@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import './assets/global.scss';
 
 const cantedComicFont = localFont({
   src: './assets/fonts/canted_comic_bold.otf',
