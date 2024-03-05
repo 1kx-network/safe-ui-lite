@@ -1,0 +1,118 @@
+@use '../../app/assets/global.scss' as global;
+
+// base
+.btn {
+  border-radius: global.$base-radius;
+  padding: 14px;
+  text-align: center;
+  width: fit-content;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+// color
+.dark {
+  color: global.$base-color;
+  border-color: global.$base-color;
+  background-color: none;
+}
+
+.light {
+  color: #fff;
+  border-color: none;
+  background-color: global.$base-color;
+}
+
+// variant types
+.outline {
+  border: 1px solid;
+  background: none;
+  background-color: none;
+
+  &.light {
+    &:hover {
+      color: global.$base-color;
+      border-color: global.$base-color;
+    }
+  }
+
+  &.dark {
+    &:hover {
+      color: #fff;
+      border-color: #fff;
+    }
+  }
+}
+
+.text {
+  border: 1px solid transparent;
+  background: none;
+  background-color: none;
+
+  &:hover {
+    border: 1px solid;
+  }
+
+  &.active {
+    border: 1px solid;
+  }
+}
+
+.contained {
+  border: none;
+
+  &.light {
+    padding: 12px;
+    color: global.$base-color;
+    background: none;
+    border: 2px solid;
+    border-width: 1px 4px 4px 1px;
+    border-color: global.$base-color;
+
+    &:hover {
+      padding: 14px;
+      color: #fff;
+      border: 0.5px solid global.$base-color;
+      background: global.$base-color;
+    }
+
+    &.active {
+      padding: 14px;
+      color: #fff;
+      border: 0.5px solid global.$base-color;
+      background: global.$base-color;
+    }
+  }
+
+  &.dark {
+    color: #fff;
+    border: 0.5px solid global.$base-color;
+    background: global.$base-color;
+
+    &:hover {
+      padding: 12px;
+      color: global.$base-color;
+      background: none;
+      border: 2px solid;
+      border-width: 1px 4px 4px 1px;
+      border-color: global.$base-color;
+    }
+
+    &.active {
+      padding: 12px;
+      color: global.$base-color;
+      background: none;
+      border: 2px solid;
+      border-width: 1px 4px 4px 1px;
+      border-color: global.$base-color;
+    }
+  }
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.loading {
+}
