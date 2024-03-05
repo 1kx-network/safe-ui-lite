@@ -11,7 +11,7 @@ interface IButtonProps {
   children: string;
   color?: 'dark' | 'light';
   className?: string;
-  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const Button: React.FunctionComponent<IButtonProps> = ({
