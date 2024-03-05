@@ -2,6 +2,7 @@
 
 // base
 .btn {
+  font-family: inherit;
   border-radius: global.$base-radius;
   padding: 14px;
   text-align: center;
@@ -49,12 +50,10 @@
   background: none;
   background-color: none;
 
-  &:hover {
-    border: 1px solid;
-  }
-
+  &:hover,
   &.active {
-    border: 1px solid;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
   }
 }
 
@@ -69,35 +68,21 @@
     border-width: 1px 4px 4px 1px;
     border-color: global.$base-color;
 
-    &:hover {
-      padding: 14px;
-      color: #fff;
-      border: 0.5px solid global.$base-color;
-      background: global.$base-color;
-    }
-
+    &:hover,
     &.active {
       padding: 14px;
-      color: #fff;
+      color: global.$base-white;
       border: 0.5px solid global.$base-color;
       background: global.$base-color;
     }
   }
 
   &.dark {
-    color: #fff;
+    color: global.$base-white;
     border: 0.5px solid global.$base-color;
     background: global.$base-color;
 
-    &:hover {
-      padding: 12px;
-      color: global.$base-color;
-      background: none;
-      border: 2px solid;
-      border-width: 1px 4px 4px 1px;
-      border-color: global.$base-color;
-    }
-
+    &:hover,
     &.active {
       padding: 12px;
       color: global.$base-color;

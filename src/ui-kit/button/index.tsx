@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react';
 import classNames from 'classnames';
 import style from './index.module.scss';
 
@@ -7,9 +8,10 @@ interface IButtonProps {
   disabled?: boolean;
   loading?: boolean;
   customStyle?: React.CSSProperties;
-  text: string | number;
+  children: string;
   color?: 'dark' | 'light';
   className?: string;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const Button: React.FunctionComponent<IButtonProps> = ({
@@ -18,10 +20,10 @@ export const Button: React.FunctionComponent<IButtonProps> = ({
   active,
   disabled,
   loading,
-  text,
+  children,
   customStyle,
   className,
-  ...props
+  onClick,
 }) => {
   const buttonClasses = classNames(
     style.btn,
@@ -36,8 +38,8 @@ export const Button: React.FunctionComponent<IButtonProps> = ({
   );
 
   return (
-    <div className={buttonClasses} style={customStyle}>
-      {text}
-    </div>
+    <button onClick={onClick} disabled={disabled} className={buttonClasses} style={customStyle}>
+      {children}
+    </button>
   );
 };
