@@ -1,12 +1,12 @@
 import classNames from 'classnames';
-import stl from './index.module.scss';
+import style from './index.module.scss';
 
 interface IButtonProps {
   variant?: 'outline' | 'text' | 'contained';
-  active?: boolean | null;
-  disabled?: boolean | null;
-  loading?: boolean | null;
-  customStyle?: React.CSSProperties | undefined;
+  active?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+  customStyle?: React.CSSProperties;
   text: string | number;
   color?: 'dark' | 'light';
   className?: string;
@@ -24,13 +24,13 @@ export const Button: React.FunctionComponent<IButtonProps> = ({
   ...props
 }) => {
   const buttonClasses = classNames(
-    stl.btn,
-    stl[color],
-    stl[variant],
+    style.btn,
+    style[color],
+    style[variant],
     {
-      [stl.active]: active,
-      [stl.disabled]: disabled,
-      [stl.loading]: loading,
+      [style.active]: active,
+      [style.disabled]: disabled,
+      [style.loading]: loading,
     },
     className
   );

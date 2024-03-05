@@ -1,4 +1,4 @@
-@use '../../app/assets/global.scss' as global;
+@use '@/app/assets/global.scss';
 
 // base
 .btn {
@@ -18,7 +18,7 @@
 }
 
 .light {
-  color: #fff;
+  color: global.$base-white;
   border-color: none;
   background-color: global.$base-color;
 }
@@ -38,8 +38,8 @@
 
   &.dark {
     &:hover {
-      color: #fff;
-      border-color: #fff;
+      color: global.$base-white;
+      border-color: global.$base-white;
     }
   }
 }
@@ -112,7 +112,4 @@
 .disabled {
   opacity: 0.5;
   pointer-events: none;
-}
-
-.loading {
 }
