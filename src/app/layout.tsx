@@ -19,7 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cantedComicFont.className}>{children}</body>
+      <body suppressHydrationWarning={true} className={cantedComicFont.className}>
+        {children}
+      </body>
     </html>
   );
 }
