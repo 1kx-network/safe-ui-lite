@@ -1,0 +1,33 @@
+{
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/*.js": { "when": "$(basename).ts" },
+    "**/*.js.map": true
+  },
+  "javascript.validate.enable": true,
+  "typescript.preferences.importModuleSpecifier": "shortest",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "typescript.validate.enable": true,
+  "cSpell.words": [
+    "betanet",
+    "bignumber",
+    "ciphertext",
+    "clsx",
+    "immer",
+    "IPFS",
+    "recaptcha",
+    "Retryable",
+    "Subaccount",
+    "tanstack",
+    "tgas",
+    "unoptimized"
+  ]
+}
