@@ -1,2 +1,2 @@
 export { WalletButton } from './WalletButton';
-export { Button } from './Button';
+export { ButtonMui } from './Button';

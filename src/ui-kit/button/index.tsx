@@ -1,20 +1,11 @@
-'use client';
 import { ThemeProvider } from '@emotion/react';
 import { themeMuiBase } from '@/app/assets/themeMuiBase';
-import { Button as ButtonMUI } from '@mui/base/Button';
-import { styled } from '@mui/system';
+import { ButtonProps } from '@mui/base/Button';
 
-const Btn = styled(ButtonMUI)(
-  ({ theme }) => `
-    background-color: ${theme.palette.primary};
-    border: 1px solid ${theme.palette.primary};
-  `
+import { Button } from './button.styles';
+
+export const ButtonMui = (props: ButtonProps) => (
+  <ThemeProvider theme={themeMuiBase}>
+    <Button {...props}>{props.children}</Button>
+  </ThemeProvider>
 );
-
-export const Button = () => {
-  return (
-    <ThemeProvider theme={themeMuiBase}>
-      <Btn variant="outline">Create Repository</Btn>
-    </ThemeProvider>
-  );
-};
