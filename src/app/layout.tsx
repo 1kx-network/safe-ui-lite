@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import './assets/global.scss';
 import { Web3ModalProvider } from '@/context/Web3Modal';
 
 const cantedComicFont = localFont({

@@ -1,5 +1,4 @@
 'use client';
-import WalletButton from '@/ui-kit/button';
 import ConnectButton from './connectButton';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
@@ -9,8 +8,6 @@ export default function Home() {
   return (
     <main>
       <ConnectButton />
-      <WalletButton>Button</WalletButton>
-      Home page
     </main>
   );
 }

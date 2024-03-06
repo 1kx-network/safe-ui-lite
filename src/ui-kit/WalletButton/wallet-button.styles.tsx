@@ -63,5 +63,5 @@ export const ButtonStyled = styled(BaseButton)(
     box-shadow: none;
     transform: scale(1);
   }
-  `
+`
 );
