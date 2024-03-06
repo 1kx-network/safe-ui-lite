@@ -6,7 +6,7 @@ export default function ConnectButton() {
 
   return (
     <>
-      <WalletButton onClick={() => open()}>Open Connect Modal</WalletButton>
+      <WalletButton onClick={() => open()}>Connect Wallet</WalletButton>
     </>
   );
 }
