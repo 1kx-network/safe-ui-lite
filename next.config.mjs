@@ -7,11 +7,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  webpack(config, { isServer }) {
+  webpack(config) {
     config.module.rules.push(...webpackConfig.rules);
-    if (!isServer) {
-      config.resolve.fallback.fs = false;
-    }
+    config.externals.push('pino-pretty', 'lokijs', 'encoding');
     return config;
   },
 };
