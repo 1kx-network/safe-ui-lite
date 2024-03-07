@@ -8,5 +8,7 @@ export const LayoutStyled = styled('main')(
       overfloy: hidden;
       margin: 0;
       position: relative;
+      display: flex;
+      padding: 20px;
   `
 );

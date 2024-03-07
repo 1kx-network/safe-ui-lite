@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { styled } from '@mui/system';
 
 export const WrapperStyled = styled('div')`
-  max-width: 246px;
+  width: 246px;
+  min-width: 178px;
   margin-right: 1.25rem;
   overflow: hidden;
   height: 100%;
@@ -41,16 +42,18 @@ export const MenuStyled = styled('div')(
 
 export const ItemMenuStyled = styled(Link)(
   ({ theme }) => `
-	border: 2px solid transparent;
-	disaply: flex;
+	border: 1px solid transparent;
+	display: flex;
+  align-items: center;
 	font-size: 14px;
 	text-decoration: none;
-	padding: 0.625rem 0.875rem;
+	padding: 0.375rem 0.75rem;
 	border-radius: 1.75rem;
 	color: #020303;
+  border-radius: 0.5rem;
 
  	&:hover {
-		border: 2px solid #020303;
+    background-color: #02030305;
 		text-decoration: none;
 	}
 `
@@ -61,3 +64,14 @@ export const boxStyleInfoUser = {
   flexDirection: 'column',
   gap: '5px',
 };
+
+export const WrapperIconStyled = styled('div')`
+  background-color: #020303;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.875rem;
+  width: 1.875rem;
+  height: 1.875rem;
+`;

@@ -1,5 +1,8 @@
 import { Box } from '@mui/system';
 import { WalletTypography } from '@/ui-kit';
+import WalletSvg from '@/assets/svg/wallet.svg';
+import SettingSvg from '@/assets/svg/setting.svg';
+import TransactionSvg from '@/assets/svg/transaction.svg';
 import {
   MenuStyled,
   WrapperStyled,
@@ -7,13 +10,15 @@ import {
   InfoUserStyled,
   ItemMenuStyled,
   boxStyleInfoUser,
+  WrapperIconStyled,
 } from './sidebar.styles';
 
 interface ISidebar {
   icon?: string;
-  name: string;
-  id: string;
-  count: string;
+  name?: string;
+  id?: string;
+  count?: string;
+  isHidden?: boolean;
 }
 
 export const Sidebar: React.FunctionComponent<ISidebar> = ({
@@ -21,6 +26,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
   name = 'Praiseworthy gnosis',
   id = 'gno:0x0eA9ecE',
   count = '10.00',
+  isHidden = false,
 }) => {
   return (
     <WrapperStyled>
@@ -35,12 +41,35 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
       </InfoUserStyled>
       <MenuStyled>
         {/* TODO */}
-        <ItemMenuStyled href="/" style={{ textAlign: 'center', border: '2px solid #020303' }}>
+        <ItemMenuStyled
+          href="/"
+          style={{
+            justifyContent: 'center',
+            border: '2px solid #020303',
+            borderRadius: '28px',
+            padding: '0.719rem 0.75rem',
+          }}
+        >
           New transaction
         </ItemMenuStyled>
-        <ItemMenuStyled href="/">Balance</ItemMenuStyled>
-        <ItemMenuStyled href="/">Transactions</ItemMenuStyled>
-        <ItemMenuStyled href="/">Settins</ItemMenuStyled>
+        <ItemMenuStyled href="/">
+          <WrapperIconStyled>
+            <WalletSvg />
+          </WrapperIconStyled>{' '}
+          Balance
+        </ItemMenuStyled>
+        <ItemMenuStyled href="/">
+          <WrapperIconStyled>
+            <SettingSvg />
+          </WrapperIconStyled>{' '}
+          Transactions
+        </ItemMenuStyled>
+        <ItemMenuStyled href="/">
+          <WrapperIconStyled>
+            <TransactionSvg />
+          </WrapperIconStyled>{' '}
+          Settins
+        </ItemMenuStyled>
       </MenuStyled>
     </WrapperStyled>
   );
