@@ -14,6 +14,7 @@ import {
   styleWalletPaper,
   DisconnectButtonStyled,
   styleWalletPaperLeft,
+  StepStyled,
 } from './save-account.styles';
 
 interface ICreatePageAccount {
@@ -51,83 +52,90 @@ export default function CreatePageAccount({
   };
 
   return (
-      <WalletLayout>
-        <WrapperStyled>
-          <DisconnectButtonStyled>
-            <WalletButton onClick={() => disconnect()}>Disconnect</WalletButton>
-          </DisconnectButtonStyled>
+    <WalletLayout hideSidebar>
+      <WrapperStyled>
+        <DisconnectButtonStyled>
+          <WalletButton onClick={() => disconnect()}>Disconnect</WalletButton>
+        </DisconnectButtonStyled>
 
-          <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
-            Create new Safe Account
-          </WalletTypography>
+        <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
+          Create new Safe Account
+        </WalletTypography>
 
-          <GridContainer>
-            <WalletPaper style={styleWalletPaperLeft}>
+        <GridContainer>
+          <WalletPaper style={styleWalletPaperLeft}>
+            <Box display="flex" alignItems="center">
+              <StepStyled>
+                <WalletTypography fontSize={18} fontWeight={600} color="#fff">
+                  1
+                </WalletTypography>
+              </StepStyled>
               <WalletTypography component="h2" fontSize={22} fontWeight={600}>
                 Select network and name of your Safe Account
               </WalletTypography>
+            </Box>
 
-              <Box display="flex" flexDirection="column" mt={1.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Name
-                </WalletTypography>
-              </Box>
-
-              <WalletInput
-                placeholder={'Devoted Polygon Safe'}
-                value={valueName}
-                onChange={handleChangeValueName}
-              />
-
-              <Box display={'flex'} flexDirection={'column'} mt={1.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Network ID
-                </WalletTypography>
-              </Box>
-
-              <WalletInput
-                placeholder={'Chain ID'}
-                value={valueNetwork}
-                onChange={handleChangeNetwork}
-              />
-
-              <Box mt={1.5}>
-                <WalletTypography fontWeight={600}>
-                  By continuing, you agree to our terms of use and privacy policy.
-                </WalletTypography>
-              </Box>
-
-              <GridButtonStyled>
-                <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
-                <WalletButton onClick={handleClickNext}>Next</WalletButton>
-              </GridButtonStyled>
-            </WalletPaper>
-
-            {/* --- */}
-            <WalletPaper style={styleWalletPaper}>
-              <WalletTypography fontSize={22} fontWeight={600}>
-                Your Safe Account preview
+            <Box display="flex" flexDirection="column" mt={1.5}>
+              <WalletTypography fontSize={12} fontWeight={600}>
+                Name
               </WalletTypography>
+            </Box>
 
-              <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Wallet
-                </WalletTypography>
-                <WalletTypography fontSize={17}>{address}</WalletTypography>
-              </Box>
+            <WalletInput
+              placeholder={'Devoted Polygon Safe'}
+              value={valueName}
+              onChange={handleChangeValueName}
+            />
 
-              <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Network
-                </WalletTypography>
-                <WalletTypography fontSize={17} fontWeight={600}>
-                  {network}
-                </WalletTypography>
-              </Box>
-            </WalletPaper>
-          </GridContainer>
-        </WrapperStyled>
-        {/*  */}
-      </WalletLayout>
+            <Box display={'flex'} flexDirection={'column'} mt={1.5}>
+              <WalletTypography fontSize={12} fontWeight={600}>
+                Network ID
+              </WalletTypography>
+            </Box>
+
+            <WalletInput
+              placeholder={'Chain ID'}
+              value={valueNetwork}
+              onChange={handleChangeNetwork}
+            />
+
+            <Box mt={1.5}>
+              <WalletTypography fontWeight={600}>
+                By continuing, you agree to our terms of use and privacy policy.
+              </WalletTypography>
+            </Box>
+
+            <GridButtonStyled>
+              <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
+              <WalletButton onClick={handleClickNext}>Next</WalletButton>
+            </GridButtonStyled>
+          </WalletPaper>
+
+          {/* --- */}
+          <WalletPaper style={styleWalletPaper}>
+            <WalletTypography fontSize={22} fontWeight={600}>
+              Your Safe Account preview
+            </WalletTypography>
+
+            <Box display="flex" justifyContent={'space-between'} mt={1.5}>
+              <WalletTypography fontSize={12} fontWeight={600}>
+                Wallet
+              </WalletTypography>
+              <WalletTypography fontSize={17}>{address}</WalletTypography>
+            </Box>
+
+            <Box display="flex" justifyContent={'space-between'} mt={1.5}>
+              <WalletTypography fontSize={12} fontWeight={600}>
+                Network
+              </WalletTypography>
+              <WalletTypography fontSize={17} fontWeight={600}>
+                {network}
+              </WalletTypography>
+            </Box>
+          </WalletPaper>
+        </GridContainer>
+      </WrapperStyled>
+      {/*  */}
+    </WalletLayout>
   );
 }

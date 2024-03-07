@@ -1,5 +1,4 @@
 import { styled } from '@mui/system';
-import { Input as InputBase } from '@mui/base';
 
 const blue = {
   100: '#DAECFF',
@@ -23,7 +22,7 @@ const grey = {
   900: '#1C2025',
 };
 
-export const InputStyled = styled(InputBase)(
+export const InputStyled = styled('input')(
   ({ theme }) => `
   border: 1px solid rgba(0, 0, 0, 0.25);
   font-family: 'IBM Plex Sans', sans-serif;
