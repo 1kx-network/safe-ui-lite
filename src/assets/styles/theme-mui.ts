@@ -9,7 +9,10 @@ export const themeMuiBase = {
     dark: '#020303',
     darkLight: '#02030305',
     grey: '#d4d4d4',
+    lightSecondary: '#FFFFFF80',
   },
+
+  spacing: (factor: number) => `${0.25 * factor}rem`,
 
   fontSize: {
     base: '1rem', // 16px

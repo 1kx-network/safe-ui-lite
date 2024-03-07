@@ -1,6 +1,8 @@
 import * as React from 'react';
+import { ThemeProvider } from '@emotion/react';
 import { LayoutStyled } from './wallet-layout.styles';
 import { Sidebar } from '@/components';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 interface IWalletLayoutProps {
   children: React.ReactNode;
@@ -9,9 +11,11 @@ interface IWalletLayoutProps {
 
 export function WalletLayout({ children, hideSidebar }: IWalletLayoutProps) {
   return (
-    <LayoutStyled>
-      {!hideSidebar && <Sidebar />}
-      {children}
-    </LayoutStyled>
+    <ThemeProvider theme={themeMuiBase}>
+      <LayoutStyled>
+        {!hideSidebar && <Sidebar />}
+        {children}
+      </LayoutStyled>
+    </ThemeProvider>
   );
 }

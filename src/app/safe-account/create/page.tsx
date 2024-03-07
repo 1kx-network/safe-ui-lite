@@ -1,12 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { ThemeProvider } from '@emotion/react';
 import { Box } from '@mui/system';
 import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import routes from '@/app/routes';
 
 import {
@@ -52,7 +50,6 @@ export default function CreatePageAccount({
   };
 
   return (
-    <ThemeProvider theme={themeMuiBase}>
       <WalletLayout>
         <WrapperStyled>
           <DisconnectButtonStyled>
@@ -119,6 +116,5 @@ export default function CreatePageAccount({
         </WrapperStyled>
         {/*  */}
       </WalletLayout>
-    </ThemeProvider>
   );
 }
