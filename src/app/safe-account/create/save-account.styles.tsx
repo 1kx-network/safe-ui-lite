@@ -40,3 +40,8 @@ export const styleWalletPaper = {
   maxWidth: '500px',
   gap: '7px',
 };
+
+export const DisconnectButtonStyled = styled('div')`
+  display: flex;
+  justify-content: end;
+`;

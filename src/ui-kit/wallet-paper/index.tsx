@@ -1,4 +1,5 @@
-import { CSSProperties, ReactNode } from 'react';
+import { ReactNode } from 'react';
+
 import { PaperStyled } from './wallet-paper.styles';
 
 interface IWalletPaper {

@@ -1,15 +1,21 @@
 'use client';
-import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
+import { useEffect, useState } from 'react';
 import { ThemeProvider } from '@emotion/react';
-import { themeMuiBase } from '../assets/styles/theme-mui';
+import { Box } from '@mui/system';
+import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useRouter } from 'next/navigation';
+
+import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
+import routes from '@/app/routes';
+
 import {
   GridContainer,
   GridButtonStyled,
   WrapperStyled,
   styleWalletPaper,
+  DisconnectButtonStyled,
 } from './save-account.styles';
-import { Box } from '@mui/system';
-import { useState } from 'react';
 
 interface ICreatePageAccount {
   address: string;
@@ -22,6 +28,17 @@ export default function CreatePageAccount({
 }: ICreatePageAccount) {
   const [valueNetwork, setValueNetwork] = useState<null | string>(null);
   const [valueName, setValueName] = useState<null | string>(null);
+
+  const { isConnected } = useWeb3ModalAccount();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isConnected) {
+      router.push(routes.home);
+    }
+  }, [isConnected]);
+
+  const { disconnect } = useDisconnect();
 
   const handleClickCancel = () => console.log('_cancel_');
   const handleClickNext = () => console.log('_next_');
@@ -37,11 +54,15 @@ export default function CreatePageAccount({
   return (
     <WalletLayout>
       <ThemeProvider theme={themeMuiBase}>
-        {/*  */}
         <WrapperStyled>
+          <DisconnectButtonStyled>
+            <WalletButton onClick={() => disconnect()}>Disconnect</WalletButton>
+          </DisconnectButtonStyled>
+
           <WalletTypography className="safe-account_main-header">
             Create new Safe Account
           </WalletTypography>
+
           <GridContainer>
             <WalletPaper style={styleWalletPaper}>
               <WalletTypography component="h2">

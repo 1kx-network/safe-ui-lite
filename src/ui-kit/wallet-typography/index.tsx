@@ -13,6 +13,7 @@ export interface WalletTypographyProps {
   children: React.ReactNode;
   textTransform?: 'uppercase' | 'lowercase' | 'capitalize';
   style?: React.CSSProperties;
+  fontFamily?: string;
 }
 
 export const WalletTypography = ({
@@ -24,6 +25,7 @@ export const WalletTypography = ({
   opacity,
   lineHeight,
   letterSpacing,
+  fontFamily = 'Barlow sans, sans-serif',
   textAlign,
   children,
   textTransform,
@@ -35,8 +37,9 @@ export const WalletTypography = ({
     fontWeight,
     lineHeight,
     letterSpacing,
+    fontFamily,
     opacity,
-    color: `var(--color-${color})`,
+    color,
     margin: 0,
     textTransform,
   }));

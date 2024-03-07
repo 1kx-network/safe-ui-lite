@@ -14,9 +14,17 @@ const mainnet = {
   rpcUrl: 'https://cloudflare-eth.com',
 };
 
+const sepolia = {
+  chainId: 11155111,
+  name: 'Sepolia',
+  currency: 'SPO',
+  explorerUrl: 'https://sepolia.io',
+  rpcUrl: 'https://gateway.tenderly.co/public/sepolia',
+};
+
 // 3. Create modal
 const metadata = {
-  name: 'My Website',
+  name: '1kx',
   description: 'My Website description',
   url: 'https://mywebsite.com', // origin must match your domain & subdomain
   icons: ['https://avatars.mywebsite.com/'],
@@ -24,11 +32,15 @@ const metadata = {
 
 createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
-  chains: [mainnet],
+  chains: [mainnet, sepolia],
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  themeMode: 'light',
+  featuredWalletIds: [
+    // '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // MetaMask
+  ],
 });
 
-export function Web3ModalProvider({ children }: any) {
+export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
   return children;
 }

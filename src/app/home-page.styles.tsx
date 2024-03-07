@@ -1,11 +1,18 @@
 import { styled } from '@mui/system';
 
+import SkeletonSvg from '@/assets/svg/skeleton.svg';
 export const MainContainerStyled = styled('main')(
   () => `
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
-    height: 100vh;
+    justify-content: center;
+    padding: 135px;
+    height: 100%;
+`
+);
+
+export const ImageStyled = styled(SkeletonSvg)(
+  () => `
+    margin-top: 44px;
 `
 );
