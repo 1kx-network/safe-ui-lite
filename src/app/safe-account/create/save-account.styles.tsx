@@ -15,14 +15,19 @@ export const GridButtonStyled = styled('div')`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 12px;
 `;
 
 export const WrapperStyled = styled('div')`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  padding: 4rem 2rem 0 2rem;
+  padding-top: 4rem;
   max-width: 1114px;
+
+  @media (max-width: 1068px) {
+    padding: 4rem 2rem 0 2rem;
+  }
 
   & > .safe-account_main-header {
     padding: 0 0.5rem;
@@ -35,6 +40,12 @@ export const WrapperStyled = styled('div')`
 `;
 
 export const styleWalletPaper = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '7px',
+};
+
+export const styleWalletPaperLeft = {
   display: 'flex',
   flexDirection: 'column',
   gap: '7px',

@@ -25,7 +25,7 @@ export const WalletTypography = ({
   opacity,
   lineHeight,
   letterSpacing,
-  fontFamily = 'Barlow sans, sans-serif',
+  fontFamily,
   textAlign,
   children,
   textTransform,
