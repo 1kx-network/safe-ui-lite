@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { InputProps } from '@mui/base';
+
 import { WalletTypography } from '..';
+
 import { InputStyled, InputErrorStyled, WrapperStyled } from './wallet-input.styles';
 
 export function WalletInput(props: InputProps & { errorValue?: string }) {

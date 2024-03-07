@@ -1,4 +1,3 @@
-import { Button as BaseButton, buttonClasses } from '@mui/base/Button';
 import { styled } from '@mui/system';
 
 const grey = {
@@ -13,7 +12,7 @@ const grey = {
   900: '#1C2025',
 };
 
-export const ButtonStyled = styled(BaseButton)(
+export const ButtonStyled = styled('button')(
   ({ theme }) => `
   font-family: 'IBM Plex Sans', sans-serif;
   width: 155px;
@@ -33,26 +32,6 @@ export const ButtonStyled = styled(BaseButton)(
 
   &:hover {
     background-color: ${grey[600]};
-  }
-
-  &.${buttonClasses.active} {
-    background-color: ${grey[700]};
-    box-shadow: none;
-    transform: scale(0.99);
-  }
-
-  &.${buttonClasses.focusVisible} {
-    box-shadow: 0 0 0 4px ${theme.palette.mode === 'dark' ? grey[300] : grey[200]};
-    outline: none;
-  }
-
-  &.${buttonClasses.disabled} {
-    background-color: ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-    color: ${theme.palette.mode === 'dark' ? grey[200] : grey[700]};
-    border: 0;
-    cursor: default;
-    box-shadow: none;
-    transform: scale(1);
   }
   `
 );

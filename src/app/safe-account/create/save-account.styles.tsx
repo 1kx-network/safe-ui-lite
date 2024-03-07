@@ -55,3 +55,17 @@ export const DisconnectButtonStyled = styled('div')`
   display: flex;
   justify-content: end;
 `;
+
+export const StepStyled = styled('div')(
+  ({ theme }) => `
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: ${theme.palette.base};
+    border-radius: 50%;
+    color: ${theme.palette.textLight};
+    height: 28px;
+    width: 28px;
+    margin-right:${theme.spacing(3)};
+`
+);

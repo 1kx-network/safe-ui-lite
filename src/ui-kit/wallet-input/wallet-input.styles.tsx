@@ -1,5 +1,4 @@
 import { styled } from '@mui/system';
-import { Input as InputBase, inputClasses } from '@mui/base';
 
 const blue = {
   100: '#DAECFF',
@@ -23,7 +22,7 @@ const grey = {
   900: '#1C2025',
 };
 
-export const InputStyled = styled(InputBase)(
+export const InputStyled = styled('input')(
   ({ theme }) => `
   font-size: 0.875rem;
   font-weight: 400;
@@ -55,7 +54,7 @@ export const InputStyled = styled(InputBase)(
     width: 100%;
   }
 
-  &.${inputClasses.error} {
+  & .error {
     border-color: ${theme.palette.error};
 
     & > input {
@@ -63,7 +62,7 @@ export const InputStyled = styled(InputBase)(
     }
   }
 
-  &.${inputClasses.disabled} {
+  & .disabled {
     cursor: not-allowed;
 
     & > input {
