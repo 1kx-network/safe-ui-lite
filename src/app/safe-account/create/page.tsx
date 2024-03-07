@@ -15,6 +15,7 @@ import {
   WrapperStyled,
   styleWalletPaper,
   DisconnectButtonStyled,
+  styleWalletPaperLeft,
 } from './save-account.styles';
 
 interface ICreatePageAccount {
@@ -23,7 +24,7 @@ interface ICreatePageAccount {
 }
 
 export default function CreatePageAccount({
-  address = '0x98BB81Bda45af3Ef8FA0C1E636CCEb3085D2e443',
+  address = 'gno:0x98BB81B...5D2e443',
   network = 'Polygon',
 }: ICreatePageAccount) {
   const [valueNetwork, setValueNetwork] = useState<null | string>(null);
@@ -59,41 +60,45 @@ export default function CreatePageAccount({
             <WalletButton onClick={() => disconnect()}>Disconnect</WalletButton>
           </DisconnectButtonStyled>
 
-          <WalletTypography className="safe-account_main-header">
+          <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
             Create new Safe Account
           </WalletTypography>
 
           <GridContainer>
-            <WalletPaper style={styleWalletPaper}>
-              <WalletTypography component="h2">
+            <WalletPaper style={styleWalletPaperLeft}>
+              <WalletTypography component="h2" fontSize={22} fontWeight={600}>
                 Select network and name of your Safe Account
               </WalletTypography>
 
-              <Box display={'flex'} flexDirection={'column'}>
-                <WalletTypography fontSize={12}>Name</WalletTypography>
-                <WalletTypography fontSize={11}>Devoted Polygon Safe</WalletTypography>
+              <Box display="flex" flexDirection="column" mt={1.5}>
+                <WalletTypography fontSize={12} fontWeight={600}>
+                  Name
+                </WalletTypography>
               </Box>
 
               <WalletInput
-                placeholder={'Value Name'}
+                placeholder={'Devoted Polygon Safe'}
                 value={valueName}
                 onChange={handleChangeValueName}
               />
 
-              <Box display={'flex'} flexDirection={'column'}>
-                <WalletTypography fontSize={12}>Network ID</WalletTypography>
-                <WalletTypography fontSize={11}>Devoted Polygon Safe</WalletTypography>
+              <Box display={'flex'} flexDirection={'column'} mt={1.5}>
+                <WalletTypography fontSize={12} fontWeight={600}>
+                  Network ID
+                </WalletTypography>
               </Box>
 
               <WalletInput
-                placeholder={'123412412'}
+                placeholder={'Chain ID'}
                 value={valueNetwork}
                 onChange={handleChangeNetwork}
               />
 
-              <WalletTypography fontSize={12}>
-                By continuing, you agree to our terms of use and privacy policy.
-              </WalletTypography>
+              <Box mt={1.5}>
+                <WalletTypography fontWeight={600}>
+                  By continuing, you agree to our terms of use and privacy policy.
+                </WalletTypography>
+              </Box>
 
               <GridButtonStyled>
                 <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
@@ -103,16 +108,24 @@ export default function CreatePageAccount({
 
             {/* --- */}
             <WalletPaper style={styleWalletPaper}>
-              <WalletTypography>Your Safe Account preview</WalletTypography>
+              <WalletTypography fontSize={22} fontWeight={600}>
+                Your Safe Account preview
+              </WalletTypography>
 
               <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-                <WalletTypography fontSize={12}>Address</WalletTypography>
+                <WalletTypography fontSize={12} fontWeight={600}>
+                  Wallet
+                </WalletTypography>
                 <WalletTypography fontSize={17}>{address}</WalletTypography>
               </Box>
 
               <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-                <WalletTypography fontSize={12}>Network</WalletTypography>
-                <WalletTypography fontSize={17}>{network}</WalletTypography>
+                <WalletTypography fontSize={12} fontWeight={600}>
+                  Network
+                </WalletTypography>
+                <WalletTypography fontSize={17} fontWeight={600}>
+                  {network}
+                </WalletTypography>
               </Box>
             </WalletPaper>
           </GridContainer>
