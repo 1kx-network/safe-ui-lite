@@ -1,4 +1,4 @@
-import { styled, GlobalStyles } from '@mui/system';
+import { styled } from '@mui/system';
 
 export const LayoutStyled = styled('main')(
   ({ theme }) => `

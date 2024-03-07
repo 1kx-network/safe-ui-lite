@@ -1,13 +1,13 @@
 import { styled } from '@mui/system';
 
 export const GridContainer = styled('div')`
-  display: flex;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 14px;
   justify-content: center;
 
-  @media (max-width: 1068px) {
-    flex-direction: column;
-    align-items: center;
+  @media (min-width: 1068px) {
+    grid-template-columns: repeat(2, 1fr);
   }
 `;
 
@@ -37,7 +37,6 @@ export const WrapperStyled = styled('div')`
 export const styleWalletPaper = {
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '500px',
   gap: '7px',
 };
 
