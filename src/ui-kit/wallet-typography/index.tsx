@@ -12,6 +12,8 @@ export interface WalletTypographyProps {
   className?: string;
   children: React.ReactNode;
   textTransform?: 'uppercase' | 'lowercase' | 'capitalize';
+  style?: React.CSSProperties;
+  fontFamily?: string;
 }
 
 export const WalletTypography = ({
@@ -23,9 +25,11 @@ export const WalletTypography = ({
   opacity,
   lineHeight,
   letterSpacing,
+  fontFamily = 'Barlow sans, sans-serif',
   textAlign,
   children,
   textTransform,
+  style,
 }: WalletTypographyProps) => {
   const Component = styled(component)(() => ({
     fontSize,
@@ -33,10 +37,15 @@ export const WalletTypography = ({
     fontWeight,
     lineHeight,
     letterSpacing,
+    fontFamily,
     opacity,
-    color: `var(--color-${color})`,
+    color,
     margin: 0,
     textTransform,
   }));
-  return <Component className={className}>{children}</Component>;
+  return (
+    <Component className={className} style={style}>
+      {children}
+    </Component>
+  );
 };

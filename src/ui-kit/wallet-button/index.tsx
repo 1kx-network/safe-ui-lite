@@ -4,8 +4,13 @@ import { ButtonStyled } from './wallet-button.styles';
 interface IWalletButtonProps {
   onClick: () => void;
   children: React.ReactNode;
+  styles?: React.CSSProperties;
 }
 
-export function WalletButton({ onClick, children }: IWalletButtonProps) {
-  return <ButtonStyled onClick={onClick}>{children}</ButtonStyled>;
+export function WalletButton({ onClick, children, styles }: IWalletButtonProps) {
+  return (
+    <ButtonStyled style={styles} onClick={onClick}>
+      {children}
+    </ButtonStyled>
+  );
 }
