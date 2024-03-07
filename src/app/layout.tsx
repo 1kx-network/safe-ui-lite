@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Web3ModalProvider } from '@/context/Web3Modal';
+import './assets/styles/global-styles.scss';
 
 const cantedComicFont = localFont({
   src: './assets/fonts/canted_comic_bold.otf',
@@ -19,11 +20,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        suppressHydrationWarning={true}
-        className={cantedComicFont.className}
-        style={{ margin: 0 }}
-      >
+      <body suppressHydrationWarning={true} className={cantedComicFont.className}>
+        {/* <Global styles={globalStyles} /> */}
         <Web3ModalProvider>{children}</Web3ModalProvider>
       </body>
     </html>
