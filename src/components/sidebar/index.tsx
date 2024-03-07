@@ -11,22 +11,22 @@ import {
   ItemMenuStyled,
   boxStyleInfoUser,
   WrapperIconStyled,
+  styleBtnTransaction,
 } from './sidebar.styles';
+import { dataUserMock } from './ fixtures';
 
 interface ISidebar {
   icon?: string;
   name?: string;
   id?: string;
   count?: string;
-  isHidden?: boolean;
 }
 
 export const Sidebar: React.FunctionComponent<ISidebar> = ({
-  icon = 'https://uxwing.com/wp-content/themes/uxwing/download/hand-gestures/good-icon.png',
-  name = 'Praiseworthy gnosis',
-  id = 'gno:0x0eA9ecE',
-  count = '10.00',
-  isHidden = false,
+  icon = dataUserMock.icon,
+  name = dataUserMock.name,
+  id = dataUserMock.id,
+  count = dataUserMock.count,
 }) => {
   return (
     <WrapperStyled>
@@ -41,34 +41,26 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
       </InfoUserStyled>
       <MenuStyled>
         {/* TODO */}
-        <ItemMenuStyled
-          href="/"
-          style={{
-            justifyContent: 'center',
-            border: '2px solid #020303',
-            borderRadius: '28px',
-            padding: '0.719rem 0.75rem',
-          }}
-        >
-          New transaction
+        <ItemMenuStyled style={styleBtnTransaction} href="/">
+          <WalletTypography>New transaction</WalletTypography>
         </ItemMenuStyled>
         <ItemMenuStyled href="/">
           <WrapperIconStyled>
             <WalletSvg />
-          </WrapperIconStyled>{' '}
-          Balance
+          </WrapperIconStyled>
+          <WalletTypography>Balance</WalletTypography>
         </ItemMenuStyled>
         <ItemMenuStyled href="/">
           <WrapperIconStyled>
             <SettingSvg />
-          </WrapperIconStyled>{' '}
-          Transactions
+          </WrapperIconStyled>
+          <WalletTypography>Transactions</WalletTypography>
         </ItemMenuStyled>
         <ItemMenuStyled href="/">
           <WrapperIconStyled>
             <TransactionSvg />
-          </WrapperIconStyled>{' '}
-          Settins
+          </WrapperIconStyled>
+          <WalletTypography>Settings</WalletTypography>
         </ItemMenuStyled>
       </MenuStyled>
     </WrapperStyled>

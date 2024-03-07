@@ -75,3 +75,11 @@ export const WrapperIconStyled = styled('div')`
   width: 1.875rem;
   height: 1.875rem;
 `;
+
+
+export const styleBtnTransaction =  {
+  justifyContent: 'center',
+  border: '2px solid #020303',
+  borderRadius: '28px',
+  padding: '0.719rem 0.75rem',
+}
