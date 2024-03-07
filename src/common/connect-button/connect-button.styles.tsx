@@ -9,5 +9,6 @@ export const WalletConnectButtonStyled = styled('button')(
     border-radius: 6px;
     border: none;
     cursor: pointer;
+    max-width: 200px;
 `
 );

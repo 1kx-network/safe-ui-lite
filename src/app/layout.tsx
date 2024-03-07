@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { Barlow } from 'next/font/google';
 
-const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
-
 import { Web3ModalProvider } from '@/context/Web3Modal';
+import '../assets/styles/global-styles.scss';
+
+const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
   title: '1kx',
@@ -17,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true} className={barlow.className} style={{ margin: 0 }}>
+      <body suppressHydrationWarning={true} className={barlow.className}>
         <Web3ModalProvider>{children}</Web3ModalProvider>
       </body>
     </html>
