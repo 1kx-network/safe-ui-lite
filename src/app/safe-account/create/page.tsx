@@ -52,8 +52,8 @@ export default function CreatePageAccount({
   };
 
   return (
-    <WalletLayout>
-      <ThemeProvider theme={themeMuiBase}>
+    <ThemeProvider theme={themeMuiBase}>
+      <WalletLayout>
         <WrapperStyled>
           <DisconnectButtonStyled>
             <WalletButton onClick={() => disconnect()}>Disconnect</WalletButton>
@@ -118,7 +118,7 @@ export default function CreatePageAccount({
           </GridContainer>
         </WrapperStyled>
         {/*  */}
-      </ThemeProvider>
-    </WalletLayout>
+      </WalletLayout>
+    </ThemeProvider>
   );
 }

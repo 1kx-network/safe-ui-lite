@@ -1,9 +1,13 @@
 export const themeMuiBase = {
   palette: {
     primary: 'green',
-    text: '#fff',
+    textLight: '#fff',
+    textDark: '#020303',
+    textDarkLight: '#02030305',
     base: '#1c1c1c',
     white: '#fff',
+    dark: '#020303',
+    darkLight: '#02030305',
     grey: '#d4d4d4',
   },
 

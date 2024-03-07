@@ -17,13 +17,15 @@ export const ImgUserStyled = styled(Image)`
   object-fit: cover;
 `;
 
-export const InfoUserStyled = styled('div')`
+export const InfoUserStyled = styled('div')(
+  ({ theme }) => `
   display: flex;
   align-items: center;
   padding: 0.625rem 0.875rem;
   border-radius: 0.875rem 0.875rem 0 0;
-  background-color: rgb(255, 255, 255);
-`;
+  background-color: ${theme.palette.white}
+`
+);
 
 export const MenuStyled = styled('div')(
   ({ theme }) => `
@@ -49,12 +51,12 @@ export const ItemMenuStyled = styled(Link)(
 	text-decoration: none;
 	padding: 0.375rem 0.75rem;
 	border-radius: 1.75rem;
-	color: #020303;
+	color: ${theme.palette.dark}
   border-radius: 0.5rem;
 
  	&:hover {
-    background-color: #02030305;
-		text-decoration: none;
+    text-decoration: none;
+    background-color: ${theme.palette.darkLight}
 	}
 `
 );
@@ -65,8 +67,9 @@ export const boxStyleInfoUser = {
   gap: '5px',
 };
 
-export const WrapperIconStyled = styled('div')`
-  background-color: #020303;
+export const WrapperIconStyled = styled('div')(
+  ({ theme }) => `
+  background-color: ${theme.palette.dark};
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -74,12 +77,12 @@ export const WrapperIconStyled = styled('div')`
   margin-right: 0.875rem;
   width: 1.875rem;
   height: 1.875rem;
-`;
+`
+);
 
-
-export const styleBtnTransaction =  {
+export const styleBtnTransaction = {
   justifyContent: 'center',
   border: '2px solid #020303',
   borderRadius: '28px',
   padding: '0.719rem 0.75rem',
-}
+};
