@@ -2,10 +2,10 @@ import { styled, GlobalStyles } from '@mui/system';
 
 export const LayoutStyled = styled('main')(
   ({ theme }) => `
-      background: linear-gradient(116.82deg, #F0F1F4 0.01%, #F4F6FD 50.01%, #F4F4F5 100.01%);
+      background: linear-gradient(143deg, rgba(179,214,255,1) 0%, rgba(255,220,179,0.5480786064425771) 100%, rgba(244,246,253,1) 100%);
       width: 100vw;
       height: 100vh;
-      overfloy: hidden;
+      overflow: hidden;
       margin: 0;
       position: relative;
   `
