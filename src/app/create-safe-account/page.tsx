@@ -1,7 +1,7 @@
 'use client';
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import { ThemeProvider } from '@emotion/react';
-import { themeMuiBase } from '../assets/theme-mui';
+import { themeMuiBase } from '../assets/styles/theme-mui';
 import {
   GridContainer,
   GridButtonStyled,

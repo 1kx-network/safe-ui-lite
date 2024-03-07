@@ -3,7 +3,7 @@ import { PaperStyled } from './wallet-paper.styles';
 
 interface IWalletPaper {
   children: ReactNode;
-  style?: CSSProperties ;
+  style?: React.CSSProperties | {};
 }
 
 export const WalletPaper: React.FunctionComponent<IWalletPaper> = ({ children, style }) => (
