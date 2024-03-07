@@ -1,8 +1,10 @@
 'use client';
-import ConnectButton from './connect-button';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { MainContainerStyled } from './home-page.styles';
+
 import { WalletTypography } from '@/ui-kit/wallet-typography';
+
+import ConnectButton from './connect-button';
+import { MainContainerStyled } from './home-page.styles';
 
 export default function Home() {
   const { address, chainId, isConnected } = useWeb3ModalAccount();

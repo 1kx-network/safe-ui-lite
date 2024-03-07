@@ -1,11 +1,9 @@
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import { Web3ModalProvider } from '@/context/Web3Modal';
+import { Barlow } from 'next/font/google';
 
-const cantedComicFont = localFont({
-  src: './assets/fonts/canted_comic_bold.otf',
-  weight: '700',
-});
+const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
+
+import { Web3ModalProvider } from '@/context/Web3Modal';
 
 export const metadata: Metadata = {
   title: '1kx',
@@ -19,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true} className={cantedComicFont.className}>
+      <body suppressHydrationWarning={true} className={barlow.className}>
         <Web3ModalProvider>{children}</Web3ModalProvider>
       </body>
     </html>
