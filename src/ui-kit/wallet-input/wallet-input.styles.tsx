@@ -26,6 +26,7 @@ export const InputStyled = styled('input')(
   ({ theme }) => `
   font-size: 0.875rem;
   font-weight: 400;
+  width: 100%;
   line-height: 1.5;
   padding: ${theme.spacing(2.5)} ${theme.spacing(5)};
   border-radius: ${theme.spacing(7)};
