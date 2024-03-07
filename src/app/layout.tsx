@@ -19,7 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true} className={cantedComicFont.className}>
+      <body
+        suppressHydrationWarning={true}
+        className={cantedComicFont.className}
+        style={{ margin: 0 }}
+      >
         <Web3ModalProvider>{children}</Web3ModalProvider>
       </body>
     </html>

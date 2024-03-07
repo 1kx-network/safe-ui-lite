@@ -12,6 +12,7 @@ export interface WalletTypographyProps {
   className?: string;
   children: React.ReactNode;
   textTransform?: 'uppercase' | 'lowercase' | 'capitalize';
+  style?: React.CSSProperties;
 }
 
 export const WalletTypography = ({
@@ -26,6 +27,7 @@ export const WalletTypography = ({
   textAlign,
   children,
   textTransform,
+  style,
 }: WalletTypographyProps) => {
   const Component = styled(component)(() => ({
     fontSize,
@@ -38,5 +40,9 @@ export const WalletTypography = ({
     margin: 0,
     textTransform,
   }));
-  return <Component className={className}>{children}</Component>;
+  return (
+    <Component className={className} style={style}>
+      {children}
+    </Component>
+  );
 };

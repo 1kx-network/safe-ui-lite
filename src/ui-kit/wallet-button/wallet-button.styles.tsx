@@ -16,6 +16,7 @@ const grey = {
 export const ButtonStyled = styled(BaseButton)(
   ({ theme }) => `
   font-family: 'IBM Plex Sans', sans-serif;
+  width: 155px;
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.5;
