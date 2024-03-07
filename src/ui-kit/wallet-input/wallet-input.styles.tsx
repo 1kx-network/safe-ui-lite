@@ -24,16 +24,14 @@ const grey = {
 
 export const InputStyled = styled('input')(
   ({ theme }) => `
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
-  padding: 8px 12px;
-  border-radius: 28px;
+  padding: ${theme.spacing(2.5)} ${theme.spacing(5)};
+  border-radius: ${theme.spacing(7)};
   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-  background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
+  background: ${theme.palette.mode === 'dark' ? grey[900] : theme.palette.white};
+  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : theme.palette.borderColor};
  
 
   &:hover {
@@ -53,6 +51,44 @@ export const InputStyled = styled('input')(
     outline: none;
     padding: 0;
     margin: 0;
+    width: 100%;
   }
+
+  & .error {
+    border-color: ${theme.palette.error};
+
+    & > input {
+      color: ${theme.palette.error};
+    }
+  }
+
+  & .disabled {
+    cursor: not-allowed;
+
+    & > input {
+      cursor: not-allowed;
+    }
+
+    &:hover {
+      border-color: ${theme.palette.borderColor};
+    }
+  
+    &:focus {
+      border-color: ${theme.palette.borderColor};
+    }
+  }
+`
+);
+
+export const WrapperStyled = styled('div')`
+  position: relative;
+`;
+
+export const InputErrorStyled = styled('div')(
+  ({ theme }) => `
+  position: absolute;
+  bottom: -${theme.spacing(5)};
+  left: 0;
+  color: ${theme.palette.error}
 `
 );
