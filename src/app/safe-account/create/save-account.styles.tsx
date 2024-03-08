@@ -45,11 +45,6 @@ export const styleWalletPaper: React.CSSProperties = {
   gap: '7px',
 };
 
-export const DisconnectButtonStyled = styled('div')`
-  display: flex;
-  justify-content: end;
-`;
-
 export const StepStyled = styled('div')(
   ({ theme }) => `
     display: flex;

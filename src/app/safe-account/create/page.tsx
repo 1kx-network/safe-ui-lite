@@ -12,7 +12,6 @@ import {
   GridButtonStyled,
   WrapperStyled,
   styleWalletPaper,
-  DisconnectButtonStyled,
   StepStyled,
 } from './save-account.styles';
 
@@ -55,10 +54,6 @@ export default function CreatePageAccount({
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
-        <DisconnectButtonStyled>
-          <WalletButton onClick={() => disconnect()}>Disconnect</WalletButton>
-        </DisconnectButtonStyled>
-
         <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
           Create new Safe Account
         </WalletTypography>
