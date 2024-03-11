@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Barlow } from 'next/font/google';
 
-import { Web3ModalProvider } from '@/context/Web3Modal';
 import '../assets/styles/global-styles.scss';
+import { ContextProvider } from '@/context/Web3Modal';
 
 const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true} className={barlow.className}>
-        <Web3ModalProvider>{children}</Web3ModalProvider>
+        <ContextProvider>{children}</ContextProvider>
       </body>
     </html>
   );

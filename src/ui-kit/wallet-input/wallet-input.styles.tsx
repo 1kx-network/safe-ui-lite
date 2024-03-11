@@ -4,7 +4,7 @@ import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { withTransientProps } from '@/utils/styled.utils';
 
 export const InputWrapperStyled = styled(
-  'button',
+  'div',
   withTransientProps
 )<{ $styles?: React.CSSProperties }>(({ theme, $styles }) => {
   return {
