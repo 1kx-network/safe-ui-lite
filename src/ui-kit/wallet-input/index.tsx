@@ -15,14 +15,16 @@ import {
 
 interface IWalletInputProps {
   placeholder?: string;
-  value?: string;
+  value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
   errorValue?: string;
   disabled?: boolean;
-  label: string;
+  label?: string;
   endAdornment?: React.ReactNode;
   onClickEndAdornment?: () => void;
+  type?: string;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
 export function WalletInput(props: IWalletInputProps) {
@@ -38,7 +40,7 @@ export function WalletInput(props: IWalletInputProps) {
         </WalletTypography>
       </LabelStyled>
 
-      <InputWrapperStyled>
+      <InputWrapperStyled $styles={errorStyle}>
         <InputStyled {...props} style={errorStyle} id={label} />
         {endAdornment && (
           <EndAdornmentIconStyled onClick={onClickEndAdornment}>

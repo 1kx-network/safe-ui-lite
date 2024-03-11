@@ -41,5 +41,15 @@ export const ButtonStyled = styled(
       color: variant !== 'text' ? theme.palette.white : theme.palette.tetriaryDark,
       textDecoration: variant === 'text' ? 'underline' : 'none',
     },
+
+    '&:disabled': {
+      opacity: 0.5,
+      cursor: 'not-allowed',
+
+      '&:hover': {
+        backgroundColor: variant === 'contained' ? theme.palette.black : theme.palette.lightGrey,
+        color: variant === 'contained' ? theme.palette.white : theme.palette.black,
+      },
+    },
   };
 });

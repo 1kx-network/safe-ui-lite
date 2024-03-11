@@ -1,14 +1,21 @@
 'use client';
-import { useState } from 'react';
 import { Box } from '@mui/system';
 import { useDisconnect } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import routes from '@/app/routes';
 import { GridContainer, StepStyled, WrapperStyled, styleWalletPaper } from '../safe-account.styles';
+import { CreateSafeAccountSchema } from '@/utils/validations.utils';
 
 import { GridButtonStyled } from './save-account.styles';
+
+interface IInputsForm {
+  name: string;
+  chainId: number;
+}
 
 interface ICreatePageAccount {
   address: string;
@@ -19,25 +26,24 @@ export default function CreatePageAccount({
   address = 'gno:0x98BB81B...5D2e443',
   network = 'Polygon',
 }: ICreatePageAccount) {
-  const [valueNetwork, setValueNetwork] = useState<undefined | string>();
-  const [valueName, setValueName] = useState<undefined | string>();
   const router = useRouter();
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = useForm<IInputsForm>({
+    resolver: yupResolver(CreateSafeAccountSchema),
+  });
+
+  const onSubmit: SubmitHandler<IInputsForm> = data => {
+    console.log(data);
+    router.push(routes.safeAccountOwners);
+  };
 
   const { disconnect } = useDisconnect();
 
   const handleClickCancel = () => {
     disconnect();
-  };
-  const handleClickNext = () => {
-    router.push(routes.safeAccountOwners);
-  };
-
-  const handleChangeNetwork = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValueNetwork(e.target.value);
-  };
-
-  const handleChangeValueName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValueName(e.target.value);
   };
 
   return (
@@ -48,45 +54,73 @@ export default function CreatePageAccount({
         </WalletTypography>
 
         <GridContainer>
-          <WalletPaper style={styleWalletPaper} minWidth="653px">
-            <Box display="flex" alignItems="center">
-              <StepStyled>
-                <WalletTypography fontSize={18} fontWeight={600} color="#fff">
-                  1
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <WalletPaper style={styleWalletPaper} minWidth="653px">
+              <Box display="flex" alignItems="center">
+                <StepStyled>
+                  <WalletTypography fontSize={18} fontWeight={600} color="#fff">
+                    1
+                  </WalletTypography>
+                </StepStyled>
+                <WalletTypography component="h2" fontSize={22} fontWeight={600}>
+                  Select network and name of your Safe Account
                 </WalletTypography>
-              </StepStyled>
-              <WalletTypography component="h2" fontSize={22} fontWeight={600}>
-                Select network and name of your Safe Account
-              </WalletTypography>
-            </Box>
+              </Box>
 
-            <WalletInput
-              placeholder={'Devoted Polygon Safe'}
-              value={valueName}
-              onChange={handleChangeValueName}
-              label="Name"
-            />
+              <Box display="flex" flexDirection="column" mt={1.5}>
+                <WalletTypography fontSize={12} fontWeight={600}>
+                  Name
+                </WalletTypography>
+              </Box>
 
-            <WalletInput
-              placeholder={'Chain ID'}
-              value={valueNetwork}
-              onChange={handleChangeNetwork}
-              label="Network ID"
-            />
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <WalletInput
+                    placeholder="Enter name"
+                    {...field}
+                    error={!!errors.name}
+                    errorValue={errors.name?.message}
+                  />
+                )}
+              />
 
-            <Box mt={1.5}>
-              <WalletTypography fontWeight={600}>
-                By continuing, you agree to our terms of use and privacy policy.
-              </WalletTypography>
-            </Box>
+              <Box display={'flex'} flexDirection={'column'} mt={1.5}>
+                <WalletTypography fontSize={12} fontWeight={600}>
+                  Network ID
+                </WalletTypography>
+              </Box>
 
-            <GridButtonStyled>
-              <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
-              <WalletButton onClick={handleClickNext} variant="contained">
-                Next
-              </WalletButton>
-            </GridButtonStyled>
-          </WalletPaper>
+              <Controller
+                control={control}
+                name="chainId"
+                render={({ field }) => (
+                  <WalletInput
+                    placeholder="Enter chain id"
+                    {...field}
+                    error={!!errors.chainId}
+                    errorValue={errors.chainId?.message}
+                  />
+                )}
+              />
+
+              <Box mt={1.5}>
+                <WalletTypography fontWeight={600}>
+                  By continuing, you agree to our terms of use and privacy policy.
+                </WalletTypography>
+              </Box>
+
+              <GridButtonStyled>
+                <WalletButton type="cancel" onClick={handleClickCancel}>
+                  Cancel
+                </WalletButton>
+                <WalletButton type="submit" variant="contained">
+                  Next
+                </WalletButton>
+              </GridButtonStyled>
+            </WalletPaper>
+          </form>
 
           {/* --- */}
           <WalletPaper style={styleWalletPaper}>

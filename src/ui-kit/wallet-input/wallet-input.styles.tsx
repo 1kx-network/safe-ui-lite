@@ -3,15 +3,20 @@ import { styled } from '@mui/system';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { withTransientProps } from '@/utils/styled.utils';
 
-export const InputWrapperStyled = styled('div')(
-  ({ theme }) => `
-  display: flex;
-  align-items: center;
-  border-radius: ${theme.spacing(7)};
-  border: 1px solid ${theme.palette.borderColor};
-  background: ${theme.palette.white};
-`
-);
+export const InputWrapperStyled = styled(
+  'button',
+  withTransientProps
+)<{ $styles?: React.CSSProperties }>(({ theme, $styles }) => {
+  return {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    border: `1px solid ${theme.palette.borderColor}`,
+    borderRadius: theme.spacing(7),
+    background: theme.palette.white,
+    ...$styles,
+  };
+});
 
 export const EndAdornmentIconStyled = styled('button')(
   ({ theme }) => `
@@ -99,7 +104,7 @@ export const WrapperStyled = styled('div')`
 export const InputErrorStyled = styled('div')(
   ({ theme }) => `
   position: absolute;
-  bottom: -${theme.spacing(5)};
+  bottom: -${theme.spacing(4)};
   left: 0;
   color: ${theme.palette.error}
 `
