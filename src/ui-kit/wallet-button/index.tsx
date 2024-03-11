@@ -6,12 +6,12 @@ interface IWalletButtonProps {
   onClick: () => void;
   children: React.ReactNode;
   styles?: React.CSSProperties;
-  variant?: 'contained' | 'outlined';
+  variant?: 'contained' | 'outlined' | 'text';
 }
 
 export function WalletButton({ onClick, children, styles, variant }: IWalletButtonProps) {
   return (
-    <ButtonStyled style={styles} onClick={onClick} variant={variant}>
+    <ButtonStyled $styles={styles} onClick={onClick} variant={variant}>
       {children}
     </ButtonStyled>
   );

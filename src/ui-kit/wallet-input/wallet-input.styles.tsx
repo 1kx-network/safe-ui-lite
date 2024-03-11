@@ -1,5 +1,43 @@
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { styled } from '@mui/system';
+
+import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { withTransientProps } from '@/utils/styled.utils';
+
+export const InputWrapperStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  align-items: center;
+  border-radius: ${theme.spacing(7)};
+  border: 1px solid ${theme.palette.borderColor};
+  background: ${theme.palette.white};
+`
+);
+
+export const EndAdornmentIconStyled = styled('button')(
+  ({ theme }) => `
+      padding: ${theme.spacing(0)} ${theme.spacing(5)};
+      border: none;
+      background: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': {
+        backgroundColor: ${theme.palette.tetriaryDark},
+      },
+`
+);
+
+export const LabelStyled = styled(
+  'label',
+  withTransientProps
+)<{ htmlFor?: string }>(({ theme }) => {
+  return {
+    display: 'flex',
+    paddingLeft: theme.spacing(2),
+    margin: `${theme.spacing(2)} 0`,
+    cursor: 'pointer',
+  };
+});
 
 export const InputStyled = styled('input')(
   ({ theme }) => `
@@ -8,11 +46,10 @@ export const InputStyled = styled('input')(
   width: 100%;
   line-height: 1.5;
   padding: ${theme.spacing(2.5)} ${theme.spacing(5)};
-  border-radius: ${theme.spacing(7)};
   color: ${theme.palette.textDark};
   background: ${theme.palette.white};
-  border: 1px solid ${theme.palette.borderColor};
-
+  border: none;
+  border-radius: ${theme.spacing(7)};
   &::placeholder {
     color: ${theme.palette.textDark};
   }

@@ -6,14 +6,9 @@ import { useRouter } from 'next/navigation';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import routes from '@/app/routes';
+import { GridContainer, StepStyled, WrapperStyled, styleWalletPaper } from '../safe-account.styles';
 
-import {
-  GridContainer,
-  GridButtonStyled,
-  WrapperStyled,
-  styleWalletPaper,
-  StepStyled,
-} from './save-account.styles';
+import { GridButtonStyled } from './save-account.styles';
 
 interface ICreatePageAccount {
   address: string;
@@ -41,7 +36,9 @@ export default function CreatePageAccount({
   const handleClickCancel = () => {
     disconnect();
   };
-  const handleClickNext = () => console.log('_next_');
+  const handleClickNext = () => {
+    router.push(routes.safeAccountOwners);
+  };
 
   const handleChangeNetwork = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValueNetwork(e.target.value);
@@ -71,28 +68,18 @@ export default function CreatePageAccount({
               </WalletTypography>
             </Box>
 
-            <Box display="flex" flexDirection="column" mt={1.5}>
-              <WalletTypography fontSize={12} fontWeight={600}>
-                Name
-              </WalletTypography>
-            </Box>
-
             <WalletInput
               placeholder={'Devoted Polygon Safe'}
               value={valueName}
               onChange={handleChangeValueName}
+              label="Name"
             />
-
-            <Box display={'flex'} flexDirection={'column'} mt={1.5}>
-              <WalletTypography fontSize={12} fontWeight={600}>
-                Network ID
-              </WalletTypography>
-            </Box>
 
             <WalletInput
               placeholder={'Chain ID'}
               value={valueNetwork}
               onChange={handleChangeNetwork}
+              label="Network ID"
             />
 
             <Box mt={1.5}>
