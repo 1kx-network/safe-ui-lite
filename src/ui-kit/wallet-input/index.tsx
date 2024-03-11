@@ -18,14 +18,14 @@ interface IWalletInputProps {
   errorValue?: string;
   disabled?: boolean;
   type?: string;
-  ref?: React.Ref<HTMLInputElement>;
+  inputRef?: React.Ref<HTMLInputElement>;
 }
 
-export function WalletInput(props: IWalletInputProps) {
+export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>((props, ref) => {
   const errorStyle = props.error ? styleErrorInput : {};
   return (
     <WrapperStyled>
-      <InputStyled {...props} style={errorStyle}></InputStyled>
+      <InputStyled {...props} ref={ref} style={errorStyle}></InputStyled>
 
       {props.error && (
         <InputErrorStyled>
@@ -36,4 +36,6 @@ export function WalletInput(props: IWalletInputProps) {
       )}
     </WrapperStyled>
   );
-}
+});
+
+WalletInput.displayName = 'WalletInput';

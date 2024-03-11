@@ -5,6 +5,7 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
+import { CreateSafeAccountSchema } from '@/utils/validations.utils';
 
 import {
   GridContainer,
@@ -13,7 +14,6 @@ import {
   styleWalletPaper,
   StepStyled,
 } from './save-account.styles';
-import { CreateSafeAccountSchema } from '@/utils/validations.utils';
 
 interface IInputsForm {
   name: string;
@@ -34,6 +34,10 @@ export default function CreatePageAccount({
     formState: { errors },
     control,
   } = useForm<IInputsForm>({
+    defaultValues: {
+      name: '',
+      chainId: undefined,
+    },
     resolver: yupResolver(CreateSafeAccountSchema),
   });
 
@@ -79,6 +83,7 @@ export default function CreatePageAccount({
                 name="name"
                 render={({ field }) => (
                   <WalletInput
+                    inputRef={field.ref}
                     placeholder="Enter name"
                     {...field}
                     error={!!errors.name}
@@ -98,6 +103,7 @@ export default function CreatePageAccount({
                 name="chainId"
                 render={({ field }) => (
                   <WalletInput
+                    inputRef={field.ref}
                     placeholder="Enter chain id"
                     {...field}
                     error={!!errors.chainId}
