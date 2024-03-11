@@ -18,7 +18,7 @@ interface IWalletInputProps {
   errorValue?: string;
   disabled?: boolean;
   type?: string;
-  ref?: any;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
 export function WalletInput(props: IWalletInputProps) {
