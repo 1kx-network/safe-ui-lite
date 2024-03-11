@@ -1,7 +1,7 @@
 'use client';
 import { Box } from '@mui/system';
 import { useDisconnect } from '@web3modal/ethers/react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 
@@ -28,11 +28,9 @@ export default function CreatePageAccount({
   network = 'Polygon',
 }: ICreatePageAccount) {
   const {
-    register,
     handleSubmit,
-    watch,
     formState: { errors },
-    setValue,
+    control,
   } = useForm<IInputsForm>();
 
   const onSubmit: SubmitHandler<IInputsForm> = data => {
@@ -72,17 +70,20 @@ export default function CreatePageAccount({
                 </WalletTypography>
               </Box>
 
-              <WalletInput
-                placeholder="Enter name"
-                value={watch('devotedInput')}
-                {...register('devotedInput', {
-                  required: true,
-                  onChange: ({ target: { value } }) => {
-                    setValue('devotedInput', value);
-                  },
-                })}
-                error={!!errors.devotedInput}
-                errorValue={'It is a required field'}
+              <Controller
+                control={control}
+                name="devotedInput"
+                rules={{
+                  required: 'It is a required field',
+                }}
+                render={({ field }) => (
+                  <WalletInput
+                    placeholder="Enter name"
+                    {...field}
+                    error={!!errors.devotedInput}
+                    errorValue={errors.devotedInput?.message}
+                  />
+                )}
               />
 
               <Box display={'flex'} flexDirection={'column'} mt={1.5}>
@@ -91,17 +92,20 @@ export default function CreatePageAccount({
                 </WalletTypography>
               </Box>
 
-              <WalletInput
-                placeholder="Enter network"
-                value={watch('chainId')}
-                {...register('chainId', {
-                  required: true,
-                  onChange: ({ target: { value } }) => {
-                    setValue('chainId', value);
-                  },
-                })}
-                error={!!errors.chainId}
-                errorValue={'It is a required field'}
+              <Controller
+                control={control}
+                name="chainId"
+                rules={{
+                  required: 'It is a required field',
+                }}
+                render={({ field }) => (
+                  <WalletInput
+                    placeholder="Enter chain id"
+                    {...field}
+                    error={!!errors.chainId}
+                    errorValue={errors.chainId?.message}
+                  />
+                )}
               />
 
               <Box mt={1.5}>

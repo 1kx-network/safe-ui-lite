@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { WalletTypography } from '..';
 
@@ -16,6 +17,8 @@ interface IWalletInputProps {
   error?: boolean;
   errorValue?: string;
   disabled?: boolean;
+  type?: string;
+  ref?: any;
 }
 
 export function WalletInput(props: IWalletInputProps) {
