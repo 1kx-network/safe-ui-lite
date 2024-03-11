@@ -24,9 +24,20 @@ export const ButtonStyled = styled(
     outline: `1px solid ${theme.palette.black}`,
     backgroundColor: variant === 'contained' ? theme.palette.black : theme.palette.lightGrey,
     transition: 'all 0.3s ease-in-out',
+
     '&:hover': {
       backgroundColor: theme.palette.tetriaryDark,
       color: theme.palette.white,
+    },
+
+    '&:disabled': {
+      opacity: 0.5,
+      cursor: 'not-allowed',
+
+      '&:hover': {
+        backgroundColor: variant === 'contained' ? theme.palette.black : theme.palette.lightGrey,
+        color: variant === 'contained' ? theme.palette.white : theme.palette.black,
+      },
     },
   };
 });

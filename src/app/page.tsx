@@ -2,9 +2,9 @@
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import ConnectButton from '@/common/connect-button';
+import { WalletLayout } from '@/ui-kit';
 
 import { ImageStyled, MainContainerStyled } from './home-page.styles';
-import { WalletLayout } from '@/ui-kit';
 
 export default function Home() {
   return (

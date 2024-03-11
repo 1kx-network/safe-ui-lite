@@ -1,5 +1,6 @@
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { styled } from '@mui/system';
+
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 export const InputStyled = styled('input')(
   ({ theme }) => `
@@ -62,7 +63,7 @@ export const WrapperStyled = styled('div')`
 export const InputErrorStyled = styled('div')(
   ({ theme }) => `
   position: absolute;
-  bottom: -${theme.spacing(5)};
+  bottom: -${theme.spacing(4)};
   left: 0;
   color: ${theme.palette.error}
 `
