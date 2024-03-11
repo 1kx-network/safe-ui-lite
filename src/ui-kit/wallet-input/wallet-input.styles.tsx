@@ -1,27 +1,5 @@
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import { styled, css } from '@mui/system';
-
-const blue = {
-  100: '#DAECFF',
-  200: '#b6daff',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  900: '#003A75',
-};
-
-const grey = {
-  50: '#F3F6F9',
-  100: '#E5EAF2',
-  200: '#DAE2ED',
-  300: '#C7D0DD',
-  400: '#B0B8C4',
-  500: '#9DA8B7',
-  600: '#6B7A90',
-  700: '#434D5B',
-  800: '#303740',
-  900: '#1C2025',
-};
+import { styled } from '@mui/system';
 
 export const InputStyled = styled('input')(
   ({ theme }) => `
@@ -31,17 +9,20 @@ export const InputStyled = styled('input')(
   line-height: 1.5;
   padding: ${theme.spacing(2.5)} ${theme.spacing(5)};
   border-radius: ${theme.spacing(7)};
-  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-  background: ${theme.palette.mode === 'dark' ? grey[900] : theme.palette.white};
-  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : theme.palette.borderColor};
- 
+  color: ${theme.palette.textDark};
+  background: ${theme.palette.white};
+  border: 1px solid ${theme.palette.borderColor};
+
+  &::placeholder {
+    color: ${theme.palette.textDark};
+  }
 
   &:hover {
-    border-color: ${blue[400]};
+    border-color: ${theme.palette.blue};
   }
 
   &:focus {
-    border-color: ${blue[400]};
+    border-color: ${theme.palette.blue};
   }
 
   &:focus-visible, & > input > &:focus-visible {
