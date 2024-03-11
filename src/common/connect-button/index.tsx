@@ -1,8 +1,9 @@
 'use client';
 import * as React from 'react';
-import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useWeb3Modal } from '@web3modal/ethers/react';
 
 import { WalletTypography } from '@/ui-kit';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 import { WalletConnectButtonStyled } from './connect-button.styles';
 
@@ -11,7 +12,7 @@ const ConnectButton = () => {
 
   return (
     <WalletConnectButtonStyled onClick={() => open()}>
-      <WalletTypography fontSize={20} color="#fff">
+      <WalletTypography fontSize={20} color={themeMuiBase.palette.white}>
         Connect wallet
       </WalletTypography>
     </WalletConnectButtonStyled>
