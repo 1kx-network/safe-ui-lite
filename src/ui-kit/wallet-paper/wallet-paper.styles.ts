@@ -1,11 +1,20 @@
 import { styled } from '@mui/system';
 
-export const PaperStyled = styled('div')(
-  () => `
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 14px;
-    padding: 20px;
-    width: 100%;
-    height: 100%;
-`
-);
+import { withTransientProps } from '@/utils/styled.utils';
+
+export const PaperStyled = styled(
+  'div',
+  withTransientProps
+)<{ minWidth?: string }>(({ minWidth = '100%', theme }) => {
+  return {
+    background: theme.palette.lightGrey,
+    borderRadius: '14px',
+    padding: theme.spacing(5),
+    width: '100%',
+    height: '100%',
+    minWidth,
+    '@media (max-width: 1068px)': {
+      minWidth: '100%',
+    },
+  };
+});

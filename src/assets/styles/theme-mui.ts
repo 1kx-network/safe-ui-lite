@@ -1,18 +1,17 @@
 export const themeMuiBase = {
   palette: {
-    primary: 'green',
-    textLight: '#fff',
+    black: '#000',
     textDark: '#020303',
+    lightGrey: '#f6f7fd',
     textDarkLight: '#02030305',
     base: '#1c1c1c',
     white: '#fff',
-    dark: '#020303',
-    darkLight: '#02030305',
     grey: '#d4d4d4',
     lightSecondary: '#FFFFFF80',
     error: '#FF2E1F',
     borderColor: 'rgba(0, 0, 0, 0.25)',
     blue: '#3399FF',
+    tetriaryDark: '#2E3338',
   },
 
   spacing: (factor: number) => `${0.25 * factor}rem`,
