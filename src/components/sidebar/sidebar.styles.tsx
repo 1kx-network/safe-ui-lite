@@ -4,8 +4,8 @@ import { styled } from '@mui/system';
 
 export const WrapperStyled = styled('div')(
   ({ theme }) => `
-  width: 246px;
-  min-width: 178px;
+  // width: 246px;
+  min-width: 246px;
   margin-right: ${theme.spacing(5)};
   overflow: hidden;
   height: 100%;
