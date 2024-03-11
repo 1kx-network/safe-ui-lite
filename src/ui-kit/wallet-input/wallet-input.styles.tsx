@@ -1,4 +1,5 @@
-import { styled } from '@mui/system';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { styled, css } from '@mui/system';
 
 const blue = {
   100: '#DAECFF',
@@ -55,15 +56,7 @@ export const InputStyled = styled('input')(
     width: 100%;
   }
 
-  & .error {
-    border-color: ${theme.palette.error};
-
-    & > input {
-      color: ${theme.palette.error};
-    }
-  }
-
-  & .disabled {
+  &:disabled {
     cursor: not-allowed;
 
     & > input {
@@ -93,3 +86,12 @@ export const InputErrorStyled = styled('div')(
   color: ${theme.palette.error}
 `
 );
+
+export const styleErrorInput = {
+  borderColor: themeMuiBase.palette.error,
+  color: themeMuiBase.palette.error,
+
+  '& > input': {
+    color: themeMuiBase.palette.error,
+  },
+};

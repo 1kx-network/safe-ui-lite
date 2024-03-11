@@ -1,18 +1,32 @@
 import * as React from 'react';
-import { InputProps } from '@mui/base';
-
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { WalletTypography } from '..';
 
-import { InputStyled, InputErrorStyled, WrapperStyled } from './wallet-input.styles';
+import {
+  InputStyled,
+  InputErrorStyled,
+  WrapperStyled,
+  styleErrorInput,
+} from './wallet-input.styles';
 
-export function WalletInput(props: InputProps & { errorValue?: string }) {
+interface IWalletInputProps {
+  placeholder?: string;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: boolean;
+  errorValue?: string;
+  disabled?: boolean;
+}
+
+export function WalletInput(props: IWalletInputProps) {
+  const errorStyle = props.error ? styleErrorInput : {};
   return (
     <WrapperStyled>
-      <InputStyled {...props}></InputStyled>
+      <InputStyled {...props} style={errorStyle}></InputStyled>
 
       {props.error && (
         <InputErrorStyled>
-          <WalletTypography fontSize={11} color="#FF2E1F">
+          <WalletTypography fontSize={11} color={themeMuiBase.palette.error}>
             {props.errorValue ?? 'Error'}
           </WalletTypography>
         </InputErrorStyled>
