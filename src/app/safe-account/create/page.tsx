@@ -1,11 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Box } from '@mui/system';
 import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
-import routes from '@/app/routes';
 
 import {
   GridContainer,
@@ -28,15 +27,6 @@ export default function CreatePageAccount({
 }: ICreatePageAccount) {
   const [valueNetwork, setValueNetwork] = useState<null | string>(null);
   const [valueName, setValueName] = useState<null | string>(null);
-
-  const { isConnected } = useWeb3ModalAccount();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isConnected) {
-      router.push(routes.home);
-    }
-  }, [isConnected]);
 
   const { disconnect } = useDisconnect();
 

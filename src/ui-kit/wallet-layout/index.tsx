@@ -3,6 +3,7 @@ import { ThemeProvider } from '@emotion/react';
 import { LayoutStyled } from './wallet-layout.styles';
 import { Sidebar } from '@/components';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { AuthProvider } from '@/context/AuthProvider';
 
 interface IWalletLayoutProps {
   children: React.ReactNode;
@@ -11,11 +12,13 @@ interface IWalletLayoutProps {
 
 export function WalletLayout({ children, hideSidebar }: IWalletLayoutProps) {
   return (
-    <ThemeProvider theme={themeMuiBase}>
-      <LayoutStyled>
-        {!hideSidebar && <Sidebar />}
-        {children}
-      </LayoutStyled>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider theme={themeMuiBase}>
+        <LayoutStyled>
+          {!hideSidebar && <Sidebar />}
+          {children}
+        </LayoutStyled>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
