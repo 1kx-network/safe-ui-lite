@@ -12,8 +12,6 @@ import {
   GridButtonStyled,
   WrapperStyled,
   styleWalletPaper,
-  DisconnectButtonStyled,
-  styleWalletPaperLeft,
   StepStyled,
 } from './save-account.styles';
 
@@ -36,11 +34,13 @@ export default function CreatePageAccount({
     if (!isConnected) {
       router.push(routes.home);
     }
-  }, [isConnected]);
+  }, [isConnected, router]);
 
   const { disconnect } = useDisconnect();
 
-  const handleClickCancel = () => console.log('_cancel_');
+  const handleClickCancel = () => {
+    disconnect();
+  };
   const handleClickNext = () => console.log('_next_');
 
   const handleChangeNetwork = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,16 +54,12 @@ export default function CreatePageAccount({
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
-        <DisconnectButtonStyled>
-          <WalletButton onClick={() => disconnect()}>Disconnect</WalletButton>
-        </DisconnectButtonStyled>
-
         <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
           Create new Safe Account
         </WalletTypography>
 
         <GridContainer>
-          <WalletPaper style={styleWalletPaperLeft}>
+          <WalletPaper style={styleWalletPaper} minWidth="653px">
             <Box display="flex" alignItems="center">
               <StepStyled>
                 <WalletTypography fontSize={18} fontWeight={600} color="#fff">
@@ -107,7 +103,9 @@ export default function CreatePageAccount({
 
             <GridButtonStyled>
               <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
-              <WalletButton onClick={handleClickNext}>Next</WalletButton>
+              <WalletButton onClick={handleClickNext} variant="contained">
+                Next
+              </WalletButton>
             </GridButtonStyled>
           </WalletPaper>
 

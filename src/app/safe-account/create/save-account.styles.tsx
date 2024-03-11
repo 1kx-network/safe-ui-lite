@@ -39,22 +39,11 @@ export const WrapperStyled = styled('div')`
   }
 `;
 
-export const styleWalletPaper = {
+export const styleWalletPaper: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   gap: '7px',
 };
-
-export const styleWalletPaperLeft = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '7px',
-};
-
-export const DisconnectButtonStyled = styled('div')`
-  display: flex;
-  justify-content: end;
-`;
 
 export const StepStyled = styled('div')(
   ({ theme }) => `
