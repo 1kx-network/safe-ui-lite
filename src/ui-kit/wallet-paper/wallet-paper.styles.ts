@@ -5,14 +5,14 @@ import { withTransientProps } from '@/utils/styled.utils';
 export const PaperStyled = styled(
   'div',
   withTransientProps
-)<{ minWidth?: string }>(({ minWidth = '100%', theme }) => {
+)<{ $minWidth?: string }>(({ $minWidth = '100%', theme }) => {
   return {
     background: theme.palette.lightGrey,
     borderRadius: '14px',
     padding: theme.spacing(5),
     width: '100%',
     height: '100%',
-    minWidth,
+    minWidth: $minWidth,
     '@media (max-width: 1068px)': {
       minWidth: '100%',
     },

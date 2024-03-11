@@ -1,19 +1,16 @@
 'use client';
 import { Box } from '@mui/system';
 import { useDisconnect } from '@web3modal/ethers/react';
+import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
-
-import {
-  GridContainer,
-  GridButtonStyled,
-  WrapperStyled,
-  styleWalletPaper,
-  StepStyled,
-} from './save-account.styles';
+import routes from '@/app/routes';
+import { GridContainer, StepStyled, WrapperStyled, styleWalletPaper } from '../safe-account.styles';
 import { CreateSafeAccountSchema } from '@/utils/validations.utils';
+
+import { GridButtonStyled } from './save-account.styles';
 
 interface IInputsForm {
   name: string;
@@ -29,6 +26,7 @@ export default function CreatePageAccount({
   address = 'gno:0x98BB81B...5D2e443',
   network = 'Polygon',
 }: ICreatePageAccount) {
+  const router = useRouter();
   const {
     handleSubmit,
     formState: { errors },
@@ -39,6 +37,7 @@ export default function CreatePageAccount({
 
   const onSubmit: SubmitHandler<IInputsForm> = data => {
     console.log(data);
+    router.push(routes.safeAccountOwners);
   };
 
   const { disconnect } = useDisconnect();
@@ -116,7 +115,7 @@ export default function CreatePageAccount({
                 <WalletButton type="cancel" onClick={handleClickCancel}>
                   Cancel
                 </WalletButton>
-                <WalletButton type="submit" onClick={() => {}} variant="contained">
+                <WalletButton type="submit" variant="contained">
                   Next
                 </WalletButton>
               </GridButtonStyled>

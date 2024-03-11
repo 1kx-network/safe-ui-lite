@@ -5,7 +5,18 @@ import { withTransientProps } from '@/utils/styled.utils';
 export const ButtonStyled = styled(
   'button',
   withTransientProps
-)<{ variant?: 'contained' | 'outlined' }>(({ variant, theme }) => {
+)<{ variant?: 'contained' | 'outlined' | 'text'; $styles?: React.CSSProperties }>(({
+  variant,
+  theme,
+  $styles,
+}) => {
+  const bgColors: {
+    [key: string]: string;
+  } = {
+    contained: theme.palette.black,
+    outlined: theme.palette.lightGrey,
+    text: 'transparent',
+  };
   return {
     display: 'flex',
     alignItems: 'center',
@@ -21,13 +32,14 @@ export const ButtonStyled = styled(
     whiteSpace: 'nowrap',
     cursor: 'pointer',
     border: 'none',
-    outline: `1px solid ${theme.palette.black}`,
-    backgroundColor: variant === 'contained' ? theme.palette.black : theme.palette.lightGrey,
+    outline: variant === 'outlined' ? `1px solid ${theme.palette.black}` : 'none',
+    backgroundColor: bgColors[variant ?? 0],
     transition: 'all 0.3s ease-in-out',
-
+    ...$styles,
     '&:hover': {
-      backgroundColor: theme.palette.tetriaryDark,
-      color: theme.palette.white,
+      backgroundColor: variant !== 'text' ? theme.palette.tetriaryDark : 'transparent',
+      color: variant !== 'text' ? theme.palette.white : theme.palette.tetriaryDark,
+      textDecoration: variant === 'text' ? 'underline' : 'none',
     },
 
     '&:disabled': {

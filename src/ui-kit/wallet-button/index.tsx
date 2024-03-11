@@ -3,10 +3,10 @@ import * as React from 'react';
 import { ButtonStyled } from './wallet-button.styles';
 
 interface IWalletButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   children: React.ReactNode;
   styles?: React.CSSProperties;
-  variant?: 'contained' | 'outlined';
+  variant?: 'contained' | 'outlined' | 'text';
   type?: string;
   disabled?: boolean;
 }

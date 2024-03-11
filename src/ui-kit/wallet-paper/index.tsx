@@ -13,7 +13,7 @@ export const WalletPaper: React.FunctionComponent<IWalletPaper> = ({
   style,
   minWidth,
 }) => (
-  <PaperStyled style={style} minWidth={minWidth}>
+  <PaperStyled style={style} $minWidth={minWidth}>
     {children}
   </PaperStyled>
 );

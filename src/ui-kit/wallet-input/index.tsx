@@ -8,6 +8,9 @@ import {
   InputErrorStyled,
   WrapperStyled,
   styleErrorInput,
+  InputWrapperStyled,
+  EndAdornmentIconStyled,
+  LabelStyled,
 } from './wallet-input.styles';
 
 interface IWalletInputProps {
@@ -17,15 +20,34 @@ interface IWalletInputProps {
   error?: boolean;
   errorValue?: string;
   disabled?: boolean;
+  label?: string;
+  endAdornment?: React.ReactNode;
+  onClickEndAdornment?: () => void;
   type?: string;
   ref?: React.Ref<HTMLInputElement>;
 }
 
 export function WalletInput(props: IWalletInputProps) {
-  const errorStyle = props.error ? styleErrorInput : {};
+  const { onClickEndAdornment, error, endAdornment, label } = props;
+
+  const errorStyle = error ? styleErrorInput : {};
+
   return (
     <WrapperStyled>
-      <InputStyled {...props} style={errorStyle}></InputStyled>
+      <LabelStyled htmlFor={label}>
+        <WalletTypography fontSize={12} fontWeight={600}>
+          {props.label}
+        </WalletTypography>
+      </LabelStyled>
+
+      <InputWrapperStyled $styles={errorStyle}>
+        <InputStyled {...props} style={errorStyle} id={label} />
+        {endAdornment && (
+          <EndAdornmentIconStyled onClick={onClickEndAdornment}>
+            {endAdornment}
+          </EndAdornmentIconStyled>
+        )}
+      </InputWrapperStyled>
 
       {props.error && (
         <InputErrorStyled>
