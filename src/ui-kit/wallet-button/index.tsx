@@ -7,11 +7,13 @@ interface IWalletButtonProps {
   children: React.ReactNode;
   styles?: React.CSSProperties;
   variant?: 'contained' | 'outlined';
+  type?: string;
+  disabled?: boolean;
 }
 
-export function WalletButton({ onClick, children, styles, variant }: IWalletButtonProps) {
+export function WalletButton({ onClick, children, styles, variant, disabled }: IWalletButtonProps) {
   return (
-    <ButtonStyled style={styles} onClick={onClick} variant={variant}>
+    <ButtonStyled style={styles} onClick={onClick} variant={variant} disabled={disabled}>
       {children}
     </ButtonStyled>
   );
