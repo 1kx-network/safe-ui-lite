@@ -24,8 +24,8 @@ export default function CreatePageAccount({
   address = 'gno:0x98BB81B...5D2e443',
   network = 'Polygon',
 }: ICreatePageAccount) {
-  const [valueNetwork, setValueNetwork] = useState<null | string>(null);
-  const [valueName, setValueName] = useState<null | string>(null);
+  const [valueNetwork, setValueNetwork] = useState<undefined | string>();
+  const [valueName, setValueName] = useState<undefined | string>();
 
   const { isConnected } = useWeb3ModalAccount();
   const router = useRouter();

@@ -10,6 +10,7 @@ export const themeMuiBase = {
     lightSecondary: '#FFFFFF80',
     error: '#FF2E1F',
     borderColor: 'rgba(0, 0, 0, 0.25)',
+    blue: '#3399FF',
     tetriaryDark: '#2E3338',
   },
 
