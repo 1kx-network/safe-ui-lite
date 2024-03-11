@@ -2,6 +2,7 @@
 import { Box } from '@mui/system';
 import { useDisconnect } from '@web3modal/ethers/react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 
@@ -12,10 +13,11 @@ import {
   styleWalletPaper,
   StepStyled,
 } from './save-account.styles';
+import { CreateSafeAccountSchema } from '@/utils/validations.utils';
 
 interface IInputsForm {
-  devotedInput: string;
-  chainId: string;
+  name: string;
+  chainId: number;
 }
 
 interface ICreatePageAccount {
@@ -31,7 +33,9 @@ export default function CreatePageAccount({
     handleSubmit,
     formState: { errors },
     control,
-  } = useForm<IInputsForm>();
+  } = useForm<IInputsForm>({
+    resolver: yupResolver(CreateSafeAccountSchema),
+  });
 
   const onSubmit: SubmitHandler<IInputsForm> = data => {
     console.log(data);
@@ -72,16 +76,13 @@ export default function CreatePageAccount({
 
               <Controller
                 control={control}
-                name="devotedInput"
-                rules={{
-                  required: 'It is a required field',
-                }}
+                name="name"
                 render={({ field }) => (
                   <WalletInput
                     placeholder="Enter name"
                     {...field}
-                    error={!!errors.devotedInput}
-                    errorValue={errors.devotedInput?.message}
+                    error={!!errors.name}
+                    errorValue={errors.name?.message}
                   />
                 )}
               />
@@ -95,9 +96,6 @@ export default function CreatePageAccount({
               <Controller
                 control={control}
                 name="chainId"
-                rules={{
-                  required: 'It is a required field',
-                }}
                 render={({ field }) => (
                   <WalletInput
                     placeholder="Enter chain id"

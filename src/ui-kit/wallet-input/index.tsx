@@ -12,7 +12,7 @@ import {
 
 interface IWalletInputProps {
   placeholder?: string;
-  value?: string;
+  value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
   errorValue?: string;
