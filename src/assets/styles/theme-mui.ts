@@ -9,9 +9,10 @@ export const themeMuiBase = {
     grey: '#d4d4d4',
     lightSecondary: '#FFFFFF80',
     error: '#FF2E1F',
-    borderColor: 'rgba(0, 0, 0, 0.25)',
+    borderColor: '#0000003f',
     blue: '#3399FF',
     tetriaryDark: '#2E3338',
+    lighError: '#ff2e1f01',
   },
 
   spacing: (factor: number) => `${0.25 * factor}rem`,

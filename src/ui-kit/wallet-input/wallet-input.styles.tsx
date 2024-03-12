@@ -105,7 +105,7 @@ export const InputErrorStyled = styled('div')(
   ({ theme }) => `
   position: absolute;
   bottom: -${theme.spacing(4)};
-  left: 0;
+  left: ${theme.spacing(5)};
   color: ${theme.palette.error}
 `
 );
@@ -113,6 +113,7 @@ export const InputErrorStyled = styled('div')(
 export const styleErrorInput = {
   borderColor: themeMuiBase.palette.error,
   color: themeMuiBase.palette.error,
+  backgroundColor: themeMuiBase.palette.lighError,
 
   '& > input': {
     color: themeMuiBase.palette.error,
