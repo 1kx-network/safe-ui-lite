@@ -1,5 +1,6 @@
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { styled } from '@mui/system';
+
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 export const styledButton = {
   padding: themeMuiBase.spacing(3.125),

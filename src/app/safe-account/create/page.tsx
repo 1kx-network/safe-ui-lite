@@ -4,6 +4,7 @@ import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useDisconnect } from 'wagmi';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import routes from '@/app/routes';
@@ -32,6 +33,7 @@ export default function CreatePageAccount({
     formState: { errors },
     control,
   } = useForm<IInputsForm>({
+    mode: 'onSubmit',
     resolver: yupResolver(CreateSafeAccountSchema),
   });
 
@@ -40,10 +42,13 @@ export default function CreatePageAccount({
     router.push(routes.safeAccountOwners);
   };
 
-  // const { disconnect } = useDisconnect();
+  const { disconnect } = useDisconnect();
 
-  const handleClickCancel = () => {
-    // disconnect();
+  const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    disconnect();
+    router.push(routes.home);
   };
 
   return (
@@ -112,9 +117,7 @@ export default function CreatePageAccount({
               </Box>
 
               <GridButtonStyled>
-                <WalletButton type="cancel" onClick={handleClickCancel}>
-                  Cancel
-                </WalletButton>
+                <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
                 <WalletButton type="submit" variant="contained">
                   Next
                 </WalletButton>

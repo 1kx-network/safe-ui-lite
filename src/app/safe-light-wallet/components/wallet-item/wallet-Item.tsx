@@ -1,7 +1,9 @@
 import { Box } from '@mui/system';
+
 import { WalletButton, WalletInput } from '@/ui-kit';
-import { InputWrapperStyled, styledButton, styledButtonDelete } from './wallet-item.styles';
 import DeleteIcon from '@/assets/svg/delete.svg';
+
+import { InputWrapperStyled, styledButton, styledButtonDelete } from './wallet-item.styles';
 
 interface IDataWallet {
   id: number;
