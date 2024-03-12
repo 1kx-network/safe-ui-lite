@@ -5,11 +5,11 @@ import { withTransientProps } from '@/utils/styled.utils';
 export const ButtonStyled = styled(
   'button',
   withTransientProps
-)<{ variant?: 'contained' | 'outlined' | 'text'; $styles?: React.CSSProperties }>(({
-  variant,
-  theme,
-  $styles,
-}) => {
+)<{
+  variant?: 'contained' | 'outlined' | 'text';
+  $styles?: React.CSSProperties;
+  type?: 'button' | 'submit' | 'reset';
+}>(({ variant, theme, $styles }) => {
   const bgColors: {
     [key: string]: string;
   } = {

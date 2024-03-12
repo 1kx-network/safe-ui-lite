@@ -33,6 +33,7 @@ export default function CreatePageAccount({
     formState: { errors },
     control,
   } = useForm<IInputsForm>({
+    mode: 'onSubmit',
     resolver: yupResolver(CreateSafeAccountSchema),
   });
 
@@ -43,8 +44,11 @@ export default function CreatePageAccount({
 
   const { disconnect } = useDisconnect();
 
-  const handleClickCancel = () => {
+  const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
     disconnect();
+    router.push(routes.home);
   };
 
   return (
@@ -113,9 +117,7 @@ export default function CreatePageAccount({
               </Box>
 
               <GridButtonStyled>
-                <WalletButton type="cancel" onClick={handleClickCancel}>
-                  Cancel
-                </WalletButton>
+                <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
                 <WalletButton type="submit" variant="contained">
                   Next
                 </WalletButton>
