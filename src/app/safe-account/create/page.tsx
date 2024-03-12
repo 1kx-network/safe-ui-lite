@@ -4,6 +4,7 @@ import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useDisconnect } from 'wagmi';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import routes from '@/app/routes';
@@ -40,10 +41,10 @@ export default function CreatePageAccount({
     router.push(routes.safeAccountOwners);
   };
 
-  // const { disconnect } = useDisconnect();
+  const { disconnect } = useDisconnect();
 
   const handleClickCancel = () => {
-    // disconnect();
+    disconnect();
   };
 
   return (
