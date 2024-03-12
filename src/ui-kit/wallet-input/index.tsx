@@ -41,7 +41,13 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
       </LabelStyled>
 
       <InputWrapperStyled $styles={errorStyle}>
-        <InputStyled {...props} value={props.value ?? ''} style={errorStyle} id={label} ref={_ref} />
+        <InputStyled
+          {...props}
+          value={props.value ?? ''}
+          style={errorStyle}
+          id={label}
+          ref={_ref}
+        />
         {endAdornment && (
           <EndAdornmentIconStyled onClick={onClickEndAdornment}>
             {endAdornment}
