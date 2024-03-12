@@ -1,8 +1,10 @@
 import { Box } from '@mui/system';
+
 import { WalletTypography } from '@/ui-kit';
 import WalletSvg from '@/assets/svg/wallet.svg';
 import SettingSvg from '@/assets/svg/setting.svg';
 import TransactionSvg from '@/assets/svg/transaction.svg';
+
 import {
   MenuStyled,
   WrapperStyled,

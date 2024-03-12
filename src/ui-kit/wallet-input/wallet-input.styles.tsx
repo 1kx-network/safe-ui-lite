@@ -1,26 +1,48 @@
 import { styled } from '@mui/system';
 
-const blue = {
-  100: '#DAECFF',
-  200: '#b6daff',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  900: '#003A75',
-};
+import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { withTransientProps } from '@/utils/styled.utils';
 
-const grey = {
-  50: '#F3F6F9',
-  100: '#E5EAF2',
-  200: '#DAE2ED',
-  300: '#C7D0DD',
-  400: '#B0B8C4',
-  500: '#9DA8B7',
-  600: '#6B7A90',
-  700: '#434D5B',
-  800: '#303740',
-  900: '#1C2025',
-};
+export const InputWrapperStyled = styled(
+  'div',
+  withTransientProps
+)<{ $styles?: React.CSSProperties }>(({ theme, $styles }) => {
+  return {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    border: `1px solid ${theme.palette.borderColor}`,
+    borderRadius: theme.spacing(7),
+    background: theme.palette.white,
+    ...$styles,
+  };
+});
+
+export const EndAdornmentIconStyled = styled('button')(
+  ({ theme }) => `
+      padding: ${theme.spacing(0)} ${theme.spacing(5)};
+      border: none;
+      background: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': {
+        backgroundColor: ${theme.palette.tetriaryDark},
+      },
+`
+);
+
+export const LabelStyled = styled(
+  'label',
+  withTransientProps
+)<{ htmlFor?: string }>(({ theme }) => {
+  return {
+    display: 'flex',
+    paddingLeft: theme.spacing(2),
+    margin: `${theme.spacing(2)} 0`,
+    cursor: 'pointer',
+  };
+});
 
 export const InputStyled = styled('input')(
   ({ theme }) => `
@@ -29,18 +51,20 @@ export const InputStyled = styled('input')(
   width: 100%;
   line-height: 1.5;
   padding: ${theme.spacing(2.5)} ${theme.spacing(5)};
+  color: ${theme.palette.textDark};
+  background: ${theme.palette.white};
+  border: none;
   border-radius: ${theme.spacing(7)};
-  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-  background: ${theme.palette.mode === 'dark' ? grey[900] : theme.palette.white};
-  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : theme.palette.borderColor};
- 
+  &::placeholder {
+    color: ${theme.palette.textDark};
+  }
 
   &:hover {
-    border-color: ${blue[400]};
+    border-color: ${theme.palette.blue};
   }
 
   &:focus {
-    border-color: ${blue[400]};
+    border-color: ${theme.palette.blue};
   }
 
   &:focus-visible, & > input > &:focus-visible {
@@ -55,15 +79,7 @@ export const InputStyled = styled('input')(
     width: 100%;
   }
 
-  & .error {
-    border-color: ${theme.palette.error};
-
-    & > input {
-      color: ${theme.palette.error};
-    }
-  }
-
-  & .disabled {
+  &:disabled {
     cursor: not-allowed;
 
     & > input {
@@ -88,8 +104,18 @@ export const WrapperStyled = styled('div')`
 export const InputErrorStyled = styled('div')(
   ({ theme }) => `
   position: absolute;
-  bottom: -${theme.spacing(5)};
-  left: 0;
+  bottom: -${theme.spacing(4)};
+  left: ${theme.spacing(5)};
   color: ${theme.palette.error}
 `
 );
+
+export const styleErrorInput = {
+  borderColor: themeMuiBase.palette.error,
+  color: themeMuiBase.palette.error,
+  backgroundColor: themeMuiBase.palette.lighError,
+
+  '& > input': {
+    color: themeMuiBase.palette.error,
+  },
+};

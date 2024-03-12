@@ -4,9 +4,16 @@ import { PaperStyled } from './wallet-paper.styles';
 
 interface IWalletPaper {
   children: ReactNode;
-  style?: React.CSSProperties | {};
+  style?: React.CSSProperties;
+  minWidth?: string;
 }
 
-export const WalletPaper: React.FunctionComponent<IWalletPaper> = ({ children, style }) => (
-  <PaperStyled style={style}>{children}</PaperStyled>
+export const WalletPaper: React.FunctionComponent<IWalletPaper> = ({
+  children,
+  style,
+  minWidth,
+}) => (
+  <PaperStyled style={style} $minWidth={minWidth}>
+    {children}
+  </PaperStyled>
 );

@@ -1,18 +1,57 @@
 import * as React from 'react';
-import { InputProps } from '@mui/base';
 
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { WalletTypography } from '..';
 
-import { InputStyled, InputErrorStyled, WrapperStyled } from './wallet-input.styles';
+import {
+  InputStyled,
+  InputErrorStyled,
+  WrapperStyled,
+  styleErrorInput,
+  InputWrapperStyled,
+  EndAdornmentIconStyled,
+  LabelStyled,
+} from './wallet-input.styles';
 
-export function WalletInput(props: InputProps & { errorValue?: string }) {
+interface IWalletInputProps {
+  placeholder?: string;
+  value?: string | number;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: boolean;
+  errorValue?: string;
+  disabled?: boolean;
+  label?: string;
+  endAdornment?: React.ReactNode;
+  onClickEndAdornment?: () => void;
+  type?: string;
+  ref?: React.Ref<HTMLInputElement>;
+}
+
+export function WalletInput(props: IWalletInputProps) {
+  const { onClickEndAdornment, error, endAdornment, label } = props;
+
+  const errorStyle = error ? styleErrorInput : {};
+
   return (
     <WrapperStyled>
-      <InputStyled {...props}></InputStyled>
+      <LabelStyled htmlFor={label}>
+        <WalletTypography fontSize={12} fontWeight={600}>
+          {props.label}
+        </WalletTypography>
+      </LabelStyled>
+
+      <InputWrapperStyled $styles={errorStyle}>
+        <InputStyled {...props} style={errorStyle} id={label} />
+        {endAdornment && (
+          <EndAdornmentIconStyled onClick={onClickEndAdornment}>
+            {endAdornment}
+          </EndAdornmentIconStyled>
+        )}
+      </InputWrapperStyled>
 
       {props.error && (
         <InputErrorStyled>
-          <WalletTypography fontSize={11} color="#FF2E1F">
+          <WalletTypography fontSize={11} color={themeMuiBase.palette.error}>
             {props.errorValue ?? 'Error'}
           </WalletTypography>
         </InputErrorStyled>
