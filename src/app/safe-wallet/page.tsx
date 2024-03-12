@@ -39,7 +39,6 @@ export default function SafeWallet() {
       value: undefined,
     };
 
-    console.log('click');
     setWalletData(prevData => [...prevData, newWallet]);
   };
 
