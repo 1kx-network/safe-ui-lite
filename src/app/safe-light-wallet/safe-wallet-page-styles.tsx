@@ -26,8 +26,8 @@ export const BlockInfoStyled = styled('div')(
     display: flex;
     flex-direction: column;
     overflow: scroll;
-    max-height: 40vh;
-    padding-bottom: ${theme.spacing(0.25)};
+    max-height: 460px;
+    padding: ${theme.spacing(0.25)};
 `
 );
 
@@ -40,3 +40,8 @@ export const InputWrapperStyled = styled('div')(
     width: 100%;
 `
 );
+
+export const styledCreateWallet = {
+  ...styledButton,
+  marginTop: themeMuiBase.spacing(2),
+};

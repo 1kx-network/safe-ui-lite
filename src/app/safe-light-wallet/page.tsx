@@ -1,8 +1,7 @@
 'use client';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Box } from '@mui/system';
 
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 
 import {
@@ -11,7 +10,9 @@ import {
   styledButton,
   BlockInfoStyled,
   InputWrapperStyled,
-} from './page-styles';
+  styledCreateWallet,
+} from './safe-wallet-page-styles';
+import { WalletItem } from './components/wallet-item/wallet-Item';
 
 interface IDataWallet {
   id: number;
@@ -42,30 +43,12 @@ export default function SafeWallet() {
     setWalletData(prevData => [...prevData, newWallet]);
   };
 
-  const handleCreateWallet = () => {};
+  const handleRemoveWallet = (walletId: number) => {
+    const updataWalletData = walletData.filter((wallet: IDataWallet) => wallet.id !== walletId);
+    setWalletData(updataWalletData);
+  };
 
-  const renderWallets = useCallback(
-    () =>
-      walletData.map((elem: IDataWallet) => (
-        <InputWrapperStyled key={elem.id}>
-          <Box width={'100%'}>
-            <WalletInput
-              label={`Wallet address ${elem.id}`}
-              placeholder="Placeholder text"
-              value={elem.value}
-            />
-          </Box>
-          <WalletButton
-            onClick={() => handleAddWallet(elem)}
-            variant="contained"
-            styles={styledButton}
-          >
-            Add Wallet
-          </WalletButton>
-        </InputWrapperStyled>
-      )),
-    [walletData]
-  );
+  const handleCreateWallet = () => {};
 
   return (
     <WalletLayout>
@@ -98,7 +81,14 @@ export default function SafeWallet() {
               If you have wallet - enter
             </WalletTypography>
 
-            {renderWallets()}
+            {walletData.map((elem: IDataWallet) => (
+              <WalletItem
+                key={elem.id}
+                dataItem={elem}
+                handleAddWallet={handleAddWallet}
+                handleRemoveWallet={handleRemoveWallet}
+              />
+            ))}
           </BlockInfoStyled>
           <WalletButton onClick={handleAddNewWallet} variant="contained" styles={styledButton}>
             + Add new
@@ -112,7 +102,7 @@ export default function SafeWallet() {
           <WalletButton
             onClick={handleCreateWallet}
             variant="contained"
-            styles={{ ...styledButton, marginTop: themeMuiBase.spacing(2) }}
+            styles={styledCreateWallet}
           >
             Create wallet
           </WalletButton>
