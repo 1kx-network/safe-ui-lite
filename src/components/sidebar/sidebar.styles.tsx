@@ -53,19 +53,19 @@ export const ItemMenuStyled = styled(Link)(
 	font-size: ${theme.spacing(3.5)};
 	text-decoration: none;
 	padding: ${theme.spacing(1.5, 3)};  
-	color: ${theme.palette.dark};
+	color: ${theme.palette.textDark};
   border-radius: 0.5rem;
 
  	&:hover {
     text-decoration: none;
-    background-color: ${theme.palette.darkLight};
+    background-color: ${theme.palette.textDarkLight};
 	}
 `
 );
 
 export const WrapperIconStyled = styled('div')(
   ({ theme }) => `
-  background-color: ${theme.palette.dark};
+  background-color: ${theme.palette.textDark};
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
