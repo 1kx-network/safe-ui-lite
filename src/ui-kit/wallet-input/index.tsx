@@ -34,11 +34,13 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
 
   return (
     <WrapperStyled>
-      <LabelStyled htmlFor={label}>
-        <WalletTypography fontSize={12} fontWeight={600}>
-          {props.label}
-        </WalletTypography>
-      </LabelStyled>
+      {props.label && (
+        <LabelStyled htmlFor={label}>
+          <WalletTypography fontSize={12} fontWeight={600}>
+            {props.label}
+          </WalletTypography>
+        </LabelStyled>
+      )}
 
       <InputWrapperStyled $styles={errorStyle}>
         <InputStyled
