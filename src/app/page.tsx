@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAccount } from 'wagmi';
 import { useRouter } from 'next/navigation';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import ConnectButton from '@/common/connect-button';
@@ -12,11 +12,13 @@ import { ImageStyled, MainContainerStyled } from './home-page.styles';
 import routes from './routes';
 
 export default function Home() {
-  const { isConnected } = useAccount();
   const router = useRouter();
+  const { isConnected } = useWeb3ModalAccount();
+
   useEffect(() => {
     if (isConnected) router.push(routes.safeAccountCreate);
   }, [isConnected, router]);
+
   return (
     <WalletLayout hideSidebar>
       <MainContainerStyled>

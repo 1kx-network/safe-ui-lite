@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useWeb3Modal } from '@web3modal/wagmi/react';
+import { useWeb3Modal } from '@web3modal/ethers/react';
 
 import { WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';

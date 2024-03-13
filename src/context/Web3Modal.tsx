@@ -1,39 +1,34 @@
 'use client';
 
-import React, { ReactNode } from 'react';
-import { createWeb3Modal } from '@web3modal/wagmi/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { State, WagmiProvider } from 'wagmi';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 
-import { wagmiConfig, projectId } from '@/config';
+// 1. Get projectId at https://cloud.walletconnect.com
+export const projectId = 'dde89f3d2432564a5cad9cadb88f93d0';
 
-// Setup queryClient
-const queryClient = new QueryClient();
+// 2. Set chains
+const mainnet = {
+  chainId: 1,
+  name: 'Ethereum',
+  currency: 'ETH',
+  explorerUrl: 'https://etherscan.io',
+  rpcUrl: 'https://cloudflare-eth.com',
+};
 
-if (!projectId) throw new Error('Project ID is not defined');
+// 3. Create modal
+const metadata = {
+  name: 'My Website',
+  description: 'My Website description',
+  url: 'https://mywebsite.com', // origin must match your domain & subdomain
+  icons: ['https://avatars.mywebsite.com/'],
+};
 
-// Create modal
 createWeb3Modal({
-  wagmiConfig,
+  ethersConfig: defaultConfig({ metadata }),
+  chains: [mainnet],
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true, // Optional - false as default
-  themeMode: 'light',
-  featuredWalletIds: [
-    // '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // MetaMask
-  ],
 });
 
-export function ContextProvider({
-  children,
-  initialState,
-}: {
-  children: ReactNode;
-  initialState?: State;
-}) {
-  return (
-    <WagmiProvider config={wagmiConfig} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
-  );
+export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
+  return children;
 }
