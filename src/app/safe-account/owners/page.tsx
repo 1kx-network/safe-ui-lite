@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { Box } from '@mui/system';
+import { useRouter } from 'next/navigation';
 
 import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import {
@@ -18,6 +19,10 @@ import { OwnerStylesBtn } from './owners.styles';
 import Accordion from './accordion';
 
 const SafeAccountOwners = () => {
+  const router = useRouter();
+  const handleBack = () => {
+    router.back();
+  };
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -95,7 +100,7 @@ const SafeAccountOwners = () => {
               </Box>
             </Box>
             <GridButtonStyled>
-              <WalletButton onClick={() => console.log}>Cancel</WalletButton>
+              <WalletButton onClick={handleBack}>Cancel</WalletButton>
               <WalletButton type="submit" variant="contained">
                 Next
               </WalletButton>

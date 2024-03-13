@@ -1,5 +1,6 @@
 import React from 'react';
 import Select, { Props, GroupBase } from 'react-select';
+
 import { CustomOption, CustomSingleValue, stylesSelect } from './wallet-select.styles';
 
 interface ICustomProps {

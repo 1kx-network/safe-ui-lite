@@ -1,6 +1,7 @@
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { Box } from '@mui/system';
 import { components, CSSObjectWithLabel, OptionProps, SingleValueProps } from 'react-select';
+
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 const { Option, SingleValue } = components;
 
