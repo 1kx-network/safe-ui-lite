@@ -6,7 +6,7 @@ export const WrapperStyled = styled('div')`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  padding-top: 4rem;
+  padding-top: ${themeMuiBase.spacing(7)};
   max-width: 1114px;
 
   @media (max-width: 1068px) {
@@ -52,3 +52,15 @@ export const StepStyled = styled('div')(
     margin-right:${theme.spacing(3)};
 `
 );
+
+export const GridButtonStyled = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+`;
+
+export const PreviewSectionStyled = styled('div')`
+  max-height: 608px;
+  overflow-y: auto;
+`;

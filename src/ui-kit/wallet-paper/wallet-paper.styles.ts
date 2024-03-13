@@ -9,9 +9,8 @@ export const PaperStyled = styled(
   return {
     background: theme.palette.lightGrey,
     borderRadius: '14px',
-    padding: theme.spacing(5),
+    padding: theme.spacing(6),
     width: '100%',
-    height: '100%',
     minWidth: $minWidth,
     '@media (max-width: 1068px)': {
       minWidth: '100%',

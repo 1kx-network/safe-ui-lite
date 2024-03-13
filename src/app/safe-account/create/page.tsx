@@ -8,10 +8,14 @@ import { useDisconnect } from 'wagmi';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import routes from '@/app/routes';
-import { GridContainer, StepStyled, WrapperStyled, styleWalletPaper } from '../safe-account.styles';
+import {
+  GridButtonStyled,
+  GridContainer,
+  StepStyled,
+  WrapperStyled,
+  styleWalletPaper,
+} from '../safe-account.styles';
 import { CreateSafeAccountSchema } from '@/utils/validations.utils';
-
-import { GridButtonStyled } from './save-account.styles';
 
 interface IInputsForm {
   name: string;

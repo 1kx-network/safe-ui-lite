@@ -1,0 +1,43 @@
+import * as React from 'react';
+import { Box } from '@mui/system';
+
+import { WalletTypography } from '..';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
+import InfoIcon from '@/assets/svg/infoIcon.svg';
+
+import { AlertStyled } from './wallet-alert.styles';
+
+interface WalletAlertProps {
+  title: string;
+  description: string;
+}
+
+const WalletAlert = ({ title, description }: WalletAlertProps) => {
+  return (
+    <AlertStyled>
+      <Box>
+        <WalletTypography
+          fontSize={12}
+          fontWeight={600}
+          component="p"
+          color={themeMuiBase.palette.white}
+        >
+          {title}
+        </WalletTypography>
+        <Box mt={2}>
+          <WalletTypography
+            fontSize={12}
+            fontWeight={600}
+            component="p"
+            color={themeMuiBase.palette.white}
+          >
+            {description}
+          </WalletTypography>
+        </Box>
+      </Box>
+      <InfoIcon />
+    </AlertStyled>
+  );
+};
+
+export default WalletAlert;
