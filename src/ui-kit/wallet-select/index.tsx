@@ -1,19 +1,13 @@
 import React from 'react';
 import Select, { Props, GroupBase } from 'react-select';
+
 import { CustomOption, CustomSingleValue, stylesSelect } from './wallet-select.styles';
 
-interface ICustomProps {
-  icon?: JSX.Element;
-  value?: string;
-  label?: string;
-  id?: string;
-}
-
-type SelectProps<
+export type SelectProps<
   Option,
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>,
-> = Props<Option, IsMulti, Group> & ICustomProps;
+> = Props<Option, IsMulti, Group>;
 
 export const WalletSelect = <
   Option,
