@@ -1,10 +1,9 @@
 'use client';
 import { Box } from '@mui/system';
-// import { useDisconnect } from '@web3modal/ethers/react';
+import { useDisconnect } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDisconnect } from 'wagmi';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import routes from '@/app/routes';
