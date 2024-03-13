@@ -5,6 +5,7 @@ import { Box } from '@mui/system';
 import { WalletButton, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
 import { IOptions, options } from '../../fixtures';
 import { styledHeader, styledPaper } from '../../entry-page.styles';
+
 import { TotalyBoxStyled, ButtonsGridStyled } from './overview.styles';
 
 export const Overview = () => {
