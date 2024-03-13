@@ -4,7 +4,7 @@ import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 
 export async function useEthersAdapter() {
   const { walletProvider } = useWeb3ModalProvider();
-  if (!walletProvider) return;
+  if (!walletProvider) return null;
 
   const etherProvider = new ethers.BrowserProvider(walletProvider);
 
