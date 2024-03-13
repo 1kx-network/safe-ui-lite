@@ -9,7 +9,7 @@ export const ItemTransactionStyled = styled('div')(
     justify-content: space-between;
     padding: ${theme.spacing(3.5)} 0;
     font-size: 12px;
-    margin-bottom: ${theme.spacing(1.375)};
+    margin-bottom: ${theme.spacing(1.875)};
 `
 );
 
