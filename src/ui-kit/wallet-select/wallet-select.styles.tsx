@@ -1,6 +1,7 @@
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { Box } from '@mui/system';
 import { components, CSSObjectWithLabel, OptionProps, SingleValueProps } from 'react-select';
+
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 const { Option, SingleValue } = components;
 
@@ -55,6 +56,7 @@ export const stylesSelect = {
     borderWidth: '2px',
     borderColor: themeMuiBase.palette.black,
     boxShadow: 'none',
+    backgroundColor: themeMuiBase.palette.lightGrey,
 
     '&:hover': {
       borderColor: themeMuiBase.palette.black,
