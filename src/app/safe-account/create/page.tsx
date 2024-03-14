@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from '@mui/system';
 import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
@@ -18,7 +18,6 @@ import {
   styleWalletPaper,
   styledHeaderSafeAccount,
 } from '../safe-account.styles';
-import { useOwnerList } from '@/queries/safe-accounts';
 
 interface IInputsForm {
   name: string;
@@ -27,21 +26,26 @@ interface IInputsForm {
 
 export default function CreatePageAccount() {
   const router = useRouter();
-  const { address } = useWeb3ModalAccount();
+  const { address, chainId } = useWeb3ModalAccount();
   const { disconnect } = useDisconnect();
   const network = useNetwork();
   const {
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
   } = useForm<IInputsForm>({
     mode: 'onSubmit',
     // resolver: yupResolver(CreateSafeAccountSchema),
   });
-  const networkName = network?.name.toString();
-  const { data } = useOwnerList(address);
 
-  console.log(data);
+  useEffect(() => {
+    if (chainId) {
+      setValue('chainId', chainId);
+    }
+  }, [chainId]);
+
+  const networkName = network?.name.toString();
 
   const onSubmit: SubmitHandler<IInputsForm> = () => {
     router.push(routes.safeAccountOwners);
@@ -75,7 +79,7 @@ export default function CreatePageAccount() {
                 </WalletTypography>
               </Box>
 
-              <Box display="flex" flexDirection="column" mt={1.5}>
+              <Box display="flex" flexDirection="column" mt={3} mb={2.5}>
                 <WalletTypography fontSize={12} fontWeight={600}>
                   Name
                 </WalletTypography>
@@ -94,7 +98,7 @@ export default function CreatePageAccount() {
                 )}
               />
 
-              <Box display={'flex'} flexDirection={'column'} mt={1.5}>
+              <Box display={'flex'} flexDirection={'column'} mt={3} mb={2.5}>
                 <WalletTypography fontSize={12} fontWeight={600}>
                   Network ID
                 </WalletTypography>
@@ -113,7 +117,7 @@ export default function CreatePageAccount() {
                 )}
               />
 
-              <Box mt={1.5}>
+              <Box mt={3}>
                 <WalletTypography fontWeight={600}>
                   By continuing, you agree to our terms of use and privacy policy.
                 </WalletTypography>
