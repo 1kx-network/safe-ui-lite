@@ -2,15 +2,19 @@ import { WalletTypography } from '@/ui-kit';
 
 import { BodyStyled, AccountInfoStyled } from './list-item.styles';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const ListItem = (props: any) => {
+interface IListItem {
+  address: string;
+  network: number;
+  onClick: () => void;
+}
+
+export const ListItem = ({ address, network, onClick }: IListItem) => {
   return (
-    <BodyStyled>
+    <BodyStyled onClick={onClick}>
       <AccountInfoStyled>
-        {props.title && <WalletTypography>Test-1</WalletTypography>}
-        <WalletTypography fontSize={12}>sep:{props.address}</WalletTypography>
+        <WalletTypography>sep:{address}</WalletTypography>
       </AccountInfoStyled>
-      <WalletTypography component="p">{props.network}</WalletTypography>
+      <WalletTypography component="p">{network}</WalletTypography>
     </BodyStyled>
   );
 };

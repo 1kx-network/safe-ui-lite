@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import { Barlow } from 'next/font/google';
 
 import '../assets/styles/global-styles.scss';
+
 import { Web3ModalProvider } from '@/context/Web3Modal';
+import ThemeProvider from '@/context/theme-provider';
+import QueryClientProvider from '@/context/query-provider';
 
 const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
@@ -19,7 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true} className={barlow.className}>
-        <Web3ModalProvider>{children}</Web3ModalProvider>
+        <QueryClientProvider>
+          <ThemeProvider>
+            <Web3ModalProvider>{children}</Web3ModalProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );
