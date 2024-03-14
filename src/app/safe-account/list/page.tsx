@@ -22,7 +22,7 @@ export default function SafeAccountList() {
       const listAccount = data[chainId];
       setDataList(listAccount);
     }
-  }, [data]);
+  }, [data, chainId]);
 
   const handleCreateAccount = () => router.push(routes.safeAccountCreate);
 
