@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import {
@@ -14,14 +15,23 @@ import {
 } from '../safe-account.styles';
 import QrCodeIcon from '@/assets/svg/qr_code.svg';
 import WalletAlert from '@/ui-kit/wallet-allert';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import { OwnerStylesBtn } from './owners.styles';
 import Accordion from './accordion';
 
 const SafeAccountOwners = () => {
   const router = useRouter();
+  const { address } = useWeb3ModalAccount();
+
+  const { deploySafe } = useSafeSdk();
   const handleBack = () => {
     router.back();
+  };
+
+  const handleNext = async () => {
+    // TODO: Change to real data
+    await deploySafe([address?.toString() || ''], 1);
   };
   return (
     <WalletLayout hideSidebar>
@@ -101,7 +111,7 @@ const SafeAccountOwners = () => {
             </Box>
             <GridButtonStyled>
               <WalletButton onClick={handleBack}>Cancel</WalletButton>
-              <WalletButton type="submit" variant="contained">
+              <WalletButton onClick={handleNext} variant="contained">
                 Next
               </WalletButton>
             </GridButtonStyled>

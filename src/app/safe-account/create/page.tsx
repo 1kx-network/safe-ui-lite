@@ -3,7 +3,6 @@ import { Box } from '@mui/system';
 import { useDisconnect } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import routes from '@/app/routes';
@@ -14,7 +13,6 @@ import {
   WrapperStyled,
   styleWalletPaper,
 } from '../safe-account.styles';
-import { CreateSafeAccountSchema } from '@/utils/validations.utils';
 
 interface IInputsForm {
   name: string;
@@ -37,11 +35,10 @@ export default function CreatePageAccount({
     control,
   } = useForm<IInputsForm>({
     mode: 'onSubmit',
-    resolver: yupResolver(CreateSafeAccountSchema),
+    // resolver: yupResolver(CreateSafeAccountSchema),
   });
 
-  const onSubmit: SubmitHandler<IInputsForm> = data => {
-    console.log(data);
+  const onSubmit: SubmitHandler<IInputsForm> = () => {
     router.push(routes.safeAccountOwners);
   };
 

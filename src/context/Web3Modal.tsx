@@ -14,6 +14,14 @@ const mainnet = {
   rpcUrl: 'https://cloudflare-eth.com',
 };
 
+const sepolia = {
+  chainId: 11155111,
+  name: 'Sepolia',
+  currency: 'SPO',
+  explorerUrl: 'https://sepolia.io',
+  rpcUrl: 'https://gateway.tenderly.co/public/sepolia',
+};
+
 // 3. Create modal
 const metadata = {
   name: 'My Website',
@@ -24,9 +32,10 @@ const metadata = {
 
 createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
-  chains: [mainnet],
+  chains: [mainnet, sepolia],
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  themeMode: 'light',
 });
 
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
