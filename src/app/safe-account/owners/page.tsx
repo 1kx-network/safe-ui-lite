@@ -25,6 +25,8 @@ import Accordion from './accordion';
 const SafeAccountOwners = () => {
   const { address } = useWeb3ModalAccount();
 
+  const [account, setAccount] = React.useState('');
+
   const network = useNetwork();
   const router = useRouter();
   const [owners, setOwners] = React.useState<{ name: string; address: string; id: number }[]>([]);
@@ -45,6 +47,7 @@ const SafeAccountOwners = () => {
           id: 1,
         },
       ]);
+      setAccount(address.toString());
     }
   }, [address]);
 
@@ -173,9 +176,9 @@ const SafeAccountOwners = () => {
                 <WalletTypography fontSize={12} fontWeight={600}>
                   Wallet
                 </WalletTypography>
-                {address && (
+                {account && (
                   <WalletTypography fontSize={17}>
-                    {networkName?.substring(0, 3)}:{formattedLabel(String(address))}
+                    {networkName?.substring(0, 3)}:{formattedLabel(account)}
                   </WalletTypography>
                 )}
               </Box>

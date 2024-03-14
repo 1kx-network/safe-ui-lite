@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning={true} className={barlow.className}>
+      <body className={barlow.className}>
         <QueryClientProvider>
           <ThemeProvider>
             <Web3ModalProvider>{children}</Web3ModalProvider>
