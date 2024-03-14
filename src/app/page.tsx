@@ -16,7 +16,7 @@ export default function Home() {
   const { isConnected } = useWeb3ModalAccount();
 
   useEffect(() => {
-    if (isConnected) router.push(routes.safeAccountCreate);
+    if (isConnected) router.push(routes.safeAccountList);
   }, [isConnected, router]);
 
   return (
