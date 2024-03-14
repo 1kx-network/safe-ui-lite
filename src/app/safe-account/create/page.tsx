@@ -1,17 +1,22 @@
 'use client';
+import React from 'react';
 import { Box } from '@mui/system';
-import { useDisconnect } from '@web3modal/ethers/react';
+import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
-import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
+import { formattedLabel } from '@/utils/foramtters';
+import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
+import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import {
+  BoxSafeAccountInfoStyled,
   GridButtonStyled,
   GridContainer,
   StepStyled,
   WrapperStyled,
   styleWalletPaper,
+  styledHeaderSafeAccount,
 } from '../safe-account.styles';
 
 interface IInputsForm {
@@ -19,30 +24,32 @@ interface IInputsForm {
   chainId: number;
 }
 
-interface ICreatePageAccount {
-  address: string;
-  network: string;
-}
-
-export default function CreatePageAccount({
-  address = 'gno:0x98BB81B...5D2e443',
-  network = 'Polygon',
-}: ICreatePageAccount) {
+export default function CreatePageAccount() {
   const router = useRouter();
+  const network = useNetwork();
+  const networkName = network?.name.toString();
+  const { disconnect } = useDisconnect();
+  const { address } = useWeb3ModalAccount();
+
   const {
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
   } = useForm<IInputsForm>({
     mode: 'onSubmit',
     // resolver: yupResolver(CreateSafeAccountSchema),
   });
 
+  React.useEffect(() => {
+    if (network?.chainId) {
+      setValue('chainId', Number(network?.chainId));
+    }
+  }, [network]);
+
   const onSubmit: SubmitHandler<IInputsForm> = () => {
     router.push(routes.safeAccountOwners);
   };
-
-  const { disconnect } = useDisconnect();
 
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -53,7 +60,7 @@ export default function CreatePageAccount({
 
   return (
     <WalletLayout hideSidebar>
-      <WrapperStyled>
+      <WrapperStyled style={{ height: 'fit-content' }}>
         <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
           Create new Safe Account
         </WalletTypography>
@@ -127,23 +134,31 @@ export default function CreatePageAccount({
 
           {/* --- */}
           <WalletPaper style={styleWalletPaper}>
-            <WalletTypography fontSize={22} fontWeight={600}>
+            <WalletTypography
+              fontSize={17}
+              fontWeight={600}
+              textAlign="center"
+              style={styledHeaderSafeAccount}
+            >
               Your Safe Account preview
             </WalletTypography>
 
-            <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-              <WalletTypography fontSize={12} fontWeight={600}>
+            <Box sx={BoxSafeAccountInfoStyled}>
+              <WalletTypography fontSize={12} fontWeight={600} lineHeight={'21px'}>
                 Wallet
               </WalletTypography>
-              <WalletTypography fontSize={17}>{address}</WalletTypography>
+              {address && (
+                <WalletTypography fontSize={17}>
+                  {networkName?.substring(0, 3)}:{formattedLabel(String(address))}
+                </WalletTypography>
+              )}
             </Box>
-
-            <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-              <WalletTypography fontSize={12} fontWeight={600}>
+            <Box sx={BoxSafeAccountInfoStyled}>
+              <WalletTypography fontSize={12} fontWeight={600} lineHeight={'21px'}>
                 Network
               </WalletTypography>
-              <WalletTypography fontSize={17} fontWeight={600}>
-                {network}
+              <WalletTypography fontSize={17} fontWeight={600} textTransform="capitalize">
+                {networkName}
               </WalletTypography>
             </Box>
           </WalletPaper>
