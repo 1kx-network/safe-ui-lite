@@ -18,6 +18,7 @@ import {
   styleWalletPaper,
   styledHeaderSafeAccount,
 } from '../safe-account.styles';
+import { useOwnerList } from '@/queries/safe-accounts';
 
 interface IInputsForm {
   name: string;
@@ -26,26 +27,21 @@ interface IInputsForm {
 
 export default function CreatePageAccount() {
   const router = useRouter();
-  const network = useNetwork();
-  const networkName = network?.name.toString();
-  const { disconnect } = useDisconnect();
   const { address } = useWeb3ModalAccount();
-
+  const { disconnect } = useDisconnect();
+  const network = useNetwork();
   const {
     handleSubmit,
     formState: { errors },
     control,
-    setValue,
   } = useForm<IInputsForm>({
     mode: 'onSubmit',
     // resolver: yupResolver(CreateSafeAccountSchema),
   });
+  const networkName = network?.name.toString();
+  const { data } = useOwnerList(address);
 
-  React.useEffect(() => {
-    if (network?.chainId) {
-      setValue('chainId', Number(network?.chainId));
-    }
-  }, [network]);
+  console.log(data);
 
   const onSubmit: SubmitHandler<IInputsForm> = () => {
     router.push(routes.safeAccountOwners);
