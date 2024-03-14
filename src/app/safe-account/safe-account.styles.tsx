@@ -37,7 +37,11 @@ export const GridContainer = styled('div')`
 export const styleWalletPaper: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '7px',
+  height: 'fit-content',
+};
+
+export const styledHeaderSafeAccount = {
+  marginBottom: '14px',
 };
 
 export const StepStyled = styled('div')(
@@ -65,3 +69,11 @@ export const PreviewSectionStyled = styled('div')`
   /* max-height: 608px;
   overflow-y: auto; */
 `;
+
+export const BoxSafeAccountInfoStyled = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  borderTop: '1px solid gray',
+  alignItems: 'center',
+  padding: '14px 0',
+};
