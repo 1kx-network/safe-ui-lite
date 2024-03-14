@@ -16,22 +16,67 @@ import {
 import QrCodeIcon from '@/assets/svg/qr_code.svg';
 import WalletAlert from '@/ui-kit/wallet-allert';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
+import { formattedLabel } from '@/utils/foramtters';
+import { useNetwork } from '@/hooks/useNetwork';
 
 import { OwnerStylesBtn } from './owners.styles';
 import Accordion from './accordion';
 
 const SafeAccountOwners = () => {
-  const router = useRouter();
   const { address } = useWeb3ModalAccount();
+
+  const network = useNetwork();
+  const router = useRouter();
+  const [owners, setOwners] = React.useState<{ name: string; address: string; id: number }[]>([]);
+
+  const networkName = network?.name.toString();
 
   const { deploySafe } = useSafeSdk();
   const handleBack = () => {
     router.back();
   };
 
+  React.useEffect(() => {
+    if (address) {
+      setOwners([
+        {
+          name: '',
+          address: address.toString(),
+          id: 1,
+        },
+      ]);
+    }
+  }, [address]);
+
   const handleNext = async () => {
-    // TODO: Change to real data
-    await deploySafe([address?.toString() || ''], 1);
+    const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
+    await deploySafe(filledOwners, filledOwners.length);
+  };
+
+  const handleAddOwner = () => {
+    setOwners(prev => [
+      ...prev,
+      {
+        name: '',
+        address: '',
+        id: prev.length + 1,
+      },
+    ]);
+  };
+
+  const handleChangeOwner = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: number,
+    field: 'name' | 'address'
+  ) => {
+    const value = e.target.value;
+    const updatedOwners = owners.map(owner => {
+      if (owner.id === id) {
+        return { ...owner, [field]: value };
+      }
+      return owner;
+    });
+    setOwners(updatedOwners);
   };
   return (
     <WalletLayout hideSidebar>
@@ -63,23 +108,25 @@ const SafeAccountOwners = () => {
               </Box>
             </Box>
             <Box mt={5}>
-              <GridContainer>
-                <WalletInput
-                  placeholder={'Owner name'}
-                  value={''}
-                  onChange={() => console.log}
-                  label="Owner name"
-                />
-                <WalletInput
-                  placeholder={'Owner address'}
-                  value={''}
-                  onChange={() => console.log}
-                  label="Owner address"
-                  endAdornment={<QrCodeIcon />}
-                />
-              </GridContainer>
+              {owners.map(owner => (
+                <GridContainer key={owner.id}>
+                  <WalletInput
+                    placeholder={'Owner name'}
+                    value={owner.name}
+                    onChange={e => handleChangeOwner(e, owner.id, 'name')}
+                    label="Owner name"
+                  />
+                  <WalletInput
+                    placeholder={'Owner address'}
+                    value={owner.address}
+                    onChange={e => handleChangeOwner(e, owner.id, 'address')}
+                    label="Owner address"
+                    endAdornment={<QrCodeIcon />}
+                  />
+                </GridContainer>
+              ))}
               <Box maxWidth="100px" mt={5}>
-                <WalletButton onClick={() => console.log} variant="text" styles={OwnerStylesBtn}>
+                <WalletButton onClick={handleAddOwner} variant="text" styles={OwnerStylesBtn}>
                   + Add new owner
                 </WalletButton>
               </Box>
@@ -102,10 +149,10 @@ const SafeAccountOwners = () => {
               </Box>
               <Box mt={3} display="flex" alignItems="center">
                 <Box mr={3} maxWidth={82}>
-                  <WalletInput value={'1'} onChange={() => console.log} />
+                  <WalletInput value={owners.length} onChange={() => console.log} />
                 </Box>
                 <WalletTypography fontSize={13} fontWeight={600}>
-                  out of 1 owners
+                  out of {owners.length} owners
                 </WalletTypography>
               </Box>
             </Box>
@@ -126,15 +173,19 @@ const SafeAccountOwners = () => {
                 <WalletTypography fontSize={12} fontWeight={600}>
                   Wallet
                 </WalletTypography>
-                <WalletTypography fontSize={17}>gno:0x98BB81B...5D2e443</WalletTypography>
+                {address && (
+                  <WalletTypography fontSize={17}>
+                    {networkName?.substring(0, 3)}:{formattedLabel(String(address))}
+                  </WalletTypography>
+                )}
               </Box>
 
               <Box display="flex" justifyContent={'space-between'} mt={1.5}>
                 <WalletTypography fontSize={12} fontWeight={600}>
                   Network
                 </WalletTypography>
-                <WalletTypography fontSize={17} fontWeight={600}>
-                  Polygon
+                <WalletTypography fontSize={17} fontWeight={600} textTransform="capitalize">
+                  {networkName}
                 </WalletTypography>
               </Box>
             </WalletPaper>

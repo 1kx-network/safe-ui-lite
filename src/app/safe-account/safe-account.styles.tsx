@@ -8,6 +8,7 @@ export const WrapperStyled = styled('div')`
   margin: 0 auto;
   padding-top: ${themeMuiBase.spacing(7)};
   max-width: 1114px;
+  min-height: 100vh;
 
   @media (max-width: 1068px) {
     padding: 4rem 2rem 0 2rem;
@@ -61,6 +62,6 @@ export const GridButtonStyled = styled('div')`
 `;
 
 export const PreviewSectionStyled = styled('div')`
-  max-height: 608px;
-  overflow-y: auto;
+  /* max-height: 608px;
+  overflow-y: auto; */
 `;
