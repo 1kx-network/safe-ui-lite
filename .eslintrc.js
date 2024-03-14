@@ -15,6 +15,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 2,
     '@typescript-eslint/explicit-member-accessibility': 'error',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    'react-hooks/exhaustive-deps': 'off',
     'import/order': [
       'warn',
       {
