@@ -1,11 +1,13 @@
 'use client';
 
+import { Box } from '@mui/system';
+
 import { WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
-import { Box } from '@mui/system';
-import { NonceBoxStyled } from './new-transaction.styles';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
+
+import { NonceBoxStyled } from './new-transaction.styles';
 
 const nonceCount = 1;
 
