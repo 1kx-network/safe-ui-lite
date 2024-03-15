@@ -58,8 +58,8 @@ export default function SignTransaction() {
                 {ownerName}
               </WalletTypography>
             </OwnerLinkStyled>
-            <OpenInNewIcon />
-            <CopyIcon />
+            <OpenInNewIcon width="18" height="19" />
+            <CopyIcon width="18px" height="19px" />
           </BoxOwnerLinkStyled>
 
           <OwnersInfoStyled>
