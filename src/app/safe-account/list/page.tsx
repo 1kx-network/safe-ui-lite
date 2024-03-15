@@ -20,11 +20,20 @@ export default function SafeAccountList() {
   useEffect(() => {
     if (chainId && data && pathName === routes.safeAccountList) {
       const listAccount = data[chainId];
-      setDataList(listAccount);
+
+      if (listAccount !== undefined) {
+        setDataList(listAccount);
+      }
     }
   }, [data, chainId]);
 
-  const handleCreateAccount = () => router.push(routes.safeAccountCreate);
+  const handleCreateAccount = () => {
+    if (chainId) {
+      router.push(routes.safeAccountCreate);
+    } else {
+      router.push(routes.home);
+    }
+  };
 
   const handleListItemClick = (address: string) => {
     const query = `?network=${chainId}&address=${encodeURIComponent(address)}`;
