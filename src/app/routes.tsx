@@ -5,6 +5,7 @@ const routes = {
   safeLightWallet: '/safe-light-wallet',
   safeAccountList: '/safe-account/list',
   entryPage: '/entry-page',
+  walletSetup: '/wallet-setup',
 };
 
 export default routes;
