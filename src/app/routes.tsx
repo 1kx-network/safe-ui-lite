@@ -6,6 +6,7 @@ const routes = {
   safeAccountList: '/safe-account/list',
   entryPage: '/entry-page',
   walletSetup: '/wallet-setup',
+  newTransaction: '/new-transaction',
 };
 
 export default routes;
