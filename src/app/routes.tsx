@@ -7,6 +7,7 @@ const routes = {
   entryPage: '/entry-page',
   walletSetup: '/wallet-setup',
   newTransaction: '/new-transaction',
+  signTransaction: '/sign-transaction',
 };
 
 export default routes;

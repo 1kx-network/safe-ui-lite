@@ -19,7 +19,7 @@ const sepolia = {
   name: 'Sepolia',
   currency: 'SPO',
   explorerUrl: 'https://sepolia.io',
-  rpcUrl: 'https://gateway.tenderly.co/public/sepolia',
+  rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
 };
 
 // 3. Create modal

@@ -1,4 +1,5 @@
 import { styled } from '@mui/system';
+
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 export const BodyStyled = styled('div')(
@@ -156,3 +157,15 @@ export const WrapPaperStyled = styled('div')`
     min-width: 100%;
   }
 `;
+
+export const BtnMaxInputStyled = styled('div')(
+  ({ theme }) => `
+  position: absolute;
+  right: ${theme.spacing(3.5)};
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+`
+);

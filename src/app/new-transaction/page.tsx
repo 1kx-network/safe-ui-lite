@@ -1,19 +1,29 @@
 'use client';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-
+import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useRouter } from 'next/navigation';
+import * as utils from 'ethers';
+import { yupResolver } from '@hookform/resolvers/yup';
+import dynamic from 'next/dynamic';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
+
 import {
   WalletButton,
   WalletInput,
   WalletLayout,
   WalletPaper,
-  WalletSelect,
+  WalletSelect as WalletSelectUi,
   WalletTypography,
 } from '@/ui-kit';
+
 import ConfirmIcon from '@/assets/svg/confirm-trx.svg';
 import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
+import useSafeStore from '@/stores/safe-store';
+import routes from '../routes';
+import { NewTransactionSchema } from '@/utils/validations.utils';
 
 import {
   AmountSelectStyled,
@@ -34,7 +44,16 @@ import {
   styledPaper,
   styledBtnNextStep,
   WrapPaperStyled,
+  BtnMaxInputStyled,
 } from './new-transaction.styles';
+
+const WalletSelect = dynamic(
+  () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),
+  {
+    ssr: false,
+    loading: () => <WalletSelectUi />,
+  }
+);
 
 const nonceCount = 1;
 const isConfirmed = false;
@@ -46,19 +65,38 @@ interface IInputsForm {
 }
 
 export default function NewTransaction() {
+  const { address } = useWeb3ModalAccount();
+  const { safeSdk, setSafeTransaction } = useSafeStore();
+  const router = useRouter();
   const {
     handleSubmit,
     formState: { errors },
     control,
   } = useForm<IInputsForm>({
     mode: 'onSubmit',
+    resolver: yupResolver(NewTransactionSchema),
     defaultValues: {
       amount: '0.00',
+      address: '0x6dB182cD4303A5C5803A0e099f7440f8448A159B',
     },
   });
 
-  const onSubmit: SubmitHandler<IInputsForm> = () => {
-    console.log('_submit_');
+  const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
+    const parseAmount = utils.parseUnits(data.amount, 'ether');
+
+    const safeTransactionData: MetaTransactionData = {
+      to: data.address,
+      value: String(parseAmount),
+      data: String(address),
+    };
+    if (!safeSdk) return;
+
+    const safeTransaction = await safeSdk.createTransaction({
+      transactions: [safeTransactionData],
+    });
+
+    setSafeTransaction(safeTransaction);
+    router.push(routes.signTransaction);
   };
 
   return (
@@ -91,10 +129,33 @@ export default function NewTransaction() {
                 <WalletTypography fontSize={17} fontWeight={600}>
                   Recipient address or ENS
                 </WalletTypography>
+                {/* <Controller
+                  control={control}
+                  name="address"
+                  render={({ field }) => (
+                    <WalletSelect
+                      options={addresses}
+                      isSearchable
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onChange={field.onChange}
+                    />
+                  )}
+                /> */}
+
                 <Controller
                   control={control}
-                  name="amount"
-                  render={({ field }) => <WalletSelect {...field} placeholder={'gno:'} />}
+                  name="address"
+                  render={({ field }) => (
+                    <Box width={'100%'}>
+                      <WalletInput
+                        {...field}
+                        style={styledInput}
+                        error={!!errors.amount}
+                        errorValue={errors.amount?.message}
+                      />
+                    </Box>
+                  )}
                 />
 
                 <WalletTypography fontSize={17} fontWeight={600}>
@@ -105,23 +166,23 @@ export default function NewTransaction() {
                     control={control}
                     name="amount"
                     render={({ field }) => (
-                      <Box width={'100%'}>
+                      <Box width={'100%'} position={'relative'}>
                         <WalletInput
                           {...field}
                           style={styledInput}
                           error={!!errors.amount}
                           errorValue={errors.amount?.message}
-                          endAdornment={
-                            <WalletButton styles={styledBtxMax} variant="contained">
-                              MAX
-                            </WalletButton>
-                          }
                         />
+                        <BtnMaxInputStyled>
+                          <WalletButton styles={styledBtxMax} variant="contained">
+                            MAX
+                          </WalletButton>
+                        </BtnMaxInputStyled>
                       </Box>
                     )}
                   />
                   <AmountSelectStyled>
-                    <WalletSelect placeholder={'xDai'} />
+                    <WalletSelect placeholder={'xDai'} isSearchable={false} />
                   </AmountSelectStyled>
                 </GridBtnStyled>
                 <WalletButton variant="contained" styles={styledBtnNextStep}>
