@@ -1,9 +1,11 @@
 'use client';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
+import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
+import * as utils from 'ethers';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import {
@@ -19,6 +21,7 @@ import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
 import useSafeStore from '@/stores/safe-store';
 import routes from '../routes';
+import { NewTransactionSchema } from '@/utils/validations.utils';
 
 import {
   AmountSelectStyled,
@@ -60,22 +63,27 @@ export default function NewTransaction() {
     control,
   } = useForm<IInputsForm>({
     mode: 'onSubmit',
+    resolver: yupResolver(NewTransactionSchema),
     defaultValues: {
       amount: '0.00',
-      address: '',
+      address: '0x6dB182cD4303A5C5803A0e099f7440f8448A159B',
     },
   });
 
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
-    const safeTransactionData: SafeTransactionDataPartial = {
+    const parseAmount = utils.parseUnits(data.amount, 'ether');
+
+    const safeTransactionData: MetaTransactionData = {
       to: data.address,
-      value: data.amount, // 1 wei
+      value: String(parseAmount),
       data: String(address),
     };
     if (!safeSdk) return;
+
     const safeTransaction = await safeSdk.createTransaction({
       transactions: [safeTransactionData],
     });
+
     setSafeTransaction(safeTransaction);
     router.push(routes.signTransaction);
   };

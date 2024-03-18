@@ -1,4 +1,5 @@
 import { styled } from '@mui/system';
+
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 export const BodyStyled = styled('div')(
