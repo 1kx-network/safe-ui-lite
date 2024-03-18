@@ -1,9 +1,13 @@
 import { Box } from '@mui/system';
+import { useSearchParams } from 'next/navigation';
 
 import { WalletTypography } from '@/ui-kit';
 import WalletSvg from '@/assets/svg/wallet.svg';
 import SettingSvg from '@/assets/svg/setting.svg';
 import TransactionSvg from '@/assets/svg/transaction.svg';
+import routes from '@/app/routes';
+import useSafeStore from '@/stores/safe-store';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import {
   MenuStyled,
@@ -30,6 +34,13 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
   id = dataUserMock.id,
   count = dataUserMock.count,
 }) => {
+  const { safeSdk } = useSafeStore();
+
+  console.log(safeSdk);
+  const searchParams = useSearchParams();
+  const safeAddress = searchParams.get('address');
+  useSafeSdk(safeAddress);
+  const network = searchParams.get('network');
   return (
     <WrapperStyled>
       <InfoUserStyled>
@@ -43,7 +54,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
       </InfoUserStyled>
       <MenuStyled>
         {/* TODO */}
-        <ItemMenuStyled style={styleBtnTransaction} href="/">
+        <ItemMenuStyled
+          style={styleBtnTransaction}
+          href={`${routes.newTransaction}?network=${network}&address=${encodeURIComponent(String(safeAddress))}`}
+        >
           <WalletTypography>New transaction</WalletTypography>
         </ItemMenuStyled>
         <ItemMenuStyled href="/">

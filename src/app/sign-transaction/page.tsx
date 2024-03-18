@@ -5,6 +5,7 @@ import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
+import useSafeStore from '@/stores/safe-store';
 
 import {
   BoxOwnerLinkStyled,
@@ -20,6 +21,21 @@ import { dataOwner } from './fixtures';
 const { account, amount, outOwners, owners, ownerName } = dataOwner;
 
 export default function SignTransaction() {
+  const { safeTransaction, safeSdk } = useSafeStore();
+  console.log(safeTransaction, 'safeTransaction');
+
+  const handleSignTransaction = async () => {
+    if (!safeSdk || !safeTransaction) return;
+    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+    const signature = await safeSdk.signHash(safeTxHash);
+    console.log(signature);
+  };
+
+  const handleExecute = async () => {
+    if (!safeSdk || !safeTransaction) return;
+    const txResponse = await safeSdk.executeTransaction(safeTransaction);
+    await txResponse.transactionResponse?.wait();
+  };
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -40,14 +56,14 @@ export default function SignTransaction() {
           </TransactionInfoStyled>
 
           <GridButtonStyled>
-            <WalletButton variant="outlined" styles={styledBtn}>
+            {/* <WalletButton variant="outlined" styles={styledBtn}>
               Connect MetaMask
-            </WalletButton>
-            <WalletButton variant="contained" styles={styledBtn}>
+            </WalletButton> */}
+            <WalletButton variant="contained" styles={styledBtn} onClick={handleSignTransaction}>
               Sign Transaction
             </WalletButton>
           </GridButtonStyled>
-
+          <button onClick={handleExecute}>execute</button>
           <WalletTypography fontSize={22} fontWeight={600}>
             Owner Name
           </WalletTypography>

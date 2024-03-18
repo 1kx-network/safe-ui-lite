@@ -1,6 +1,9 @@
 'use client';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useRouter } from 'next/navigation';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import {
@@ -14,6 +17,8 @@ import {
 import ConfirmIcon from '@/assets/svg/confirm-trx.svg';
 import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
+import useSafeStore from '@/stores/safe-store';
+import routes from '../routes';
 
 import {
   AmountSelectStyled,
@@ -46,6 +51,9 @@ interface IInputsForm {
 }
 
 export default function NewTransaction() {
+  const { address } = useWeb3ModalAccount();
+  const { safeSdk, setSafeTransaction } = useSafeStore();
+  const router = useRouter();
   const {
     handleSubmit,
     formState: { errors },
@@ -54,11 +62,22 @@ export default function NewTransaction() {
     mode: 'onSubmit',
     defaultValues: {
       amount: '0.00',
+      address: '',
     },
   });
 
-  const onSubmit: SubmitHandler<IInputsForm> = () => {
-    console.log('_submit_');
+  const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
+    const safeTransactionData: SafeTransactionDataPartial = {
+      to: data.address,
+      value: data.amount, // 1 wei
+      data: String(address),
+    };
+    if (!safeSdk) return;
+    const safeTransaction = await safeSdk.createTransaction({
+      transactions: [safeTransactionData],
+    });
+    setSafeTransaction(safeTransaction);
+    router.push(routes.signTransaction);
   };
 
   return (
@@ -91,10 +110,25 @@ export default function NewTransaction() {
                 <WalletTypography fontSize={17} fontWeight={600}>
                   Recipient address or ENS
                 </WalletTypography>
-                <Controller
+                {/* <Controller
                   control={control}
                   name="amount"
                   render={({ field }) => <WalletSelect {...field} placeholder={'gno:'} />}
+                /> */}
+
+                <Controller
+                  control={control}
+                  name="address"
+                  render={({ field }) => (
+                    <Box width={'100%'}>
+                      <WalletInput
+                        {...field}
+                        style={styledInput}
+                        error={!!errors.amount}
+                        errorValue={errors.amount?.message}
+                      />
+                    </Box>
+                  )}
                 />
 
                 <WalletTypography fontSize={17} fontWeight={600}>
