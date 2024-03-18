@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import dynamic from 'next/dynamic';
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 import {
   WalletButton,
   WalletInput,
@@ -17,7 +17,6 @@ import {
   WalletSelect as WalletSelectUi,
   WalletTypography,
 } from '@/ui-kit';
-
 import ConfirmIcon from '@/assets/svg/confirm-trx.svg';
 import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
