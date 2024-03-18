@@ -11,8 +11,10 @@ import {
   WalletSelect,
   WalletTypography,
 } from '@/ui-kit';
-
 import ConfirmIcon from '@/assets/svg/confirm-trx.svg';
+import TokensIcon from '@/assets/svg/tokens.svg';
+import TrxIcon from '@/assets/svg/trx-status.svg';
+
 import {
   AmountSelectStyled,
   ConfirmedWaitStyled,
@@ -22,17 +24,17 @@ import {
   NonceBoxStyled,
   ProccessingBoxStyled,
   StatusLineStyled,
-  styledAlignCenter,
-  styledBoxTokens,
-  styledBoxTrx,
+  HeaderTokensStyled,
   styledBtxMax,
   styledInput,
-  styledPaper,
   BodyStyled,
   WrapperStyled,
+  TrxHeaderStyled,
+  AlignCenterStyled,
+  styledPaper,
+  styledBtnNextStep,
+  WrapPaperStyled,
 } from './new-transaction.styles';
-import TokensIcon from '@/assets/svg/tokens.svg';
-import TrxIcon from '@/assets/svg/trx-status.svg';
 
 const nonceCount = 1;
 const isConfirmed = false;
@@ -68,98 +70,104 @@ export default function NewTransaction() {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <BodyStyled>
-            <WalletPaper style={styledPaper} id={'send-tokens-body'}>
-              <Box sx={styledBoxTokens}>
-                <Box sx={styledAlignCenter} gap={themeMuiBase.spacing(2)}>
-                  <TokensIcon />
-                  <WalletTypography fontSize={17} fontWeight={600}>
-                    Send Tokens
-                  </WalletTypography>
-                </Box>
+            <WrapPaperStyled>
+              <WalletPaper style={styledPaper}>
+                <HeaderTokensStyled>
+                  <AlignCenterStyled sx={{ gap: themeMuiBase.spacing(2) }}>
+                    <TokensIcon />
+                    <WalletTypography fontSize={17} fontWeight={600}>
+                      Send Tokens
+                    </WalletTypography>
+                  </AlignCenterStyled>
 
-                <Box sx={styledAlignCenter} gap={themeMuiBase.spacing(3.5)}>
-                  <WalletTypography fontSize={17} fontWeight={600}>
-                    Nonce #
-                  </WalletTypography>
-                  <NonceBoxStyled>{nonceCount}</NonceBoxStyled>
-                </Box>
-              </Box>
+                  <AlignCenterStyled sx={{ gap: themeMuiBase.spacing(2) }}>
+                    <WalletTypography fontSize={17} fontWeight={600}>
+                      Nonce #
+                    </WalletTypography>
+                    <NonceBoxStyled>{nonceCount}</NonceBoxStyled>
+                  </AlignCenterStyled>
+                </HeaderTokensStyled>
 
-              <WalletTypography fontSize={17} fontWeight={600}>
-                Recipient address or ENS
-              </WalletTypography>
-              <Controller
-                control={control}
-                name="amount"
-                render={({ field }) => <WalletSelect {...field} placeholder={'gno:'} />}
-              />
-
-              <WalletTypography fontSize={17} fontWeight={600}>
-                Amount
-              </WalletTypography>
-              <GridBtnStyled>
+                <WalletTypography fontSize={17} fontWeight={600}>
+                  Recipient address or ENS
+                </WalletTypography>
                 <Controller
                   control={control}
                   name="amount"
-                  render={({ field }) => (
-                    <Box width={'100%'}>
-                      <WalletInput
-                        {...field}
-                        style={styledInput}
-                        error={!!errors.amount}
-                        errorValue={errors.amount?.message}
-                        endAdornment={
-                          <WalletButton styles={styledBtxMax} variant="contained">
-                            MAX
-                          </WalletButton>
-                        }
-                      />
-                    </Box>
-                  )}
+                  render={({ field }) => <WalletSelect {...field} placeholder={'gno:'} />}
                 />
-                <AmountSelectStyled>
-                  <WalletSelect placeholder={'xDai'} />
-                </AmountSelectStyled>
-              </GridBtnStyled>
-              <WalletButton variant="contained">Next</WalletButton>
-            </WalletPaper>
+
+                <WalletTypography fontSize={17} fontWeight={600}>
+                  Amount
+                </WalletTypography>
+                <GridBtnStyled>
+                  <Controller
+                    control={control}
+                    name="amount"
+                    render={({ field }) => (
+                      <Box width={'100%'}>
+                        <WalletInput
+                          {...field}
+                          style={styledInput}
+                          error={!!errors.amount}
+                          errorValue={errors.amount?.message}
+                          endAdornment={
+                            <WalletButton styles={styledBtxMax} variant="contained">
+                              MAX
+                            </WalletButton>
+                          }
+                        />
+                      </Box>
+                    )}
+                  />
+                  <AmountSelectStyled>
+                    <WalletSelect placeholder={'xDai'} />
+                  </AmountSelectStyled>
+                </GridBtnStyled>
+                <WalletButton variant="contained" styles={styledBtnNextStep}>
+                  Next
+                </WalletButton>
+              </WalletPaper>
+            </WrapPaperStyled>
 
             {/*  */}
-            <WalletPaper style={styledPaper} id={'trx-tokens-body'}>
-              <Box sx={styledBoxTrx}>
-                <TrxIcon />
-                <WalletTypography fontSize={17} fontWeight={600}>
-                  Transaction Status
-                </WalletTypography>
-              </Box>
-
-              <ProccessingBoxStyled>
-                <ItemProccessingStyled>
-                  <ConfirmIcon />
+            <WrapPaperStyled>
+              <WalletPaper style={styledPaper}>
+                <TrxHeaderStyled>
+                  <TrxIcon />
                   <WalletTypography fontSize={17} fontWeight={600}>
-                    Create
+                    Transaction Status
                   </WalletTypography>
-                </ItemProccessingStyled>
+                </TrxHeaderStyled>
 
-                <StatusLineStyled />
+                <ProccessingBoxStyled>
+                  <ItemProccessingStyled>
+                    <ConfirmIcon />
+                    <WalletTypography fontSize={17} fontWeight={600}>
+                      Create
+                    </WalletTypography>
+                  </ItemProccessingStyled>
 
-                <ItemProccessingStyled>
-                  {isConfirmed ? <ConfirmIcon /> : <ConfirmedWaitStyled>+</ConfirmedWaitStyled>}
-                  <WalletTypography fontSize={17} fontWeight={600}>
-                    Confirmed (0 of 1)
-                  </WalletTypography>
-                </ItemProccessingStyled>
+                  <StatusLineStyled />
 
-                <StatusLineStyled />
-                <ItemProccessingStyled>
-                  {isExecute ? <ConfirmIcon /> : <ExecuteIconStyled />}
-                  <WalletTypography fontSize={17} fontWeight={600}>
-                    Execute
-                  </WalletTypography>
-                </ItemProccessingStyled>
-              </ProccessingBoxStyled>
-              {/*  */}
-            </WalletPaper>
+                  <ItemProccessingStyled>
+                    {isConfirmed ? <ConfirmIcon /> : <ConfirmedWaitStyled>+</ConfirmedWaitStyled>}
+                    <WalletTypography fontSize={17} fontWeight={600}>
+                      Confirmed (0 of 1)
+                    </WalletTypography>
+                  </ItemProccessingStyled>
+
+                  <StatusLineStyled />
+                  <ItemProccessingStyled>
+                    {isExecute ? <ConfirmIcon /> : <ExecuteIconStyled />}
+                    <WalletTypography fontSize={17} fontWeight={600}>
+                      Execute
+                    </WalletTypography>
+                  </ItemProccessingStyled>
+                </ProccessingBoxStyled>
+                {/*  */}
+              </WalletPaper>
+            </WrapPaperStyled>
           </BodyStyled>
         </form>
       </WrapperStyled>

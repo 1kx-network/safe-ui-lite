@@ -1,35 +1,14 @@
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { styled } from '@mui/system';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 export const BodyStyled = styled('div')(
   ({ theme }) => `
   display: flex;
   gap: ${theme.spacing(3.5)};
+  width: 100%;
 
   @media (max-width: 1240px) {
-   
-  #send-tokens-body {
-    width: 90%;
-    max-width: 90% !important;
-   }
-
-   #trx-tokens-body {
-    width: 10%;
-    min-width: 260px !important;
-   }
-  }
-  
-  @media (max-width: 1040px) {
     flex-wrap: wrap;
-   
-    #send-tokens-body, #trx-tokens-body {
-      width: 100%;
-      max-width: 100% !important;
-     }
-  
-     #trx-tokens-body {
-      min-width: 260px;
-     }
   }
 `
 );
@@ -38,7 +17,7 @@ export const NonceBoxStyled = styled('div')(
   ({ theme }) => `
     display: flex;
     align-items: center;
-    width: 84px;
+    width: 5.25rem;
     overflow: hidden;
     border: 1px solid ${theme.palette.black};
     border-radius: ${theme.spacing(7)};
@@ -59,12 +38,14 @@ export const AmountSelectStyled = styled('div')`
   width: 30%;
 `;
 
-export const InputAmountStyled = styled('div')`
+export const InputAmountStyled = styled('div')(
+  ({ theme }) => `
   width: 70%;
   & > input {
-    padding: 15.5px 14px;
+    padding: ${theme.spacing(3.875)} ${theme.spacing(3.5)};
   }
-`;
+`
+);
 
 export const StatusLineStyled = styled('div')(
   ({ theme }) => `
@@ -123,8 +104,8 @@ export const WrapperStyled = styled('div')(
 );
 
 export const styledBtxMax = {
-  width: '82px',
-  height: '36px',
+  width: '5.125rem',
+  height: '2.2rem',
   margin: 0,
   padding: 0,
 };
@@ -134,30 +115,44 @@ export const styledInput = {
   padding: `${themeMuiBase.spacing(3.875)} ${themeMuiBase.spacing(3.5)}`,
 };
 
+export const HeaderTokensStyled = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+export const TrxHeaderStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  gap: ${theme.spacing(2)};
+  border-bottom: 1px solid ${theme.palette.tetriaryLightGrey};
+  padding-bottom: ${theme.spacing(12)};
+  margin-bottom: ${theme.spacing(12)};
+`
+);
+
+export const AlignCenterStyled = styled('div')`
+  display: flex;
+  align-items: center;
+`;
+
 export const styledPaper: React.CSSProperties = {
-  maxWidth: '50%',
-  minWidth: '360px',
-  gap: '12px',
   display: 'flex',
   flexDirection: 'column',
+  maxWidth: '100%',
+  gap: themeMuiBase.spacing(3),
 };
 
-export const styledBoxTokens = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  width: '100%',
+export const styledBtnNextStep = {
+  width: '153px',
 };
 
-export const styledBoxTrx = {
-  display: 'flex',
-  gap: '8px',
-  borderBottom: '1px solid #e3e3e3',
-  paddingBottom: '53px',
-  marginBottom: '53px',
-};
+export const WrapPaperStyled = styled('div')`
+  width: 50%;
+  min-width: 360px;
 
-export const styledAlignCenter = {
-  display: 'flex',
-  alignItems: 'center',
-};
+  @media (max-width: 1240px) {
+    min-width: 100%;
+  }
+`;
