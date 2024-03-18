@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SingleValue } from 'react-select';
 import { Box } from '@mui/system';
+import dynamic from 'next/dynamic';
 
 import {
   WalletButton,
@@ -12,7 +13,6 @@ import { IOptions, options } from '../../fixtures';
 import { styledHeader, styledPaper } from '../../entry-page.styles';
 
 import { TotalyBoxStyled, ButtonsGridStyled } from './overview.styles';
-import dynamic from 'next/dynamic';
 
 const WalletSelect = dynamic(
   () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),
