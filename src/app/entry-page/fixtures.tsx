@@ -17,10 +17,10 @@ export const options = [
 
 export const tokenList = [
   { id: 1, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
-  { id: 1, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
-  { id: 1, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
-  { id: 1, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
-  { id: 1, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
+  { id: 2, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
+  { id: 3, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
+  { id: 4, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
+  { id: 5, value: 'Ethereum', label: 'ETH', count: 12, icon: <EthIcon /> },
 ];
 
 export const transactions = [
@@ -34,7 +34,7 @@ export const transactions = [
     addInfo: 'Needs confirmations',
   },
   {
-    id: 1,
+    id: 2,
     status: 'On-chain rejection',
     timeHour: 1,
     owners: 2,
@@ -43,7 +43,7 @@ export const transactions = [
     addInfo: 'Needs confirmations',
   },
   {
-    id: 1,
+    id: 3,
     status: 'On-chain rejection',
     timeHour: 1,
     owners: 2,
@@ -52,7 +52,7 @@ export const transactions = [
     addInfo: 'Needs confirmations',
   },
   {
-    id: 1,
+    id: 4,
     status: 'On-chain rejection',
     timeHour: 1,
     owners: 2,

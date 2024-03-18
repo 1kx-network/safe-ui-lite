@@ -2,11 +2,25 @@ import { useState } from 'react';
 import { SingleValue } from 'react-select';
 import { Box } from '@mui/system';
 
-import { WalletButton, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
+import {
+  WalletButton,
+  WalletPaper,
+  WalletSelect as WalletSelectUi,
+  WalletTypography,
+} from '@/ui-kit';
 import { IOptions, options } from '../../fixtures';
 import { styledHeader, styledPaper } from '../../entry-page.styles';
 
 import { TotalyBoxStyled, ButtonsGridStyled } from './overview.styles';
+import dynamic from 'next/dynamic';
+
+const WalletSelect = dynamic(
+  () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),
+  {
+    ssr: false,
+    loading: () => <WalletSelectUi />,
+  }
+);
 
 export const Overview = () => {
   const [value, setValue] = useState<SingleValue<IOptions> | null>(options[0]);
