@@ -6,16 +6,18 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
-
+import dynamic from 'next/dynamic';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
+
 import {
   WalletButton,
   WalletInput,
   WalletLayout,
   WalletPaper,
-  WalletSelect,
+  WalletSelect as WalletSelectUi,
   WalletTypography,
 } from '@/ui-kit';
+
 import ConfirmIcon from '@/assets/svg/confirm-trx.svg';
 import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
@@ -42,7 +44,16 @@ import {
   styledPaper,
   styledBtnNextStep,
   WrapPaperStyled,
+  BtnMaxInputStyled,
 } from './new-transaction.styles';
+
+const WalletSelect = dynamic(
+  () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),
+  {
+    ssr: false,
+    loading: () => <WalletSelectUi />,
+  }
+);
 
 const nonceCount = 1;
 const isConfirmed = false;
@@ -120,8 +131,16 @@ export default function NewTransaction() {
                 </WalletTypography>
                 {/* <Controller
                   control={control}
-                  name="amount"
-                  render={({ field }) => <WalletSelect {...field} placeholder={'gno:'} />}
+                  name="address"
+                  render={({ field }) => (
+                    <WalletSelect
+                      options={addresses}
+                      isSearchable
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onChange={field.onChange}
+                    />
+                  )}
                 /> */}
 
                 <Controller
@@ -147,23 +166,23 @@ export default function NewTransaction() {
                     control={control}
                     name="amount"
                     render={({ field }) => (
-                      <Box width={'100%'}>
+                      <Box width={'100%'} position={'relative'}>
                         <WalletInput
                           {...field}
                           style={styledInput}
                           error={!!errors.amount}
                           errorValue={errors.amount?.message}
-                          endAdornment={
-                            <WalletButton styles={styledBtxMax} variant="contained">
-                              MAX
-                            </WalletButton>
-                          }
                         />
+                        <BtnMaxInputStyled>
+                          <WalletButton styles={styledBtxMax} variant="contained">
+                            MAX
+                          </WalletButton>
+                        </BtnMaxInputStyled>
                       </Box>
                     )}
                   />
                   <AmountSelectStyled>
-                    <WalletSelect placeholder={'xDai'} />
+                    <WalletSelect placeholder={'xDai'} isSearchable={false} />
                   </AmountSelectStyled>
                 </GridBtnStyled>
                 <WalletButton variant="contained" styles={styledBtnNextStep}>

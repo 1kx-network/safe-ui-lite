@@ -7,7 +7,7 @@ export type SelectProps<
   Option,
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>,
-> = Props<Option, IsMulti, Group>;
+> = Props<Option, IsMulti, Group> ;
 
 export const WalletSelect = <
   Option,
