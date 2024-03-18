@@ -20,7 +20,7 @@ export const InputWrapperStyled = styled(
 
 export const EndAdornmentIconStyled = styled('button')(
   ({ theme }) => `
-      padding: ${theme.spacing(0)} ${theme.spacing(5)};
+      padding: ${theme.spacing(0)} ${theme.spacing(3)};
       border: none;
       background: none;
       border-radius: 50%;

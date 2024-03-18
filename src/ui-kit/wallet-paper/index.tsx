@@ -6,14 +6,16 @@ interface IWalletPaper {
   children: ReactNode;
   style?: React.CSSProperties;
   minWidth?: string;
+  id?: string;
 }
 
 export const WalletPaper: React.FunctionComponent<IWalletPaper> = ({
   children,
   style,
   minWidth,
+  id,
 }) => (
-  <PaperStyled style={style} $minWidth={minWidth}>
+  <PaperStyled style={style} $minWidth={minWidth} id={id}>
     {children}
   </PaperStyled>
 );

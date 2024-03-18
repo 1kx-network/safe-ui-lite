@@ -25,10 +25,11 @@ interface IWalletInputProps {
   onClickEndAdornment?: () => void;
   type?: string;
   ref?: React.Ref<HTMLInputElement>;
+  style?: React.CSSProperties;
 }
 
 export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>((props, _ref) => {
-  const { onClickEndAdornment, error, endAdornment, label } = props;
+  const { onClickEndAdornment, error, endAdornment, label, style } = props;
 
   const errorStyle = error ? styleErrorInput : {};
 
@@ -46,7 +47,7 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
         <InputStyled
           {...props}
           value={props.value ?? ''}
-          style={errorStyle}
+          style={{ ...style, ...errorStyle }}
           id={label}
           ref={_ref}
         />

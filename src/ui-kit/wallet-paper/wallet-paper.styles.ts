@@ -5,7 +5,7 @@ import { withTransientProps } from '@/utils/styled.utils';
 export const PaperStyled = styled(
   'div',
   withTransientProps
-)<{ $minWidth?: string }>(({ $minWidth = '100%', theme }) => {
+)<{ $minWidth?: string }>(({ $minWidth = '100%', theme, style }) => {
   return {
     background: theme.palette.lightGrey,
     borderRadius: '14px',
@@ -15,5 +15,7 @@ export const PaperStyled = styled(
     '@media (max-width: 1068px)': {
       minWidth: '100%',
     },
+
+    ...style,
   };
 });
