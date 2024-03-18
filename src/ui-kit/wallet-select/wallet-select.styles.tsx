@@ -31,7 +31,6 @@ export const stylesSelect = {
   container: (base: CSSObjectWithLabel) => ({
     ...base,
     fontSize: '17px',
-    fontWeight: 600,
 
     '&:focus-visible': {
       borderColor: themeMuiBase.palette.black,
@@ -53,7 +52,8 @@ export const stylesSelect = {
     borderRadius: '28px',
     height: '52px',
     padding: '0 20px',
-    borderWidth: '2px',
+    borderWidth: '1px',
+    flexWrap: 'nowrap',
     borderColor: themeMuiBase.palette.black,
     boxShadow: 'none',
     backgroundColor: themeMuiBase.palette.lightGrey,
@@ -77,6 +77,7 @@ export const stylesSelect = {
     display: 'flex',
     height: '52px',
     padding: '0 20px',
+    flexWrap: 'nowrap',
     backgroundColor: isSelected ? themeMuiBase.palette.tetriaryDark : 'transparent',
 
     '&:hover': {
@@ -95,5 +96,6 @@ export const stylesSelect = {
     display: 'flex',
     alignItems: 'center',
     borderRadius: '28px',
+    flexWrap: 'nowrap',
   }),
 };
