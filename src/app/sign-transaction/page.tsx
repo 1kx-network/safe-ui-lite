@@ -1,11 +1,15 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import useSafeStore from '@/stores/safe-store';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import {
   BoxOwnerLinkStyled,
@@ -18,17 +22,34 @@ import {
 } from './sing-transaction.styles';
 import { dataOwner } from './fixtures';
 
-const { account, amount, outOwners, owners, ownerName } = dataOwner;
+const { account, amount, outOwners, ownerName } = dataOwner;
 
 export default function SignTransaction() {
+  const searchParams = useSearchParams();
+  const safeAddress = searchParams.get('address');
+  useSafeSdk(safeAddress);
   const { safeTransaction, safeSdk } = useSafeStore();
-  console.log(safeTransaction, 'safeTransaction');
+  const [owners, setOwners] = useState<string[]>([]);
+
+  const getOwners = async () => {
+    if (!safeSdk) return;
+    const owners = await safeSdk.getOwners();
+    setOwners(owners);
+  };
+
+  useEffect(() => {
+    getOwners();
+  }, [safeSdk]);
+
+  const handleTransaction = async () => {
+    if (!safeSdk || !safeTransaction) return;
+    owners.length > 1 ? handleSignTransaction() : handleExecute();
+  };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-    const signature = await safeSdk.signHash(safeTxHash);
-    console.log(signature);
+    await safeSdk.signHash(safeTxHash);
   };
 
   const handleExecute = async () => {
@@ -59,11 +80,11 @@ export default function SignTransaction() {
             {/* <WalletButton variant="outlined" styles={styledBtn}>
               Connect MetaMask
             </WalletButton> */}
-            <WalletButton variant="contained" styles={styledBtn} onClick={handleSignTransaction}>
-              Sign Transaction
+            <WalletButton variant="contained" styles={styledBtn} onClick={handleTransaction}>
+              {`${owners.length > 1 ? 'Sign' : 'Execute'} Transaction`}
             </WalletButton>
           </GridButtonStyled>
-          <button onClick={handleExecute}>execute</button>
+
           <WalletTypography fontSize={22} fontWeight={600}>
             Owner Name
           </WalletTypography>
@@ -85,7 +106,7 @@ export default function SignTransaction() {
 
             <WalletTypography fontSize={17}>
               <WalletTypography fontWeight={600}>{outOwners} </WalletTypography>
-              out of <WalletTypography fontWeight={600}>{owners}</WalletTypography> owners
+              out of <WalletTypography fontWeight={600}>{owners.length}</WalletTypography> owners
             </WalletTypography>
           </OwnersInfoStyled>
         </WalletPaper>

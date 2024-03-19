@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import dynamic from 'next/dynamic';
@@ -66,6 +66,11 @@ interface IInputsForm {
 export default function NewTransaction() {
   const { address } = useWeb3ModalAccount();
   const { safeSdk, setSafeTransaction } = useSafeStore();
+  const searchParams = useSearchParams();
+
+  const safeAddress = searchParams.get('address');
+  const network = searchParams.get('network');
+
   const router = useRouter();
   const {
     handleSubmit,
@@ -95,7 +100,9 @@ export default function NewTransaction() {
     });
 
     setSafeTransaction(safeTransaction);
-    router.push(routes.signTransaction);
+    router.push(
+      `${routes.signTransaction}?network=${network}&address=${encodeURIComponent(String(safeAddress))}`
+    );
   };
 
   return (
