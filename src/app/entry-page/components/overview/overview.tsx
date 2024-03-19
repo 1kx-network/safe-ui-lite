@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { SingleValue } from 'react-select';
 import { Box } from '@mui/system';
 import dynamic from 'next/dynamic';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   WalletButton,
@@ -11,6 +12,7 @@ import {
 } from '@/ui-kit';
 import { IOptions, options } from '../../fixtures';
 import { styledHeader, styledPaper } from '../../entry-page.styles';
+import routes from '@/app/routes';
 
 import { TotalyBoxStyled, ButtonsGridStyled } from './overview.styles';
 
@@ -24,13 +26,22 @@ const WalletSelect = dynamic(
 
 export const Overview = () => {
   const [value, setValue] = useState<SingleValue<IOptions> | null>(options[0]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const safeAddress = searchParams.get('account');
+  const network = searchParams.get('network');
 
   const handleChangeSelect = (elem: SingleValue<IOptions>) => {
     setValue(elem);
   };
 
   const handleReceive = () => {};
-  const handleSend = () => {};
+  const handleSend = () => {
+    router.push(
+      `${routes.newTransaction}?network=${network}&address=${encodeURIComponent(String(safeAddress))}`
+    );
+  };
 
   return (
     <>

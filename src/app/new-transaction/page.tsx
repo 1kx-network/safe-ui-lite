@@ -8,6 +8,7 @@ import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import dynamic from 'next/dynamic';
 
+import { NewTransactionSchema } from '@/utils/validations.utils';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import {
   WalletButton,
@@ -22,7 +23,6 @@ import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
 import useSafeStore from '@/stores/safe-store';
 import routes from '../routes';
-import { NewTransactionSchema } from '@/utils/validations.utils';
 
 import {
   AmountSelectStyled,
@@ -81,7 +81,7 @@ export default function NewTransaction() {
     resolver: yupResolver(NewTransactionSchema),
     defaultValues: {
       amount: '0.00',
-      address: '0x6dB182cD4303A5C5803A0e099f7440f8448A159B',
+      address: '',
     },
   });
 
@@ -100,9 +100,19 @@ export default function NewTransaction() {
     });
 
     setSafeTransaction(safeTransaction);
-    router.push(
-      `${routes.signTransaction}?network=${network}&address=${encodeURIComponent(String(safeAddress))}`
-    );
+
+    if (network) {
+      const queryParams = {
+        network,
+        address: encodeURIComponent(String(safeAddress)),
+        amount: String(data.amount),
+        destinationAddress: String(data.address),
+      };
+
+      const queryString = new URLSearchParams(queryParams).toString();
+
+      router.push(`${routes.signTransaction}?${queryString}`);
+    }
   };
 
   return (
