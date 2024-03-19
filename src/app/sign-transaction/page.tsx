@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import * as utils from 'ethers';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
@@ -22,13 +25,19 @@ import {
 } from './sing-transaction.styles';
 import { dataOwner } from './fixtures';
 
-const { account, amount, outOwners, ownerName } = dataOwner;
+const { outOwners, ownerName } = dataOwner;
 
 export default function SignTransaction() {
+  const { address } = useWeb3ModalAccount();
   const searchParams = useSearchParams();
+
   const safeAddress = searchParams.get('address');
   useSafeSdk(safeAddress);
-  const { safeTransaction, safeSdk } = useSafeStore();
+
+  const amount = searchParams.get('amount');
+  const destinationAddress = searchParams.get('destinationAddress');
+
+  const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
   const [owners, setOwners] = useState<string[]>([]);
 
   const getOwners = async () => {
@@ -39,23 +48,47 @@ export default function SignTransaction() {
 
   useEffect(() => {
     getOwners();
+
+    const pendingCreateTrxData = async () => {
+      if (amount && destinationAddress && !safeTransaction && safeSdk) {
+        const parseAmount = utils.parseUnits(amount, 'ether');
+        const safeTransactionData: MetaTransactionData = {
+          to: destinationAddress,
+          value: String(parseAmount),
+          data: String(address),
+        };
+        if (!safeSdk) return;
+
+        const safeTransaction = await safeSdk.createTransaction({
+          transactions: [safeTransactionData],
+        });
+
+        setSafeTransaction(safeTransaction);
+      }
+    };
+
+    pendingCreateTrxData();
   }, [safeSdk]);
+
+  const [wasSign, setWasSign] = useState(false);
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
-    owners.length > 1 ? handleSignTransaction() : handleExecute();
+    wasSign ? handleExecute() : handleSignTransaction();
   };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
     await safeSdk.signHash(safeTxHash);
+    setWasSign(true);
   };
 
   const handleExecute = async () => {
     if (!safeSdk || !safeTransaction) return;
     const txResponse = await safeSdk.executeTransaction(safeTransaction);
     await txResponse.transactionResponse?.wait();
+    setWasSign(false);
   };
   return (
     <WalletLayout hideSidebar>
@@ -72,17 +105,20 @@ export default function SignTransaction() {
               Amount: {amount} USD
             </WalletTypography>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Destination: {account}
+              Destination: {destinationAddress}
             </WalletTypography>
           </TransactionInfoStyled>
 
           <GridButtonStyled>
-            {/* <WalletButton variant="outlined" styles={styledBtn}>
-              Connect MetaMask
-            </WalletButton> */}
-            <WalletButton variant="contained" styles={styledBtn} onClick={handleTransaction}>
-              {`${owners.length > 1 ? 'Sign' : 'Execute'} Transaction`}
-            </WalletButton>
+            {address ? (
+              <WalletButton variant="contained" styles={styledBtn} onClick={handleTransaction}>
+                {`${!wasSign ? 'Sign' : 'Execute'} Transaction`}
+              </WalletButton>
+            ) : (
+              <WalletButton variant="outlined" styles={styledBtn}>
+                Connect Wallet
+              </WalletButton>
+            )}
           </GridButtonStyled>
 
           <WalletTypography fontSize={22} fontWeight={600}>
