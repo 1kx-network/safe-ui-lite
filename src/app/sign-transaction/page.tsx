@@ -70,25 +70,21 @@ export default function SignTransaction() {
     pendingCreateTrxData();
   }, [safeSdk]);
 
-  const [wasSign, setWasSign] = useState(false);
-
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
-    wasSign ? handleExecute() : handleSignTransaction();
+    owners.length > 1 ? handleSignTransaction() : handleExecute();
   };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
     await safeSdk.signHash(safeTxHash);
-    setWasSign(true);
   };
 
   const handleExecute = async () => {
     if (!safeSdk || !safeTransaction) return;
     const txResponse = await safeSdk.executeTransaction(safeTransaction);
     await txResponse.transactionResponse?.wait();
-    setWasSign(false);
   };
   return (
     <WalletLayout hideSidebar>
@@ -112,7 +108,7 @@ export default function SignTransaction() {
           <GridButtonStyled>
             {address ? (
               <WalletButton variant="contained" styles={styledBtn} onClick={handleTransaction}>
-                {`${!wasSign ? 'Sign' : 'Execute'} Transaction`}
+                {`${owners.length > 1 ? 'Sign' : 'Execute'} Transaction`}
               </WalletButton>
             ) : (
               <WalletButton variant="outlined" styles={styledBtn}>

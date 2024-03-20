@@ -6,6 +6,7 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect, useState } from 'react';
 
 import { NewTransactionSchema } from '@/utils/validations.utils';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -38,7 +39,6 @@ import {
   BtnMaxInputStyled,
   CurrentNetworkStyled,
 } from './new-transaction.styles';
-import { useEffect, useState } from 'react';
 
 const nonceCount = 1;
 const isConfirmed = false;
