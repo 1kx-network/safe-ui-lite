@@ -6,18 +6,10 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
-import dynamic from 'next/dynamic';
 
 import { NewTransactionSchema } from '@/utils/validations.utils';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import {
-  WalletButton,
-  WalletInput,
-  WalletLayout,
-  WalletPaper,
-  WalletSelect as WalletSelectUi,
-  WalletTypography,
-} from '@/ui-kit';
+import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import ConfirmIcon from '@/assets/svg/confirm-trx.svg';
 import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
@@ -44,15 +36,9 @@ import {
   styledBtnNextStep,
   WrapPaperStyled,
   BtnMaxInputStyled,
+  CurrentNetworkStyled,
 } from './new-transaction.styles';
-
-const WalletSelect = dynamic(
-  () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),
-  {
-    ssr: false,
-    loading: () => <WalletSelectUi />,
-  }
-);
+import { useEffect, useState } from 'react';
 
 const nonceCount = 1;
 const isConfirmed = false;
@@ -64,7 +50,7 @@ interface IInputsForm {
 }
 
 export default function NewTransaction() {
-  const { address } = useWeb3ModalAccount();
+  const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk, setSafeTransaction } = useSafeStore();
   const searchParams = useSearchParams();
 
@@ -76,14 +62,28 @@ export default function NewTransaction() {
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
   } = useForm<IInputsForm>({
     mode: 'onSubmit',
     resolver: yupResolver(NewTransactionSchema),
     defaultValues: {
-      amount: '0.00',
+      amount: '',
       address: '',
     },
   });
+
+  const [balanceAcc, setBalanceAcc] = useState('');
+
+  useEffect(() => {
+    if (safeSdk) {
+      const pendingBalance = async () => {
+        const balanceAccount = await safeSdk.getBalance();
+        setBalanceAcc(String(balanceAccount));
+      };
+
+      pendingBalance();
+    }
+  }, [safeSdk]);
 
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
     const parseAmount = utils.parseUnits(data.amount, 'ether');
@@ -112,6 +112,22 @@ export default function NewTransaction() {
       const queryString = new URLSearchParams(queryParams).toString();
 
       router.push(`${routes.signTransaction}?${queryString}`);
+    }
+  };
+
+  const handleChangeAmount = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    onChange: (value: React.ChangeEvent<HTMLInputElement>) => void
+  ) => {
+    const value = event.target.value;
+    if (/^\d*\.?\d*$/.test(value) || value === '') {
+      onChange(event);
+    }
+  };
+
+  const handleClickMax = async () => {
+    if (safeSdk) {
+      setValue('amount', balanceAcc);
     }
   };
 
@@ -166,9 +182,10 @@ export default function NewTransaction() {
                     <Box width={'100%'}>
                       <WalletInput
                         {...field}
+                        placeholder="Address"
                         style={styledInput}
-                        error={!!errors.amount}
-                        errorValue={errors.amount?.message}
+                        error={!!errors.address}
+                        errorValue={errors.address?.message}
                       />
                     </Box>
                   )}
@@ -185,12 +202,18 @@ export default function NewTransaction() {
                       <Box width={'100%'} position={'relative'}>
                         <WalletInput
                           {...field}
+                          placeholder="0"
+                          onChange={e => handleChangeAmount(e, field.onChange)}
                           style={styledInput}
                           error={!!errors.amount}
                           errorValue={errors.amount?.message}
                         />
                         <BtnMaxInputStyled>
-                          <WalletButton styles={styledBtxMax} variant="contained">
+                          <WalletButton
+                            styles={styledBtxMax}
+                            variant="contained"
+                            onClick={handleClickMax}
+                          >
                             MAX
                           </WalletButton>
                         </BtnMaxInputStyled>
@@ -198,7 +221,10 @@ export default function NewTransaction() {
                     )}
                   />
                   <AmountSelectStyled>
-                    <WalletSelect placeholder={'xDai'} isSearchable={false} />
+                    {/* <WalletSelect placeholder={'xDai'} isSearchable={false}  /> */}
+                    <CurrentNetworkStyled>
+                      <WalletTypography>{chainId}</WalletTypography>
+                    </CurrentNetworkStyled>
                   </AmountSelectStyled>
                 </GridBtnStyled>
                 <WalletButton variant="contained" styles={styledBtnNextStep}>

@@ -36,7 +36,6 @@ export const GridBtnStyled = styled('div')(
 
 export const AmountSelectStyled = styled('div')`
   max-width: 184px;
-  width: 30%;
 `;
 
 export const InputAmountStyled = styled('div')(
@@ -128,8 +127,8 @@ export const TrxHeaderStyled = styled('div')(
   display: flex;
   gap: ${theme.spacing(2)};
   border-bottom: 1px solid ${theme.palette.tetriaryLightGrey};
-  padding-bottom: ${theme.spacing(12)};
-  margin-bottom: ${theme.spacing(12)};
+  padding-bottom: ${theme.spacing(13)};
+  margin-bottom: ${theme.spacing(13)};
 `
 );
 
@@ -147,6 +146,7 @@ export const styledPaper: React.CSSProperties = {
 
 export const styledBtnNextStep = {
   width: '153px',
+  marginTop: themeMuiBase.spacing(1.4),
 };
 
 export const WrapPaperStyled = styled('div')`
@@ -167,5 +167,18 @@ export const BtnMaxInputStyled = styled('div')(
   height: 100%;
   display: flex;
   align-items: center;
+`
+);
+
+export const CurrentNetworkStyled = styled('div')(
+  ({ theme }) => `
+    display: flex;
+    align-items: center;
+    width: 5.25rem;
+    height: 52px;
+    overflow: hidden;
+    border: 1px solid ${theme.palette.black};
+    border-radius: ${theme.spacing(7)};
+    padding: ${theme.spacing(3.75)} ${theme.spacing(3.75)};
 `
 );
