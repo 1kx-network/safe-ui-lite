@@ -21,6 +21,7 @@ import { useNetwork } from '@/hooks/useNetwork';
 
 import { OwnerStylesBtn } from './owners.styles';
 import Accordion from './accordion';
+import routes from '@/app/routes';
 
 const SafeAccountOwners = () => {
   const { address } = useWeb3ModalAccount();
@@ -53,7 +54,9 @@ const SafeAccountOwners = () => {
 
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
-    await deploySafe(filledOwners, filledOwners.length);
+    await deploySafe(filledOwners, filledOwners.length)
+      .then(() => router.push(routes.entryPage))
+      .catch(() => console.log('Something error with create account'));
   };
 
   const handleAddOwner = () => {
@@ -128,7 +131,7 @@ const SafeAccountOwners = () => {
                   />
                 </GridContainer>
               ))}
-              <Box maxWidth="100px" mt={5}>
+              <Box maxWidth="120px" mt={5}>
                 <WalletButton onClick={handleAddOwner} variant="text" styles={OwnerStylesBtn}>
                   + Add new owner
                 </WalletButton>
