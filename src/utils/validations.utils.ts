@@ -13,5 +13,8 @@ export const NewTransactionSchema = yup.object().shape({
   amount: yup
     .string()
     .matches(/^\d*\.?\d*$/, 'Amount must be a valid number')
+    .test('is-non-zero', 'Amount cannot be zero', function (value) {
+      return value !== undefined && parseFloat(value) !== 0;
+    })
     .required('This field is required'),
 });
