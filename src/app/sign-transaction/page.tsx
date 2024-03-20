@@ -112,7 +112,7 @@ export default function SignTransaction() {
           <GridButtonStyled>
             {address ? (
               <WalletButton variant="contained" styles={styledBtn} onClick={handleTransaction}>
-                {`${!wasSign ? 'Sign' : 'Execute'} Transaction`}
+                {`${owners.length > 1 ? 'Sign' : 'Execute'} Transaction`}
               </WalletButton>
             ) : (
               <WalletButton variant="outlined" styles={styledBtn}>
