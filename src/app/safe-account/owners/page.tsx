@@ -18,10 +18,10 @@ import WalletAlert from '@/ui-kit/wallet-allert';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { formattedLabel } from '@/utils/foramtters';
 import { useNetwork } from '@/hooks/useNetwork';
+import routes from '@/app/routes';
 
 import { OwnerStylesBtn } from './owners.styles';
 import Accordion from './accordion';
-import routes from '@/app/routes';
 
 const SafeAccountOwners = () => {
   const { address } = useWeb3ModalAccount();
