@@ -20,7 +20,7 @@ import { formattedLabel } from '@/utils/foramtters';
 import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
 
-import { OwnerStylesBtn } from './owners.styles';
+import { OwnerStylesBtn, OwnersListStyled } from './owners.styles';
 import Accordion from './accordion';
 
 const SafeAccountOwners = () => {
@@ -31,6 +31,7 @@ const SafeAccountOwners = () => {
   const network = useNetwork();
   const router = useRouter();
   const [owners, setOwners] = React.useState<{ name: string; address: string; id: number }[]>([]);
+  const [needConfirmOwner, setNeedConfirmOwner] = React.useState<string>('1');
 
   const networkName = network?.name.toString();
 
@@ -52,11 +53,17 @@ const SafeAccountOwners = () => {
     }
   }, [address]);
 
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
     await deploySafe(filledOwners, filledOwners.length)
-      .then(() => router.push(routes.entryPage))
-      .catch(() => console.log('Something error with create account'));
+      .then(() => {
+        setIsLoading(true);
+        router.push(routes.entryPage);
+      })
+      .catch(() => console.log('Something error with create account'))
+      .finally(() => setIsLoading(false));
   };
 
   const handleAddOwner = () => {
@@ -84,6 +91,14 @@ const SafeAccountOwners = () => {
     });
     setOwners(updatedOwners);
   };
+
+  const handleChangeNeedConfirmOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const count = e.target.value;
+    if ((+count > 0 && +count <= owners.length) || count === '') {
+      setNeedConfirmOwner(count);
+    }
+  };
+
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -114,23 +129,25 @@ const SafeAccountOwners = () => {
               </Box>
             </Box>
             <Box mt={5}>
-              {owners.map(owner => (
-                <GridContainer key={owner.id}>
-                  <WalletInput
-                    placeholder={'Owner name'}
-                    value={owner.name}
-                    onChange={e => handleChangeOwner(e, owner.id, 'name')}
-                    label="Owner name"
-                  />
-                  <WalletInput
-                    placeholder={'Owner address'}
-                    value={owner.address}
-                    onChange={e => handleChangeOwner(e, owner.id, 'address')}
-                    label="Owner address"
-                    endAdornment={<QrCodeIcon />}
-                  />
-                </GridContainer>
-              ))}
+              <OwnersListStyled>
+                {owners.map(owner => (
+                  <GridContainer key={owner.id}>
+                    <WalletInput
+                      placeholder={'Owner name'}
+                      value={owner.name}
+                      onChange={e => handleChangeOwner(e, owner.id, 'name')}
+                      label="Owner name"
+                    />
+                    <WalletInput
+                      placeholder={'Owner address'}
+                      value={owner.address}
+                      onChange={e => handleChangeOwner(e, owner.id, 'address')}
+                      label="Owner address"
+                      endAdornment={<QrCodeIcon />}
+                    />
+                  </GridContainer>
+                ))}
+              </OwnersListStyled>
               <Box maxWidth="120px" mt={5}>
                 <WalletButton onClick={handleAddOwner} variant="text" styles={OwnerStylesBtn}>
                   + Add new owner
@@ -155,7 +172,7 @@ const SafeAccountOwners = () => {
               </Box>
               <Box mt={3} display="flex" alignItems="center">
                 <Box mr={3} maxWidth={82}>
-                  <WalletInput value={owners.length} onChange={() => console.log} />
+                  <WalletInput value={needConfirmOwner} onChange={handleChangeNeedConfirmOwner} />
                 </Box>
                 <WalletTypography fontSize={13} fontWeight={600}>
                   out of {owners.length} owners
@@ -163,8 +180,10 @@ const SafeAccountOwners = () => {
               </Box>
             </Box>
             <GridButtonStyled>
-              <WalletButton onClick={handleBack}>Cancel</WalletButton>
-              <WalletButton onClick={handleNext} variant="contained">
+              <WalletButton disabled={isLoading} onClick={handleBack}>
+                Cancel
+              </WalletButton>
+              <WalletButton disabled={isLoading} onClick={handleNext} variant="contained">
                 Next
               </WalletButton>
             </GridButtonStyled>
@@ -204,7 +223,6 @@ const SafeAccountOwners = () => {
                 </Box>
                 <Accordion
                   title="Network fee"
-                  initialOpen
                   description="We recommend using a threshold higher than one to prevent losing access to your safe account in case an owner key is lost or compromised."
                 />
                 <Accordion title="Address book privacy" description="Some info" />
