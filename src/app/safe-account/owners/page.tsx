@@ -42,6 +42,7 @@ const SafeAccountOwners = () => {
 
   React.useEffect(() => {
     if (address) {
+      console.log('__add__1');
       setOwners([
         {
           name: '',
@@ -57,10 +58,14 @@ const SafeAccountOwners = () => {
 
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
+    console.log('_filledOwners_', filledOwners);
+    setIsLoading(true);
     await deploySafe(filledOwners, filledOwners.length)
-      .then(() => {
-        setIsLoading(true);
-        router.push(routes.entryPage);
+      .then(res => {
+        console.log(res);
+        if (!!res) {
+          router.push(routes.entryPage);
+        }
       })
       .catch(() => console.log('Something error with create account'))
       .finally(() => setIsLoading(false));

@@ -17,6 +17,7 @@ import TrxIcon from '@/assets/svg/trx-status.svg';
 import useSafeStore from '@/stores/safe-store';
 import routes from '../routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
+import { useNetwork } from '@/hooks/useNetwork';
 
 import {
   AmountSelectStyled,
@@ -54,8 +55,13 @@ export default function NewTransaction() {
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk, setSafeTransaction } = useSafeStore();
   const { createSafe } = useSafeSdk();
+  const network = useNetwork();
+  const capitalizedNetworkName = network
+    ? network?.name.toString().charAt(0).toUpperCase() + network?.name.toString().slice(1)
+    : '';
 
   const safeAddress = localStorage.getItem('safeAddress');
+  console.log('_safeAddress', safeAddress);
 
   const router = useRouter();
   const {
@@ -87,18 +93,16 @@ export default function NewTransaction() {
         createSafe(safeAddress);
       }
     }
-  }, [safeSdk]);
+  }, [safeSdk, safeAddress]);
 
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
     const parseAmount = utils.parseUnits(data.amount, 'ether').toString();
-    console.log('_parseAmount_', parseAmount);
 
     const safeTransactionData: MetaTransactionData = {
       to: data.address,
       value: parseAmount,
       data: String(address),
     };
-    console.log('_safeSdk_', safeSdk);
 
     if (!safeSdk || !chainId || !address) return;
 
@@ -243,7 +247,7 @@ export default function NewTransaction() {
                   <AmountSelectStyled>
                     {/* <WalletSelect placeholder={'xDai'} isSearchable={false}  /> */}
                     <CurrentNetworkStyled>
-                      <WalletTypography>{chainId}</WalletTypography>
+                      <WalletTypography fontWeight={600}>{capitalizedNetworkName}</WalletTypography>
                     </CurrentNetworkStyled>
                   </AmountSelectStyled>
                 </GridBtnStyled>
@@ -276,7 +280,7 @@ export default function NewTransaction() {
                   <ItemProccessingStyled>
                     {isConfirmed ? <ConfirmIcon /> : <ConfirmedWaitStyled>+</ConfirmedWaitStyled>}
                     <WalletTypography fontSize={17} fontWeight={600}>
-                      Confirmed (0 of 1)
+                      Confirmed (0 of 2)
                     </WalletTypography>
                   </ItemProccessingStyled>
 
