@@ -49,7 +49,7 @@ export default function SignTransaction() {
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
-  const safeTrxsHash = JSON.parse(localStorage.getItem('safeTrxsHash') ?? '[]');
+  // const safeTrxsHash = JSON.parse(localStorage.getItem('safeTrxsHash') ?? '[]');
 
   const getOwners = async () => {
     if (!safeSdk) return;
@@ -91,8 +91,8 @@ export default function SignTransaction() {
           transactions: [safeTransactionData],
         });
 
-        const updateTrxHash = safeTrxsHash[safeAddress].unshift(safeTransaction);
-        localStorage.setItem('safeTrxsHash', JSON.stringify({ safeAddress: updateTrxHash }));
+        // const updateTrxHash = safeTrxsHash[safeAddress].unshift(safeTransaction);
+        // localStorage.setItem('safeTrxsHash', JSON.stringify({ safeAddress: updateTrxHash }));
 
         setSafeTransaction(safeTransaction);
       }
