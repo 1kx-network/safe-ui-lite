@@ -1,7 +1,8 @@
-import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
-import CopyIcon from '@/assets/svg/copy.svg';
 import { styled } from '@mui/system';
 import Link from 'next/link';
+
+import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
+import CopyIcon from '@/assets/svg/copy.svg';
 
 export const TotalyBoxStyled = styled('div')(
   ({ theme }) => `

@@ -5,9 +5,10 @@ import { Box } from '@mui/system';
 import dynamic from 'next/dynamic';
 import * as utils from 'ethers';
 import { useRouter } from 'next/navigation';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+
 import routes from '@/app/routes';
 import useSafeStore from '@/stores/safe-store';
-
 import {
   WalletButton,
   WalletPaper,
@@ -16,6 +17,8 @@ import {
 } from '@/ui-kit';
 import { styledHeader, styledPaper } from '../../entry-page.styles';
 import { IOptions, options } from '../../fixtures';
+import { CustomModal } from '@/components/modal';
+import { networks } from '@/context/networks';
 
 import {
   TotalyBoxStyled,
@@ -27,9 +30,6 @@ import {
   OpenInNewIconStyled,
   LinkOpenInNewIconStyled,
 } from './overview.styles';
-import { CustomModal } from '@/components/modal';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { networks } from '@/context/networks';
 
 const WalletSelect = dynamic(
   () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),

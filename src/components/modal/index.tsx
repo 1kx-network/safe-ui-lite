@@ -1,10 +1,11 @@
 import React from 'react';
 import Modal from 'react-modal';
+import { Box } from '@mui/system';
+
 import { WalletPaper, WalletTypography } from '@/ui-kit';
 import IconClose from '@/assets/svg/close.svg';
 
 import { customStyles, TitleStyled } from './modal.styles';
-import { Box } from '@mui/system';
 
 interface IModal {
   isOpen: boolean;
