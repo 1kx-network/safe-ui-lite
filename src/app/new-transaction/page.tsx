@@ -56,6 +56,7 @@ export default function NewTransaction() {
   const { createSafe } = useSafeSdk();
 
   const safeAddress = localStorage.getItem('safeAddress');
+  console.log('_safeAddress', safeAddress);
 
   const router = useRouter();
   const {
@@ -87,7 +88,7 @@ export default function NewTransaction() {
         createSafe(safeAddress);
       }
     }
-  }, [safeSdk]);
+  }, [safeSdk, safeAddress]);
 
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
     const parseAmount = utils.parseUnits(data.amount, 'ether').toString();
