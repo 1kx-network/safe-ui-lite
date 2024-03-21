@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { useWeb3ModalAccount, useSwitchNetwork, useWeb3Modal } from '@web3modal/ethers/react';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
@@ -23,9 +23,6 @@ import {
   WrapperStyled,
   styledBtn,
 } from './sing-transaction.styles';
-import { dataOwner } from './fixtures';
-
-const { outOwners, ownerName } = dataOwner;
 
 interface ICheckAndSwitchNetwork {
   chainIdUrl: string | null;
@@ -35,14 +32,17 @@ interface ICheckAndSwitchNetwork {
 }
 
 export default function SignTransaction() {
+  const router = useRouter();
+  const pathName = usePathname();
+  const searchParams = useSearchParams();
   const [owners, setOwners] = useState<string[]>([]);
+  const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
 
   const { address, chainId } = useWeb3ModalAccount();
   const { open } = useWeb3Modal();
   const { switchNetwork } = useSwitchNetwork();
 
-  const searchParams = useSearchParams();
   const safeAddress = searchParams.get('address');
   useSafeSdk(safeAddress);
   const chainIdUrl = searchParams.get('chainId');
@@ -109,15 +109,36 @@ export default function SignTransaction() {
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
     if (safeTxHash) {
-      await safeSdk.signHash(safeTxHash);
+      const signedTransaction = await safeSdk.signTransaction(safeTransaction);
+      const originalUrl = new URL(window.location.href);
+      const signatures = originalUrl.searchParams.getAll('signatures');
+
+      const signature = signedTransaction.signatures.entries().next().value[1].data;
+      console.log(`signature`, signature);
+      if (!signature) return;
+      signatures.push(encodeURIComponent(signature));
+      const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
+      originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
+      router.push(originalUrl.toString());
     }
   };
+
+  useEffect(() => {
+    const signatures = searchParams.getAll('signatures');
+    setSignedCount(signatures.length);
+  }, [router, searchParams]);
 
   const handleExecute = async () => {
     if (!safeSdk || !safeTransaction) return;
     const txResponse = await safeSdk.executeTransaction(safeTransaction);
     await txResponse.transactionResponse?.wait();
   };
+
+  const handleCopy = () => {
+    if (!pathName || !searchParams) return;
+    navigator.clipboard.writeText(window.location.href);
+  };
+
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -130,7 +151,7 @@ export default function SignTransaction() {
               Transaction Info
             </WalletTypography>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Amount: {amount} USD
+              Amount: {amount} ETH
             </WalletTypography>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Destination: {destinationAddress}
@@ -150,17 +171,26 @@ export default function SignTransaction() {
           </GridButtonStyled>
 
           <WalletTypography fontSize={22} fontWeight={600}>
-            Owner Name
+            Safe URL
           </WalletTypography>
 
           <BoxOwnerLinkStyled>
             <OwnerLinkStyled>
-              <WalletTypography fontSize={17} fontWeight={400}>
-                {ownerName}
+              <WalletTypography
+                style={{
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  maxWidth: '450px',
+                }}
+                fontSize={17}
+                fontWeight={400}
+              >
+                {`${pathName}?${searchParams.toString()}`}
               </WalletTypography>
             </OwnerLinkStyled>
             <OpenInNewIcon width="18" height="19" />
-            <CopyIcon width="18px" height="19px" />
+            <CopyIcon width="18px" height="19px" cursor="pointer" onClick={handleCopy} />
           </BoxOwnerLinkStyled>
 
           <OwnersInfoStyled>
@@ -169,7 +199,7 @@ export default function SignTransaction() {
             </WalletTypography>
 
             <WalletTypography fontSize={17}>
-              <WalletTypography fontWeight={600}>{outOwners} </WalletTypography>
+              <WalletTypography fontWeight={600}>{signedCount} </WalletTypography>
               out of <WalletTypography fontWeight={600}>{owners.length}</WalletTypography> owners
             </WalletTypography>
           </OwnersInfoStyled>
