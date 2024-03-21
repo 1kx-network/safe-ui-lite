@@ -38,6 +38,7 @@ export const styleWalletPaper: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   height: 'fit-content',
+  gap: themeMuiBase.spacing(3),
 };
 
 export const styledHeaderSafeAccount = {

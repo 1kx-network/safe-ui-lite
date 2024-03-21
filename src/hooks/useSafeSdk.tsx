@@ -5,6 +5,7 @@ import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import useSafeStore from '@/stores/safe-store';
 
 import { useEthersAdapter } from './useEthersAdapter';
+
 export function useSafeSdk(safeAddress: string | null = null) {
   const createEthAdapter = useEthersAdapter();
   const { saveSdk } = useSafeStore();
@@ -26,6 +27,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const safeAddress = await ethAdapter?.getSignerAddress();
 
       if (!safeAddress || !ethAdapter) return null;
+      localStorage.setItem('safeAddress', safeAddress);
 
       const safeAccountConfig: SafeAccountConfig = {
         owners,

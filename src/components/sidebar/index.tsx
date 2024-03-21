@@ -1,12 +1,11 @@
+'use client';
 import { Box } from '@mui/system';
-import { useSearchParams } from 'next/navigation';
 
 import { WalletTypography } from '@/ui-kit';
 import WalletSvg from '@/assets/svg/wallet.svg';
 import SettingSvg from '@/assets/svg/setting.svg';
 import TransactionSvg from '@/assets/svg/transaction.svg';
 import routes from '@/app/routes';
-import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import {
   MenuStyled,
@@ -33,10 +32,19 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
   id = dataUserMock.id,
   count = dataUserMock.count,
 }) => {
-  const searchParams = useSearchParams();
-  const safeAddress = searchParams.get('address');
-  useSafeSdk(safeAddress);
-  const network = searchParams.get('network');
+  // const safeAddress = localStorage.getItem('safeAddress');
+
+  // if (!safeSdk && safeAddress) {
+  //   useSafeSdk(safeAddress);
+  // }
+
+  // useEffect(() => {
+  //   console.log(safeSdk);
+  //   if (!safeSdk && safeAddress) {
+  //     useSafeSdk(safeAddress);
+  //   }
+  // }, [safeSdk]);
+
   return (
     <WrapperStyled>
       <InfoUserStyled>
@@ -52,7 +60,8 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
         {/* TODO */}
         <ItemMenuStyled
           style={styleBtnTransaction}
-          href={`${routes.newTransaction}?network=${network}&address=${encodeURIComponent(String(safeAddress))}`}
+          href={routes.newTransaction}
+          // href={`${routes.newTransaction}?network=${network}&address=${encodeURIComponent(String(safeAddress))}`}
         >
           <WalletTypography>New transaction</WalletTypography>
         </ItemMenuStyled>
