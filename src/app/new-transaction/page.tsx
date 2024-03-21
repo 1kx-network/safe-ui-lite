@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
@@ -16,6 +16,7 @@ import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
 import useSafeStore from '@/stores/safe-store';
 import routes from '../routes';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import {
   AmountSelectStyled,
@@ -52,10 +53,9 @@ interface IInputsForm {
 export default function NewTransaction() {
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk, setSafeTransaction } = useSafeStore();
-  const searchParams = useSearchParams();
+  const { createSafe } = useSafeSdk();
 
-  const safeAddress = searchParams.get('address');
-  const network = searchParams.get('network');
+  const safeAddress = localStorage.getItem('safeAddress');
 
   const router = useRouter();
   const {
@@ -82,18 +82,25 @@ export default function NewTransaction() {
       };
 
       pendingBalance();
+    } else {
+      if (safeAddress) {
+        createSafe(safeAddress);
+      }
     }
   }, [safeSdk]);
 
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
-    const parseAmount = utils.parseUnits(data.amount, 'ether');
+    const parseAmount = utils.parseUnits(data.amount, 'ether').toString();
+    console.log('_parseAmount_', parseAmount);
 
     const safeTransactionData: MetaTransactionData = {
       to: data.address,
-      value: String(parseAmount),
+      value: parseAmount,
       data: String(address),
     };
-    if (!safeSdk) return;
+    console.log('_safeSdk_', safeSdk);
+
+    if (!safeSdk || !chainId || !address) return;
 
     const safeTransaction = await safeSdk.createTransaction({
       transactions: [safeTransactionData],
@@ -101,12 +108,25 @@ export default function NewTransaction() {
 
     setSafeTransaction(safeTransaction);
 
-    if (network) {
+    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+    const dataTxHash = JSON.parse(localStorage.getItem('dataTxHash') ?? '{}');
+
+    const updateDataTrxHash = {
+      ...dataTxHash,
+      [address]: {
+        [chainId]: dataTxHash[chainId],
+      },
+    };
+
+    localStorage.setItem('dataTxHash', JSON.stringify(updateDataTrxHash));
+
+    if (chainId && safeAddress) {
       const queryParams = {
-        network,
-        address: encodeURIComponent(String(safeAddress)),
-        amount: String(data.amount),
-        destinationAddress: String(data.address),
+        chainId: String(chainId),
+        address: encodeURIComponent(safeAddress),
+        amount: data.amount,
+        destinationAddress: data.address,
+        safeTxHash,
       };
 
       const queryString = new URLSearchParams(queryParams).toString();
@@ -227,7 +247,7 @@ export default function NewTransaction() {
                     </CurrentNetworkStyled>
                   </AmountSelectStyled>
                 </GridBtnStyled>
-                <WalletButton variant="contained" styles={styledBtnNextStep}>
+                <WalletButton type="submit" variant="contained" styles={styledBtnNextStep}>
                   Next
                 </WalletButton>
               </WalletPaper>

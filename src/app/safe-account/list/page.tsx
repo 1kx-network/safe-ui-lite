@@ -36,8 +36,9 @@ export default function SafeAccountList() {
   };
 
   const handleListItemClick = (address: string) => {
-    const query = `?network=${chainId}&address=${encodeURIComponent(address)}`;
-    router.push(`${routes.entryPage}${query}`);
+    // const query = `?network=${chainId}&address=${encodeURIComponent(address)}`;
+    localStorage.setItem('safeAddress', address);
+    router.push(routes.entryPage);
   };
 
   return (

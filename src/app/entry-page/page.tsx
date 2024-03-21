@@ -1,7 +1,6 @@
 'use client';
 
 import { Box } from '@mui/system';
-import { useSearchParams } from 'next/navigation';
 
 import { WalletLayout } from '@/ui-kit';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
@@ -12,8 +11,8 @@ import { Transactions } from './components/transactions/transactions';
 import { BoxGridStyled, WrapperStyled } from './entry-page.styles';
 
 export default function EntryPage() {
-  const searchParams = useSearchParams();
-  const safeAddress = searchParams.get('address');
+  const safeAddress = localStorage.getItem('safeAddress');
+  console.log('_safeAddress_EntryPage_', safeAddress);
   useSafeSdk(safeAddress);
 
   return (

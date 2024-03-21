@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useWeb3ModalAccount, useSwitchNetwork, useWeb3Modal } from '@web3modal/ethers/react';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
@@ -27,18 +27,29 @@ import { dataOwner } from './fixtures';
 
 const { outOwners, ownerName } = dataOwner;
 
-export default function SignTransaction() {
-  const { address } = useWeb3ModalAccount();
-  const searchParams = useSearchParams();
+interface ICheckAndSwitchNetwork {
+  chainIdUrl: string | null;
+  chainId: number | undefined;
+  switchNetwork: (chainId: number) => void;
+  open: () => void;
+}
 
+export default function SignTransaction() {
+  const [owners, setOwners] = useState<string[]>([]);
+  const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
+
+  const { address, chainId } = useWeb3ModalAccount();
+  const { open } = useWeb3Modal();
+  const { switchNetwork } = useSwitchNetwork();
+
+  const searchParams = useSearchParams();
   const safeAddress = searchParams.get('address');
   useSafeSdk(safeAddress);
-
+  const chainIdUrl = searchParams.get('chainId');
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
-
-  const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
-  const [owners, setOwners] = useState<string[]>([]);
+  const safeTxHash = searchParams.get('safeTxHash');
+  const safeTrxsHash = JSON.parse(localStorage.getItem('safeTrxsHash') ?? '[]');
 
   const getOwners = async () => {
     if (!safeSdk) return;
@@ -46,11 +57,28 @@ export default function SignTransaction() {
     setOwners(owners);
   };
 
+  const checkAndSwitchNetwork = async (props: ICheckAndSwitchNetwork) => {
+    const { chainIdUrl, chainId, switchNetwork, open } = props;
+    const shouldSwitchNetwork = chainIdUrl && +chainIdUrl !== chainId;
+    const isNewNetwork = !chainId && chainIdUrl;
+
+    if (shouldSwitchNetwork) {
+      await switchNetwork(+chainIdUrl);
+    } else if (isNewNetwork) {
+      await open();
+      await switchNetwork(+chainIdUrl);
+    }
+  };
+
   useEffect(() => {
+    checkAndSwitchNetwork({ chainIdUrl, chainId, switchNetwork, open });
+
     getOwners();
+    const conditionForCreateTrx =
+      amount && destinationAddress && !safeTransaction && safeSdk && safeAddress;
 
     const pendingCreateTrxData = async () => {
-      if (amount && destinationAddress && !safeTransaction && safeSdk) {
+      if (conditionForCreateTrx) {
         const parseAmount = utils.parseUnits(amount, 'ether');
         const safeTransactionData: MetaTransactionData = {
           to: destinationAddress,
@@ -62,6 +90,9 @@ export default function SignTransaction() {
         const safeTransaction = await safeSdk.createTransaction({
           transactions: [safeTransactionData],
         });
+
+        const updateTrxHash = safeTrxsHash[safeAddress].unshift(safeTransaction);
+        localStorage.setItem('safeTrxsHash', JSON.stringify({ safeAddress: updateTrxHash }));
 
         setSafeTransaction(safeTransaction);
       }
@@ -78,9 +109,10 @@ export default function SignTransaction() {
   };
 
   const handleSignTransaction = async () => {
-    if (!safeSdk || !safeTransaction) return;
-    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-    await safeSdk.signHash(safeTxHash);
+    if (!safeSdk || !safeTransaction || !safeTxHash) return;
+    if (safeTxHash) {
+      await safeSdk.signHash(safeTxHash);
+    }
     setWasSign(true);
   };
 
