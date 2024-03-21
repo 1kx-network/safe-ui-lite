@@ -29,6 +29,7 @@ export default function SafeAccountList() {
 
   const handleCreateAccount = () => {
     if (chainId) {
+      localStorage.removeItem('safeAddress');
       router.push(routes.safeAccountCreate);
     } else {
       router.push(routes.home);

@@ -27,14 +27,21 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const safeAddress = await ethAdapter?.getSignerAddress();
 
       if (!safeAddress || !ethAdapter) return null;
-      localStorage.setItem('safeAddress', safeAddress);
 
       const safeAccountConfig: SafeAccountConfig = {
         owners,
         threshold,
       };
-      const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true });
+      const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true }).catch(
+        res => {
+          console.log(res);
+          return res;
+        }
+      );
+
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
+      const addressAccount = await safeSdk.getAddress();
+      localStorage.setItem('safeAddress', addressAccount);
 
       return safeSdk;
     } catch (e) {
