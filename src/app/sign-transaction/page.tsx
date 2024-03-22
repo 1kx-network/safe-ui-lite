@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { useWeb3ModalAccount, useSwitchNetwork, useWeb3Modal } from '@web3modal/ethers/react';
-import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
+import { MetaTransactionData, SafeSignature } from '@safe-global/safe-core-sdk-types';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
@@ -89,6 +89,9 @@ export default function SignTransaction() {
 
         const safeTransaction = await safeSdk.createTransaction({
           transactions: [safeTransactionData],
+          options: {
+            gasPrice: '1000000',
+          },
         });
 
         // const updateTrxHash = safeTrxsHash[safeAddress].unshift(safeTransaction);
@@ -103,33 +106,55 @@ export default function SignTransaction() {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
-    owners.length > 1 ? handleSignTransaction() : handleExecute();
+    signedCount === owners.length ? handleExecute() : handleSignTransaction();
   };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
     if (safeTxHash) {
       const signedTransaction = await safeSdk.signTransaction(safeTransaction);
+      console.log(`signedTransaction`, signedTransaction);
       const originalUrl = new URL(window.location.href);
-      const signatures = originalUrl.searchParams.getAll('signatures');
+      const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
+      const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
 
       const signature = signedTransaction.signatures.entries().next().value[1].data;
-      console.log(`signature`, signature);
+      const signer = signedTransaction.signatures.entries().next().value[1].signer;
+      console.log(`signer`, signer);
       if (!signature) return;
       signatures.push(encodeURIComponent(signature));
+      signers.push(encodeURIComponent(signer));
       const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
+      const encodedSigners = signers.map(sig => encodeURIComponent(sig));
+      console.log(`encodedSignatures`, encodedSignatures);
+      console.log(`encodedSigners`, encodedSigners);
       originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
+      originalUrl.searchParams.set('signers', encodedSigners.join(','));
       router.push(originalUrl.toString());
     }
   };
 
   useEffect(() => {
-    const signatures = searchParams.getAll('signatures');
-    setSignedCount(signatures.length);
+    const signatures = searchParams.getAll('signatures')[0];
+    if (signatures) {
+      setSignedCount(signatures.split(',').length);
+    }
   }, [router, searchParams]);
 
   const handleExecute = async () => {
-    if (!safeSdk || !safeTransaction) return;
+    const signatures = searchParams.getAll('signatures')[0];
+    const signers = searchParams.getAll('signers')[0];
+    if (!safeSdk || !safeTransaction || !signatures || !signers) return;
+    console.log(`transaction`, safeTransaction);
+    signatures.split(',').map((sig: string, idx: number) =>
+      safeTransaction.addSignature({
+        data: sig,
+        isContractSignature: false,
+        signer: signers.split(',')[idx],
+      } as SafeSignature)
+    );
+    const valid = await safeSdk.isValidTransaction(safeTransaction);
+    console.log(`valid`, valid);
     const txResponse = await safeSdk.executeTransaction(safeTransaction);
     await txResponse.transactionResponse?.wait();
   };
@@ -161,7 +186,7 @@ export default function SignTransaction() {
           <GridButtonStyled>
             {address ? (
               <WalletButton variant="contained" styles={styledBtn} onClick={handleTransaction}>
-                {`${owners.length > 1 ? 'Sign' : 'Execute'} Transaction`}
+                {`${signedCount === owners.length ? 'Execute' : 'Sign'} Transaction`}
               </WalletButton>
             ) : (
               <WalletButton variant="outlined" styles={styledBtn}>
