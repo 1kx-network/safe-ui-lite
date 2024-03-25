@@ -101,7 +101,7 @@ export default function NewTransaction() {
     const safeTransactionData: MetaTransactionData = {
       to: data.address,
       value: parseAmount,
-      data: String(address),
+      data: '0x',
     };
 
     if (!safeSdk || !chainId || !address) return;

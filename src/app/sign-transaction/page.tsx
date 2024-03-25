@@ -35,6 +35,7 @@ export default function SignTransaction() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
   const [owners, setOwners] = useState<string[]>([]);
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
@@ -83,17 +84,15 @@ export default function SignTransaction() {
         const safeTransactionData: MetaTransactionData = {
           to: destinationAddress,
           value: String(parseAmount),
-          data: String(address),
+          data: '0x',
         };
         if (!safeSdk) return;
 
         const safeTransaction = await safeSdk.createTransaction({
           transactions: [safeTransactionData],
         });
-
         // const updateTrxHash = safeTrxsHash[safeAddress].unshift(safeTransaction);
         // localStorage.setItem('safeTrxsHash', JSON.stringify({ safeAddress: updateTrxHash }));
-
         setSafeTransaction(safeTransaction);
       }
     };
@@ -103,35 +102,56 @@ export default function SignTransaction() {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
-    owners.length > 1 ? handleSignTransaction() : handleExecute();
+    signedCount === owners.length ? handleExecute() : handleSignTransaction();
   };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
-    if (safeTxHash) {
-      const signedTransaction = await safeSdk.signTransaction(safeTransaction);
-      const originalUrl = new URL(window.location.href);
-      const signatures = originalUrl.searchParams.getAll('signatures');
+    const signedTransaction = await safeSdk.signTransaction(safeTransaction);
+    setSafeTransaction(signedTransaction);
+    const originalUrl = new URL(window.location.href);
+    const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
+    const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
 
-      const signature = signedTransaction.signatures.entries().next().value[1].data;
-      console.log(`signature`, signature);
-      if (!signature) return;
-      signatures.push(encodeURIComponent(signature));
-      const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
-      originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
-      router.push(originalUrl.toString());
-    }
+    const signature = signedTransaction.signatures.entries().next().value[1].data;
+    const signer = signedTransaction.signatures.entries().next().value[1].signer;
+    signatures.push(encodeURIComponent(signature));
+    signers.push(encodeURIComponent(signer));
+    const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
+    const encodedSigners = signers.map(sig => encodeURIComponent(sig));
+    originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
+    originalUrl.searchParams.set('signers', encodedSigners.join(','));
+    router.push(originalUrl.toString());
   };
 
   useEffect(() => {
-    const signatures = searchParams.getAll('signatures');
-    setSignedCount(signatures.length);
+    const signatures = searchParams.getAll('signatures')[0];
+    if (signatures) {
+      setSignedCount(signatures.split(',').length);
+    }
   }, [router, searchParams]);
 
   const handleExecute = async () => {
-    if (!safeSdk || !safeTransaction) return;
-    const txResponse = await safeSdk.executeTransaction(safeTransaction);
-    await txResponse.transactionResponse?.wait();
+    try {
+      setIsLoading(true);
+      const signatures = searchParams.getAll('signatures')[0];
+      const signers = searchParams.getAll('signers')[0];
+      if (!safeSdk || !safeTransaction || !signatures || !signers) return;
+      signatures.split(',').map((sig: string, idx: number) =>
+        safeTransaction.addSignature({
+          data: sig,
+          isContractSignature: false,
+          signer: signers.split(',')[idx],
+          staticPart: () => sig,
+          dynamicPart: () => '',
+        })
+      );
+      const txResponse = await safeSdk.executeTransaction(safeTransaction);
+      await txResponse.transactionResponse?.wait();
+      setIsLoading(false);
+    } catch (error) {
+      console.log(`error`, error);
+    }
   };
 
   const handleCopy = () => {
@@ -160,8 +180,13 @@ export default function SignTransaction() {
 
           <GridButtonStyled>
             {address ? (
-              <WalletButton variant="contained" styles={styledBtn} onClick={handleTransaction}>
-                {`${owners.length > 1 ? 'Sign' : 'Execute'} Transaction`}
+              <WalletButton
+                disabled={isLoading}
+                variant="contained"
+                styles={styledBtn}
+                onClick={handleTransaction}
+              >
+                {`${signedCount === owners.length ? 'Execute' : 'Sign'} Transaction`}
               </WalletButton>
             ) : (
               <WalletButton variant="outlined" styles={styledBtn}>
