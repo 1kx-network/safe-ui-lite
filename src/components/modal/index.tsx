@@ -5,7 +5,7 @@ import { Box } from '@mui/system';
 import { WalletPaper, WalletTypography } from '@/ui-kit';
 import IconClose from '@/assets/svg/close.svg';
 
-import { customStyles, TitleStyled } from './modal.styles';
+import { customStyles, TitleStyled, styledPaper } from './modal.styles';
 
 interface IModal {
   isOpen: boolean;
@@ -25,12 +25,12 @@ export const CustomModal = ({ isOpen, closeModal, children, title, styles }: IMo
       contentLabel="Modal"
       ariaHideApp={false}
     >
-      <WalletPaper style={styles}>
+      <WalletPaper style={{ ...styledPaper, ...styles }}>
         <TitleStyled>
           <WalletTypography fontSize={17} fontWeight={600}>
             {title}
           </WalletTypography>
-          <Box onClick={closeModal}>
+          <Box onClick={closeModal} sx={{ cursor: 'pointer' }}>
             <IconClose />
           </Box>
         </TitleStyled>

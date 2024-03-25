@@ -64,8 +64,8 @@ export default function CreatePageAccount() {
                   fontWeight={400}
                   color={themeMuiBase.palette.tetriaryGrey}
                 >
-                  You are about to create a new Safe Account and will have to confirm the transaction
-                  with your connected wallet
+                  You are about to create a new Safe Account and will have to confirm the
+                  transaction with your connected wallet
                 </WalletTypography>
               </Box>
             </Box>

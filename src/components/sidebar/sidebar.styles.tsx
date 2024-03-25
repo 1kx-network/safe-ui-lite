@@ -63,16 +63,18 @@ export const ItemMenuStyled = styled(Link)(
 `
 );
 
-export const WrapperIconStyled = styled('div')(
-  ({ theme }) => `
-  background-color: ${theme.palette.textDark};
+export const WrapperIconStyled = styled('div')<{ isActive: boolean }>(
+  ({ theme, isActive }) => `
+  background-color: ${isActive ? theme.palette.textDark : 'transparent'};
+  border: 1px solid  ${theme.palette.textDark};
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 0.875rem;
-  width: ${theme.spacing(7.5)};
-  height: ${theme.spacing(7.5)};
+  width: ${theme.spacing(8)};
+  height: ${theme.spacing(8)};
+  color: ${isActive ? theme.palette.white : theme.palette.textDark};
 `
 );
 

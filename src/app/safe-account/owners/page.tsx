@@ -200,7 +200,7 @@ const SafeAccountOwners = () => {
               </OwnersListStyled>
               <Box mt={2} mb={1} display={'flex'} flexDirection={'row-reverse'}>
                 <WalletButton onClick={handleAddOwner} variant="text" styles={OwnerStylesBtn}>
-                  <IconPlus />
+                  <IconPlus width="20px" height="21px" color={themeMuiBase.palette.success} />
                   <WalletTypography fontWeight={600} fontSize={14}>
                     Add new owner
                   </WalletTypography>

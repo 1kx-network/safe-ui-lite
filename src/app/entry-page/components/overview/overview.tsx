@@ -1,20 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { SingleValue } from 'react-select';
-import { Box } from '@mui/system';
-import dynamic from 'next/dynamic';
 import * as utils from 'ethers';
 import { useRouter } from 'next/navigation';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 import routes from '@/app/routes';
 import useSafeStore from '@/stores/safe-store';
-import {
-  WalletButton,
-  WalletPaper,
-  WalletSelect as WalletSelectUi,
-  WalletTypography,
-} from '@/ui-kit';
+import { WalletButton, WalletPaper, WalletTypography } from '@/ui-kit';
 import { styledHeader, styledPaper } from '../../entry-page.styles';
 import { IOptions, options } from '../../fixtures';
 import { CustomModal } from '@/components/modal';
@@ -31,13 +24,13 @@ import {
   LinkOpenInNewIconStyled,
 } from './overview.styles';
 
-const WalletSelect = dynamic(
-  () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),
-  {
-    ssr: false,
-    loading: () => <WalletSelectUi />,
-  }
-);
+// const WalletSelect = dynamic(
+//   () => import('@/ui-kit/wallet-select/index').then(module => module.WalletSelect),
+//   {
+//     ssr: false,
+//     loading: () => <WalletSelectUi />,
+//   }
+// );
 
 export const Overview = () => {
   const [value, setValue] = useState<SingleValue<IOptions> | null>(options[0]);
@@ -61,6 +54,8 @@ export const Overview = () => {
     }
   }, [safeSdk]);
 
+  // TODO type any
+  // eslint-disable-next-line
   const handleChangeSelect = (elem: SingleValue<IOptions>) => {
     setValue(elem);
   };
@@ -99,23 +94,19 @@ export const Overview = () => {
           <WalletTypography style={styledHeader}>
             {balanceAccount} {value?.label}
           </WalletTypography>
-          <Box width={'223px'}>
+          {/* <Box width={'223px'}>
             <WalletSelect
               options={options}
               defaultValue={options[0]}
               onChange={handleChangeSelect}
             />
-          </Box>
+          </Box> */}
         </TotalyBoxStyled>
         <WalletTypography fontSize={17} fontWeight={600}>
           {balanceAccount} tokens
         </WalletTypography>
         <ButtonsGridStyled>
-          <WalletButton
-            onClick={handleSend}
-            variant="contained"
-            //  disabled={!!balanceAccount.length}
-          >
+          <WalletButton onClick={handleSend} variant="contained" disabled={!!balanceAccount.length}>
             Send
           </WalletButton>
           <WalletButton onClick={handleReceive} variant="outlined">
