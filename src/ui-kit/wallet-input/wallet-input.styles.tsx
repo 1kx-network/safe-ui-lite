@@ -1,5 +1,6 @@
 import { styled } from '@mui/system';
 
+import IconDefault from '@/assets/svg/defult-icon-address.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { withTransientProps } from '@/utils/styled.utils';
 
@@ -20,12 +21,13 @@ export const InputWrapperStyled = styled(
 
 export const EndAdornmentIconStyled = styled('button')(
   ({ theme }) => `
+      display: flex;
       padding: ${theme.spacing(0)} ${theme.spacing(3)};
       border: none;
       background: none;
       border-radius: 50%;
       cursor: pointer;
-      transition: 'all 0.3s ease-in-out',
+      transition: all 0.3s ease-in-out,
       '&:hover': {
         backgroundColor: ${theme.palette.tetriaryDark},
       },
@@ -44,61 +46,72 @@ export const LabelStyled = styled(
   };
 });
 
-export const InputStyled = styled('input')(
-  ({ theme }) => `
-  font-size: 0.875rem;
-  font-weight: 400;
-  width: 100%;
-  line-height: 1.5;
-  padding: ${theme.spacing(2.5)} ${theme.spacing(5)};
-  color: ${theme.palette.textDark};
-  background: ${theme.palette.white};
-  border: none;
-  border-radius: ${theme.spacing(7)};
-  &::placeholder {
-    color: ${theme.palette.textDark};
-  }
+export const InputStyled = styled(
+  'input',
+  withTransientProps
+)<{ startAdornment?: boolean }>(({ theme, startAdornment }) => {
+  const customPadding = startAdornment
+    ? `${theme.spacing(2.5)} 0 ${theme.spacing(2.5)} ${theme.spacing(0.75)}`
+    : `${theme.spacing(2.5)} ${theme.spacing(5)}`;
 
-  &:hover {
-    border-color: ${theme.palette.blue};
-  }
-
-  &:focus {
-    border-color: ${theme.palette.blue};
-  }
-
-  &:focus-visible, & > input > &:focus-visible {
-    outline: 0;
-  }
-
-  & > input {
-    border: none;
-    outline: none;
-    padding: 0;
-    margin: 0;
+  return `
+    font-size: 0.875rem;
+    font-weight: 400;
     width: 100%;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-
-    & > input {
-      cursor: not-allowed;
+    line-height: 1.5;
+    padding:  ${customPadding};
+    color: ${theme.palette.textDark};
+    border: none;
+    border-radius: ${theme.spacing(2)};
+    background: transparent;
+    text-overflow: ellipsis;
+  
+    &::placeholder {
+      color: ${theme.palette.textDark};
     }
-
+  
     &:hover {
-      border-color: ${theme.palette.borderColor};
+      border-color: ${theme.palette.blue};
     }
   
     &:focus {
-      border-color: ${theme.palette.borderColor};
+      border-color: ${theme.palette.blue};
     }
-  }
-`
-);
+  
+    &:focus-visible, & > input > &:focus-visible {
+      outline: 0;
+    }
+  
+    & > input {
+      border: none;
+      outline: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      text-overflow: ellipsis;
+    }
+  
+    &:disabled {
+      cursor: not-allowed;
+  
+      & > input {
+        cursor: not-allowed;
+      }
+  
+      &:hover {
+        border-color: ${theme.palette.borderColor};
+      }
+    
+      &:focus {
+        border-color: ${theme.palette.borderColor};
+      }
+    }
+  `;
+});
 
 export const WrapperStyled = styled('div')`
   position: relative;
+  width: 100%;
 `;
 
 export const InputErrorStyled = styled('div')(
@@ -119,3 +132,9 @@ export const styleErrorInput = {
     color: themeMuiBase.palette.error,
   },
 };
+
+export const BoxAddressInfoStyled = styled('div')`
+  display: flex;
+`;
+
+export const IconDefaultWalletStyled = styled(IconDefault)(() => `width: 1.25rem;`);

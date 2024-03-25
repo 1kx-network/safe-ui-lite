@@ -27,7 +27,9 @@ const Accordion = ({ title, description, initialOpen = false }: IAccordionProps)
       </Box>
       {open && (
         <Box mt={3}>
-          <WalletTypography>{description}</WalletTypography>
+          <WalletTypography fontSize={14} fontWeight={400}>
+            {description}
+          </WalletTypography>
         </Box>
       )}
     </AccordionStyled>
