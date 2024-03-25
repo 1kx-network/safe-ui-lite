@@ -38,11 +38,6 @@ export const styleWalletPaper: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   height: 'fit-content',
-  gap: themeMuiBase.spacing(3),
-};
-
-export const styledHeaderSafeAccount = {
-  marginBottom: '14px',
 };
 
 export const StepStyled = styled('div')(
@@ -55,26 +50,34 @@ export const StepStyled = styled('div')(
     color: ${theme.palette.textLight};
     height: 28px;
     width: 28px;
+    min-width: 28px;
     margin-right:${theme.spacing(3)};
 `
 );
 
-export const GridButtonStyled = styled('div')`
+export const GridButtonStyled = styled('div')(
+  ({ theme }) => `
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 12px;
-`;
+  padding-top: ${theme.spacing(5)};
+`
+);
 
 export const PreviewSectionStyled = styled('div')`
   /* max-height: 608px;
   overflow-y: auto; */
 `;
 
-export const BoxSafeAccountInfoStyled = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  borderTop: '1px solid gray',
-  alignItems: 'center',
-  padding: '14px 0',
-};
+export const AccountPreviewItemstyled = styled('div')<{ noBorder?: boolean }>(
+  ({ theme, noBorder }) => `
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid ${noBorder ? 'transparent' : theme.palette.tetriaryLightGrey};
+  padding: ${theme.spacing(4.5)} 0;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+`
+);

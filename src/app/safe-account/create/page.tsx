@@ -1,61 +1,88 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
-import { formattedLabel } from '@/utils/foramtters';
 import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
-import { WalletTypography, WalletPaper, WalletLayout, WalletButton, WalletInput } from '@/ui-kit';
 import {
-  BoxSafeAccountInfoStyled,
+  WalletTypography,
+  WalletPaper,
+  WalletLayout,
+  WalletButton,
+  WalletInput,
+  WalletSelect,
+} from '@/ui-kit';
+import {
   GridButtonStyled,
   GridContainer,
   StepStyled,
   WrapperStyled,
   styleWalletPaper,
-  styledHeaderSafeAccount,
 } from '../safe-account.styles';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { optionsNetwork } from '../constants';
+import ETHIcon from '@/assets/svg/ETH.svg';
+import { AccountInfo } from '../components/account-info/account-info';
 
-interface IInputsForm {
-  name: string;
+interface IOption {
   chainId: number;
+  label: string;
+  value: string;
+  icon: React.ReactNode;
 }
 
 export default function CreatePageAccount() {
+  const [options, setOptions] = useState<IOption[]>(optionsNetwork);
+  const [chooseOpt, setChooseOpt] = useState(optionsNetwork[0]);
+  const [valueAcc, setValueAcc] = useState('');
+
   const router = useRouter();
-  const { address, chainId } = useWeb3ModalAccount();
+  const { address } = useWeb3ModalAccount();
   const { disconnect } = useDisconnect();
   const network = useNetwork();
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-    setValue,
-  } = useForm<IInputsForm>({
-    mode: 'onSubmit',
-    // resolver: yupResolver(CreateSafeAccountSchema),
-  });
+
+  const networkName = network?.name.toString();
+  const chainId = Number(network?.chainId);
 
   useEffect(() => {
     if (chainId) {
-      setValue('chainId', chainId);
+      const updatedOption = optionsNetwork.find(option => option.chainId === +chainId);
+      if (updatedOption) {
+        console.log(updatedOption);
+        setChooseOpt(updatedOption);
+      } else if (chainId && networkName) {
+        const newOption: IOption = {
+          chainId: +chainId,
+          label: networkName,
+          value: networkName,
+          icon: ETHIcon,
+        };
+        setOptions(prevOptions => [...prevOptions, newOption]);
+        setChooseOpt(newOption);
+      }
     }
   }, [chainId]);
-
-  const networkName = network?.name.toString();
-
-  const onSubmit: SubmitHandler<IInputsForm> = () => {
-    router.push(routes.safeAccountOwners);
-  };
 
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
     e.preventDefault();
     disconnect();
     router.push(routes.home);
+  };
+
+  const handleNext = () => {
+    router.push(routes.safeAccountOwners);
+  };
+
+  const handleChooseNetwork = async (network: number) => {
+    console.log(network, chainId);
+  };
+
+  const handleSetValueAcc = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setValueAcc(value);
   };
 
   return (
@@ -66,102 +93,53 @@ export default function CreatePageAccount() {
         </WalletTypography>
 
         <GridContainer>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <WalletPaper style={styleWalletPaper} minWidth="653px">
-              <Box display="flex" alignItems="center">
-                <StepStyled>
-                  <WalletTypography fontSize={18} fontWeight={600} color="#fff">
-                    1
-                  </WalletTypography>
-                </StepStyled>
-                <WalletTypography component="h2" fontSize={22} fontWeight={600}>
-                  Select network and name of your Safe Account
+          <WalletPaper style={styleWalletPaper} minWidth="653px">
+            <Box display="flex" alignItems="center">
+              <StepStyled>
+                <WalletTypography fontSize={18} fontWeight={600} color="#fff">
+                  1
                 </WalletTypography>
-              </Box>
+              </StepStyled>
+              <WalletTypography component="h2" fontSize={18} fontWeight={600}>
+                Select network and name of your Safe Account
+              </WalletTypography>
+            </Box>
 
-              <Box display="flex" flexDirection="column" mt={3} mb={2.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Name
-                </WalletTypography>
-              </Box>
-
-              <Controller
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <WalletInput
-                    placeholder="Enter name"
-                    {...field}
-                    error={!!errors.name}
-                    errorValue={errors.name?.message}
-                  />
-                )}
+            <Box display="flex" gap={themeMuiBase.spacing(3)}>
+              <WalletInput
+                label="Name"
+                placeholder="Enter name"
+                value={valueAcc}
+                onChange={handleSetValueAcc}
               />
 
-              <Box display={'flex'} flexDirection={'column'} mt={3} mb={2.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Network ID
-                </WalletTypography>
+              <Box minWidth={'177px'} display={'flex'} alignItems={'end'}>
+                <WalletSelect
+                  options={options}
+                  defaultValue={chooseOpt}
+                  onChange={({ chainId }: { chainId: number }) => handleChooseNetwork(chainId)}
+                />
               </Box>
+            </Box>
 
-              <Controller
-                control={control}
-                name="chainId"
-                render={({ field }) => (
-                  <WalletInput
-                    placeholder="Enter chain id"
-                    {...field}
-                    error={!!errors.chainId}
-                    errorValue={errors.chainId?.message}
-                  />
-                )}
-              />
+            <Box mt={3}>
+              <WalletTypography fontWeight={500} fontSize={14}>
+                By continuing, you agree to our terms of use and privacy policy.
+              </WalletTypography>
+            </Box>
 
-              <Box mt={3}>
-                <WalletTypography fontWeight={600}>
-                  By continuing, you agree to our terms of use and privacy policy.
-                </WalletTypography>
-              </Box>
-
-              <GridButtonStyled>
-                <WalletButton onClick={handleClickCancel}>Cancel</WalletButton>
-                <WalletButton type="submit" variant="contained">
-                  Next
-                </WalletButton>
-              </GridButtonStyled>
-            </WalletPaper>
-          </form>
+            <GridButtonStyled>
+              <WalletButton onClick={handleClickCancel} variant="outlined">
+                Cancel
+              </WalletButton>
+              <WalletButton onClick={handleNext} variant="contained">
+                Next
+              </WalletButton>
+            </GridButtonStyled>
+          </WalletPaper>
 
           {/* --- */}
-          <WalletPaper style={styleWalletPaper}>
-            <WalletTypography
-              fontSize={17}
-              fontWeight={600}
-              textAlign="center"
-              style={styledHeaderSafeAccount}
-            >
-              Your Safe Account preview
-            </WalletTypography>
-
-            <Box sx={BoxSafeAccountInfoStyled}>
-              <WalletTypography fontSize={12} fontWeight={600} lineHeight={'21px'}>
-                Wallet
-              </WalletTypography>
-              {address && (
-                <WalletTypography fontSize={17}>
-                  {networkName?.substring(0, 3)}:{formattedLabel(String(address))}
-                </WalletTypography>
-              )}
-            </Box>
-            <Box sx={BoxSafeAccountInfoStyled}>
-              <WalletTypography fontSize={12} fontWeight={600} lineHeight={'21px'}>
-                Network
-              </WalletTypography>
-              <WalletTypography fontSize={17} fontWeight={600} textTransform="capitalize">
-                {networkName}
-              </WalletTypography>
-            </Box>
-          </WalletPaper>
+          <AccountInfo account={address} networkName={networkName} chainId={chainId} />
         </GridContainer>
       </WrapperStyled>
       {/*  */}

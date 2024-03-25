@@ -3,8 +3,16 @@ import * as React from 'react';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { SingleValue } from 'react-select';
 
-import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
+import {
+  WalletButton,
+  WalletInput,
+  WalletLayout,
+  WalletPaper,
+  WalletSelect,
+  WalletTypography,
+} from '@/ui-kit';
 import {
   GridButtonStyled,
   GridContainer,
@@ -14,35 +22,46 @@ import {
   styleWalletPaper,
 } from '../safe-account.styles';
 import QrCodeIcon from '@/assets/svg/qr_code.svg';
+import IconDelete from '@/assets/svg/delete.svg';
+import IconPlus from '@/assets/svg/plus.svg';
 import WalletAlert from '@/ui-kit/wallet-allert';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
-import { formattedLabel } from '@/utils/foramtters';
 import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
+import Accordion from '../components/accordion';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { AccountInfo } from '../components/account-info/account-info';
 
-import { OwnerStylesBtn, OwnersListStyled } from './owners.styles';
-import Accordion from './accordion';
+import {
+  BoxAddressStyled,
+  BoxNameStyled,
+  GridOwnerAddressStyled,
+  OwnerStylesBtn,
+  OwnersListStyled,
+  RemoveAddressStyled,
+} from './owners.styles';
 
 const SafeAccountOwners = () => {
-  const { address } = useWeb3ModalAccount();
-
+  const [countNeedCormed, setCountNeedCormed] = React.useState([{ value: 1, label: 1, id: 1 }]);
+  const [owners, setOwners] = React.useState<{ name: string; address: string; id: number }[]>([
+    { name: '', address: '', id: 1 },
+  ]);
+  const [needConfirmOwner, setNeedConfirmOwner] = React.useState<number>(1);
   const [account, setAccount] = React.useState('');
 
+  const { address, chainId } = useWeb3ModalAccount();
   const network = useNetwork();
   const router = useRouter();
-  const [owners, setOwners] = React.useState<{ name: string; address: string; id: number }[]>([]);
-  const [needConfirmOwner, setNeedConfirmOwner] = React.useState<string>('1');
+  const { deploySafe } = useSafeSdk();
 
   const networkName = network?.name.toString();
 
-  const { deploySafe } = useSafeSdk();
   const handleBack = () => {
     router.back();
   };
 
   React.useEffect(() => {
     if (address) {
-      console.log('__add__1');
       setOwners([
         {
           name: '',
@@ -58,11 +77,10 @@ const SafeAccountOwners = () => {
 
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
-    console.log('_filledOwners_', filledOwners);
     setIsLoading(true);
     await deploySafe(filledOwners, filledOwners.length)
       .then(res => {
-        console.log(res);
+        console.log(needConfirmOwner);
         if (!!res) {
           router.push(routes.entryPage);
         }
@@ -72,14 +90,18 @@ const SafeAccountOwners = () => {
   };
 
   const handleAddOwner = () => {
+    const newOwnerId = countNeedCormed.length + 1;
+
     setOwners(prev => [
       ...prev,
       {
         name: '',
         address: '',
-        id: prev.length + 1,
+        id: newOwnerId,
       },
     ]);
+
+    setCountNeedCormed(prev => [...prev, { id: newOwnerId, label: newOwnerId, value: newOwnerId }]);
   };
 
   const handleChangeOwner = (
@@ -97,11 +119,19 @@ const SafeAccountOwners = () => {
     setOwners(updatedOwners);
   };
 
-  const handleChangeNeedConfirmOwner = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const count = e.target.value;
-    if ((+count > 0 && +count <= owners.length) || count === '') {
-      setNeedConfirmOwner(count);
-    }
+  const handleChooseAccounConfirm = (
+    elem: SingleValue<{
+      value: number;
+      label: number;
+      id: number;
+    }>
+  ) => {
+    elem && setNeedConfirmOwner(elem.label);
+  };
+
+  const handleRemodeAddress = (id: number) => {
+    setOwners(prevOwners => prevOwners.filter(owner => owner.id !== id));
+    setCountNeedCormed(prevCount => prevCount.slice(0, -1));
   };
 
   return (
@@ -113,80 +143,106 @@ const SafeAccountOwners = () => {
           fontWeight={600}
           component="h1"
         >
-          Create new Safe Account
+          Add Safe Account
         </WalletTypography>
         <GridContainer>
           <WalletPaper style={styleWalletPaper} minWidth="653px">
-            <Box display="flex" alignItems="center" pb={5} sx={{ borderBottom: '1px solid' }}>
+            <Box display="flex" alignItems="center">
               <StepStyled>
                 <WalletTypography fontSize={18} fontWeight={600} color="#fff">
                   2
                 </WalletTypography>
               </StepStyled>
               <Box>
-                <WalletTypography component="h2" fontSize={22} fontWeight={600}>
+                <WalletTypography component="h2" fontSize={18} fontWeight={600}>
                   Owners and confirmation
                 </WalletTypography>
-                <WalletTypography fontSize={12} fontWeight={400}>
+                <WalletTypography
+                  fontSize={12}
+                  fontWeight={400}
+                  color={themeMuiBase.palette.tetriaryGrey}
+                >
                   Set the owner wallets of your Safe Account and how many need to confirm to execute
                   a valid transaction
                 </WalletTypography>
               </Box>
             </Box>
-            <Box mt={5}>
+            <Box>
               <OwnersListStyled>
                 {owners.map(owner => (
-                  <GridContainer key={owner.id}>
-                    <WalletInput
-                      placeholder={'Owner name'}
-                      value={owner.name}
-                      onChange={e => handleChangeOwner(e, owner.id, 'name')}
-                      label="Owner name"
-                    />
-                    <WalletInput
-                      placeholder={'Owner address'}
-                      value={owner.address}
-                      onChange={e => handleChangeOwner(e, owner.id, 'address')}
-                      label="Owner address"
-                      endAdornment={<QrCodeIcon />}
-                    />
-                  </GridContainer>
+                  <GridOwnerAddressStyled key={owner.id}>
+                    <BoxNameStyled>
+                      <WalletInput
+                        placeholder={'Owner name'}
+                        value={owner.name}
+                        onChange={e => handleChangeOwner(e, owner.id, 'name')}
+                        label="Owner name"
+                      />
+                    </BoxNameStyled>
+                    <BoxAddressStyled>
+                      <WalletInput
+                        placeholder={'Owner address'}
+                        value={owner.address}
+                        onChange={e => handleChangeOwner(e, owner.id, 'address')}
+                        label="Owner address"
+                        startAdornment
+                        endAdornment={<QrCodeIcon />}
+                      />
+
+                      {owners.length !== 1 && (
+                        <RemoveAddressStyled onClick={() => handleRemodeAddress(owner.id)}>
+                          <IconDelete />
+                        </RemoveAddressStyled>
+                      )}
+                    </BoxAddressStyled>
+                  </GridOwnerAddressStyled>
                 ))}
               </OwnersListStyled>
-              <Box maxWidth="120px" mt={5}>
+              <Box mt={2} mb={1} display={'flex'} flexDirection={'row-reverse'}>
                 <WalletButton onClick={handleAddOwner} variant="text" styles={OwnerStylesBtn}>
-                  + Add new owner
+                  <IconPlus />
+                  <WalletTypography fontWeight={600} fontSize={14}>
+                    Add new owner
+                  </WalletTypography>
                 </WalletButton>
               </Box>
             </Box>
-            <Box pb={5} borderBottom={1}>
+            <Box pb={5} borderBottom={1} borderColor={themeMuiBase.palette.tetriaryLightGrey}>
               <WalletAlert
                 title="Safe(Wallet) mobile owner key (optional)"
                 description="Use your mobile phone as an additional owner key"
               />
             </Box>
-            <Box mt={5}>
+            <Box mt={3}>
               <WalletTypography component="p" fontSize={22} fontWeight={600}>
                 Threshold
               </WalletTypography>
               <Box mt={3}>
-                <WalletTypography>
+                <WalletTypography
+                  fontSize={14}
+                  fontWeight={400}
+                  color={themeMuiBase.palette.tetriaryGrey}
+                >
                   Set the owner wallets of your Safe Account and how many need to confirm to execute
                   a valid transaction
                 </WalletTypography>
               </Box>
               <Box mt={3} display="flex" alignItems="center">
-                <Box mr={3} maxWidth={82}>
-                  <WalletInput value={needConfirmOwner} onChange={handleChangeNeedConfirmOwner} />
+                <Box mr={3} width={'84px'}>
+                  <WalletSelect
+                    options={countNeedCormed}
+                    defaultValue={countNeedCormed[0]}
+                    onChange={handleChooseAccounConfirm}
+                  />
                 </Box>
                 <WalletTypography fontSize={13} fontWeight={600}>
-                  out of {owners.length} owners
+                  out of {owners.length} owner(s)
                 </WalletTypography>
               </Box>
             </Box>
             <GridButtonStyled>
-              <WalletButton disabled={isLoading} onClick={handleBack}>
-                Cancel
+              <WalletButton disabled={isLoading} onClick={handleBack} variant="outlined">
+                Back
               </WalletButton>
               <WalletButton disabled={isLoading} onClick={handleNext} variant="contained">
                 Next
@@ -194,33 +250,9 @@ const SafeAccountOwners = () => {
             </GridButtonStyled>
           </WalletPaper>
           <PreviewSectionStyled>
-            <WalletPaper style={styleWalletPaper}>
-              <WalletTypography fontSize={17} fontWeight={600}>
-                Your Safe Account preview
-              </WalletTypography>
-
-              <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Wallet
-                </WalletTypography>
-                {account && (
-                  <WalletTypography fontSize={17}>
-                    {networkName?.substring(0, 3)}:{formattedLabel(account)}
-                  </WalletTypography>
-                )}
-              </Box>
-
-              <Box display="flex" justifyContent={'space-between'} mt={1.5}>
-                <WalletTypography fontSize={12} fontWeight={600}>
-                  Network
-                </WalletTypography>
-                <WalletTypography fontSize={17} fontWeight={600} textTransform="capitalize">
-                  {networkName}
-                </WalletTypography>
-              </Box>
-            </WalletPaper>
+            <AccountInfo account={account} networkName={networkName} chainId={chainId} />
             <Box mt={3}>
-              <WalletPaper style={styleWalletPaper}>
+              <WalletPaper style={{ ...styleWalletPaper, gap: themeMuiBase.spacing(3) }}>
                 <Box mb={3}>
                   <WalletTypography fontSize={17} fontWeight={600}>
                     Safe account creation

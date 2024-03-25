@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Box } from '@mui/system';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { WalletTypography } from '..';
@@ -11,6 +12,7 @@ import {
   InputWrapperStyled,
   EndAdornmentIconStyled,
   LabelStyled,
+  IconDefaultWalletStyled,
 } from './wallet-input.styles';
 
 interface IWalletInputProps {
@@ -26,10 +28,11 @@ interface IWalletInputProps {
   type?: string;
   ref?: React.Ref<HTMLInputElement>;
   style?: React.CSSProperties;
+  startAdornment?: boolean;
 }
 
 export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>((props, _ref) => {
-  const { onClickEndAdornment, error, endAdornment, label, style } = props;
+  const { onClickEndAdornment, error, endAdornment, label, style, startAdornment } = props;
 
   const errorStyle = error ? styleErrorInput : {};
 
@@ -37,17 +40,34 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
     <WrapperStyled>
       {props.label && (
         <LabelStyled htmlFor={label}>
-          <WalletTypography fontSize={12} fontWeight={600}>
+          <WalletTypography
+            fontSize={12}
+            fontWeight={400}
+            color={themeMuiBase.palette.tetriaryGrey}
+          >
             {props.label}
           </WalletTypography>
         </LabelStyled>
       )}
 
       <InputWrapperStyled $styles={errorStyle}>
+        {startAdornment && (
+          <Box display={'flex'} ml={3}>
+            <IconDefaultWalletStyled />
+            <WalletTypography fontSize={14} fontWeight={500}>
+              gno:
+            </WalletTypography>
+          </Box>
+        )}
+
         <InputStyled
           {...props}
           value={props.value ?? ''}
-          style={{ ...style, ...errorStyle }}
+          startAdornment={startAdornment}
+          style={{
+            ...style,
+            ...errorStyle,
+          }}
           id={label}
           ref={_ref}
         />

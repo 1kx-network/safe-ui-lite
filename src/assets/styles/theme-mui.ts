@@ -13,7 +13,8 @@ export const themeMuiBase = {
     blue: '#3399FF',
     tetriaryDark: '#2E3338',
     lighError: '#ff2e1f01',
-    tetriaryLightGrey: '#D9D9D9',
+    tetriaryLightGrey: '#D9D9D9', // border
+    tetriaryGrey: '#777F88', // label text
   },
 
   spacing: (factor: number) => `${0.25 * factor}rem`,

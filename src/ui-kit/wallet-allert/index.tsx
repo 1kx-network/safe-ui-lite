@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 
 import { WalletTypography } from '..';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import InfoIcon from '@/assets/svg/infoIcon.svg';
+import InfoIcon from '@/assets/svg/b-info-icon.svg';
 
 import { AlertStyled } from './wallet-alert.styles';
 
@@ -27,7 +27,7 @@ const WalletAlert = ({ title, description }: WalletAlertProps) => {
         <Box mt={2}>
           <WalletTypography
             fontSize={12}
-            fontWeight={600}
+            fontWeight={400}
             component="p"
             color={themeMuiBase.palette.white}
           >
