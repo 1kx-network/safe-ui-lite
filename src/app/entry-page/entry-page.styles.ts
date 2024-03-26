@@ -14,6 +14,7 @@ export const WrapperStyled = styled('div')`
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-top: 4rem;
 `;
 
 export const BoxGridStyled = styled('div')(

@@ -1,33 +1,84 @@
 'use client';
+import { Box } from '@mui/system';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
-import { WalletTypography } from '@/ui-kit/wallet-typography';
-import ConnectButton from '@/common/connect-button';
-import { WalletLayout } from '@/ui-kit';
-
-import { ImageStyled, MainContainerStyled } from './home-page.styles';
-import routes from './routes';
+import {
+  GridStepsStyled,
+  IconDoneOpacityStyled,
+  IconPlusStyled,
+  IconProgressStyled,
+  ItemStepPaperStyled,
+  WrapperStyled,
+  styledBtn,
+} from './home.styles';
 
 export default function Home() {
-  const router = useRouter();
-  const { isConnected } = useWeb3ModalAccount();
-
-  useEffect(() => {
-    if (isConnected) router.push(routes.safeAccountList);
-  }, [isConnected, router]);
-
   return (
-    <WalletLayout hideSidebar>
-      <MainContainerStyled>
-        <WalletTypography component="h1" fontSize={36} fontWeight={700} fontFamily="Inter">
-          What it is?
-        </WalletTypography>
-        <ImageStyled />
-        <ConnectButton />
-      </MainContainerStyled>
+    <WalletLayout>
+      <WrapperStyled>
+        <Box mb={9} display={'flex'} alignItems={'center'} gap={4}>
+          <IconProgressStyled />
+          <Box display={'flex'} flexDirection={'column'} gap={4}>
+            <WalletTypography fontSize={22} fontWeight={600}>
+              Activate your Safe Account
+            </WalletTypography>
+            <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+              0 of 2 steps completed. Finish the next steps to start using all Safe Account
+              features:
+            </WalletTypography>
+          </Box>
+        </Box>
+        {/*  */}
+        <GridStepsStyled>
+          <ItemStepPaperStyled>
+            <WalletPaper>
+              <IconPlusStyled />
+              <Box display={'flex'} flexDirection={'column'} gap={4}>
+                <WalletTypography fontSize={22} fontWeight={600}>
+                  Add native assets
+                </WalletTypography>
+                <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+                  Receive Dai to start interacting with your account.
+                </WalletTypography>
+              </Box>
+              <WalletButton variant="contained" styles={styledBtn}>
+                Add funds
+              </WalletButton>
+            </WalletPaper>
+          </ItemStepPaperStyled>
+          <ItemStepPaperStyled>
+            <WalletPaper>
+              <IconPlusStyled />
+              <Box display={'flex'} flexDirection={'column'} gap={4}>
+                <WalletTypography fontSize={22} fontWeight={600}>
+                  Create your first transaction
+                </WalletTypography>
+                <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+                  Simply send funds, add a new signer or swap tokens through a safe app.
+                </WalletTypography>
+              </Box>
+              <WalletButton variant="outlined" styles={styledBtn}>
+                Create Transaction
+              </WalletButton>
+            </WalletPaper>
+          </ItemStepPaperStyled>
+        </GridStepsStyled>
+        {/*  */}
+        <WalletPaper>
+          <IconDoneOpacityStyled />
+
+          <Box display={'flex'} flexDirection={'column'} gap={4}>
+            <WalletTypography fontSize={22} fontWeight={600} opacity={0.3}>
+              Safe Account is ready!
+            </WalletTypography>
+            <WalletTypography opacity={0.3}>
+              Continue to improve your account security and unlock more features.
+            </WalletTypography>
+          </Box>
+        </WalletPaper>
+      </WrapperStyled>
     </WalletLayout>
   );
 }

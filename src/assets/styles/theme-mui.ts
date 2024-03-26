@@ -6,7 +6,7 @@ export const themeMuiBase = {
     textDarkLight: '#02030305',
     base: '#1c1c1c',
     white: '#fff',
-    grey: '#d4d4d4',
+    grey: '#D8D8D8',
     lightSecondary: '#FFFFFF80',
     error: '#FF2E1F',
     borderColor: '#0000003f',
@@ -15,6 +15,7 @@ export const themeMuiBase = {
     lighError: '#ff2e1f01',
     tetriaryLightGrey: '#D9D9D9', // border
     tetriaryGrey: '#777F88', // label text
+    success: '#43C057',
   },
 
   spacing: (factor: number) => `${0.25 * factor}rem`,
