@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { styled } from '@mui/system';
 
+import IconTrash from '@/assets/svg/delete.svg';
+import CopyIcon from '@/assets/svg/copy.svg';
 import IconAddress from '@/assets/svg/defult-icon-address.svg';
 
 export const WrapperStyled = styled('div')(
@@ -94,11 +96,20 @@ export const boxStyleInfoUser = {
   display: 'flex',
   flexDirection: 'column',
   gap: '5px',
+  width: '100%',
+};
+
+export const boxStyleInfoUserAddress = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  width: '100%',
+  paddingRight: 3,
 };
 
 export const IconOpenAccountsStyled = styled('div')(
   ({ theme }) => `
-  padding: ${theme.spacing(4.1)} 0 ${theme.spacing(4.1)} ${theme.spacing(4.1)};
+  padding: ${theme.spacing(4.1)} 0 ${theme.spacing(4.1)} ${theme.spacing(1)};
   position: absolute;
   right: 0;
   cursor: pointer;
@@ -107,7 +118,11 @@ export const IconOpenAccountsStyled = styled('div')(
 
 export const AccountWrapperStyled = styled('div')(
   ({ theme }) => `
-  background-color: ${theme.palette.lightSecondary};
+  background-color: #FFFFFFB5;
+  backdrop-filter: blur(25px);
+  padding: ${theme.spacing(5)};
+  border-radius:  0 0 0.625rem 0.625rem;
+  height: calc(100% - 60px);
 `
 );
 
@@ -127,4 +142,36 @@ export const ItemAccountStyled = styled('div')(
 `
 );
 
-export const IconDefaultAddressStyled = styled(IconAddress)``;
+export const IconDefaultAddressStyled = styled(IconAddress)`
+  margin-right: 4px;
+`;
+
+export const modalStyled = {
+  content: {
+    top: '0%',
+    left: '0%',
+    bottom: '0',
+    width: '410px',
+    height: '100%',
+    border: 'none',
+    padding: '1.5rem',
+    background: 'transparent',
+    overflow: 'hidden',
+  },
+};
+
+export const IconRemoveAccountStyled = styled(IconTrash)`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  z-index: 999;
+`;
+
+export const CopyIconStyled = styled(CopyIcon)`
+  width: 12px;
+  min-width: 12px;
+  height: 12px;
+  cursor: pointer;
+  margin-left: 8px;
+  maring: 4px;
+`;

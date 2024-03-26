@@ -101,11 +101,7 @@ export const Overview = () => {
           {balanceAccount} tokens
         </WalletTypography>
         <ButtonsGridStyled>
-          <WalletButton
-            onClick={handleSend}
-            variant="contained"
-            disabled={address ? !balanceAccount.length : false}
-          >
+          <WalletButton onClick={handleSend} variant="contained" disabled={!!balanceAccount.length}>
             Send
           </WalletButton>
           <WalletButton onClick={handleReceive} variant="outlined" disabled={!address}>

@@ -15,6 +15,7 @@ interface IModal {
   styles?: React.CSSProperties;
   // eslint-disable-next-line
   modalStyles?: any;
+  widthoutPaper?: boolean;
 }
 
 export const CustomModal = ({
@@ -24,6 +25,7 @@ export const CustomModal = ({
   title,
   styles,
   modalStyles,
+  widthoutPaper,
 }: IModal) => {
   return (
     <Modal
@@ -33,19 +35,23 @@ export const CustomModal = ({
       contentLabel="Modal"
       ariaHideApp={false}
     >
-      <WalletPaper style={{ ...styledPaper, ...styles }}>
-        {title && (
-          <TitleStyled>
-            <WalletTypography fontSize={17} fontWeight={600}>
-              {title}
-            </WalletTypography>
-            <Box onClick={closeModal} sx={{ cursor: 'pointer' }}>
-              <IconClose />
-            </Box>
-          </TitleStyled>
-        )}
-        {children}
-      </WalletPaper>
+      {widthoutPaper ? (
+        children
+      ) : (
+        <WalletPaper style={{ ...styledPaper, ...styles }}>
+          {title && (
+            <TitleStyled>
+              <WalletTypography fontSize={17} fontWeight={600}>
+                {title}
+              </WalletTypography>
+              <Box onClick={closeModal} sx={{ cursor: 'pointer' }}>
+                <IconClose />
+              </Box>
+            </TitleStyled>
+          )}
+          {children}
+        </WalletPaper>
+      )}
     </Modal>
   );
 };

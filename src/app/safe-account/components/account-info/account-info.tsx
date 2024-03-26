@@ -27,7 +27,7 @@ export const AccountInfo = ({ account, networkName, chainId }: IAccountInfo) => 
           </WalletTypography>
           {account && (
             <Box display={'flex'} gap={1.5}>
-              <IconDefualtAddress />
+              <IconDefualtAddress width={'16px'} height={'16px'} />
 
               <WalletTypography fontSize={14}>
                 <WalletTypography fontSize={14} fontWeight={500}>
@@ -44,7 +44,7 @@ export const AccountInfo = ({ account, networkName, chainId }: IAccountInfo) => 
             Network
           </WalletTypography>
           <Box display={'flex'} alignItems={'center'} gap={themeMuiBase.spacing(2)}>
-            {chainId ? iconNetwork(chainId) : ''}
+            {chainId ? iconNetwork(chainId, '15px', '15px') : ''}
             <WalletTypography fontSize={14} fontWeight={600} textTransform="capitalize">
               {networkName}
             </WalletTypography>

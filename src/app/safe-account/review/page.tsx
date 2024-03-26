@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/system';
+import { useRouter } from 'next/navigation';
 
 import { useNetwork } from '@/hooks/useNetwork';
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton } from '@/ui-kit';
@@ -11,6 +12,10 @@ import { iconNetwork } from '@/utils/icon-formatter';
 import IconDefualtAddress from '@/assets/svg/defult-icon-address.svg';
 import { formattedLabel } from '@/utils/foramtters';
 import { networks } from '@/context/networks';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
+import routes from '@/app/routes';
+import useActiveOwnerStore from '@/stores/active-owners-store';
+import { customToasty } from '@/components';
 
 import {
   CopyIconStyled,
@@ -20,15 +25,24 @@ import {
   OwnerListStyled,
 } from './review.styles';
 
-const owners = ['d'];
-
 export default function CreatePageAccount() {
-  const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const { owners, needConfirmOwner, setOwners, setNeedConfirmOwner } = useActiveOwnerStore();
   const network = useNetwork();
+  const { deploySafe } = useSafeSdk();
+  const router = useRouter();
+
+  const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const networkName = network?.name.toString();
   const chainId = Number(network?.chainId);
 
   useEffect(() => {
+    if (!owners.length) {
+      router.push(routes.safeAccountOwners);
+      return;
+    }
+
     if (chainId) {
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
@@ -39,6 +53,26 @@ export default function CreatePageAccount() {
 
   const handleCopyAddress = (address: string) => {
     navigator.clipboard.writeText(address);
+  };
+
+  const handleCreate = async () => {
+    setIsLoading(true);
+
+    await deploySafe(owners, needConfirmOwner)
+      .then(res => {
+        if (!!res) {
+          customToasty('Success create account', 'success');
+          router.push(routes.entryPage);
+        }
+      })
+      .catch(() => customToasty('Something error with create account', 'error'))
+      .finally(() => setIsLoading(false));
+  };
+
+  const handleClickBack = () => {
+    setOwners([]);
+    setNeedConfirmOwner(1);
+    router.push(routes.safeAccountOwners);
   };
 
   return (
@@ -99,7 +133,7 @@ export default function CreatePageAccount() {
                 <OwnerListStyled>
                   {owners.map((owner, index) => (
                     <Box display={'flex'} gap={1.5} key={index}>
-                      <IconDefualtAddress />
+                      <IconDefualtAddress width={'16px'} height={'16px'} />
 
                       <WalletTypography fontSize={14}>
                         <WalletTypography fontSize={14} fontWeight={500}>
@@ -109,7 +143,7 @@ export default function CreatePageAccount() {
                       </WalletTypography>
 
                       <LinkOpenInNewIconStyled
-                        href={`${linkOnScan}/address/{owner.address}`}
+                        href={`${linkOnScan}address/${owner}`}
                         target="_blank"
                       >
                         <OpenInNewIconStyled />
@@ -124,14 +158,18 @@ export default function CreatePageAccount() {
                   Threshold
                 </WalletTypography>
                 <WalletTypography component="p" fontSize={14} fontWeight={500}>
-                  1 out of {owners.length} owner(s)
+                  {needConfirmOwner} out of {owners.length} owner(s)
                 </WalletTypography>
               </ItemInfoStyled>
             </Box>
 
             <Box display={'flex'} justifyContent={'space-between'} gap={3}>
-              <WalletButton variant="outlined">Back</WalletButton>
-              <WalletButton variant="contained">Create</WalletButton>
+              <WalletButton variant="outlined" disabled={isLoading} onClick={handleClickBack}>
+                Back
+              </WalletButton>
+              <WalletButton variant="contained" disabled={isLoading} onClick={handleCreate}>
+                Create
+              </WalletButton>
             </Box>
           </WalletPaper>
 
