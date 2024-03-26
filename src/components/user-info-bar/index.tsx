@@ -1,3 +1,6 @@
+'use client';
+
+import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
 import { useEffect, useRef, useState } from 'react';
 
@@ -6,6 +9,7 @@ import { WalletButton, WalletTypography } from '@/ui-kit';
 import IconDefaultAdd from '@/assets/svg/defult-icon-address.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';
+import { CustomModal } from '..';
 
 import {
   WrapperStyled,
@@ -19,16 +23,19 @@ import {
   styledBtnDisconnect,
 } from './user-info-bar.styles';
 
-const address = '0x159a07c50646A90654a67FD105dec87bdB11ca9B';
-
 export const UserInfoBar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { address } = useWeb3ModalAccount();
+  const { open } = useWeb3Modal();
+
+  const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+
   const wrapperRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !(wrapperRef.current as Node).contains(event.target as Node)) {
-        setIsOpen(false);
+        setIsOpenMenu(false);
       }
     };
 
@@ -40,40 +47,67 @@ export const UserInfoBar = () => {
   }, []);
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(address);
+    if (address) navigator.clipboard.writeText(address);
   };
 
   const handleClickMenu = () => {
-    setIsOpen(!isOpen);
+    if (address) {
+      setIsOpenMenu(!isOpenMenu);
+    } else {
+      setIsOpenModal(true);
+    }
+  };
+
+  const handleConnect = async () => {
+    try {
+      await open();
+      setIsOpenModal(false);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
     <WrapperStyled ref={wrapperRef}>
       <InfoUserStyled onClick={handleClickMenu}>
-        <Box display={'flex'} alignItems={'center'} gap={1} zIndex={0}>
-          <IconDefaultAdd />
-          <WalletTypography
-            fontSize={12}
-            fontWeight={400}
-            color={themeMuiBase.palette.grey}
-            style={{ pointerEvents: 'none' }}
-          >
-            <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
-              gno:{' '}
-            </WalletTypography>
-            {formattedLabel(address, 6, 4)}
-          </WalletTypography>
-        </Box>
+        {address ? (
+          <>
+            <Box display={'flex'} alignItems={'center'} gap={1} zIndex={0}>
+              <IconDefaultAdd />
+              <WalletTypography
+                fontSize={12}
+                fontWeight={400}
+                color={themeMuiBase.palette.grey}
+                style={{ pointerEvents: 'none' }}
+              >
+                <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
+                  gno:{' '}
+                </WalletTypography>
+                {formattedLabel(address, 6, 4)}
+              </WalletTypography>
+            </Box>
 
-        <IconArrowStyled isOpen={isOpen}>
-          <IconMenu />
-        </IconArrowStyled>
+            <IconArrowStyled isOpen={isOpenMenu}>
+              <IconMenu />
+            </IconArrowStyled>
+          </>
+        ) : (
+          <WalletTypography
+            fontSize={14}
+            fontWeight={400}
+            textAlign="center"
+            style={{ width: '100%' }}
+            color={themeMuiBase.palette.white}
+          >
+            Create accont
+          </WalletTypography>
+        )}
       </InfoUserStyled>
 
-      <BodyOpenStyled isOpen={isOpen}>
+      <BodyOpenStyled isOpen={isOpenMenu}>
         <ItemInfoStyled noBorder>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
-            {formattedLabel(address, 6, 4)}
+            {address && formattedLabel(address, 6, 4)}
           </WalletTypography>
           <IconCopyStyled onClick={handleCopyAddress} />
         </ItemInfoStyled>
@@ -103,6 +137,39 @@ export const UserInfoBar = () => {
           </WalletButton>
         </GridButtonStyled>
       </BodyOpenStyled>
+
+      <CustomModal
+        title=""
+        isOpen={isOpenModal}
+        closeModal={() => setIsOpenModal(false)}
+        styles={{
+          minWidth: '360px',
+          maxWidth: '560px',
+        }}
+      >
+        <Box
+          display={'flex'}
+          justifyContent={'center'}
+          flexDirection={'column'}
+          gap={4}
+          alignItems={'center'}
+        >
+          <WalletTypography fontSize={22} fontWeight={600} textAlign={'center'}>
+            Get started
+          </WalletTypography>
+          <WalletTypography
+            fontSize={14}
+            fontWeight={400}
+            color={themeMuiBase.palette.tetriaryGrey}
+            textAlign={'center'}
+          >
+            The most trusted decentralized custody protocol and collective asset management platform
+          </WalletTypography>
+          <WalletButton variant="contained" onClick={handleConnect}>
+            Create Account
+          </WalletButton>
+        </Box>
+      </CustomModal>
     </WrapperStyled>
   );
 };

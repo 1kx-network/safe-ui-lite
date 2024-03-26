@@ -16,7 +16,7 @@ export const customStyles = {
   overlay: {
     inset: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(5px)',
+    backdropFilter: 'blur(8px)',
   },
 };
 

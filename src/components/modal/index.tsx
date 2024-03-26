@@ -26,14 +26,16 @@ export const CustomModal = ({ isOpen, closeModal, children, title, styles }: IMo
       ariaHideApp={false}
     >
       <WalletPaper style={{ ...styledPaper, ...styles }}>
-        <TitleStyled>
-          <WalletTypography fontSize={17} fontWeight={600}>
-            {title}
-          </WalletTypography>
-          <Box onClick={closeModal} sx={{ cursor: 'pointer' }}>
-            <IconClose />
-          </Box>
-        </TitleStyled>
+        {title && (
+          <TitleStyled>
+            <WalletTypography fontSize={17} fontWeight={600}>
+              {title}
+            </WalletTypography>
+            <Box onClick={closeModal} sx={{ cursor: 'pointer' }}>
+              <IconClose />
+            </Box>
+          </TitleStyled>
+        )}
         {children}
       </WalletPaper>
     </Modal>
