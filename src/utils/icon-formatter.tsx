@@ -4,8 +4,10 @@ import BNBIcon from '@/assets/svg/BNB.svg';
 import GnosisIcon from '@/assets/svg/gnosis.svg';
 import MaticIcon from '@/assets/svg/matic.svg';
 import ETHIcon from '@/assets/svg/ETH.svg';
+import DefaultIcon from '@/assets/svg/default-network.svg';
 
 const iconMapping: { [key: number]: React.FunctionComponent<React.SVGProps<SVGSVGElement>> } = {
+  '0': DefaultIcon,
   '1': ETHIcon,
   '4': ETHIcon,
   '11155111': ETHIcon,
@@ -26,7 +28,7 @@ export const iconNetwork = (
   if (IconComponent) {
     return <IconComponent width={width} height={height} />;
   } else {
-    const IconComponent = iconMapping[1];
+    const IconComponent = iconMapping[0];
     return <IconComponent width={width} height={height} />;
   }
 };

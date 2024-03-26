@@ -137,4 +137,9 @@ export const BoxAddressInfoStyled = styled('div')`
   display: flex;
 `;
 
-export const IconDefaultWalletStyled = styled(IconDefault)(() => `width: 1.25rem;`);
+export const IconDefaultWalletStyled = styled(IconDefault)(
+  () => `
+width: 1.25rem;
+height: 1.25rem;
+`
+);

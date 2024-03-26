@@ -214,7 +214,7 @@ export default function SignTransaction() {
                 {`${pathName}?${searchParams.toString()}`}
               </WalletTypography>
             </OwnerLinkStyled>
-            <OpenInNewIcon width="18" height="19" />
+            <OpenInNewIcon width="19px" height="18px" />
             <CopyIcon width="18px" height="19px" cursor="pointer" onClick={handleCopy} />
           </BoxOwnerLinkStyled>
 
