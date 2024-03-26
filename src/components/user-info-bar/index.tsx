@@ -1,8 +1,9 @@
 'use client';
 
-import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useDisconnect, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { formattedLabel } from '@/utils/foramtters';
 import { WalletButton, WalletTypography } from '@/ui-kit';
@@ -10,6 +11,7 @@ import IconDefaultAdd from '@/assets/svg/defult-icon-address.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';
 import { CustomModal } from '..';
+import routes from '@/app/routes';
 
 import {
   WrapperStyled,
@@ -25,12 +27,13 @@ import {
 
 export const UserInfoBar = () => {
   const { address } = useWeb3ModalAccount();
+  const { disconnect } = useDisconnect();
   const { open } = useWeb3Modal();
+  const router = useRouter();
+  const wrapperRef = useRef(null);
 
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
-
-  const wrapperRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,13 +61,25 @@ export const UserInfoBar = () => {
     }
   };
 
-  const handleConnect = async () => {
-    try {
-      await open();
+  const [isTryToConnect, setIsTryToConnect] = useState(false);
+
+  useEffect(() => {
+    if (address && isTryToConnect) {
+      router.push(routes.safeAccountList);
       setIsOpenModal(false);
-    } catch (e) {
-      console.log(e);
+      setIsTryToConnect(false);
     }
+  }, [address, isTryToConnect]);
+
+  const handleConnect = () => {
+    open();
+    setIsTryToConnect(true);
+  };
+
+  const handleDisconnect = async () => {
+    disconnect();
+    setIsOpenMenu(false);
+    router.push(routes.home);
   };
 
   return (
@@ -129,10 +144,10 @@ export const UserInfoBar = () => {
         </ItemInfoStyled>
 
         <GridButtonStyled>
-          <WalletButton variant="outlined" styles={styledBtn}>
+          <WalletButton variant="outlined" styles={styledBtn} onClick={() => open()}>
             Switch Wallet
           </WalletButton>
-          <WalletButton variant="text" styles={styledBtnDisconnect}>
+          <WalletButton variant="text" styles={styledBtnDisconnect} onClick={handleDisconnect}>
             Disconnect
           </WalletButton>
         </GridButtonStyled>

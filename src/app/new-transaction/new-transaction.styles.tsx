@@ -100,6 +100,7 @@ export const WrapperStyled = styled('div')(
   flex-direction: column;
   width: 100%;
   gap: ${theme.spacing(3.5)};
+  margin-top: 4rem;
 `
 );
 
