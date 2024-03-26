@@ -1,10 +1,8 @@
 'use client';
 import { Box } from '@mui/system';
+import { usePathname } from 'next/navigation';
 
 import { WalletTypography } from '@/ui-kit';
-import WalletSvg from '@/assets/svg/wallet.svg';
-import SettingSvg from '@/assets/svg/setting.svg';
-import TransactionSvg from '@/assets/svg/transaction.svg';
 import routes from '@/app/routes';
 
 import {
@@ -17,7 +15,7 @@ import {
   WrapperIconStyled,
   styleBtnTransaction,
 } from './sidebar.styles';
-import { dataUserMock } from './ fixtures';
+import { dataUserMock, menuList } from './ fixtures';
 
 interface ISidebar {
   icon?: string;
@@ -29,9 +27,9 @@ interface ISidebar {
 export const Sidebar: React.FunctionComponent<ISidebar> = ({
   icon = dataUserMock.icon,
   name = dataUserMock.name,
-  id = dataUserMock.id,
   count = dataUserMock.count,
 }) => {
+  const pathname = usePathname();
   // const safeAddress = localStorage.getItem('safeAddress');
 
   // if (!safeSdk && safeAddress) {
@@ -51,38 +49,30 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({
         <ImgUserStyled src={icon} alt="avatar" width={44} height={44} />
 
         <Box sx={boxStyleInfoUser}>
-          <WalletTypography fontSize={10}>{name}</WalletTypography>
-          <WalletTypography fontSize={10}>{id}</WalletTypography>
-          <WalletTypography fontSize={10}>{count} USD</WalletTypography>
+          <WalletTypography fontSize={12} fontWeight={400}>
+            <WalletTypography fontSize={12} fontWeight={500}>
+              gno:
+            </WalletTypography>
+            {name}
+          </WalletTypography>
+          <WalletTypography fontSize={14} fontWeight={500}>
+            {count} USD
+          </WalletTypography>
         </Box>
       </InfoUserStyled>
       <MenuStyled>
-        {/* TODO */}
-        <ItemMenuStyled
-          style={styleBtnTransaction}
-          href={routes.newTransaction}
-          // href={`${routes.newTransaction}?network=${network}&address=${encodeURIComponent(String(safeAddress))}`}
-        >
+        <ItemMenuStyled style={styleBtnTransaction} href={routes.newTransaction}>
           <WalletTypography>New transaction</WalletTypography>
         </ItemMenuStyled>
-        <ItemMenuStyled href="/">
-          <WrapperIconStyled>
-            <WalletSvg />
-          </WrapperIconStyled>
-          <WalletTypography>Balance</WalletTypography>
-        </ItemMenuStyled>
-        <ItemMenuStyled href="/">
-          <WrapperIconStyled>
-            <SettingSvg />
-          </WrapperIconStyled>
-          <WalletTypography>Transactions</WalletTypography>
-        </ItemMenuStyled>
-        <ItemMenuStyled href="/">
-          <WrapperIconStyled>
-            <TransactionSvg />
-          </WrapperIconStyled>
-          <WalletTypography>Settings</WalletTypography>
-        </ItemMenuStyled>
+
+        {menuList.map(item => (
+          <ItemMenuStyled key={item.id} href={item.url}>
+            <WrapperIconStyled isActive={item.url === pathname}>
+              <item.icon />
+            </WrapperIconStyled>
+            <WalletTypography>{item.title}</WalletTypography>
+          </ItemMenuStyled>
+        ))}
       </MenuStyled>
     </WrapperStyled>
   );

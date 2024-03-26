@@ -21,10 +21,10 @@ export const CustomOption = (props: OptionProps<any>) => {
     <Option {...props}>
       <Box sx={stylesOption}>
         <Box display={'flex'} alignItems={'center'} gap={'8px'}>
-          {IconOption && <IconOption minWidth={'19px'} width={'19px'} height={'19px'} />}
+          {IconOption && <IconOption width={'19px'} height={'19px'} />}
           {props.data.label}
         </Box>
-        {props.isSelected && <IconCheck width={'17px'} minWidth={'17px'} height={'18px'} />}
+        {props.isSelected && <IconCheck width={'17px'} height={'18px'} />}
       </Box>
     </Option>
   );
@@ -34,10 +34,11 @@ export const CustomOption = (props: OptionProps<any>) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CustomSingleValue = (props: SingleValueProps<any>) => {
   const IconOption = props.data.icon;
+  console.log(props.data.icon);
   return (
     <SingleValue {...props}>
       <Box display={'flex'} alignItems={'center'} gap={'8px'}>
-        {IconOption && <IconOption minWidth={'19px'} width={'19px'} height={'19px'} />}
+        {IconOption && <IconOption width={'19px'} height={'19px'} />}
         {props.data.label}
       </Box>
     </SingleValue>

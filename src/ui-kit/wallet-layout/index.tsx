@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { Sidebar } from '@/components';
+import { Sidebar, UserInfoBar } from '@/components';
 
-import { LayoutStyled } from './wallet-layout.styles';
+import { LayoutStyled, InfoUserStyled } from './wallet-layout.styles';
 
 interface IWalletLayoutProps {
   children: React.ReactNode;
@@ -13,6 +13,12 @@ export function WalletLayout({ children, hideSidebar }: IWalletLayoutProps) {
   return (
     <LayoutStyled>
       {!hideSidebar && <Sidebar />}
+
+      {!hideSidebar && (
+        <InfoUserStyled>
+          <UserInfoBar />
+        </InfoUserStyled>
+      )}
       {children}
     </LayoutStyled>
   );
