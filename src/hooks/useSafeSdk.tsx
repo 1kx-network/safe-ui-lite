@@ -48,21 +48,21 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const localListParsed = localList
         ? JSON.parse(localList)
         : {
-          '1': [],
-          '10': [],
-          '56': [],
-          '100': [],
-          '137': [],
-          '324': [],
-          '1101': [],
-          '8453': [],
-          '42161': [],
-          '42220': [],
-          '43114': [],
-          '84532': [],
-          '11155111': [],
-          '1313161554': [],
-        };
+            '1': [],
+            '10': [],
+            '56': [],
+            '100': [],
+            '137': [],
+            '324': [],
+            '1101': [],
+            '8453': [],
+            '42161': [],
+            '42220': [],
+            '43114': [],
+            '84532': [],
+            '11155111': [],
+            '1313161554': [],
+          };
       localListParsed[chainId ?? 1].push(addressAccount);
       console.log(`localListParsed`, localListParsed);
       localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
