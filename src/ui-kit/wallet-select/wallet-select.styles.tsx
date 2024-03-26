@@ -1,5 +1,6 @@
 import { Box } from '@mui/system';
-import { components, CSSObjectWithLabel, OptionProps, SingleValueProps } from 'react-select';
+import { components, OptionProps, SingleValueProps } from 'react-select';
+import { CSSObject } from '@emotion/react';
 
 import IconCheck from '@/assets/svg/check.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -46,7 +47,7 @@ export const CustomSingleValue = (props: SingleValueProps<any>) => {
 };
 
 export const stylesSelect = {
-  container: (base: CSSObjectWithLabel) => ({
+  container: (base: CSSObject) => ({
     ...base,
     fontSize: '17px',
     width: '100%',
@@ -57,7 +58,7 @@ export const stylesSelect = {
   }),
 
   dropdownIndicator: (
-    base: CSSObjectWithLabel,
+    base: CSSObject,
     { selectProps: { menuIsOpen } }: { selectProps: { menuIsOpen: boolean } }
   ) => ({
     ...base,
@@ -66,7 +67,8 @@ export const stylesSelect = {
     transform: menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
   }),
 
-  control: (base: CSSObjectWithLabel) => ({
+  // eslint-disable-next-line
+  control: (base: any) => ({
     ...base,
     borderRadius: '1.75rem',
     height: '2.75rem',
@@ -82,16 +84,18 @@ export const stylesSelect = {
     },
   }),
 
-  menu: (base: CSSObjectWithLabel) => ({
-    ...base,
-    borderRadius: themeMuiBase.spacing(5.75),
-  }),
-  menuList: (base: CSSObjectWithLabel) => ({
+  menu: (base: CSSObject) => ({
     ...base,
     borderRadius: themeMuiBase.spacing(5.75),
   }),
 
-  option: (base: CSSObjectWithLabel) => ({
+  menuList: (base: CSSObject) => ({
+    ...base,
+    borderRadius: themeMuiBase.spacing(5.75),
+  }),
+
+  // eslint-disable-next-line
+  option: (base: any) => ({
     ...base,
     display: 'flex',
     height: '44px',
@@ -102,7 +106,8 @@ export const stylesSelect = {
     cursor: 'pointer',
   }),
 
-  valueContainer: (base: CSSObjectWithLabel) => ({
+  // eslint-disable-next-line
+  valueContainer: (base: any) => ({
     ...base,
     display: 'flex',
     alignItems: 'center',

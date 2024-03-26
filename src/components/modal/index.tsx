@@ -10,18 +10,26 @@ import { customStyles, TitleStyled, styledPaper } from './modal.styles';
 interface IModal {
   isOpen: boolean;
   children: React.ReactNode;
-  //   openModal: () => void;
   closeModal: () => void;
-  title: string;
+  title?: string;
   styles?: React.CSSProperties;
+  // eslint-disable-next-line
+  modalStyles?: any;
 }
 
-export const CustomModal = ({ isOpen, closeModal, children, title, styles }: IModal) => {
+export const CustomModal = ({
+  isOpen,
+  closeModal,
+  children,
+  title,
+  styles,
+  modalStyles,
+}: IModal) => {
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={closeModal}
-      style={customStyles}
+      style={{ ...customStyles, ...modalStyles }}
       contentLabel="Modal"
       ariaHideApp={false}
     >

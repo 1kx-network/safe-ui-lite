@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Barlow } from 'next/font/google';
 import '../assets/styles/global-styles.scss';
 import { Toaster } from 'react-hot-toast';
+
 import { Web3ModalProvider } from '@/context/Web3Modal';
 import ThemeProvider from '@/context/theme-provider';
 import QueryClientProvider from '@/context/query-provider';

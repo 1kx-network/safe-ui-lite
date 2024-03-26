@@ -71,13 +71,13 @@ export const UserInfoBar = () => {
     }
   }, [address, isTryToConnect]);
 
-  const handleConnect = () => {
-    open();
+  const handleConnect = async () => {
+    await open();
     setIsTryToConnect(true);
   };
 
   const handleDisconnect = async () => {
-    disconnect();
+    await disconnect();
     setIsOpenMenu(false);
     router.push(routes.home);
   };
