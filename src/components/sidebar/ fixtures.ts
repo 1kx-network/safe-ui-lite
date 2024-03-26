@@ -1,3 +1,4 @@
+import routes from '@/app/routes';
 import HomeSvg from '@/assets/svg/home.svg';
 
 export const dataUserMock = {
@@ -15,8 +16,8 @@ interface IMenu {
 }
 
 export const menuList: IMenu[] = [
-  { id: 1, url: '/home', title: 'Home', icon: HomeSvg },
-  { id: 2, url: 'routes.wallet', title: 'Wallet', icon: HomeSvg },
+  { id: 1, url: routes.home, title: 'Home', icon: HomeSvg },
+  { id: 2, url: routes.entryPage, title: 'Wallet', icon: HomeSvg },
   // { id: 3, url: routes.transactions ,title: 'Transactions', icon: TransactionSvg },
   // { id: 4, url: routes.settings ,title: 'Settings', icon: SettingSvg },
 ];
