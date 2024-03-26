@@ -1,6 +1,6 @@
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import { useEffect } from 'react';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 
 import useSafeStore from '@/stores/safe-store';
 
@@ -10,6 +10,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const createEthAdapter = useEthersAdapter();
   const { saveSdk } = useSafeStore();
   const { walletProvider } = useWeb3ModalProvider();
+  const { chainId } = useWeb3ModalAccount();
 
   const createSdkInstance = async () => {
     if (safeAddress && walletProvider) {
@@ -38,9 +39,33 @@ export function useSafeSdk(safeAddress: string | null = null) {
           return res;
         }
       );
+      console.log(`safeFactory`, safeFactory);
 
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
       const addressAccount = await safeSdk.getAddress();
+
+      const localList = localStorage.getItem('createdSafes');
+      const localListParsed = localList
+        ? JSON.parse(localList)
+        : {
+          '1': [],
+          '10': [],
+          '56': [],
+          '100': [],
+          '137': [],
+          '324': [],
+          '1101': [],
+          '8453': [],
+          '42161': [],
+          '42220': [],
+          '43114': [],
+          '84532': [],
+          '11155111': [],
+          '1313161554': [],
+        };
+      localListParsed[chainId ?? 1].push(addressAccount);
+      console.log(`localListParsed`, localListParsed);
+      localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
       localStorage.setItem('safeAddress', addressAccount);
 
       return safeSdk;

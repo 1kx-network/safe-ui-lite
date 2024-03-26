@@ -34,7 +34,6 @@ export const CustomOption = (props: OptionProps<any>) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CustomSingleValue = (props: SingleValueProps<any>) => {
   const IconOption = props.data.icon;
-  console.log(props.data.icon);
   return (
     <SingleValue {...props}>
       <Box display={'flex'} alignItems={'center'} gap={'8px'}>

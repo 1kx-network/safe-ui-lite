@@ -35,8 +35,8 @@ export default function SignTransaction() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'signed' | 'error' | ''>('');
-  const [owners, setOwners] = useState<string[]>([]);
+  const [status, setStatus] = useState<'loading' | 'success' | 'signed' | 'error' | ''>('loading');
+  const [threshold, setThreshold] = useState<number>(0);
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
 
@@ -54,8 +54,9 @@ export default function SignTransaction() {
 
   const getOwners = async () => {
     if (!safeSdk) return;
-    const owners = await safeSdk.getOwners();
-    setOwners(owners);
+    const threshold = await safeSdk.getThreshold();
+    setThreshold(threshold);
+    setStatus('');
   };
 
   const checkAndSwitchNetwork = async (props: ICheckAndSwitchNetwork) => {
@@ -102,11 +103,15 @@ export default function SignTransaction() {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
-    signedCount === owners.length ? handleExecute() : handleSignTransaction();
+    signedCount === threshold ? handleExecute() : handleSignTransaction();
   };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
+    if (status === 'signed') {
+      // TODO: show toast
+      return;
+    }
     const signedTransaction = await safeSdk.signTransaction(safeTransaction);
     setSafeTransaction(signedTransaction);
     const originalUrl = new URL(window.location.href);
@@ -165,9 +170,11 @@ export default function SignTransaction() {
 
   let buttonText = 'Sign Transaction';
   if (status === 'success') {
+    buttonText = 'Successfully deployed';
+  } else if (signedCount === threshold) {
     buttonText = 'Execute';
-  } else if (signedCount === owners.length) {
-    buttonText = 'Execute';
+  } else if (status === 'loading') {
+    buttonText = 'Loading...';
   } else if (status === 'signed') {
     buttonText = 'Signed';
   }
@@ -195,7 +202,7 @@ export default function SignTransaction() {
             {address ? (
               <WalletButton
                 disabled={status === 'loading'}
-                variant="contained"
+                variant={status === 'success' ? 'outlined' : 'contained'}
                 styles={styledBtn}
                 onClick={handleTransaction}
               >
@@ -238,7 +245,7 @@ export default function SignTransaction() {
 
             <WalletTypography fontSize={17}>
               <WalletTypography fontWeight={600}>{signedCount} </WalletTypography>
-              out of <WalletTypography fontWeight={600}>{owners.length}</WalletTypography> owners
+              out of <WalletTypography fontWeight={600}>{threshold}</WalletTypography> owners
             </WalletTypography>
           </OwnersInfoStyled>
         </WalletPaper>

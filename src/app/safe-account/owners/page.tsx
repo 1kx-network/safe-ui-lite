@@ -78,9 +78,8 @@ const SafeAccountOwners = () => {
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
     setIsLoading(true);
-    await deploySafe(filledOwners, filledOwners.length)
+    await deploySafe(filledOwners, needConfirmOwner)
       .then(res => {
-        console.log(needConfirmOwner);
         if (!!res) {
           router.push(routes.entryPage);
         }
