@@ -35,7 +35,7 @@ export default function SignTransaction() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<'loading' | 'success' | 'signed' | 'error' | ''>('');
   const [owners, setOwners] = useState<string[]>([]);
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
@@ -126,14 +126,18 @@ export default function SignTransaction() {
 
   useEffect(() => {
     const signatures = searchParams.getAll('signatures')[0];
-    if (signatures) {
+    const signers = searchParams.getAll('signers')[0];
+    if (signatures && signers) {
       setSignedCount(signatures.split(',').length);
+      if (signers.split(',').some(signer => signer === address)) {
+        setStatus('signed');
+      }
     }
   }, [router, searchParams]);
 
   const handleExecute = async () => {
     try {
-      setIsLoading(true);
+      setStatus('loading');
       const signatures = searchParams.getAll('signatures')[0];
       const signers = searchParams.getAll('signers')[0];
       if (!safeSdk || !safeTransaction || !signatures || !signers) return;
@@ -148,7 +152,7 @@ export default function SignTransaction() {
       );
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
       await txResponse.transactionResponse?.wait();
-      setIsLoading(false);
+      setStatus('success');
     } catch (error) {
       console.log(`error`, error);
     }
@@ -158,6 +162,15 @@ export default function SignTransaction() {
     if (!pathName || !searchParams) return;
     navigator.clipboard.writeText(window.location.href);
   };
+
+  let buttonText = 'Sign Transaction';
+  if (status === 'success') {
+    buttonText = 'Execute';
+  } else if (signedCount === owners.length) {
+    buttonText = 'Execute';
+  } else if (status === 'signed') {
+    buttonText = 'Signed';
+  }
 
   return (
     <WalletLayout hideSidebar>
@@ -181,12 +194,12 @@ export default function SignTransaction() {
           <GridButtonStyled>
             {address ? (
               <WalletButton
-                disabled={isLoading}
+                disabled={status === 'loading'}
                 variant="contained"
                 styles={styledBtn}
                 onClick={handleTransaction}
               >
-                {`${signedCount === owners.length ? 'Execute' : 'Sign'} Transaction`}
+                {buttonText}
               </WalletButton>
             ) : (
               <WalletButton variant="outlined" styles={styledBtn}>
