@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { styled } from '@mui/system';
 
+import IconAddress from '@/assets/svg/defult-icon-address.svg';
+
 export const WrapperStyled = styled('div')(
   ({ theme }) => `
   min-width: 246px;
@@ -23,6 +25,7 @@ object-fit: cover;
 export const InfoUserStyled = styled('div')(
   ({ theme }) => `
   display: flex;
+  position: relative;
   align-items: center;
   padding: ${theme.spacing(2.5, 3.5)};
   border-radius: 0.875rem 0.875rem 0 0;
@@ -45,8 +48,8 @@ export const MenuStyled = styled('div')(
   `
 );
 
-export const ItemMenuStyled = styled(Link)(
-  ({ theme }) => `
+export const ItemMenuStyled = styled(Link)<{ disabled?: boolean }>(
+  ({ theme, disabled }) => `
 	border: 1px solid transparent;
 	display: flex;
   align-items: center;
@@ -55,10 +58,12 @@ export const ItemMenuStyled = styled(Link)(
 	padding: ${theme.spacing(1.5, 3)};  
 	color: ${theme.palette.textDark};
   border-radius: 0.5rem;
+  background-color: ${disabled ? theme.palette.grey : 'transparent'};
+  cursor: ${disabled ? 'not-allowed' : 'pointer'};
 
  	&:hover {
     text-decoration: none;
-    background-color: ${theme.palette.textDarkLight};
+    background-color: ${disabled ? theme.palette.grey : theme.palette.textDarkLight};
 	}
 `
 );
@@ -90,3 +95,36 @@ export const boxStyleInfoUser = {
   flexDirection: 'column',
   gap: '5px',
 };
+
+export const IconOpenAccountsStyled = styled('div')(
+  ({ theme }) => `
+  padding: ${theme.spacing(4.1)} 0 ${theme.spacing(4.1)} ${theme.spacing(4.1)};
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+`
+);
+
+export const AccountWrapperStyled = styled('div')(
+  ({ theme }) => `
+  background-color: ${theme.palette.lightSecondary};
+`
+);
+
+export const ItemAccountStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ${theme.spacing(3.5)} 0;
+  border-bottom: 0.5px solid ${theme.palette.tetriaryLightGrey};
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: 0.5px solid transparent;
+  }
+
+`
+);
+
+export const IconDefaultAddressStyled = styled(IconAddress)``;

@@ -1,5 +1,7 @@
 'use client';
 import { Box } from '@mui/system';
+import { useRouter } from 'next/navigation';
+import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -13,8 +15,29 @@ import {
   WrapperStyled,
   styledBtn,
 } from './home.styles';
+import routes from './routes';
 
 export default function Home() {
+  const { address } = useWeb3ModalAccount();
+  const { open } = useWeb3Modal();
+  const router = useRouter();
+
+  const handleCreateTransaction = async () => {
+    if (address) {
+      router.push(routes.newTransaction);
+    } else {
+      await open();
+    }
+  };
+
+  const handleAddfunds = async () => {
+    if (address) {
+      router.push(routes.entryPage);
+    } else {
+      await open();
+    }
+  };
+
   return (
     <WalletLayout>
       <WrapperStyled>
@@ -43,7 +66,7 @@ export default function Home() {
                   Receive Dai to start interacting with your account.
                 </WalletTypography>
               </Box>
-              <WalletButton variant="contained" styles={styledBtn}>
+              <WalletButton variant="contained" styles={styledBtn} onClick={handleAddfunds}>
                 Add funds
               </WalletButton>
             </WalletPaper>
@@ -59,7 +82,7 @@ export default function Home() {
                   Simply send funds, add a new signer or swap tokens through a safe app.
                 </WalletTypography>
               </Box>
-              <WalletButton variant="outlined" styles={styledBtn}>
+              <WalletButton variant="outlined" styles={styledBtn} onClick={handleCreateTransaction}>
                 Create Transaction
               </WalletButton>
             </WalletPaper>

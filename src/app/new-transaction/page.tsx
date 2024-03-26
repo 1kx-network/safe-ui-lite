@@ -185,19 +185,6 @@ export default function NewTransaction() {
                 <WalletTypography fontSize={17} fontWeight={600}>
                   Recipient address or ENS
                 </WalletTypography>
-                {/* <Controller
-                  control={control}
-                  name="address"
-                  render={({ field }) => (
-                    <WalletSelect
-                      options={addresses}
-                      isSearchable
-                      value={field.value}
-                      onBlur={field.onBlur}
-                      onChange={field.onChange}
-                    />
-                  )}
-                /> */}
 
                 <Controller
                   control={control}
@@ -277,7 +264,7 @@ export default function NewTransaction() {
 
                   <StatusLineStyled />
 
-                  <ItemProccessingStyled>
+                  <ItemProccessingStyled sx={{ opacity: 0.2 }}>
                     {isConfirmed ? <ConfirmIcon /> : <ConfirmedWaitStyled>+</ConfirmedWaitStyled>}
                     <WalletTypography fontSize={17} fontWeight={600}>
                       Confirmed (0 of 2)
@@ -285,7 +272,7 @@ export default function NewTransaction() {
                   </ItemProccessingStyled>
 
                   <StatusLineStyled />
-                  <ItemProccessingStyled>
+                  <ItemProccessingStyled sx={{ opacity: 0.2 }}>
                     {isExecute ? <ConfirmIcon /> : <ExecuteIconStyled />}
                     <WalletTypography fontSize={17} fontWeight={600}>
                       Execute

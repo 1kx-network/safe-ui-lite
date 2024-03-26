@@ -12,19 +12,25 @@ export const TokenList = () => {
         Tokens
       </WalletTypography>
       <TokenListStyled>
-        {tokenList.map(elem => (
-          <TokenItemStyled key={elem.id}>
-            <Box display={'flex'} alignItems={'center'}>
-              <IconStyled>{elem.icon}</IconStyled>
+        {tokenList.map(elem => {
+          const IconToken = elem.icon;
+
+          return (
+            <TokenItemStyled key={elem.id}>
+              <Box display={'flex'} alignItems={'center'}>
+                <IconStyled>
+                  <IconToken />
+                </IconStyled>
+                <WalletTypography fontWeight={600} fontSize={17}>
+                  {elem.value}
+                </WalletTypography>
+              </Box>
               <WalletTypography fontWeight={600} fontSize={17}>
-                {elem.value}
+                {elem?.count} {elem.label}
               </WalletTypography>
-            </Box>
-            <WalletTypography fontWeight={600} fontSize={17}>
-              {elem.count} {elem.label}
-            </WalletTypography>
-          </TokenItemStyled>
-        ))}
+            </TokenItemStyled>
+          );
+        })}
       </TokenListStyled>
     </WalletPaper>
   );

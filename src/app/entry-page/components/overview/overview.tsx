@@ -30,7 +30,7 @@ export const Overview = () => {
   const [balanceAccount, setBalanceAccount] = useState('0');
   const router = useRouter();
   const { safeSdk } = useSafeStore();
-  const { chainId } = useWeb3ModalAccount();
+  const { address, chainId } = useWeb3ModalAccount();
 
   const safeAddress = localStorage.getItem('safeAddress');
 
@@ -101,10 +101,14 @@ export const Overview = () => {
           {balanceAccount} tokens
         </WalletTypography>
         <ButtonsGridStyled>
-          <WalletButton onClick={handleSend} variant="contained" disabled={!balanceAccount.length}>
+          <WalletButton
+            onClick={handleSend}
+            variant="contained"
+            disabled={address ? !balanceAccount.length : false}
+          >
             Send
           </WalletButton>
-          <WalletButton onClick={handleReceive} variant="outlined">
+          <WalletButton onClick={handleReceive} variant="outlined" disabled={!address}>
             Receive
           </WalletButton>
         </ButtonsGridStyled>
