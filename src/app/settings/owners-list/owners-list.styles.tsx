@@ -7,6 +7,7 @@ export const WrapperStyled = styled('div')(
     height: 100%;
     flex-direction: column; 
     gap: ${theme.spacing(3.5)};
+    margin-top: 1.5rem;
 `
 );
 
@@ -25,15 +26,8 @@ export const BoxStyled = styled('div')(
   ({ theme }) => `
     display: flex;
     flex-direction: column;
-    gap: ${theme.spacing(4)};
+    gap: ${theme.spacing(3)};
 `
-);
-
-export const BoxIconStyled = styled('div')(
-  ({ theme }) => `
-    margin-left: ${theme.spacing(3)};
-    margin-bottom: -${theme.spacing(1)};
-  `
 );
 
 export const GridBtnStyled = styled('div')`
@@ -44,6 +38,12 @@ export const GridBtnStyled = styled('div')`
 
 export const styledBtn = {
   width: 'fit-content',
+  fontSize: '14px',
+};
+
+export const styledCSV = {
+  textDecoretion: 'none',
+  color: 'transparent',
 };
 
 export const ConfirmationsStyled = styled('div')(
@@ -53,3 +53,11 @@ export const ConfirmationsStyled = styled('div')(
   gap: ${theme.spacing(6)}
 `
 );
+
+export const BodyListAccountsStyled = styled('div')`
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: auto;
+  max-height: 350px;
+`;

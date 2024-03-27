@@ -33,6 +33,7 @@ export const BodyOpenStyled = styled('div')<{ isOpen: boolean }>(
   ({ theme, isOpen }) => `
       overflow: hidden;
       position: absolute;
+      z-index: 999;
       display: ${isOpen ? 'flex' : 'none'};
       width: 173px;
       border-radius: ${theme.spacing(4.5)};

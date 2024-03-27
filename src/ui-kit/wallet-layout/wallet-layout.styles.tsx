@@ -32,6 +32,7 @@ export const LayoutStyled = styled('main')(
 );
 
 export const InfoUserStyled = styled('div')`
+  top: 1.5rem;
   display: inline-block;
   position: absolute;
   right: 0;

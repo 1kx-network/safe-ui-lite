@@ -15,6 +15,7 @@ export const themeMuiBase = {
     lighError: '#ff2e1f01',
     tetriaryLightGrey: '#D9D9D9', // border
     tetriaryGrey: '#777F88', // label text
+    greyToo: '#636363', // label grey2
     success: '#43C057',
   },
 

@@ -9,18 +9,27 @@ import IconAddress from '@/assets/svg/defult-icon-address.svg';
 export const WrapperStyled = styled('div')(
   ({ theme }) => `
   min-width: 246px;
+  width: 246px;
   margin-right: ${theme.spacing(5)};
   overflow: hidden;
   height: 100%;
+  padding: 1.5rem 0;
   border-radius: 0 0 0.875rem 0.875rem;
 `
 );
 
+export const BodyMainInfoStyled = styled('div')`
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0 0 0.875rem 0.875rem;
+`;
+
 export const ImgUserStyled = styled(Image)(
   ({ theme }) => `
-border-radius: 50%;
-margin-right: ${theme.spacing(3.5)};
-object-fit: cover;
+  border-radius: 50%;
+  margin-right: ${theme.spacing(3.5)};
+  object-fit: cover;
 `
 );
 
