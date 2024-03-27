@@ -6,6 +6,7 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useOwnerList } from '@/queries/safe-accounts';
 import routes from '@/app/routes';
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton } from '@/ui-kit';
+import { useNetwork } from '@/hooks/useNetwork';
 
 import { ListItem } from './components/list-item/list-item';
 import { HeaderStyled, MainContainerStyled } from './list.styles';
@@ -16,6 +17,9 @@ export default function SafeAccountList() {
   const pathName = usePathname();
   const { address, chainId } = useWeb3ModalAccount();
   const { data } = useOwnerList(address);
+
+  const network = useNetwork();
+  const networkName = network?.name.toString();
 
   useEffect(() => {
     if (chainId && data && pathName === routes.safeAccountList) {
@@ -78,7 +82,8 @@ export default function SafeAccountList() {
               <ListItem
                 key={index}
                 address={address}
-                network={chainId}
+                chainId={chainId}
+                network={networkName}
                 onClick={() => handleListItemClick(address)}
               />
             ))

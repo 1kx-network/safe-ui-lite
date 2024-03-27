@@ -1,5 +1,7 @@
 import { styled } from '@mui/system';
 
+import IconAddress from '@/assets/svg/defult-icon-address.svg';
+
 export const BodyStyled = styled('div')(
   ({ theme }) => `
     display:flex;
@@ -33,3 +35,7 @@ export const AccountInfoStyled = styled('div')(
     gap: 4px;
 `
 );
+
+export const IconDefaultAddressStyled = styled(IconAddress)`
+  margin-right: 4px;
+`;

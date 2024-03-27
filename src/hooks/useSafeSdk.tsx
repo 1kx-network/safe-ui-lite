@@ -92,5 +92,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
       return null;
     }
   };
+
   return { deploySafe, createSafe };
 }

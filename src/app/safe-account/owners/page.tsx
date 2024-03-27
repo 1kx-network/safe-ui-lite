@@ -25,12 +25,12 @@ import QrCodeIcon from '@/assets/svg/qr_code.svg';
 import IconDelete from '@/assets/svg/delete.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import WalletAlert from '@/ui-kit/wallet-allert';
-import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
 import Accordion from '../components/accordion';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { AccountInfo } from '../components/account-info/account-info';
+import useActiveOwnerStore from '@/stores/active-owners-store';
 
 import {
   BoxAddressStyled,
@@ -52,7 +52,7 @@ const SafeAccountOwners = () => {
   const { address, chainId } = useWeb3ModalAccount();
   const network = useNetwork();
   const router = useRouter();
-  const { deploySafe } = useSafeSdk();
+  const storeOwners = useActiveOwnerStore();
 
   const networkName = network?.name.toString();
 
@@ -73,21 +73,13 @@ const SafeAccountOwners = () => {
     }
   }, [address]);
 
-  const [isLoading, setIsLoading] = React.useState(false);
-
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
-    setIsLoading(true);
-    console.log(`owners`, owners);
-    console.log(`needConfirmOwner`, needConfirmOwner);
-    await deploySafe(filledOwners, needConfirmOwner)
-      .then(res => {
-        if (!!res) {
-          router.push(routes.entryPage);
-        }
-      })
-      .catch(() => console.log('Something error with create account'))
-      .finally(() => setIsLoading(false));
+    storeOwners.setOwners(filledOwners);
+    const filterSigners =
+      needConfirmOwner > filledOwners.length ? filledOwners.length : needConfirmOwner;
+    storeOwners.setNeedConfirmOwner(filterSigners);
+    router.push(routes.safeAccountReview);
   };
 
   const handleAddOwner = () => {
@@ -242,10 +234,10 @@ const SafeAccountOwners = () => {
               </Box>
             </Box>
             <GridButtonStyled>
-              <WalletButton disabled={isLoading} onClick={handleBack} variant="outlined">
+              <WalletButton onClick={handleBack} variant="outlined">
                 Back
               </WalletButton>
-              <WalletButton disabled={isLoading} onClick={handleNext} variant="contained">
+              <WalletButton onClick={handleNext} variant="contained">
                 Next
               </WalletButton>
             </GridButtonStyled>

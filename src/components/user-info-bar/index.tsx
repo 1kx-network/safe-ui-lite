@@ -65,14 +65,14 @@ export const UserInfoBar = () => {
 
   useEffect(() => {
     if (address && isTryToConnect) {
-      router.push(routes.safeAccountList);
+      router.push(routes.safeAccountCreate);
       setIsOpenModal(false);
       setIsTryToConnect(false);
     }
   }, [address, isTryToConnect]);
 
   const handleConnect = async () => {
-    await open();
+    open();
     setIsTryToConnect(true);
   };
 
@@ -88,7 +88,7 @@ export const UserInfoBar = () => {
         {address ? (
           <>
             <Box display={'flex'} alignItems={'center'} gap={1} zIndex={0}>
-              <IconDefaultAdd />
+              <IconDefaultAdd width={'16px'} height={'16px'} />
               <WalletTypography
                 fontSize={12}
                 fontWeight={400}
