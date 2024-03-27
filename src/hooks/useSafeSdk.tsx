@@ -35,7 +35,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
       };
       const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true }).catch(
         res => {
-          console.log(res);
           return res;
         }
       );
@@ -64,7 +63,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
             '1313161554': [],
           };
       localListParsed[chainId ?? 1].push(addressAccount);
-      console.log(`localListParsed`, localListParsed);
       localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
       localStorage.setItem('safeAddress', addressAccount);
 

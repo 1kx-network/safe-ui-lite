@@ -78,6 +78,8 @@ const SafeAccountOwners = () => {
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
     setIsLoading(true);
+    console.log(`owners`, owners);
+    console.log(`needConfirmOwner`, needConfirmOwner);
     await deploySafe(filledOwners, needConfirmOwner)
       .then(res => {
         if (!!res) {
