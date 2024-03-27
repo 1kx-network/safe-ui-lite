@@ -6,17 +6,6 @@ import { styledHeader } from '../../entry-page.styles';
 import { ItemTransactionStyled, styledPaper } from './transactions.styles';
 
 export const Transactions = () => {
-  // const { safeSdk } = useSafeStore();
-
-  // useEffect(() => {
-  //   if (safeSdk) {
-  //     const pendingTrxData = async () => {
-  //       // const data = await safeSdk.getTransactionHash();
-  //     };
-  //     pendingTrxData();
-  //   }
-  // }, [safeSdk]);
-
   return (
     <>
       <WalletTypography style={styledHeader}>Pending transactions</WalletTypography>

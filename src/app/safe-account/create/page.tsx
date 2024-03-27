@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 import {
   WalletTypography,
   WalletPaper,
@@ -21,7 +22,6 @@ import {
   WrapperStyled,
   styleWalletPaper,
 } from '../safe-account.styles';
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { optionsNetwork } from '../constants';
 import ETHIcon from '@/assets/svg/eth-icon.svg';
 import { AccountInfo } from '../components/account-info/account-info';
@@ -117,7 +117,9 @@ export default function CreatePageAccount() {
                 <WalletSelect
                   options={options}
                   defaultValue={chooseOpt}
-                  onChange={({ chainId }: { chainId: number }) => handleChooseNetwork(chainId)}
+                  onChange={(newValue: IOption | null | undefined) =>
+                    newValue && handleChooseNetwork(newValue.chainId)
+                  }
                 />
               </Box>
             </Box>

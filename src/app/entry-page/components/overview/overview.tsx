@@ -32,7 +32,8 @@ export const Overview = () => {
   const { safeSdk } = useSafeStore();
   const { address, chainId } = useWeb3ModalAccount();
 
-  const safeAddress = localStorage.getItem('safeAddress');
+  const safeAddress: string | null =
+    typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
 
   useEffect(() => {
     if (safeSdk) {
