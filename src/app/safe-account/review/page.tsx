@@ -167,7 +167,7 @@ export default function CreatePageAccount() {
               <WalletButton variant="outlined" disabled={isLoading} onClick={handleClickBack}>
                 Back
               </WalletButton>
-              <WalletButton variant="contained" disabled={isLoading} onClick={handleCreate}>
+              <WalletButton variant="contained" onClick={handleCreate} loading={isLoading}>
                 Create
               </WalletButton>
             </Box>

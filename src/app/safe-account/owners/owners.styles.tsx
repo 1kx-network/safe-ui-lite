@@ -13,8 +13,26 @@ export const OwnersListStyled = styled('div')(
     display: flex;
     flex-direction: column;
     max-height: 320px;
-    overflow: scroll;
+    overflow-y: scroll;
     gap: ${theme.spacing(3)};
+
+    &::-webkit-scrollbar {
+      width: 1px !important;
+    }
+    &::-webkit-scrollbar-thumb {  
+      background-color: black !important;
+      width: 1px !important;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: transparent !important;
+    }
+    &::-moz-scrollbar-thumb {
+      background-color: ${theme.palette.textDark} !important;
+      width: 20px !important;
+    }
+    &::-moz-scrollbar-track {
+      background-color: white !important;
+    }
 `
 );
 
