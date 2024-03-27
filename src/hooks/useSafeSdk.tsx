@@ -43,7 +43,9 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
       const addressAccount = await safeSdk.getAddress();
 
-      const localList = localStorage.getItem('createdSafes');
+      const localList = localStorage.getItem('createdSafes')
+        ? localStorage.getItem('createdSafes')
+        : null;
       const localListParsed = localList
         ? JSON.parse(localList)
         : {

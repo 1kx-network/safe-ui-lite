@@ -1,5 +1,4 @@
 import { styled } from '@mui/system';
-
 export const TransactionInfoStyled = styled('div')(
   ({ theme }) => `
     display: flex;

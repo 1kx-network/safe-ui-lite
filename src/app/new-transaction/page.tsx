@@ -60,8 +60,8 @@ export default function NewTransaction() {
     ? network?.name.toString().charAt(0).toUpperCase() + network?.name.toString().slice(1)
     : '';
 
-  const safeAddress = localStorage.getItem('safeAddress');
-  console.log('_safeAddress', safeAddress);
+  const safeAddress: string | null =
+    typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
 
   const router = useRouter();
   const {

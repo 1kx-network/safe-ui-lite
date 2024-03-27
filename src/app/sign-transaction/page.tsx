@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { useWeb3ModalAccount, useSwitchNetwork, useWeb3Modal } from '@web3modal/ethers/react';
@@ -13,6 +13,7 @@ import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import useSafeStore from '@/stores/safe-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
+import { customToasty } from '@/components';
 
 import {
   BoxOwnerLinkStyled,
@@ -22,7 +23,7 @@ import {
   TransactionInfoStyled,
   WrapperStyled,
   styledBtn,
-} from './sing-transaction.styles';
+} from './sing-transaction.styles'; // Изменил путь к компоненту стилей
 
 interface ICheckAndSwitchNetwork {
   chainIdUrl: string | null;
@@ -31,7 +32,7 @@ interface ICheckAndSwitchNetwork {
   open: () => void;
 }
 
-export default function SignTransaction() {
+const SignTransactionComponent = () => {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -44,13 +45,14 @@ export default function SignTransaction() {
   const { open } = useWeb3Modal();
   const { switchNetwork } = useSwitchNetwork();
 
-  const safeAddress = searchParams.get('address');
+  // const safeAddress = searchParams.get('address');
+  const safeAddress = typeof window !== 'undefined' ? searchParams.get('address') : null;
+
   useSafeSdk(safeAddress);
   const chainIdUrl = searchParams.get('chainId');
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
-  // const safeTrxsHash = JSON.parse(localStorage.getItem('safeTrxsHash') ?? '[]');
 
   const getOwners = async () => {
     if (!safeSdk) return;
@@ -92,8 +94,6 @@ export default function SignTransaction() {
         const safeTransaction = await safeSdk.createTransaction({
           transactions: [safeTransactionData],
         });
-        // const updateTrxHash = safeTrxsHash[safeAddress].unshift(safeTransaction);
-        // localStorage.setItem('safeTrxsHash', JSON.stringify({ safeAddress: updateTrxHash }));
         setSafeTransaction(safeTransaction);
       }
     };
@@ -110,6 +110,7 @@ export default function SignTransaction() {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
     if (status === 'signed') {
       // TODO: show toast
+      customToasty('Transaction was sign');
       return;
     }
     const signedTransaction = await safeSdk.signTransaction(safeTransaction);
@@ -127,6 +128,8 @@ export default function SignTransaction() {
     originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
     originalUrl.searchParams.set('signers', encodedSigners.join(','));
     router.push(originalUrl.toString());
+
+    customToasty('Succes sign transaction', 'success');
   };
 
   useEffect(() => {
@@ -158,14 +161,17 @@ export default function SignTransaction() {
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
       await txResponse.transactionResponse?.wait();
       setStatus('success');
+      customToasty('Success execute', 'success');
     } catch (error) {
       console.log(`error`, error);
+      customToasty('Something error with execute', 'error');
     }
   };
 
   const handleCopy = () => {
     if (!pathName || !searchParams) return;
     navigator.clipboard.writeText(window.location.href);
+    customToasty('Link was copy', 'success');
   };
 
   let buttonText = 'Sign Transaction';
@@ -252,4 +258,10 @@ export default function SignTransaction() {
       </WrapperStyled>
     </WalletLayout>
   );
+};
+
+export default function SignTransaction() {
+  <Suspense fallback={<div>Loading...</div>}>
+    <SignTransactionComponent />
+  </Suspense>;
 }
