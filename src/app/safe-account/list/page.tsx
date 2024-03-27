@@ -23,10 +23,28 @@ export default function SafeAccountList() {
 
   useEffect(() => {
     if (chainId && data && pathName === routes.safeAccountList) {
-      const listAccount = data[chainId];
-
-      if (listAccount !== undefined) {
-        setDataList(listAccount);
+      const fetchedList = data[chainId];
+      const localList = localStorage.getItem('createdSafes');
+      const localListParsed = localList
+        ? JSON.parse(localList)
+        : {
+            '1': [],
+            '10': [],
+            '56': [],
+            '100': [],
+            '137': [],
+            '324': [],
+            '1101': [],
+            '8453': [],
+            '42161': [],
+            '42220': [],
+            '43114': [],
+            '84532': [],
+            '11155111': [],
+            '1313161554': [],
+          };
+      if (fetchedList !== undefined) {
+        setDataList(fetchedList.concat(localListParsed[chainId]));
       }
     }
   }, [data, chainId]);

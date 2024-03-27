@@ -35,8 +35,8 @@ export default function SignTransaction() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [owners, setOwners] = useState<string[]>([]);
+  const [status, setStatus] = useState<'loading' | 'success' | 'signed' | 'error' | ''>('loading');
+  const [threshold, setThreshold] = useState<number>(0);
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
 
@@ -54,8 +54,9 @@ export default function SignTransaction() {
 
   const getOwners = async () => {
     if (!safeSdk) return;
-    const owners = await safeSdk.getOwners();
-    setOwners(owners);
+    const threshold = await safeSdk.getThreshold();
+    setThreshold(threshold);
+    setStatus('');
   };
 
   const checkAndSwitchNetwork = async (props: ICheckAndSwitchNetwork) => {
@@ -102,11 +103,15 @@ export default function SignTransaction() {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
-    signedCount === owners.length ? handleExecute() : handleSignTransaction();
+    signedCount === threshold ? handleExecute() : handleSignTransaction();
   };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
+    if (status === 'signed') {
+      // TODO: show toast
+      return;
+    }
     const signedTransaction = await safeSdk.signTransaction(safeTransaction);
     setSafeTransaction(signedTransaction);
     const originalUrl = new URL(window.location.href);
@@ -126,14 +131,18 @@ export default function SignTransaction() {
 
   useEffect(() => {
     const signatures = searchParams.getAll('signatures')[0];
-    if (signatures) {
+    const signers = searchParams.getAll('signers')[0];
+    if (signatures && signers) {
       setSignedCount(signatures.split(',').length);
+      if (signers.split(',').some(signer => signer === address)) {
+        setStatus('signed');
+      }
     }
   }, [router, searchParams]);
 
   const handleExecute = async () => {
     try {
-      setIsLoading(true);
+      setStatus('loading');
       const signatures = searchParams.getAll('signatures')[0];
       const signers = searchParams.getAll('signers')[0];
       if (!safeSdk || !safeTransaction || !signatures || !signers) return;
@@ -148,7 +157,7 @@ export default function SignTransaction() {
       );
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
       await txResponse.transactionResponse?.wait();
-      setIsLoading(false);
+      setStatus('success');
     } catch (error) {
       console.log(`error`, error);
     }
@@ -158,6 +167,17 @@ export default function SignTransaction() {
     if (!pathName || !searchParams) return;
     navigator.clipboard.writeText(window.location.href);
   };
+
+  let buttonText = 'Sign Transaction';
+  if (status === 'success') {
+    buttonText = 'Successfully deployed';
+  } else if (signedCount === threshold) {
+    buttonText = 'Execute';
+  } else if (status === 'loading') {
+    buttonText = 'Loading...';
+  } else if (status === 'signed') {
+    buttonText = 'Signed';
+  }
 
   return (
     <WalletLayout hideSidebar>
@@ -181,12 +201,12 @@ export default function SignTransaction() {
           <GridButtonStyled>
             {address ? (
               <WalletButton
-                disabled={isLoading}
-                variant="contained"
+                disabled={status === 'loading'}
+                variant={status === 'success' ? 'outlined' : 'contained'}
                 styles={styledBtn}
                 onClick={handleTransaction}
               >
-                {`${signedCount === owners.length ? 'Execute' : 'Sign'} Transaction`}
+                {buttonText}
               </WalletButton>
             ) : (
               <WalletButton variant="outlined" styles={styledBtn}>
@@ -225,7 +245,7 @@ export default function SignTransaction() {
 
             <WalletTypography fontSize={17}>
               <WalletTypography fontWeight={600}>{signedCount} </WalletTypography>
-              out of <WalletTypography fontWeight={600}>{owners.length}</WalletTypography> owners
+              out of <WalletTypography fontWeight={600}>{threshold}</WalletTypography> owners
             </WalletTypography>
           </OwnersInfoStyled>
         </WalletPaper>

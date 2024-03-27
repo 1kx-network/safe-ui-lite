@@ -3,8 +3,8 @@ export const networks = [
     chainId: 1,
     name: 'Ethereum',
     currency: 'ETH',
-    explorerUrl: 'https://etherscan.io',
-    rpcUrl: 'https://cloudflare-eth.com',
+    explorerUrl: 'https://explorer.buildbear.io/boostylabs/transactions',
+    rpcUrl: 'https://rpc.buildbear.io/boostylabs',
   },
   {
     chainId: 11155111,

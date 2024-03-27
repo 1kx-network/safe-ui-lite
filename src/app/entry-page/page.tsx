@@ -10,8 +10,12 @@ import { TokenList } from './components/tokens-list/tokens-list';
 import { Transactions } from './components/transactions/transactions';
 import { BoxGridStyled, WrapperStyled } from './entry-page.styles';
 
+let safeAddress: string | null = null;
+
 export default function EntryPage() {
-  const safeAddress = localStorage.getItem('safeAddress');
+  if (typeof window !== 'undefined') {
+    safeAddress = localStorage.getItem('safeAddress');
+  }
   console.log('_safeAddress_EntryPage_', safeAddress);
   useSafeSdk(safeAddress);
 
