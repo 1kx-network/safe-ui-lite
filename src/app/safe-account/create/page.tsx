@@ -50,7 +50,6 @@ export default function CreatePageAccount() {
     if (chainId) {
       const updatedOption = optionsNetwork.find(option => option.chainId === +chainId);
       if (updatedOption) {
-        console.log(updatedOption);
         setChooseOpt(updatedOption);
       } else if (chainId && networkName) {
         const newOption: IOption = {
