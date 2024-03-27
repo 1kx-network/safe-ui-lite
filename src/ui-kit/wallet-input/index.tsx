@@ -52,7 +52,7 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
 
       <InputWrapperStyled $styles={errorStyle}>
         {startAdornment && (
-          <Box display={'flex'} ml={3}>
+          <Box display={'flex'} ml={3} gap={1}>
             <IconDefaultWalletStyled />
             <WalletTypography fontSize={14} fontWeight={500}>
               gno:

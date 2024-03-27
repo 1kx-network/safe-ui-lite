@@ -3,7 +3,7 @@ import React from 'react';
 import BNBIcon from '@/assets/svg/BNB.svg';
 import GnosisIcon from '@/assets/svg/gnosis.svg';
 import MaticIcon from '@/assets/svg/matic.svg';
-import ETHIcon from '@/assets/svg/ETH.svg';
+import ETHIcon from '@/assets/svg/eth.svg';
 import DefaultIcon from '@/assets/svg/default-network.svg';
 
 const iconMapping: { [key: number]: React.FunctionComponent<React.SVGProps<SVGSVGElement>> } = {

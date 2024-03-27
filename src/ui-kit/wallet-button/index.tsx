@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import IconLoader from '@/assets/svg/loader.svg';
+
 import { ButtonStyled } from './wallet-button.styles';
 
 interface IWalletButtonProps {

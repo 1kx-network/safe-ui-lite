@@ -9,7 +9,7 @@ type Store = {
 };
 
 const useActiveOwnerStore = create<Store>(set => ({
-  owners: [],
+  owners: ['sdfsdfsdf'],
   needConfirmOwner: 1,
 
   setOwners: (payload: string[]) => {

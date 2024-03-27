@@ -37,6 +37,7 @@ import {
   IconRemoveAccountStyled,
   CopyIconStyled,
   boxStyleInfoUserAddress,
+  BodyMainInfoStyled,
 } from './sidebar.styles';
 
 interface ISidebar {
@@ -121,52 +122,54 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   return (
     <WrapperStyled>
-      <InfoUserStyled>
-        <ImgUserStyled src={icon} alt="avatar" width={44} height={44} />
+      <BodyMainInfoStyled>
+        <InfoUserStyled>
+          <ImgUserStyled src={icon} alt="avatar" width={44} height={44} />
 
-        <Box sx={boxStyleInfoUser}>
-          <Box sx={boxStyleInfoUserAddress}>
-            <WalletTypography fontSize={12} fontWeight={400}>
-              <WalletTypography fontSize={12} fontWeight={500}>
-                gno:
+          <Box sx={boxStyleInfoUser}>
+            <Box sx={boxStyleInfoUserAddress}>
+              <WalletTypography fontSize={12} fontWeight={400}>
+                <WalletTypography fontSize={12} fontWeight={500}>
+                  gno:
+                </WalletTypography>
+                {headerAddress()}
               </WalletTypography>
-              {headerAddress()}
+              {safeAddress && (
+                <Box display={'flex'} alignItems={'center'}>
+                  <Link href={`${linkOnScan}address/${safeAddress}`} target="_blank">
+                    <OpenInNewIcon width="14px" height="14px" />
+                  </Link>
+                  <CopyIconStyled onClick={handleCopyAddress} />
+                </Box>
+              )}
+            </Box>
+
+            <WalletTypography fontSize={14} fontWeight={500}>
+              {balanceAccount} USD
             </WalletTypography>
-            {safeAddress && (
-              <Box display={'flex'} alignItems={'center'}>
-                <Link href={`${linkOnScan}address/${safeAddress}`} target="_blank">
-                  <OpenInNewIcon width="14px" height="14px" />
-                </Link>
-                <CopyIconStyled onClick={handleCopyAddress} />
-              </Box>
-            )}
           </Box>
 
-          <WalletTypography fontSize={14} fontWeight={500}>
-            {balanceAccount} USD
-          </WalletTypography>
-        </Box>
-
-        {address && (
-          <IconOpenAccountsStyled onClick={handleOpenAccount}>
-            <IconOpenAccount />
-          </IconOpenAccountsStyled>
-        )}
-      </InfoUserStyled>
-      <MenuStyled>
-        <ItemMenuStyled style={styleBtnTransaction} href={address ? routes.newTransaction : ''}>
-          <WalletTypography>New transaction</WalletTypography>
-        </ItemMenuStyled>
-
-        {menuList.map(item => (
-          <ItemMenuStyled key={item.id} href={item.url}>
-            <WrapperIconStyled isActive={item.url === pathname}>
-              <item.icon />
-            </WrapperIconStyled>
-            <WalletTypography>{item.title}</WalletTypography>
+          {address && (
+            <IconOpenAccountsStyled onClick={handleOpenAccount}>
+              <IconOpenAccount />
+            </IconOpenAccountsStyled>
+          )}
+        </InfoUserStyled>
+        <MenuStyled>
+          <ItemMenuStyled style={styleBtnTransaction} href={address ? routes.newTransaction : ''}>
+            <WalletTypography>New transaction</WalletTypography>
           </ItemMenuStyled>
-        ))}
-      </MenuStyled>
+
+          {menuList.map(item => (
+            <ItemMenuStyled key={item.id} href={item.url}>
+              <WrapperIconStyled isActive={item.url === pathname}>
+                <item.icon />
+              </WrapperIconStyled>
+              <WalletTypography>{item.title}</WalletTypography>
+            </ItemMenuStyled>
+          ))}
+        </MenuStyled>
+      </BodyMainInfoStyled>
 
       <CustomModal
         isOpen={isOpenAccount}

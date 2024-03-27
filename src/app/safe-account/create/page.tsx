@@ -23,7 +23,7 @@ import {
 } from '../safe-account.styles';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { optionsNetwork } from '../constants';
-import ETHIcon from '@/assets/svg/ETH.svg';
+import ETHIcon from '@/assets/svg/eth.svg';
 import { AccountInfo } from '../components/account-info/account-info';
 
 interface IOption {

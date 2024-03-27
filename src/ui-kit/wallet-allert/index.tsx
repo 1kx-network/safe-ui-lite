@@ -35,7 +35,7 @@ const WalletAlert = ({ title, description }: WalletAlertProps) => {
           </WalletTypography>
         </Box>
       </Box>
-      <InfoIcon />
+      <InfoIcon width="14px" height="14px" color="white" />
     </AlertStyled>
   );
 };
