@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import IconLoader from '@/assets/svg/loader.svg';
 import { ButtonStyled } from './wallet-button.styles';
 
 interface IWalletButtonProps {
@@ -9,6 +10,7 @@ interface IWalletButtonProps {
   variant?: 'contained' | 'outlined' | 'text';
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
+  loading?: boolean;
 }
 
 export function WalletButton({
@@ -18,6 +20,7 @@ export function WalletButton({
   variant,
   disabled,
   type,
+  loading,
 }: IWalletButtonProps) {
   return (
     <ButtonStyled
@@ -25,9 +28,10 @@ export function WalletButton({
       style={styles}
       onClick={onClick}
       variant={variant}
-      disabled={disabled}
+      disabled={disabled || loading}
+      loading={loading}
     >
-      {children}
+      {loading ? <IconLoader /> : children}
     </ButtonStyled>
   );
 }

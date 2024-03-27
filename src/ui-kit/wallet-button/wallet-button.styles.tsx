@@ -9,7 +9,8 @@ export const ButtonStyled = styled(
   variant?: 'contained' | 'outlined' | 'text';
   $styles?: React.CSSProperties;
   type?: 'button' | 'submit' | 'reset';
-}>(({ variant, theme, $styles }) => {
+  loading?: boolean;
+}>(({ variant, theme, $styles, loading }) => {
   const bgColors: {
     [key: string]: string;
   } = {
@@ -23,7 +24,7 @@ export const ButtonStyled = styled(
     justifyContent: 'center',
     fontWeight: 500,
     fontSize: '16px',
-    padding: theme.spacing(3),
+    padding: loading ? '0.583rem' : theme.spacing(3),
     borderRadius: '28px',
     color: variant === 'contained' ? theme.palette.white : theme.palette.black,
     width: '100%',
@@ -36,6 +37,7 @@ export const ButtonStyled = styled(
     backgroundColor: bgColors[variant ?? 0],
     transition: 'all 0.3s ease-in-out',
     ...$styles,
+
     '&:hover': {
       backgroundColor: variant !== 'text' ? theme.palette.tetriaryDark : 'transparent',
       color: variant !== 'text' ? theme.palette.white : theme.palette.tetriaryDark,
@@ -43,13 +45,17 @@ export const ButtonStyled = styled(
     },
 
     '&:disabled': {
-      opacity: 0.5,
-      cursor: 'not-allowed',
+      opacity: loading ? 0.85 : 0.5,
+      cursor: loading ? 'progress' : 'not-allowed',
 
       '&:hover': {
         backgroundColor: variant === 'contained' ? theme.palette.black : theme.palette.lightGrey,
         color: variant === 'contained' ? theme.palette.white : theme.palette.black,
       },
+    },
+
+    '&:loading': {
+      opacity: 0.9,
     },
   };
 });
