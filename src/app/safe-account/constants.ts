@@ -1,5 +1,5 @@
 import BNBIcon from '@/assets/svg/BNB.svg';
-import ETHIcon from '@/assets/svg/eth.svg';
+import ETHIcon from '@/assets/svg/eth-icon.svg';
 
 export const optionsNetwork = [
   { chainId: 1, label: 'ETH', value: 'ETH', icon: ETHIcon },
