@@ -5,7 +5,6 @@ import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import Cookies from 'js-cookie';
 
 import {
   GridStepsStyled,

@@ -258,9 +258,3 @@ export default function SignTransactionComponent() {
     </WalletLayout>
   );
 }
-
-// export default function SignTransaction() {
-//   <Suspense fallback={<div>Loading...</div>}>
-//     <SignTransactionComponent />
-//   </Suspense>;
-// }

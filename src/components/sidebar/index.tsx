@@ -19,6 +19,8 @@ import { iconNetwork } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { networks } from '@/context/networks';
 import useSafeStore from '@/stores/safe-store';
+import useActiveSafeAddress from '@/stores/safe-address-store';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import { dataUserMock, menuList } from './ fixtures';
 import {
@@ -40,8 +42,6 @@ import {
   boxStyleInfoUserAddress,
   BodyMainInfoStyled,
 } from './sidebar.styles';
-import useActiveSafeAddress from '@/stores/safe-address-store';
-import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 interface ISidebar {
   icon?: string;

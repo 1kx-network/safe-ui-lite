@@ -4,6 +4,7 @@ import { useDisconnect, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/eth
 import { Box } from '@mui/system';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 import { formattedLabel } from '@/utils/foramtters';
 import { WalletButton, WalletTypography } from '@/ui-kit';
@@ -12,7 +13,6 @@ import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';
 import { CustomModal } from '..';
 import routes from '@/app/routes';
-import Cookies from 'js-cookie';
 
 import {
   WrapperStyled,

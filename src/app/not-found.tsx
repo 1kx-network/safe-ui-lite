@@ -1,11 +1,12 @@
 'use client';
 import { Box } from '@mui/system';
+import Link from 'next/link';
+
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
+import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 import { WrapperStyled, styledBtn, styledPaper } from './not-found/404.styles';
-import Link from 'next/link';
 import routes from './routes';
-import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 export default function NotFound() {
   return (

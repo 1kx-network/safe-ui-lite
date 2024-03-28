@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+
 import routes from './app/routes';
 
 function parseCookie(cookieHeader: string | null): Record<string, string> {
