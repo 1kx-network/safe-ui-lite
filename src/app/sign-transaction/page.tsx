@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -25,7 +25,7 @@ import {
   TransactionInfoStyled,
   WrapperStyled,
   styledBtn,
-} from './sing-transaction.styles'; // Изменил путь к компоненту стилей
+} from './sing-transaction.styles';
 
 interface ICheckAndSwitchNetwork {
   chainIdUrl: string | null;
@@ -34,7 +34,7 @@ interface ICheckAndSwitchNetwork {
   open: () => void;
 }
 
-export default function SignTransactionComponent() {
+const SignTransactionComponent = () => {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -326,5 +326,13 @@ export default function SignTransactionComponent() {
         </WalletPaper>
       </WrapperStyled>
     </WalletLayout>
+  );
+};
+
+export default function SignTransaction() {
+  return (
+    <Suspense>
+      <SignTransactionComponent />
+    </Suspense>
   );
 }
