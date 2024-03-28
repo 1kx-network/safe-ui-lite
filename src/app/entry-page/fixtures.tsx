@@ -9,9 +9,12 @@ export interface IOptions {
   count?: number;
 }
 
-export const options = [{ id: 1, label: 'USD', value: 'USD', icon: DollarIcon }];
+export const options = [
+  { id: 0, label: 'ETH', value: 'ETH', icon: EthIcon },
+  { id: 1, label: 'USD', value: 'USD', icon: DollarIcon },
+];
 
-export const tokenList = [{ id: 1, value: 'Ethereum', label: 'ETH', icon: EthIcon, count: 12 }];
+export const tokenList = [{ id: 0, value: 'Ethereum', label: 'ETH', icon: EthIcon, count: 12 }];
 
 export const transactions = [
   {
