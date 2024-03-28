@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useWeb3ModalAccount, useSwitchNetwork, useWeb3Modal } from '@web3modal/ethers/react';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 
@@ -14,6 +15,7 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import useSafeStore from '@/stores/safe-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { customToasty } from '@/components';
+import { db } from '@/db';
 
 import {
   BoxOwnerLinkStyled,
@@ -53,6 +55,15 @@ const SignTransactionComponent = () => {
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
+
+  const transactions = useLiveQuery(
+    () =>
+      db.transactions
+        .where('hash')
+        .equals(safeTxHash ?? '')
+        .toArray(),
+    [safeTxHash]
+  );
 
   const getOwners = async () => {
     if (!safeSdk) return;
@@ -103,34 +114,87 @@ const SignTransactionComponent = () => {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
+    if (status === 'success') return;
     signedCount === threshold ? handleExecute() : handleSignTransaction();
+  };
+
+  const getSignaturesFromDb = () => {
+    return (
+      transactions![0]?.signatures.reduce(
+        (acc: { signatures: string[]; signers: string[] }, sig) => {
+          acc.signatures.push(sig.data);
+          acc.signers.push(sig.signer);
+          return acc;
+        },
+        { signatures: [], signers: [] }
+      ) ?? { signatures: [], signers: [] }
+    );
+  };
+
+  const getSignatures = () => {
+    const originalUrl = new URL(window.location.href);
+    const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
+    const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
+    if (transactions) {
+      const { signatures: signaturesFromDb, signers: signersFromDb } = getSignaturesFromDb();
+
+      signersFromDb.map((s, idx) => {
+        if (!signers.includes(s)) {
+          signers.push(s);
+          signatures.push(signaturesFromDb[idx]);
+        }
+      });
+    }
+    return { signatures, signers };
+  };
+
+  const saveSignatures = (signatures: string[], signers: string[]) => {
+    if (signatures.length === 0 || signatures[0] === '') {
+      return;
+    }
+    const originalUrl = new URL(window.location.href);
+    const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
+    const encodedSigners = signers.map(sig => encodeURIComponent(sig));
+    originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
+    originalUrl.searchParams.set('signers', encodedSigners.join(','));
+    if (transactions) {
+      const { signers: signersFromDb } = getSignaturesFromDb();
+
+      db.transactions.where({ hash: transactions[0].hash }).modify(trx => {
+        signers.map((s, idx) => {
+          if (!signersFromDb.includes(s)) {
+            trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
+          }
+        });
+      });
+    }
+    router.push(originalUrl.toString());
   };
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
     if (status === 'signed') {
-      // TODO: show toast
-      customToasty('Transaction was sign');
+      customToasty('This wallet has already signed', 'error');
       return;
     }
     const signedTransaction = await safeSdk.signTransaction(safeTransaction);
     setSafeTransaction(signedTransaction);
-    const originalUrl = new URL(window.location.href);
-    const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
-    const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
 
+    const { signatures, signers } = getSignatures();
     const signature = signedTransaction.signatures.entries().next().value[1].data;
     const signer = signedTransaction.signatures.entries().next().value[1].signer;
     signatures.push(encodeURIComponent(signature));
     signers.push(encodeURIComponent(signer));
-    const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
-    const encodedSigners = signers.map(sig => encodeURIComponent(sig));
-    originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
-    originalUrl.searchParams.set('signers', encodedSigners.join(','));
-    router.push(originalUrl.toString());
-
-    customToasty('Succes sign transaction', 'success');
+    saveSignatures(signatures, signers);
+    customToasty('This wallet signed successfully', 'success');
   };
+
+  useEffect(() => {
+    if (transactions) {
+      const { signatures, signers } = getSignatures();
+      saveSignatures(signatures, signers);
+    }
+  }, [transactions]);
 
   useEffect(() => {
     const signatures = searchParams.getAll('signatures')[0];

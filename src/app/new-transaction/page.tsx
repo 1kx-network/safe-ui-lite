@@ -18,6 +18,7 @@ import useSafeStore from '@/stores/safe-store';
 import routes from '../routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { useNetwork } from '@/hooks/useNetwork';
+import { db } from '@/db';
 
 import {
   AmountSelectStyled,
@@ -132,6 +133,10 @@ export default function NewTransaction() {
         destinationAddress: data.address,
         safeTxHash,
       };
+      db.transactions.add({
+        hash: safeTxHash,
+        signatures: [],
+      });
 
       const queryString = new URLSearchParams(queryParams).toString();
 
