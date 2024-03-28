@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -34,7 +34,7 @@ interface ICheckAndSwitchNetwork {
   open: () => void;
 }
 
-const SignTransactionComponent = () => {
+export default function SignTransactionComponent() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -173,20 +173,26 @@ const SignTransactionComponent = () => {
 
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
-    if (status === 'signed') {
-      customToasty('This wallet has already signed', 'error');
-      return;
-    }
-    const signedTransaction = await safeSdk.signTransaction(safeTransaction);
-    setSafeTransaction(signedTransaction);
+    try {
+      if (status === 'signed') {
+        customToasty('This wallet has already signed', 'error');
+        return;
+      }
+      const signedTransaction = await safeSdk.signTransaction(safeTransaction);
+      setSafeTransaction(signedTransaction);
 
-    const { signatures, signers } = getSignatures();
-    const signature = signedTransaction.signatures.entries().next().value[1].data;
-    const signer = signedTransaction.signatures.entries().next().value[1].signer;
-    signatures.push(encodeURIComponent(signature));
-    signers.push(encodeURIComponent(signer));
-    saveSignatures(signatures, signers);
-    customToasty('This wallet signed successfully', 'success');
+      const { signatures, signers } = getSignatures();
+      const signature = signedTransaction.signatures.entries().next().value[1].data;
+      const signer = signedTransaction.signatures.entries().next().value[1].signer;
+      signatures.push(encodeURIComponent(signature));
+      signers.push(encodeURIComponent(signer));
+      saveSignatures(signatures, signers);
+      customToasty('This wallet signed successfully', 'success');
+    } catch (error) {
+      if ((error as { message: string }).message) {
+        customToasty((error as { message: string }).message as string, 'error');
+      }
+    }
   };
 
   useEffect(() => {
@@ -322,10 +328,10 @@ const SignTransactionComponent = () => {
       </WrapperStyled>
     </WalletLayout>
   );
-};
+}
 
-export default function SignTransaction() {
+/* export default function SignTransaction() {
   <Suspense fallback={<div>Loading...</div>}>
     <SignTransactionComponent />
   </Suspense>;
-}
+} */

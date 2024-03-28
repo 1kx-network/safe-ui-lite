@@ -139,7 +139,7 @@ export default function CreatePageAccount() {
                         <WalletTypography fontSize={14} fontWeight={500}>
                           gno:
                         </WalletTypography>
-                        {formattedLabel('sdfsdfowner.address')}
+                        {formattedLabel(owner)}
                       </WalletTypography>
 
                       <LinkOpenInNewIconStyled

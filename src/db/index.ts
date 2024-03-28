@@ -7,11 +7,13 @@ interface ISignature {
 export interface ITransaction {
   id?: number;
   hash: string;
+  amount: string;
+  destinationAddress: string;
   signatures: ISignature[];
 }
 export interface ISafe {
   id?: number;
-  name: string;
+  address: string;
   owners: string[];
 }
 

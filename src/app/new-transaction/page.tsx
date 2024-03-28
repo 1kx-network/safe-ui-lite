@@ -133,8 +133,10 @@ export default function NewTransaction() {
         destinationAddress: data.address,
         safeTxHash,
       };
-      db.transactions.add({
+      await db.transactions.add({
         hash: safeTxHash,
+        amount: data.amount,
+        destinationAddress: data.address,
         signatures: [],
       });
 
