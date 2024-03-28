@@ -3,12 +3,13 @@ import { useEffect } from 'react';
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 
 import useSafeStore from '@/stores/safe-store';
+import { customToasty } from '@/components';
 
 import { useEthersAdapter } from './useEthersAdapter';
 
 export function useSafeSdk(safeAddress: string | null = null) {
   const createEthAdapter = useEthersAdapter();
-  const { saveSdk } = useSafeStore();
+  const { saveSdk, safeSdk } = useSafeStore();
   const { walletProvider } = useWeb3ModalProvider();
   const { chainId } = useWeb3ModalAccount();
 
@@ -94,5 +95,67 @@ export function useSafeSdk(safeAddress: string | null = null) {
     }
   };
 
-  return { deploySafe, createSafe };
+  const getInfoByAccount = async (safeSdk: null | Safe) => {
+    try {
+      if (!safeSdk) return;
+      const balanceAccount = await safeSdk.getBalance();
+      const ownersAccount = await safeSdk.getOwners();
+      const contractVersion = await safeSdk.getContractVersion();
+      const contractNonce = await safeSdk.getNonce();
+      const accountThreshold = await safeSdk.getThreshold();
+      return { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold };
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const removeAddress = async (ownerAddress: string) => {
+    try {
+      if (!safeSdk) return;
+
+      await safeSdk.createRemoveOwnerTx({ ownerAddress }).then(() => {
+        customToasty(`Success remove address ${ownerAddress}`, 'success');
+        return true;
+      });
+    } catch (e) {
+      customToasty(`Error remove address ${ownerAddress}`, 'error');
+      return null;
+    }
+  };
+
+  const addAddress = async (ownerAddresses: string[]) => {
+    try {
+      if (!safeSdk) return;
+
+      const promises = ownerAddresses.map(async address => {
+        try {
+          await safeSdk.createAddOwnerTx({ ownerAddress: address });
+          return address;
+        } catch (e) {
+          throw new Error(`Failed to add owner at address: ${address}`);
+        }
+      });
+
+      await Promise.all(promises);
+
+      customToasty(`Success add addresses`, 'success');
+    } catch (e) {
+      customToasty(`Error add address`, 'error');
+    }
+  };
+
+  const changeThresholdTx = async (count: number) => {
+    try {
+      if (!safeSdk) return;
+
+      await safeSdk.createChangeThresholdTx(count).then(() => {
+        customToasty(`Success change thresholder count on ${count}`, 'success');
+        return true;
+      });
+    } catch (e) {
+      customToasty(`Error change thresholder count on ${count}`, 'error');
+    }
+  };
+
+  return { deploySafe, createSafe, getInfoByAccount, removeAddress, changeThresholdTx, addAddress };
 }

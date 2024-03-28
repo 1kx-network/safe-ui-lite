@@ -58,33 +58,48 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const { data } = useOwnerList(address);
   const { safeSdk } = useSafeStore();
   const {
-    setSafeAddress,
     safeAddress,
     balanceAccount,
+    setSafeAddress,
     setBalanceAccount,
     setClearActiveSafeStore,
+    setSafeAccountOwners,
+    setNeedConfirmOwner,
+    setContractNonce,
+    setContractVersion,
+    isLoading,
+    setIsLoading,
   } = useActiveSafeAddress();
-  const { createSafe } = useSafeSdk();
+  const { createSafe, getInfoByAccount } = useSafeSdk();
 
   const [isOpenAccount, setIsOpenAccount] = useState(false);
   const [linkOnScan, setLinkOnScan] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (safeAddress) {
-      setIsLoading(true);
-      createSafe(safeAddress);
-    }
+    if (!safeAddress) return;
+
+    setIsLoading(true);
+    createSafe(safeAddress);
   }, [safeAddress]);
 
   useEffect(() => {
+    if (!safeSdk) return;
+
     const pendingBalance = async () => {
-      if (safeSdk) {
-        const balanceAccount = await safeSdk.getBalance();
-        const parceBalance = utils.formatEther(String(balanceAccount));
-        setBalanceAccount(parceBalance);
-        setIsLoading(false);
-      }
+      const dataAcc = await getInfoByAccount(safeSdk);
+      if (!dataAcc) return;
+
+      const { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold } =
+        dataAcc;
+      const parceBalance = utils.formatEther(String(balanceAccount));
+
+      setBalanceAccount(parceBalance);
+      setSafeAccountOwners(ownersAccount);
+      setContractNonce(contractNonce);
+      setContractVersion(contractVersion);
+      setNeedConfirmOwner(accountThreshold);
+
+      setIsLoading(false);
     };
 
     pendingBalance();
