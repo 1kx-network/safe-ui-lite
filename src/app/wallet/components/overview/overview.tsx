@@ -9,7 +9,7 @@ import { Box } from '@mui/system';
 import routes from '@/app/routes';
 import useSafeStore from '@/stores/safe-store';
 import { WalletButton, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
-import { styledHeader, styledPaper } from '../../entry-page.styles';
+import { styledHeader, styledPaper } from '../../wallet.styles';
 import { IOptions, options } from '../../fixtures';
 import { CustomModal } from '@/components/modal';
 import { networks } from '@/context/networks';

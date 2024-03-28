@@ -69,12 +69,13 @@ export const ItemMenuStyled = styled(Link)<{ disabled?: boolean }>(
 	padding: ${theme.spacing(1.5, 3)};  
 	color: ${theme.palette.textDark};
   border-radius: 0.5rem;
-  background-color: ${disabled ? theme.palette.grey : 'transparent'};
+  background-color: ${disabled ? theme.palette.textDarkLight : 'transparent'};
   cursor: ${disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${disabled ? 0.3 : 1};
 
  	&:hover {
     text-decoration: none;
-    background-color: ${disabled ? theme.palette.grey : theme.palette.textDarkLight};
+    background-color: ${theme.palette.textDarkLight};
 	}
 `
 );

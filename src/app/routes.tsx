@@ -5,9 +5,11 @@ const routes = {
   safeAccountReview: '/safe-account/review',
   settingsOwnersList: '/settings/owners-list',
 
+  settings: '/settings',
+
   safeLightWallet: '/safe-light-wallet',
   safeAccountList: '/safe-account/list',
-  entryPage: '/entry-page',
+  walletPage: '/wallet',
   walletSetup: '/wallet-setup',
 
   newTransaction: '/new-transaction',

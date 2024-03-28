@@ -32,7 +32,7 @@ export default function Home() {
 
   const handleAddfunds = async () => {
     if (address) {
-      router.push(routes.entryPage);
+      router.push(routes.walletPage);
     } else {
       await open();
     }

@@ -38,7 +38,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
           return res;
         }
       );
-      console.log(`safeFactory`, safeFactory);
 
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
       const addressAccount = await safeSdk.getAddress();

@@ -60,7 +60,7 @@ export default function SafeAccountList() {
 
   const handleListItemClick = (address: string) => {
     localStorage.setItem('safeAddress', address);
-    router.push(routes.entryPage);
+    router.push(routes.walletPage);
   };
 
   return (

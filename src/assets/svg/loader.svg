@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px">
-  <circle cx="12" cy="12" r="10" fill="none" stroke="white" stroke-width="3" />
+  <circle cx="12" cy="12" r="10" fill="none" stroke="#5E94DF" stroke-width="3" />
 
-  <circle cx="12" cy="2" r="1.5" fill="#5B9EED">
+  <circle cx="12" cy="2" r="1.5" fill="white">
     <animateTransform 
       attributeName="transform" 
       type="rotate" 
       from="0 12 12" 
       to="360 12 12"
-      dur="1s" 
+      dur="0.7s" 
       repeatCount="indefinite"
      />
   </circle>
