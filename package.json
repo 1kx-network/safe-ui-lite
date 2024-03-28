@@ -24,6 +24,8 @@
     "@web3modal/ethers": "^4.1.0",
     "@web3modal/wagmi": "4.1.0",
     "classnames": "2.5.1",
+    "dexie": "^4.0.1",
+    "dexie-react-hooks": "^1.1.7",
     "ethers": "6.11.1",
     "js-cookie": "^3.0.5",
     "next": "14.1.2",
