@@ -13,6 +13,7 @@ import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import useSafeStore from '@/stores/safe-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
+import { customToasty } from '@/components';
 
 import {
   BoxOwnerLinkStyled,
@@ -109,7 +110,7 @@ export default function SignTransaction() {
   const handleSignTransaction = async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
     if (status === 'signed') {
-      // TODO: show toast
+      customToasty('Success create account', 'success');
       return;
     }
     const signedTransaction = await safeSdk.signTransaction(safeTransaction);
@@ -201,7 +202,7 @@ export default function SignTransaction() {
           <GridButtonStyled>
             {address ? (
               <WalletButton
-                disabled={status === 'loading'}
+                disabled={status === 'loading' || status === 'success'}
                 variant={status === 'success' ? 'outlined' : 'contained'}
                 styles={styledBtn}
                 onClick={handleTransaction}
