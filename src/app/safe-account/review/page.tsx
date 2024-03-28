@@ -62,7 +62,7 @@ export default function CreatePageAccount() {
       .then(res => {
         if (!!res) {
           customToasty('Success create account', 'success');
-          router.push(routes.entryPage);
+          router.push(routes.walletPage);
         }
       })
       .catch(() => customToasty('Something error with create account', 'error'))

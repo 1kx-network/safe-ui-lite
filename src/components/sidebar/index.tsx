@@ -10,6 +10,7 @@ import { WalletTypography } from '@/ui-kit';
 import routes from '@/app/routes';
 import IconOpenAccount from '@/assets/svg/arrow-r.svg';
 import IconPlus from '@/assets/svg/plus.svg';
+import IconLoading from '@/assets/svg/loader.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import { CustomModal } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
@@ -39,6 +40,8 @@ import {
   boxStyleInfoUserAddress,
   BodyMainInfoStyled,
 } from './sidebar.styles';
+import useActiveSafeAddress from '@/stores/safe-address-store';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 interface ISidebar {
   icon?: string;
@@ -54,26 +57,40 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const router = useRouter();
   const { data } = useOwnerList(address);
   const { safeSdk } = useSafeStore();
+  const {
+    setSafeAddress,
+    safeAddress,
+    balanceAccount,
+    setBalanceAccount,
+    setClearActiveSafeStore,
+  } = useActiveSafeAddress();
+  const { createSafe } = useSafeSdk();
 
   const [isOpenAccount, setIsOpenAccount] = useState(false);
-  const [safeAddress, setSafeAddress] = useState('');
   const [linkOnScan, setLinkOnScan] = useState<string>('');
-  const [balanceAccount, setBalanceAccount] = useState('0');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (safeAddress) {
+      setIsLoading(true);
+      createSafe(safeAddress);
+    }
+  }, [safeAddress]);
 
   useEffect(() => {
     const pendingBalance = async () => {
       if (safeSdk) {
         const balanceAccount = await safeSdk.getBalance();
         const parceBalance = utils.formatEther(String(balanceAccount));
-
         setBalanceAccount(parceBalance);
+        setIsLoading(false);
       }
     };
 
     pendingBalance();
+  }, [safeSdk]);
 
-    setSafeAddress(localStorage.getItem('safeAddress') ?? '');
-
+  useEffect(() => {
     if (chainId && data) {
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
@@ -84,14 +101,27 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
       if (listAccount !== undefined) {
         setDataList(listAccount);
+
+        if (!safeAddress) {
+          const defaultAccount = listAccount[0];
+          localStorage.setItem('safeAddress', defaultAccount);
+          setSafeAddress(defaultAccount);
+        }
       }
     }
   }, [data, chainId]);
 
+  useEffect(() => {
+    if (!address) setClearActiveSafeStore();
+  }, [address]);
+
   const handleClickAccount = (address: string) => {
     localStorage.setItem('safeAddress', address);
+
+    setSafeAddress(address);
     setIsOpenAccount(false);
-    router.push(routes.entryPage);
+
+    router.push(routes.walletPage);
   };
 
   const handleOpenAccount = () => {
@@ -101,11 +131,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const handleRemoveAccount = async (e: React.MouseEvent<HTMLElement>, address: string) => {
     e.stopPropagation();
 
+    // TODO - need create logic if user want remove yourself active account
     if (safeAddress === address) {
       router.push(routes.home);
     }
-
-    console.log('_remove account_', address);
   };
 
   const headerAddress = useCallback(() => {
@@ -119,6 +148,8 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     e.stopPropagation();
     if (safeAddress) navigator.clipboard.writeText(safeAddress);
   };
+
+  const condMenuList = address ? menuList : [menuList[0]];
 
   return (
     <WrapperStyled>
@@ -144,9 +175,13 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
               )}
             </Box>
 
-            <WalletTypography fontSize={14} fontWeight={500}>
-              {balanceAccount} USD
-            </WalletTypography>
+            {isLoading ? (
+              <IconLoading />
+            ) : (
+              <WalletTypography fontSize={14} fontWeight={500}>
+                {balanceAccount} USD
+              </WalletTypography>
+            )}
           </Box>
 
           {address && (
@@ -160,7 +195,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             <WalletTypography>New transaction</WalletTypography>
           </ItemMenuStyled>
 
-          {menuList.map(item => (
+          {condMenuList.map(item => (
             <ItemMenuStyled key={item.id} href={item.url}>
               <WrapperIconStyled isActive={item.url === pathname}>
                 <item.icon />

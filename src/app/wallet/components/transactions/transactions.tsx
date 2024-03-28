@@ -1,7 +1,7 @@
 import { WalletPaper, WalletTypography } from '@/ui-kit';
 import CheckIcon from '@/assets/svg/check.svg';
 import { transactions } from '../../fixtures';
-import { styledHeader } from '../../entry-page.styles';
+import { styledHeader } from '../../wallet.styles';
 
 import { ItemTransactionStyled, styledPaper } from './transactions.styles';
 

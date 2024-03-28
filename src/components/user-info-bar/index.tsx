@@ -12,6 +12,7 @@ import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';
 import { CustomModal } from '..';
 import routes from '@/app/routes';
+import Cookies from 'js-cookie';
 
 import {
   WrapperStyled,
@@ -34,6 +35,7 @@ export const UserInfoBar = () => {
 
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -61,24 +63,34 @@ export const UserInfoBar = () => {
     }
   };
 
-  const [isTryToConnect, setIsTryToConnect] = useState(false);
-
   useEffect(() => {
-    if (address && isTryToConnect) {
-      router.push(routes.safeAccountCreate);
+    if (address) {
+      Cookies.set('addressUser', address);
       setIsOpenModal(false);
-      setIsTryToConnect(false);
+      setIsCreateNewAccount(false);
+
+      return;
+    } else {
+      Cookies.remove('addressUser');
     }
-  }, [address, isTryToConnect]);
+
+    if (isCreateNewAccount && address) router.push(routes.safeAccountCreate);
+  }, [address, isCreateNewAccount]);
 
   const handleConnect = async () => {
+    setIsCreateNewAccount(true);
     open();
-    setIsTryToConnect(true);
+  };
+
+  const handleConnectExisting = async () => {
+    open();
   };
 
   const handleDisconnect = async () => {
     await disconnect();
+    Cookies.remove('addressUser');
     setIsOpenMenu(false);
+    localStorage.removeItem('safeAddress');
     router.push(routes.home);
   };
 
@@ -180,6 +192,10 @@ export const UserInfoBar = () => {
           >
             The most trusted decentralized custody protocol and collective asset management platform
           </WalletTypography>
+          <WalletButton variant="contained" onClick={handleConnectExisting}>
+            + Add Existing Account
+          </WalletButton>
+
           <WalletButton variant="contained" onClick={handleConnect}>
             Create Account
           </WalletButton>

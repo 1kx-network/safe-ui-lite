@@ -1,7 +1,7 @@
 'use client';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
-import { useDisconnect, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 
 import { useNetwork } from '@/hooks/useNetwork';
@@ -40,7 +40,6 @@ export default function CreatePageAccount() {
 
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
-  const { disconnect } = useDisconnect();
   const network = useNetwork();
 
   const networkName = network?.name.toString();
@@ -67,7 +66,6 @@ export default function CreatePageAccount() {
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
     e.preventDefault();
-    disconnect();
     router.push(routes.home);
   };
 

@@ -18,7 +18,7 @@ interface IMenu {
 
 export const menuList: IMenu[] = [
   { id: 1, url: routes.home, title: 'Home', icon: HomeSvg },
-  { id: 2, url: routes.entryPage, title: 'Wallet', icon: HomeSvg },
+  { id: 2, url: routes.walletPage, title: 'Wallet', icon: HomeSvg },
   { id: 3, url: routes.settingsOwnersList, title: 'Settings', icon: SettingSvg },
   // { id: 3, url: routes.transactions ,title: 'Transactions', icon: TransactionSvg },
   // { id: 4, url: routes.settings ,title: 'Settings', icon: SettingSvg },

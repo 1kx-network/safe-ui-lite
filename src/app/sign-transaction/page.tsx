@@ -32,7 +32,7 @@ interface ICheckAndSwitchNetwork {
   open: () => void;
 }
 
-const SignTransactionComponent = () => {
+export default function SignTransactionComponent() {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -163,7 +163,6 @@ const SignTransactionComponent = () => {
       setStatus('success');
       customToasty('Success execute', 'success');
     } catch (error) {
-      console.log(`error`, error);
       customToasty('Something error with execute', 'error');
     }
   };
@@ -258,10 +257,10 @@ const SignTransactionComponent = () => {
       </WrapperStyled>
     </WalletLayout>
   );
-};
-
-export default function SignTransaction() {
-  <Suspense fallback={<div>Loading...</div>}>
-    <SignTransactionComponent />
-  </Suspense>;
 }
+
+// export default function SignTransaction() {
+//   <Suspense fallback={<div>Loading...</div>}>
+//     <SignTransactionComponent />
+//   </Suspense>;
+// }
