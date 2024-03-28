@@ -1,5 +1,5 @@
 import DollarIcon from '@/assets/svg/dollar.svg';
-import EthIcon from '@/assets/svg/eth.svg';
+import EthIcon from '@/assets/svg/eth-icon.svg';
 
 export interface IOptions {
   icon: JSX.Element;

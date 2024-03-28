@@ -10,13 +10,10 @@ import { TokenList } from './components/tokens-list/tokens-list';
 import { Transactions } from './components/transactions/transactions';
 import { BoxGridStyled, WrapperStyled } from './entry-page.styles';
 
-let safeAddress: string | null = null;
-
 export default function EntryPage() {
-  if (typeof window !== 'undefined') {
-    safeAddress = localStorage.getItem('safeAddress');
-  }
-  console.log('_safeAddress_EntryPage_', safeAddress);
+  const safeAddress: string | null =
+    typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
+
   useSafeSdk(safeAddress);
 
   return (
