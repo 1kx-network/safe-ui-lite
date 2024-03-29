@@ -16,6 +16,7 @@ import { CustomModal } from '..';
 import routes from '@/app/routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import {
   WrapperStyled,
@@ -38,6 +39,7 @@ export const UserInfoBar = () => {
   const { safeSdk } = useSafeStore();
   const { getInfoByAccount } = useSafeSdk();
   const [balance, setBalance] = useState('0');
+  const { setClearActiveSafeStore } = useActiveSafeAddress();
 
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -85,8 +87,6 @@ export const UserInfoBar = () => {
       Cookies.set('addressUser', address);
       setIsOpenModal(false);
       setIsCreateNewAccount(false);
-
-      return;
     } else {
       Cookies.remove('addressUser');
     }
@@ -108,6 +108,8 @@ export const UserInfoBar = () => {
     Cookies.remove('addressUser');
     setIsOpenMenu(false);
     localStorage.removeItem('safeAddress');
+    setClearActiveSafeStore();
+
     router.push(routes.home);
   };
 
