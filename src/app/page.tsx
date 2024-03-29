@@ -2,9 +2,11 @@
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useEffect } from 'react';
 
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { useOwnerList } from '@/queries/safe-accounts';
 
 import {
   GridStepsStyled,
@@ -18,7 +20,8 @@ import {
 import routes from './routes';
 
 export default function Home() {
-  const { address } = useWeb3ModalAccount();
+  const { address, chainId } = useWeb3ModalAccount();
+  const { data } = useOwnerList(address);
   const { open } = useWeb3Modal();
   const router = useRouter();
 
@@ -29,6 +32,38 @@ export default function Home() {
       await open();
     }
   };
+
+  useEffect(() => {
+    if (chainId && data) {
+      const fetchedList = data[chainId];
+      const localList = localStorage.getItem('createdSafes');
+      const localListParsed = localList
+        ? JSON.parse(localList)
+        : {
+            '1': [],
+            '10': [],
+            '56': [],
+            '100': [],
+            '137': [],
+            '324': [],
+            '1101': [],
+            '8453': [],
+            '42161': [],
+            '42220': [],
+            '43114': [],
+            '84532': [],
+            '11155111': [],
+            '1313161554': [],
+          };
+      if (fetchedList === undefined || fetchedList.concat(localListParsed[chainId]).length === 0) {
+        router.push(routes.safeAccountCreate);
+      }
+    } else {
+      if (!address) {
+        open();
+      }
+    }
+  }, [data, chainId]);
 
   const handleAddfunds = async () => {
     if (address) {
