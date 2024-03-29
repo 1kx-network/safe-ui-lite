@@ -5,6 +5,7 @@ import { Box } from '@mui/system';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import * as utils from 'ethers';
 
 import { formattedLabel } from '@/utils/foramtters';
 import { WalletButton, WalletTypography } from '@/ui-kit';
@@ -36,7 +37,7 @@ export const UserInfoBar = () => {
   const wrapperRef = useRef(null);
   const { safeSdk } = useSafeStore();
   const { getInfoByAccount } = useSafeSdk();
-  const [balance, setBalance] = useState('0.00');
+  const [balance, setBalance] = useState('0');
 
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -167,7 +168,7 @@ export const UserInfoBar = () => {
             Balance
           </WalletTypography>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
-            {balance} ETH
+            {utils.formatEther(balance)} ETH
           </WalletTypography>
         </ItemInfoStyled>
 
