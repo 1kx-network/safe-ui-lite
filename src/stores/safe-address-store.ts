@@ -48,7 +48,16 @@ const useActiveSafeAddress = create<Store>(set => ({
   setContractVersion: (payload: string) => set(state => ({ ...state, contractVersion: payload })),
   setIsLoading: (payload: boolean) => set(state => ({ ...state, isLoading: payload })),
 
-  setClearActiveSafeStore: () => set({}),
+  setClearActiveSafeStore: () =>
+    set({
+      safeAddress: null,
+      balanceAccount: '0',
+      safeAccountOwners: [],
+      needConfirmOwner: 0,
+      contractNonce: null,
+      contractVersion: null,
+      isLoading: false,
+    }),
 }));
 
 export default useActiveSafeAddress;

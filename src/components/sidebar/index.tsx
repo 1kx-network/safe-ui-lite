@@ -56,7 +56,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const [dataList, setDataList] = useState([]);
   const router = useRouter();
   const { data } = useOwnerList(address);
-  const { safeSdk } = useSafeStore();
+  const { safeSdk, saveSdk } = useSafeStore();
   const {
     safeAddress,
     balanceAccount,
@@ -92,6 +92,8 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       const { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold } =
         dataAcc;
       const parceBalance = utils.formatEther(String(balanceAccount));
+
+      console.log('_safeSdk_');
 
       setBalanceAccount(parceBalance);
       setSafeAccountOwners(ownersAccount);
@@ -147,7 +149,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   }, [data, chainId]);
 
   useEffect(() => {
-    if (!address) setClearActiveSafeStore();
+    if (!address) {
+      saveSdk(null);
+      setClearActiveSafeStore();
+    }
   }, [address]);
 
   const handleClickAccount = (address: string) => {
