@@ -7,7 +7,7 @@ import OpenIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import IconTrash from '@/assets/svg/delete.svg';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
-import useActiveOwnerStore from '@/stores/active-owners-store';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import { ItemInfoStyled, ItemStyled, WalletListStyled } from './list-account.styles';
 
@@ -18,7 +18,7 @@ export const ListAccount = ({
   linkOnScan: string;
   handleRemoveOwnerAddress: (address: string) => void;
 }) => {
-  const { owners } = useActiveOwnerStore();
+  const { safeAccountOwners } = useActiveSafeAddress();
 
   const handleCopyAddress = (address: string) => {
     navigator.clipboard.writeText(address);
@@ -29,7 +29,7 @@ export const ListAccount = ({
       <WalletTypography fontSize={17} fontWeight={600}>
         Name
         <WalletListStyled>
-          {owners.map((address, index) => (
+          {safeAccountOwners.map((address, index) => (
             <ItemStyled key={index}>
               <ItemInfoStyled>
                 <IconDefaultAddress width="33px" height="33px" />
@@ -41,7 +41,7 @@ export const ListAccount = ({
                 </Link>
                 <CopyIcon width="18px" height="18px" onClick={() => handleCopyAddress(address)} />
               </ItemInfoStyled>
-              {owners.length !== 1 && (
+              {safeAccountOwners.length !== 1 && (
                 <Box
                   sx={{ display: 'flex', cursor: 'pointer' }}
                   onClick={() => handleRemoveOwnerAddress(address)}

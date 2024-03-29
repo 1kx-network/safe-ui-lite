@@ -13,15 +13,15 @@ import {
   WalletSelect,
   WalletTypography,
 } from '@/ui-kit';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import useActiveOwnerStore from '@/stores/active-owners-store';
 import { useNetwork } from '@/hooks/useNetwork';
-import { TabsSettings } from '../tabs';
 import InfoIcon from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import IconDelete from '@/assets/svg/delete.svg';
 import { networks } from '@/context/networks';
-import { customToasty } from '@/components';
+import { customToasty, TabsSettings } from '@/components';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import {
   BoxStyled,
@@ -34,25 +34,45 @@ import {
   BodyListAccountsStyled,
 } from './owners-list.styles';
 import { ListAccount } from './components/list-account/list-account';
+import { settingsMenu } from './fixutres';
 
 interface Owner {
   id: number;
   address: string;
 }
 
+const selectDef = {
+  value: 1,
+  label: 1,
+  id: 1,
+};
+
 export default function WalletSetup() {
-  const { owners, needConfirmOwner, setNeedConfirmOwner, setOwners } = useActiveOwnerStore();
   const network = useNetwork();
   const { chainId } = useWeb3ModalAccount();
+  const { removeAddress, addAddress, changeThresholdTx } = useSafeSdk();
+  const {
+    needConfirmOwner,
+    safeAccountOwners,
+    contractNonce,
+    contractVersion,
+    isLoading,
+
+    setIsLoading,
+    setSafeAccountOwners,
+    setNeedConfirmOwner,
+  } = useActiveSafeAddress();
 
   const [csvData, setCsvData] = useState<Array<Array<string>>>([]);
-  const [countNeedCorfimLocal, setNeedConfirmLocal] = useState([{ value: 1, label: 1, id: 1 }]);
+  const [countNeedCorfimLocal, setNeedConfirmLocal] = useState([selectDef]);
+  const [defCountConfirm, setDefCountConfirm] = useState(selectDef);
   const [newOwners, setNewOwners] = useState<Owner[] | null>([]);
-
   const [newCountNeedConfirm, setNewCountNeedConfirm] = useState(needConfirmOwner);
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
-  const countOwners = newOwners ? newOwners.length + owners.length : owners.length;
+  const countOwners = newOwners
+    ? newOwners.length + safeAccountOwners.length
+    : safeAccountOwners.length;
 
   useEffect(() => {
     const newCountNeedCormed = Array.from({ length: countOwners }, (_, index) => ({
@@ -61,21 +81,29 @@ export default function WalletSetup() {
       value: index + 1,
     }));
 
+    console.log(needConfirmOwner);
+
+    setDefCountConfirm({ id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner });
     setNeedConfirmLocal(newCountNeedCormed);
   }, [countOwners]);
 
   useEffect(() => {
     if (network && chainId) {
-      const networkName = network.name.toString();
-      setCsvData([['Address', 'Network'], ...owners.map(owner => [owner, networkName])]);
-
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
         const updateLink = linkOnScan;
         setLinkOnScan(updateLink);
       }
     }
-  }, [network, chainId, owners]);
+  }, [network, chainId, safeAccountOwners]);
+
+  const handleGetCSV = () => {
+    if (network && chainId) {
+      const networkName = network.name.toString();
+
+      setCsvData([['Address', 'Network'], ...safeAccountOwners.map(owner => [owner, networkName])]);
+    }
+  };
 
   const handleAddOwner = () => {
     if (!newOwners || newOwners.length === 0) {
@@ -121,24 +149,47 @@ export default function WalletSetup() {
     elem && setNewCountNeedConfirm(elem.label);
   };
 
-  const handleRemoveOwnerAddress = (address: string) => {
-    console.log('_addres_', address);
+  const handleRemoveOwnerAddress = async (address: string) => {
+    setIsLoading(true);
+    const owners = safeAccountOwners.filter(owner => owner !== address);
+
+    await removeAddress(address);
+
+    if (owners.length < needConfirmOwner) {
+      await changeThresholdTx(owners.length);
+      setNeedConfirmOwner(owners.length);
+    }
+    setSafeAccountOwners(owners);
+
+    setIsLoading(false);
   };
 
-  const handleChangeSettings = () => {
+  const handleChangeSettings = async () => {
+    setIsLoading(true);
+
     if (newOwners != null) {
       const updateDataOwners = newOwners
         .filter(elem => elem.address !== '')
         .map(elem => elem.address);
-      setOwners([...owners, ...updateDataOwners]);
+
+      const newAddressList = [...safeAccountOwners, ...updateDataOwners];
+
+      setSafeAccountOwners(newAddressList);
+
+      const dataAddress = newAddressList.filter(address => !safeAccountOwners.includes(address));
+      console.log('_1_dataAddress', dataAddress);
 
       const correctNeedConfirm =
-        newCountNeedConfirm > [...owners, ...updateDataOwners].length
-          ? [...owners, ...updateDataOwners].length
+        newCountNeedConfirm > [...safeAccountOwners, ...updateDataOwners].length
+          ? [...safeAccountOwners, ...updateDataOwners].length
           : newCountNeedConfirm;
 
       setNeedConfirmOwner(correctNeedConfirm);
+      await addAddress(dataAddress);
+      await changeThresholdTx(correctNeedConfirm);
+
       setNewCountNeedConfirm(correctNeedConfirm);
+      setIsLoading(false);
     }
 
     setNewOwners([]);
@@ -154,7 +205,7 @@ export default function WalletSetup() {
           </WalletTypography>
         </Box>
 
-        <TabsSettings />
+        <TabsSettings tabs={settingsMenu} />
 
         <WalletPaper>
           <Box display={'flex'} gap={themeMuiBase.spacing(3)}>
@@ -168,7 +219,7 @@ export default function WalletSetup() {
                 </Box>
               </Box>
               <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                Current nonce: {needConfirmOwner}
+                Current nonce: {contractNonce}
               </WalletTypography>
             </BoxStyled>
             <BoxStyled>
@@ -176,7 +227,7 @@ export default function WalletSetup() {
                 Contract Version
               </WalletTypography>
               <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                1.3.0+L2
+                {contractVersion}
               </WalletTypography>
               <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
                 Latest version
@@ -232,7 +283,7 @@ export default function WalletSetup() {
                   <IconPlus width="20px" height="21px" color={themeMuiBase.palette.success} /> Add
                   new owner
                 </WalletButton>
-                <CSVLink data={csvData} style={styledCSV}>
+                <CSVLink data={csvData} style={styledCSV} onClick={handleGetCSV} href="/">
                   <WalletButton variant="text" styles={styledBtn}>
                     Export as CSV
                   </WalletButton>
@@ -252,8 +303,10 @@ export default function WalletSetup() {
             <Box mt={3} display="flex" alignItems="center">
               <Box mr={3} width={'84px'}>
                 <WalletSelect
+                  isDisabled={isLoading}
                   options={countNeedCorfimLocal}
-                  defaultValue={countNeedCorfimLocal[needConfirmOwner - 1]}
+                  controlShouldRenderValue
+                  defaultValue={defCountConfirm}
                   onChange={handleChooseAccounConfirm}
                 />
               </Box>
@@ -262,7 +315,7 @@ export default function WalletSetup() {
               </WalletTypography>
             </Box>
 
-            <WalletButton variant="contained" onClick={handleChangeSettings}>
+            <WalletButton variant="contained" onClick={handleChangeSettings} loading={isLoading}>
               Change
             </WalletButton>
           </ConfirmationsStyled>
