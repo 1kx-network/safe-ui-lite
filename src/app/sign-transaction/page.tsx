@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -118,7 +118,7 @@ const SignTransactionComponent = () => {
     signedCount === threshold ? handleExecute() : handleSignTransaction();
   };
 
-  const getSignaturesFromDb = () => {
+  const getSignaturesFromDb = useCallback(() => {
     return (
       transactions![0]?.signatures.reduce(
         (acc: { signatures: string[]; signers: string[] }, sig) => {
@@ -129,9 +129,9 @@ const SignTransactionComponent = () => {
         { signatures: [], signers: [] }
       ) ?? { signatures: [], signers: [] }
     );
-  };
+  }, [transactions]);
 
-  const getSignatures = () => {
+  const getSignatures = useCallback(() => {
     const originalUrl = new URL(window.location.href);
     const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
     const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
@@ -146,32 +146,36 @@ const SignTransactionComponent = () => {
       });
     }
     return { signatures, signers };
-  };
+  }, [transactions]);
 
-  const saveSignatures = (signatures: string[], signers: string[]) => {
-    if (signatures.length === 0 || signatures[0] === '') {
-      return;
-    }
-    const originalUrl = new URL(window.location.href);
-    const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
-    const encodedSigners = signers.map(sig => encodeURIComponent(sig));
-    originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
-    originalUrl.searchParams.set('signers', encodedSigners.join(','));
-    if (transactions) {
-      const { signers: signersFromDb } = getSignaturesFromDb();
+  const saveSignatures = useCallback(
+    (signatures: string[], signers: string[]) => {
+      if (signatures.length === 0 || signatures[0] === '') {
+        return;
+      }
+      const originalUrl = new URL(window.location.href);
+      const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
+      const encodedSigners = signers.map(sig => encodeURIComponent(sig));
+      originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
+      originalUrl.searchParams.set('signers', encodedSigners.join(','));
+      if (transactions) {
+        const { signers: signersFromDb } = getSignaturesFromDb();
+        if (transactions[0].signatures.length !== signers.length) {
+          db.transactions.where({ hash: transactions[0].hash }).modify(trx => {
+            signers.map((s, idx) => {
+              if (!signersFromDb.includes(s)) {
+                trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
+              }
+            });
+          });
+        }
+      }
+      router.push(originalUrl.toString());
+    },
+    [router, transactions]
+  );
 
-      db.transactions.where({ hash: transactions[0].hash }).modify(trx => {
-        signers.map((s, idx) => {
-          if (!signersFromDb.includes(s)) {
-            trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
-          }
-        });
-      });
-    }
-    router.push(originalUrl.toString());
-  };
-
-  const handleSignTransaction = async () => {
+  const handleSignTransaction = useCallback(async () => {
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
     try {
       if (status === 'signed') {
@@ -193,27 +197,9 @@ const SignTransactionComponent = () => {
         customToasty((error as { message: string }).message as string, 'error');
       }
     }
-  };
+  }, [safeSdk, safeTransaction, safeTxHash, status]);
 
-  useEffect(() => {
-    if (transactions) {
-      const { signatures, signers } = getSignatures();
-      saveSignatures(signatures, signers);
-    }
-  }, [transactions]);
-
-  useEffect(() => {
-    const signatures = searchParams.getAll('signatures')[0];
-    const signers = searchParams.getAll('signers')[0];
-    if (signatures && signers) {
-      setSignedCount(signatures.split(',').length);
-      if (signers.split(',').some(signer => signer === address)) {
-        setStatus('signed');
-      }
-    }
-  }, [router, searchParams]);
-
-  const handleExecute = async () => {
+  const handleExecute = useCallback(async () => {
     try {
       setStatus('loading');
       const signatures = searchParams.getAll('signatures')[0];
@@ -233,15 +219,40 @@ const SignTransactionComponent = () => {
       setStatus('success');
       customToasty('Success execute', 'success');
     } catch (error) {
+      if ((error as { message: string }).message.includes('-32603')) {
+        customToasty('Transaction has already been executed', 'error');
+        return;
+      }
       customToasty('Something error with execute', 'error');
     }
-  };
+  }, [safeSdk, safeTransaction, searchParams]);
 
   const handleCopy = () => {
     if (!pathName || !searchParams) return;
     navigator.clipboard.writeText(window.location.href);
     customToasty('Link was copy', 'success');
   };
+
+  useEffect(() => {
+    if (transactions) {
+      const { signatures, signers } = getSignatures();
+      console.log(`setting signatures`);
+      saveSignatures(signatures, signers);
+    }
+  }, [transactions]);
+
+  useEffect(() => {
+    const signatures = searchParams.getAll('signatures')[0];
+    const signers = searchParams.getAll('signers')[0];
+    if (signatures && signers) {
+      if (signedCount !== signatures.split(',').length) {
+        setSignedCount(signatures.split(',').length);
+      }
+      if (status !== 'signed' && signers.split(',').some(signer => signer === address)) {
+        setStatus('signed');
+      }
+    }
+  }, [router, searchParams]);
 
   let buttonText = 'Sign Transaction';
   if (status === 'success') {
