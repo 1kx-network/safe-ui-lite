@@ -111,9 +111,6 @@ export const UserInfoBar = () => {
     router.push(routes.home);
   };
 
-  console.log(utils.formatEther(balance));
-  console.log(balance);
-
   return (
     <WrapperStyled ref={wrapperRef}>
       <InfoUserStyled onClick={handleClickMenu}>
