@@ -9,7 +9,7 @@ export const ButtonStyled = styled(
   variant?: 'contained' | 'outlined' | 'text';
   $styles?: React.CSSProperties;
   type?: 'button' | 'submit' | 'reset';
-  loading?: boolean;
+  loading?: boolean | string;
 }>(({ variant, theme, $styles, loading }) => {
   const bgColors: {
     [key: string]: string;

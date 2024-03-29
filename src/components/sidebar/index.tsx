@@ -169,7 +169,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   return (
     <WrapperStyled>
       <BodyMainInfoStyled>
-        <InfoUserStyled>
+        <InfoUserStyled suppressHydrationWarning>
           <ImgUserStyled src={icon} alt="avatar" width={44} height={44} />
 
           <Box sx={boxStyleInfoUser}>
@@ -191,11 +191,15 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             </Box>
 
             {isLoading ? (
-              <IconLoading />
+              <Box>
+                <IconLoading />
+              </Box>
             ) : (
-              <WalletTypography fontSize={14} fontWeight={500}>
-                {balanceAccount} USD
-              </WalletTypography>
+              <Box height={'25px'}>
+                <WalletTypography fontSize={14} fontWeight={500}>
+                  {balanceAccount} USD
+                </WalletTypography>
+              </Box>
             )}
           </Box>
 
@@ -205,7 +209,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             </IconOpenAccountsStyled>
           )}
         </InfoUserStyled>
-        <MenuStyled>
+        <MenuStyled suppressHydrationWarning>
           <ItemMenuStyled style={styleBtnTransaction} href={address ? routes.newTransaction : ''}>
             <WalletTypography>New transaction</WalletTypography>
           </ItemMenuStyled>

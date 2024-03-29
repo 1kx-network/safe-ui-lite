@@ -30,7 +30,7 @@ export function WalletButton({
       onClick={onClick}
       variant={variant}
       disabled={disabled || loading}
-      loading={loading}
+      loading={loading ? 'true' : 'false'}
     >
       {loading ? <IconLoader /> : children}
     </ButtonStyled>

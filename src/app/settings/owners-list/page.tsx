@@ -16,12 +16,11 @@ import {
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { useNetwork } from '@/hooks/useNetwork';
-import { TabsSettings } from '../tabs';
 import InfoIcon from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import IconDelete from '@/assets/svg/delete.svg';
 import { networks } from '@/context/networks';
-import { customToasty } from '@/components';
+import { customToasty, TabsSettings } from '@/components';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import {
@@ -35,6 +34,7 @@ import {
   BodyListAccountsStyled,
 } from './owners-list.styles';
 import { ListAccount } from './components/list-account/list-account';
+import { settingsMenu } from './fixutres';
 
 interface Owner {
   id: number;
@@ -89,9 +89,6 @@ export default function WalletSetup() {
 
   useEffect(() => {
     if (network && chainId) {
-      const networkName = network.name.toString();
-      setCsvData([['Address', 'Network'], ...safeAccountOwners.map(owner => [owner, networkName])]);
-
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
         const updateLink = linkOnScan;
@@ -99,6 +96,14 @@ export default function WalletSetup() {
       }
     }
   }, [network, chainId, safeAccountOwners]);
+
+  const handleGetCSV = () => {
+    if (network && chainId) {
+      const networkName = network.name.toString();
+
+      setCsvData([['Address', 'Network'], ...safeAccountOwners.map(owner => [owner, networkName])]);
+    }
+  };
 
   const handleAddOwner = () => {
     if (!newOwners || newOwners.length === 0) {
@@ -200,7 +205,7 @@ export default function WalletSetup() {
           </WalletTypography>
         </Box>
 
-        <TabsSettings />
+        <TabsSettings tabs={settingsMenu} />
 
         <WalletPaper>
           <Box display={'flex'} gap={themeMuiBase.spacing(3)}>
@@ -278,7 +283,7 @@ export default function WalletSetup() {
                   <IconPlus width="20px" height="21px" color={themeMuiBase.palette.success} /> Add
                   new owner
                 </WalletButton>
-                <CSVLink data={csvData} style={styledCSV}>
+                <CSVLink data={csvData} style={styledCSV} onClick={handleGetCSV} href="/">
                   <WalletButton variant="text" styles={styledBtn}>
                     Export as CSV
                   </WalletButton>
