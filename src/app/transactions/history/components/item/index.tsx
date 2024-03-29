@@ -17,7 +17,7 @@ interface ItemTransaction {
 export const ItemTransaction = () => {
   return (
     <WrapperStyled>
-      <WalletTypography>sdsf</WalletTypography>
+      <WalletTypography>Transaction</WalletTypography>
     </WrapperStyled>
   );
 };

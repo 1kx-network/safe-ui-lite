@@ -61,7 +61,7 @@ export default function CreatePageAccount() {
     await deploySafe(owners, needConfirmOwner)
       .then(res => {
         if (!!res) {
-          customToasty('Success create account', 'success');
+          customToasty('Account successfully created', 'success');
           router.push(routes.walletPage);
         }
       })

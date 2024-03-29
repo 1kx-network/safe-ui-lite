@@ -64,6 +64,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
             '11155111': [],
             '1313161554': [],
           };
+
       localListParsed[chainId ?? 1].push(addressAccount);
       localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
       localStorage.setItem('safeAddress', addressAccount);

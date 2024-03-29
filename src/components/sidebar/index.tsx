@@ -112,12 +112,32 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         setLinkOnScan(linkOnScan);
       }
 
-      const listAccount = data[chainId];
+      const localList = localStorage.getItem('createdSafes');
+      const localListParsed = localList
+        ? JSON.parse(localList)
+        : {
+            '1': [],
+            '10': [],
+            '56': [],
+            '100': [],
+            '137': [],
+            '324': [],
+            '1101': [],
+            '8453': [],
+            '42161': [],
+            '42220': [],
+            '43114': [],
+            '84532': [],
+            '11155111': [],
+            '1313161554': [],
+          };
+      const listAccount = data[chainId].concat(localListParsed[chainId]);
 
       if (listAccount !== undefined) {
         setDataList(listAccount);
 
-        if (!safeAddress) {
+        const safeAddressFromStore = localStorage.getItem('safeAddress');
+        if (!safeAddress && !safeAddressFromStore) {
           const defaultAccount = listAccount[0];
           localStorage.setItem('safeAddress', defaultAccount);
           setSafeAddress(defaultAccount);
@@ -272,7 +292,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                   <Box display={'flex'} alignItems={'center'} gap={1}>
                     {chainId && iconNetwork(chainId, '14px', '14px')}
                     <WalletTypography fontSize={12} fontWeight={300}>
-                      Sepolia
+                      Ethereum
                     </WalletTypography>
                   </Box>
 
