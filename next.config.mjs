@@ -2,17 +2,19 @@ import webpackConfig from './webpack.config.js';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // output: 'export',
   reactStrictMode: true,
   images: {
     unoptimized: true,
   },
-  webpack(config, { isServer }) {
+  webpack(config) {
     config.module.rules.push(...webpackConfig.rules);
-    if (!isServer) {
-      config.resolve.fallback.fs = false;
-    }
+    config.externals.push('pino-pretty', 'lokijs', 'encoding');
     return config;
+  },
+
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
   },
 };
 
