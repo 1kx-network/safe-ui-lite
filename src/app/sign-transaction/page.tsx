@@ -236,7 +236,6 @@ const SignTransactionComponent = () => {
   useEffect(() => {
     if (transactions) {
       const { signatures, signers } = getSignatures();
-      console.log(`setting signatures`);
       saveSignatures(signatures, signers);
     }
   }, [transactions]);

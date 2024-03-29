@@ -217,7 +217,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             ) : (
               <Box height={'25px'}>
                 <WalletTypography fontSize={14} fontWeight={500}>
-                  {balanceAccount} USD
+                  {balanceAccount} ETH
                 </WalletTypography>
               </Box>
             )}
@@ -262,7 +262,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
               {headerAddress()}
             </WalletTypography>
             <WalletTypography fontSize={14} fontWeight={500}>
-              {balanceAccount} USD
+              {balanceAccount} ETH
             </WalletTypography>
           </Box>
         </InfoUserStyled>

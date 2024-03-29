@@ -13,6 +13,8 @@ import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';
 import { CustomModal } from '..';
 import routes from '@/app/routes';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
+import useSafeStore from '@/stores/safe-store';
 
 import {
   WrapperStyled,
@@ -32,10 +34,24 @@ export const UserInfoBar = () => {
   const { open } = useWeb3Modal();
   const router = useRouter();
   const wrapperRef = useRef(null);
+  const { safeSdk } = useSafeStore();
+  const { getInfoByAccount } = useSafeSdk();
+  const [balance, setBalance] = useState('0.00');
 
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      if (address && safeSdk) {
+        const dataInfo = await getInfoByAccount(safeSdk);
+        if (dataInfo) {
+          setBalance(dataInfo.balanceAccount.toString());
+        }
+      }
+    })();
+  }, [address, safeSdk]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -151,7 +167,7 @@ export const UserInfoBar = () => {
             Balance
           </WalletTypography>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
-            12.00 USD
+            {balance} ETH
           </WalletTypography>
         </ItemInfoStyled>
 
