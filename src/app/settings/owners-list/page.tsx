@@ -20,7 +20,7 @@ import InfoIcon from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import IconDelete from '@/assets/svg/delete.svg';
 import { networks } from '@/context/networks';
-import { customToasty, TabsSettings } from '@/components';
+import { CustomTabs } from '@/components';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import {
@@ -47,7 +47,7 @@ const selectDef = {
   id: 1,
 };
 
-export default function WalletSetup() {
+export default function SettingsOwner() {
   const network = useNetwork();
   const { chainId } = useWeb3ModalAccount();
   const { removeAddress, addAddress, changeThresholdTx } = useSafeSdk();
@@ -65,7 +65,9 @@ export default function WalletSetup() {
 
   const [csvData, setCsvData] = useState<Array<Array<string>>>([]);
   const [countNeedCorfimLocal, setNeedConfirmLocal] = useState([selectDef]);
-  const [defCountConfirm, setDefCountConfirm] = useState(selectDef);
+  const [defCountConfirm, setDefCountConfirm] = useState([
+    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
+  ]);
   const [newOwners, setNewOwners] = useState<Owner[] | null>([]);
   const [newCountNeedConfirm, setNewCountNeedConfirm] = useState(needConfirmOwner);
   const [linkOnScan, setLinkOnScan] = useState<string>('');
@@ -82,10 +84,18 @@ export default function WalletSetup() {
     }));
 
     console.log(needConfirmOwner);
+    console.log({ id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner });
 
-    setDefCountConfirm({ id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner });
     setNeedConfirmLocal(newCountNeedCormed);
-  }, [countOwners]);
+  }, [countOwners, isLoading]);
+
+  useEffect(() => {
+    setDefCountConfirm([
+      { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
+    ]);
+  }, [needConfirmOwner]);
+
+  console.log(defCountConfirm);
 
   useEffect(() => {
     if (network && chainId) {
@@ -153,12 +163,15 @@ export default function WalletSetup() {
     setIsLoading(true);
     const owners = safeAccountOwners.filter(owner => owner !== address);
 
-    await removeAddress(address);
-
     if (owners.length < needConfirmOwner) {
-      await changeThresholdTx(owners.length);
+      // await changeThresholdTx(owners.length);
       setNeedConfirmOwner(owners.length);
+
+      await removeAddress(address, owners.length);
+    } else {
+      await removeAddress(address);
     }
+
     setSafeAccountOwners(owners);
 
     setIsLoading(false);
@@ -177,12 +190,12 @@ export default function WalletSetup() {
       setSafeAccountOwners(newAddressList);
 
       const dataAddress = newAddressList.filter(address => !safeAccountOwners.includes(address));
-      console.log('_1_dataAddress', dataAddress);
-
       const correctNeedConfirm =
         newCountNeedConfirm > [...safeAccountOwners, ...updateDataOwners].length
           ? [...safeAccountOwners, ...updateDataOwners].length
           : newCountNeedConfirm;
+
+      setNewOwners([]);
 
       setNeedConfirmOwner(correctNeedConfirm);
       await addAddress(dataAddress);
@@ -191,9 +204,6 @@ export default function WalletSetup() {
       setNewCountNeedConfirm(correctNeedConfirm);
       setIsLoading(false);
     }
-
-    setNewOwners([]);
-    customToasty('Success account settings was applied', 'success');
   };
 
   return (
@@ -205,7 +215,7 @@ export default function WalletSetup() {
           </WalletTypography>
         </Box>
 
-        <TabsSettings tabs={settingsMenu} />
+        <CustomTabs tabs={settingsMenu} />
 
         <WalletPaper>
           <Box display={'flex'} gap={themeMuiBase.spacing(3)}>

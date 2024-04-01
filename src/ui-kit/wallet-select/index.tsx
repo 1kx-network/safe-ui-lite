@@ -28,8 +28,8 @@ export const WalletSelect = <
     <Select
       isClearable={false}
       isSearchable={false}
-      {...props}
       components={components}
+      {...props}
       styles={stylesSelect}
     />
   );

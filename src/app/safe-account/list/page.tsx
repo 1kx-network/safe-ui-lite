@@ -7,6 +7,7 @@ import { useOwnerList } from '@/queries/safe-accounts';
 import routes from '@/app/routes';
 import { WalletTypography, WalletPaper, WalletLayout, WalletButton } from '@/ui-kit';
 import { useNetwork } from '@/hooks/useNetwork';
+import { safeNetworksObj } from '@/constants/networks';
 
 import { ListItem } from './components/list-item/list-item';
 import { HeaderStyled, MainContainerStyled } from './list.styles';
@@ -25,24 +26,7 @@ export default function SafeAccountList() {
     if (chainId && data && pathName === routes.safeAccountList) {
       const fetchedList = data[chainId];
       const localList = localStorage.getItem('createdSafes');
-      const localListParsed = localList
-        ? JSON.parse(localList)
-        : {
-            '1': [],
-            '10': [],
-            '56': [],
-            '100': [],
-            '137': [],
-            '324': [],
-            '1101': [],
-            '8453': [],
-            '42161': [],
-            '42220': [],
-            '43114': [],
-            '84532': [],
-            '11155111': [],
-            '1313161554': [],
-          };
+      const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
       if (fetchedList !== undefined) {
         setDataList(fetchedList.concat(localListParsed[chainId]));
       }

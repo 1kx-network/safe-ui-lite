@@ -1,6 +1,7 @@
 import { styled } from '@mui/system';
 
 import IconDefault from '@/assets/svg/defult-icon-address.svg';
+import IconSearch from '@/assets/svg/search.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { withTransientProps } from '@/utils/styled.utils';
 
@@ -49,7 +50,7 @@ export const LabelStyled = styled(
 export const InputStyled = styled(
   'input',
   withTransientProps
-)<{ startAdornment?: boolean }>(({ theme, startAdornment }) => {
+)<{ startAdornment?: boolean; isSearch?: boolean }>(({ theme, startAdornment, isSearch }) => {
   const customPadding = startAdornment
     ? `${theme.spacing(2.5)} 0 ${theme.spacing(2.5)} ${theme.spacing(0.75)}`
     : `${theme.spacing(2.5)} ${theme.spacing(5)}`;
@@ -60,6 +61,7 @@ export const InputStyled = styled(
     width: 100%;
     line-height: 1.5;
     padding:  ${customPadding};
+    padding-left: ${isSearch || startAdornment ? theme.spacing(1) : theme.spacing(5)};
     color: ${theme.palette.textDark};
     border: none;
     border-radius: ${theme.spacing(2)};
@@ -143,3 +145,5 @@ width: 1.25rem;
 height: 1.25rem;
 `
 );
+
+export const IconSearchStyled = styled(IconSearch)``;

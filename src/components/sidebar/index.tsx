@@ -21,6 +21,7 @@ import { networks } from '@/context/networks';
 import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
+import { safeNetworksObj } from '@/constants/networks';
 
 import { dataUserMock, menuList } from './ fixtures';
 import {
@@ -93,8 +94,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         dataAcc;
       const parceBalance = utils.formatEther(String(balanceAccount));
 
-      console.log('_safeSdk_');
-
       setBalanceAccount(parceBalance);
       setSafeAccountOwners(ownersAccount);
       setContractNonce(contractNonce);
@@ -108,42 +107,34 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   }, [safeSdk]);
 
   useEffect(() => {
-    if (chainId && data) {
+    if (chainId) {
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
         setLinkOnScan(linkOnScan);
       }
+    }
+  }, [chainId]);
 
-      const localList = localStorage.getItem('createdSafes');
-      const localListParsed = localList
-        ? JSON.parse(localList)
-        : {
-            '1': [],
-            '10': [],
-            '56': [],
-            '100': [],
-            '137': [],
-            '324': [],
-            '1101': [],
-            '8453': [],
-            '42161': [],
-            '42220': [],
-            '43114': [],
-            '84532': [],
-            '11155111': [],
-            '1313161554': [],
-          };
-      const listAccount = data[chainId].concat(localListParsed[chainId]);
+  useEffect(() => {
+    if (!chainId) return;
+    if (!data) return;
 
-      if (listAccount !== undefined) {
-        setDataList(listAccount);
+    const localList = localStorage.getItem('createdSafes');
+    const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+    const listAccount = data[chainId].concat(localListParsed[chainId]);
 
-        const safeAddressFromStore = localStorage.getItem('safeAddress');
-        if (!safeAddress && !safeAddressFromStore) {
-          const defaultAccount = listAccount[0];
-          localStorage.setItem('safeAddress', defaultAccount);
-          setSafeAddress(defaultAccount);
-        }
+    if (listAccount !== undefined) {
+      setDataList(listAccount);
+      const safeAddressFromStore = localStorage.getItem('safeAddress');
+      const defaultAccount = listAccount[0];
+
+      if (safeAddressFromStore && !safeAddress) {
+        setSafeAddress(safeAddressFromStore);
+      }
+
+      if (!safeAddress && !safeAddressFromStore) {
+        localStorage.setItem('safeAddress', defaultAccount);
+        setSafeAddress(defaultAccount);
       }
     }
   }, [data, chainId]);
