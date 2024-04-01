@@ -1,12 +1,12 @@
 import { ItemMenuStyled, WrapperStyled } from './tabs.styles';
 
-interface ITab {
+export interface ITab {
   id: number;
   title: string;
   url: string;
 }
 
-export const TabsSettings = ({ tabs }: { tabs: ITab[] }) => {
+export const CustomTabs = ({ tabs }: { tabs: ITab[] }) => {
   return (
     <WrapperStyled>
       {tabs.map(item => (

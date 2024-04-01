@@ -13,6 +13,7 @@ import {
   EndAdornmentIconStyled,
   LabelStyled,
   IconDefaultWalletStyled,
+  IconSearchStyled,
 } from './wallet-input.styles';
 
 interface IWalletInputProps {
@@ -29,10 +30,12 @@ interface IWalletInputProps {
   ref?: React.Ref<HTMLInputElement>;
   style?: React.CSSProperties;
   startAdornment?: boolean;
+  isSearch?: boolean;
 }
 
 export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>((props, _ref) => {
-  const { onClickEndAdornment, error, endAdornment, label, style, startAdornment } = props;
+  const { onClickEndAdornment, error, endAdornment, label, style, startAdornment, isSearch } =
+    props;
 
   const errorStyle = error ? styleErrorInput : {};
 
@@ -57,6 +60,12 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
             <WalletTypography fontSize={14} fontWeight={500}>
               gno:
             </WalletTypography>
+          </Box>
+        )}
+
+        {isSearch && (
+          <Box display={'flex'} ml={3}>
+            <IconSearchStyled />
           </Box>
         )}
 

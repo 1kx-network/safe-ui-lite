@@ -48,12 +48,17 @@ export const CustomSingleValue = (props: SingleValueProps<any>) => {
 export const stylesSelect = {
   container: (base: CSSObject) => ({
     ...base,
-    fontSize: '17px',
+    fontSize: '14px',
     width: '100%',
 
     '&:focus-visible': {
       borderColor: themeMuiBase.palette.black,
     },
+  }),
+
+  placeholder: (base: CSSObject) => ({
+    ...base,
+    color: themeMuiBase.palette.black,
   }),
 
   dropdownIndicator: (
@@ -101,7 +106,8 @@ export const stylesSelect = {
     padding: '0 20px',
     flexWrap: 'nowrap',
     backgroundColor: 'transparent',
-    color: themeMuiBase.palette.tetriaryDark,
+    color: themeMuiBase.palette.greyToo,
+    fontSize: '14px',
     cursor: 'pointer',
   }),
 

@@ -1,23 +1,45 @@
+import Link from 'next/link';
+
 import { WalletTypography } from '@/ui-kit';
+import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 
-import { WrapperStyled } from './item.styles';
+import { ItemInfoStyled, ItemWrapperStyled } from './item.styles';
 
-interface ItemTransaction {
+interface IItemTransaction {
   id: number;
   date: string;
   amount: number | string;
   token: string;
   address: string;
-  linkOnScan: string;
   theshold: number;
-  owners: number;
+  linkOnScan: string;
   status?: string;
+  owners: string[];
+  // status?: string;
 }
 
-export const ItemTransaction = () => {
+export const ItemTransaction = (data: IItemTransaction) => {
   return (
-    <WrapperStyled>
-      <WalletTypography>Transaction</WalletTypography>
-    </WrapperStyled>
+    <ItemWrapperStyled>
+      <ItemInfoStyled isFirst>
+        <WalletTypography fontWeight={500}>{data.date}</WalletTypography>
+      </ItemInfoStyled>
+
+      <ItemInfoStyled>
+        <WalletTypography fontWeight={500}>
+          {data.amount} {data.token}
+        </WalletTypography>{' '}
+        send to{' '}
+        <Link href={`${data.linkOnScan}address/${data.address}`}>
+          <IconDefaultAddress width="20px" height="20px" />
+        </Link>
+      </ItemInfoStyled>
+
+      <ItemInfoStyled>
+        <WalletTypography fontWeight={500}>
+          {data.theshold} out of {data.owners.length}
+        </WalletTypography>
+      </ItemInfoStyled>
+    </ItemWrapperStyled>
   );
 };
