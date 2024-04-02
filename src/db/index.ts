@@ -5,7 +5,10 @@ interface ISignature {
   data: string;
 }
 export interface ITransaction {
-  id?: number;
+  id: string;
+  date: string;
+  token: string;
+  theshold: number;
   hash: string;
   amount: string;
   destinationAddress: string;

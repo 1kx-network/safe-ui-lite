@@ -4,6 +4,7 @@ import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/rea
 
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
+import { safeNetworksObj } from '@/constants/networks';
 
 import { useEthersAdapter } from './useEthersAdapter';
 
@@ -46,24 +47,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const localList = localStorage.getItem('createdSafes')
         ? localStorage.getItem('createdSafes')
         : null;
-      const localListParsed = localList
-        ? JSON.parse(localList)
-        : {
-            '1': [],
-            '10': [],
-            '56': [],
-            '100': [],
-            '137': [],
-            '324': [],
-            '1101': [],
-            '8453': [],
-            '42161': [],
-            '42220': [],
-            '43114': [],
-            '84532': [],
-            '11155111': [],
-            '1313161554': [],
-          };
+      const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
 
       localListParsed[chainId ?? 1].push(addressAccount);
       localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
@@ -110,15 +94,29 @@ export function useSafeSdk(safeAddress: string | null = null) {
     }
   };
 
-  const removeAddress = async (ownerAddress: string) => {
+  const removeAddress = async (ownerAddress: string, threshold?: number) => {
     try {
       if (!safeSdk) return;
 
-      await safeSdk.createRemoveOwnerTx({ ownerAddress }).then(() => {
-        customToasty(`Success remove address ${ownerAddress}`, 'success');
-        return true;
+      console.log('threshold', threshold);
+
+      const safeTransactionRemoveOwner = await safeSdk.createRemoveOwnerTx({
+        ownerAddress: ownerAddress,
+        threshold: 1,
       });
+
+      console.log(safeTransactionRemoveOwner);
+
+      const signTrx = await safeSdk.signTransaction(safeTransactionRemoveOwner);
+      console.log(signTrx);
+
+      const res = await safeSdk.executeTransaction(safeTransactionRemoveOwner);
+
+      console.log(res);
+      await res.transactionResponse?.wait();
+      customToasty(`Success remove address ${ownerAddress}`, 'success');
     } catch (e) {
+      console.log(e);
       customToasty(`Error remove address ${ownerAddress}`, 'error');
       return null;
     }
@@ -130,7 +128,12 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
       const promises = ownerAddresses.map(async address => {
         try {
-          await safeSdk.createAddOwnerTx({ ownerAddress: address });
+          const safeTrxAddAddress = await safeSdk.createAddOwnerTx({ ownerAddress: address });
+          // const signTrx = await safeSdk.signTransaction(safeTrxAddAddress);
+          const txResponse = await safeSdk.executeTransaction(safeTrxAddAddress);
+
+          await txResponse.transactionResponse?.wait();
+
           return address;
         } catch (e) {
           throw new Error(`Failed to add owner at address: ${address}`);

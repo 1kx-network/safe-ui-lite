@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { useOwnerList } from '@/queries/safe-accounts';
+import { safeNetworksObj } from '@/constants/networks';
 
 import {
   GridStepsStyled,
@@ -37,24 +38,7 @@ export default function Home() {
     if (chainId && data) {
       const fetchedList = data[chainId];
       const localList = localStorage.getItem('createdSafes');
-      const localListParsed = localList
-        ? JSON.parse(localList)
-        : {
-            '1': [],
-            '10': [],
-            '56': [],
-            '100': [],
-            '137': [],
-            '324': [],
-            '1101': [],
-            '8453': [],
-            '42161': [],
-            '42220': [],
-            '43114': [],
-            '84532': [],
-            '11155111': [],
-            '1313161554': [],
-          };
+      const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
       if (fetchedList === undefined || fetchedList.concat(localListParsed[chainId]).length === 0) {
         router.push(routes.safeAccountCreate);
       }

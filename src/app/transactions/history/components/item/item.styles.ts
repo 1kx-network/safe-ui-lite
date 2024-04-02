@@ -8,36 +8,32 @@ export const WrapperStyled = styled('div')(
 `
 );
 
-export const HeaderWrapperStyled = styled('div')(
-  () => `
-  display: flex;
-  justify-content: center;
-`
-);
-
-export const BodyTableStyled = styled('div')(
-  () => `
-    display: flex;
-    height: 100%;
-    overflow-y: scroll;
-    width: 100%;
-`
-);
-
 export const ItemWrapperStyled = styled('div')(
   ({ theme }) => `
     display: flex;
     width: 100%;
     aling-items: center;
+    justify-content: space-between;
     gap: ${theme.spacing(2)};
+    border-bottom: 1px solid ${theme.palette.tetriaryLightGrey};
+    padding: ${theme.spacing(5)} 0; 
+
+    &:last-child {
+      border-bottom: 1px solid transparent;
+    }
   `
 );
 
-export const ItemInfoStyled = styled('div')(
-  ({ theme }) => `
+export const ItemInfoStyled = styled('div')<{ isFirst?: boolean }>(
+  ({ theme, isFirst }) => `
   display: flex;
-  justify-content: center;
-  padding: ${theme.spacing(3.5)} 0; 
-  border-bottom: 1px solid ${theme.palette.tetriaryLightGrey};
+  justify-content: ${!isFirst ? 'center' : 'left'};
+  width: 33%;
+  max-width: 186px;
+  min-width: 80px;
+  overflow: hidder;
+  gap: ${theme.spacing(1.5)};
+  white-space: nowrap;
+  text-overflow: ellipsis; 
 `
 );

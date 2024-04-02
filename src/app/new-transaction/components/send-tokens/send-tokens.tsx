@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 
 import { NewTransactionSchema } from '@/utils/validations.utils';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -123,6 +124,8 @@ export const SendTokens = ({}: SendTokensProps) => {
     };
 
     localStorage.setItem('dataTxHash', JSON.stringify(updateDataTrxHash));
+    const currentDate = new Date();
+    const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
 
     if (chainId && safeAddress) {
       const queryParams = {
@@ -132,7 +135,23 @@ export const SendTokens = ({}: SendTokensProps) => {
         destinationAddress: data.address,
         safeTxHash,
       };
+
+      console.log('_DB___', {
+        id: uuid(),
+        date: dateTrx,
+        token: 'ETH',
+        theshold: 3,
+        hash: safeTxHash,
+        amount: data.amount,
+        destinationAddress: data.address,
+        signatures: [],
+      });
+
       await db.transactions.add({
+        id: uuid(),
+        date: dateTrx,
+        token: 'ETH',
+        theshold: 3,
         hash: safeTxHash,
         amount: data.amount,
         destinationAddress: data.address,
@@ -157,7 +176,8 @@ export const SendTokens = ({}: SendTokensProps) => {
 
   const handleClickMax = async () => {
     if (safeSdk) {
-      setValue('amount', balanceAcc);
+      const parceBalance = utils.formatEther(String(balanceAcc));
+      setValue('amount', parceBalance);
     }
   };
 

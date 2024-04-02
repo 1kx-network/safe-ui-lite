@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 
 import { WalletLayout, WalletTypography } from '@/ui-kit';
