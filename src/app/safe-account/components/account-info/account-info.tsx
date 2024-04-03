@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import { WalletPaper, WalletTypography } from '@/ui-kit';
 import IconDefualtAddress from '@/assets/svg/defult-icon-address.svg';
 import { formattedLabel } from '@/utils/foramtters';
-import { iconNetwork } from '@/utils/icon-formatter';
+import { formatterIcon } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 
 import { AccountPreviewItemstyled, styleWalletPaper } from './account-info-styles';
@@ -30,9 +30,6 @@ export const AccountInfo = ({ account, networkName, chainId }: IAccountInfo) => 
               <IconDefualtAddress width={'16px'} height={'16px'} />
 
               <WalletTypography fontSize={14}>
-                <WalletTypography fontSize={14} fontWeight={500}>
-                  gno:
-                </WalletTypography>
                 {networkName?.substring(0, 3)}:{formattedLabel(account)}
               </WalletTypography>
             </Box>
@@ -44,7 +41,7 @@ export const AccountInfo = ({ account, networkName, chainId }: IAccountInfo) => 
             Network
           </WalletTypography>
           <Box display={'flex'} alignItems={'center'} gap={themeMuiBase.spacing(2)}>
-            {chainId ? iconNetwork(chainId, '15px', '15px') : ''}
+            {chainId ? formatterIcon(chainId, '15px', '15px') : ''}
             <WalletTypography fontSize={14} fontWeight={600} textTransform="capitalize">
               {networkName}
             </WalletTypography>

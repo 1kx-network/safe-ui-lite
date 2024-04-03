@@ -7,7 +7,7 @@ interface ISignature {
 export interface ITransaction {
   id: string;
   date: string;
-  token: string;
+  tokenType: string;
   theshold: number;
   hash: string;
   amount: string;
