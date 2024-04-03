@@ -1,21 +1,21 @@
 import { useCallback, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import * as utils from 'ethers';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 
 import { db } from '@/db';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
+import { returnTransactionObj } from '@/utils/new-trx-functionals';
 interface IUseMultySign {
   safeAddress: string | null;
   safeTxHash: string | null;
   destinationAddress: string | null;
   amount: string | null;
   chainIdUrl: string | null;
+  tokenType: string | null;
 }
 
 interface IMultySignResult {
@@ -40,9 +40,10 @@ export function useMultySign({
   destinationAddress,
   amount,
   chainIdUrl,
+  tokenType,
 }: IUseMultySign): IMultySignResult | undefined {
-  const conditionMulty =
-    !safeAddress || !safeTxHash || !destinationAddress || !amount || !chainIdUrl;
+  const conditionMulty = !safeAddress || !safeTxHash;
+  !destinationAddress || !amount || !chainIdUrl;
 
   const { chainId } = useWeb3ModalAccount();
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
@@ -52,6 +53,7 @@ export function useMultySign({
   const searchParams = useSearchParams();
 
   const { threshold, setThreshold, status, setStatus } = useSignStore();
+  const { createTrancationERC20 } = useSafeSdk();
 
   useSafeSdk(safeAddress);
 
@@ -98,23 +100,27 @@ export function useMultySign({
 
     const pendingCreateTrxData = async () => {
       if (conditionForCreateTrx) {
-        const parseAmount = utils.parseUnits(amount, 'ether');
-        const safeTransactionData: MetaTransactionData = {
-          to: destinationAddress,
-          value: String(parseAmount),
-          data: '0x',
-        };
-        if (!safeSdk) return;
+        if (!chainId || !safeSdk || !tokenType) return;
+
+        const transactionObj = await returnTransactionObj(
+          destinationAddress,
+          amount,
+          tokenType,
+          chainId,
+          createTrancationERC20
+        );
+        if (!transactionObj) return;
 
         const safeTransaction = await safeSdk.createTransaction({
-          transactions: [safeTransactionData],
+          transactions: [transactionObj],
         });
+
         setSafeTransaction(safeTransaction);
       }
     };
 
     pendingCreateTrxData();
-  }, [safeSdk]);
+  }, [safeSdk, conditionMulty]);
 
   const getSignaturesFromDbMulty = useCallback(() => {
     return (
@@ -133,9 +139,9 @@ export function useMultySign({
     const originalUrl = new URL(window.location.href);
     const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
     const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
-    if (transactions) {
-      const { signatures: signaturesFromDb, signers: signersFromDb } = getSignaturesFromDbMulty();
 
+    if (!!transactions?.length) {
+      const { signatures: signaturesFromDb, signers: signersFromDb } = getSignaturesFromDbMulty();
       signersFromDb.map((s, idx) => {
         if (!signers.includes(s)) {
           signers.push(s);
@@ -143,6 +149,7 @@ export function useMultySign({
         }
       });
     }
+
     return { signatures, signers };
   }, [transactions]);
 
@@ -178,7 +185,7 @@ export function useMultySign({
 
   const signTransactionMulty = useCallback(async () => {
     if (conditionMulty) return;
-    if (!safeSdk || !safeTransaction || !safeTxHash) return;
+    if (!safeSdk || !safeTransaction) return;
 
     try {
       const signedTransaction = await safeSdk.signTransaction(safeTransaction);
@@ -193,7 +200,8 @@ export function useMultySign({
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       if ((error as { message: string }).message) {
-        customToasty((error as { message: string }).message as string, 'error');
+        customToasty('Something went wrong width sing!', 'error');
+        console.log((error as { message: string }).message as string);
       }
     }
   }, [safeSdk, safeTransaction, safeTxHash, status]);
@@ -217,6 +225,7 @@ export function useMultySign({
       );
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
       await txResponse.transactionResponse?.wait();
+
       setStatus('success');
       customToasty('Execute success', 'success');
     } catch (error) {

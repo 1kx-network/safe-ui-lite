@@ -3,16 +3,19 @@
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { Box } from '@mui/system';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
+import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
 import { useMultySign } from '@/hooks/useMultySign';
 import useSignStore from '@/stores/sign-store';
+import { formatterIcon } from '@/utils/icon-formatter';
 
 import {
   BoxOwnerLinkStyled,
@@ -40,6 +43,8 @@ const SignTransactionComponent = () => {
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
+  const tokenType = searchParams.get('tokenType');
+  const networkName = searchParams.get('networkName');
 
   const multySign = useMultySign({
     safeAddress,
@@ -47,6 +52,7 @@ const SignTransactionComponent = () => {
     destinationAddress,
     amount,
     chainIdUrl,
+    tokenType,
   });
 
   useEffect(() => {
@@ -113,14 +119,48 @@ const SignTransactionComponent = () => {
           </WalletTypography>
           <TransactionInfoStyled>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+              Account info
+            </WalletTypography>
+            <Box display={'flex'} alignItems={'center'} gap={1}>
+              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                Network: {networkName}
+              </WalletTypography>
+              {chainIdUrl && formatterIcon(+chainIdUrl)}
+            </Box>
+            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+              Chain: {chainIdUrl}
+            </WalletTypography>
+            <Box display={'flex'} alignItems={'center'} gap={1}>
+              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                Address:{' '}
+              </WalletTypography>
+              <IconDefaultAddress width="21px" height="21px" />
+              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                {safeAddress}
+              </WalletTypography>
+            </Box>
+          </TransactionInfoStyled>
+
+          <TransactionInfoStyled>
+            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Transaction Info
             </WalletTypography>
-            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Amount: {amount} ETH
-            </WalletTypography>
-            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Destination: {destinationAddress}
-            </WalletTypography>
+            <Box display={'flex'} alignItems={'center'} gap={1}>
+              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                Amount: {amount} {tokenType}
+              </WalletTypography>
+              {tokenType && formatterIcon(tokenType)}
+            </Box>
+
+            <Box display={'flex'} alignItems={'center'} gap={1}>
+              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                Destination:{' '}
+              </WalletTypography>
+              <IconDefaultAddress width="21px" height="21px" />
+              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                {destinationAddress}
+              </WalletTypography>
+            </Box>
           </TransactionInfoStyled>
 
           <GridButtonStyled>

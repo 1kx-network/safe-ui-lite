@@ -8,7 +8,7 @@ import { WalletTypography, WalletPaper, WalletLayout, WalletButton } from '@/ui-
 import { GridContainer, StepStyled, WrapperStyled, styleWalletPaper } from '../safe-account.styles';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import Accordion from '../components/accordion';
-import { iconNetwork } from '@/utils/icon-formatter';
+import { formatterIcon } from '@/utils/icon-formatter';
 import IconDefualtAddress from '@/assets/svg/defult-icon-address.svg';
 import { formattedLabel } from '@/utils/foramtters';
 import { networks } from '@/context/networks';
@@ -111,7 +111,7 @@ export default function CreatePageAccount() {
                 </WalletTypography>
 
                 <Box display={'flex'} alignItems={'center'} gap={themeMuiBase.spacing(2)}>
-                  {chainId ? iconNetwork(chainId) : ``}
+                  {chainId ? formatterIcon(chainId) : ``}
                   <WalletTypography fontSize={14} fontWeight={600} textTransform="capitalize">
                     {networkName}
                   </WalletTypography>
@@ -136,9 +136,7 @@ export default function CreatePageAccount() {
                       <IconDefualtAddress width={'16px'} height={'16px'} />
 
                       <WalletTypography fontSize={14}>
-                        <WalletTypography fontSize={14} fontWeight={500}>
-                          gno:
-                        </WalletTypography>
+                        <WalletTypography fontSize={14} fontWeight={500}></WalletTypography>
                         {formattedLabel(owner)}
                       </WalletTypography>
 

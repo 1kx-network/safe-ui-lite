@@ -35,17 +35,9 @@ export const GridBtnStyled = styled('div')(
 );
 
 export const AmountSelectStyled = styled('div')`
-  max-width: 184px;
+  width: 145px;
+  min-width: 145px;
 `;
-
-export const InputAmountStyled = styled('div')(
-  ({ theme }) => `
-  width: 70%;
-  & > input {
-    padding: ${theme.spacing(3.875)} ${theme.spacing(3.5)};
-  }
-`
-);
 
 export const StatusLineStyled = styled('div')(
   ({ theme }) => `
@@ -105,15 +97,16 @@ export const WrapperStyled = styled('div')(
 );
 
 export const styledBtxMax = {
-  width: '5.125rem',
-  height: '2.2rem',
+  width: '34px',
+  height: '34px',
   margin: 0,
   padding: 0,
+  fontSize: '14px',
 };
 
 export const styledInput = {
   width: '100%',
-  padding: `${themeMuiBase.spacing(3.875)} ${themeMuiBase.spacing(3.5)}`,
+  padding: `${themeMuiBase.spacing(3)}`,
 };
 
 export const HeaderTokensStyled = styled('div')`
@@ -128,8 +121,8 @@ export const TrxHeaderStyled = styled('div')(
   display: flex;
   gap: ${theme.spacing(2)};
   border-bottom: 1px solid ${theme.palette.tetriaryLightGrey};
-  padding-bottom: ${theme.spacing(13)};
-  margin-bottom: ${theme.spacing(13)};
+  padding-bottom: ${theme.spacing(9.9)};
+  margin-bottom: ${theme.spacing(9.9)};
 `
 );
 
@@ -168,18 +161,5 @@ export const BtnMaxInputStyled = styled('div')(
   height: 100%;
   display: flex;
   align-items: center;
-`
-);
-
-export const CurrentNetworkStyled = styled('div')(
-  ({ theme }) => `
-    display: flex;
-    align-items: center;
-    width: 5.25rem;
-    height: 52px;
-    overflow: hidden;
-    border: 1px solid ${theme.palette.black};
-    border-radius: ${theme.spacing(7)};
-    padding: ${theme.spacing(3.75)} ${theme.spacing(3.75)};
 `
 );

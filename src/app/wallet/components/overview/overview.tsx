@@ -13,6 +13,10 @@ import { styledHeader, styledPaper } from '../../wallet.styles';
 import { IOptions, options } from '../../fixtures';
 import { CustomModal } from '@/components/modal';
 import { networks } from '@/context/networks';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
+import useActiveSafeAddress from '@/stores/safe-address-store';
+import { customToasty } from '@/components';
+import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 
 import {
   TotalyBoxStyled,
@@ -26,47 +30,59 @@ import {
 } from './overview.styles';
 
 export const Overview = () => {
-  const [value, setValue] = useState<SingleValue<IOptions> | null>(options[0]);
-  const [balanceAccount, setBalanceAccount] = useState('0');
   const router = useRouter();
   const { safeSdk } = useSafeStore();
+  const { getInfoByAccount, getTokenERC20Balance } = useSafeSdk();
   const { address, chainId } = useWeb3ModalAccount();
+  const { safeAddress, balanceAccount, setBalanceAccount, isLoading, setIsLoading } =
+    useActiveSafeAddress();
 
-  const safeAddress: string | null =
-    typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
+  const [value, setValue] = useState<SingleValue<IOptions> | null>(options[0]);
+  const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [balanceAccountLocal, setBalanceAccountLocal] = useState(balanceAccount);
 
   useEffect(() => {
-    if (safeSdk) {
-      const pendingBalance = async () => {
-        const balanceAccount = await safeSdk.getBalance();
-        const parceBalance = utils.formatEther(String(balanceAccount));
+    setBalanceAccountLocal(balanceAccount);
+  }, [balanceAccount]);
 
-        setBalanceAccount(parceBalance);
-      };
+  const handleChangeSelect = async (elem: SingleValue<IOptions>) => {
+    if (!elem || !chainId) return;
+    const { label } = elem;
 
-      pendingBalance();
+    if (label === NATIVE_TOKENS.ETH) {
+      setIsLoading(true);
+      const dataAcc = await getInfoByAccount(safeSdk);
+      if (!dataAcc) return;
+
+      const { balanceAccount } = dataAcc;
+      const parceBalance = utils.formatEther(String(balanceAccount));
+
+      setBalanceAccount(parceBalance);
+      setBalanceAccountLocal(parceBalance);
     }
-  }, [safeSdk]);
 
-  // TODO type any
-  // eslint-disable-next-line
-  const handleChangeSelect = (elem: SingleValue<IOptions>) => {
+    if (label === TOKENS_ERC20[label]) {
+      setIsLoading(true);
+      const balanceERC20 = await getTokenERC20Balance(TOKENS_ERC20[label], chainId);
+      const parceBalance = utils.formatUnits(String(balanceERC20), 6);
+
+      setBalanceAccountLocal(parceBalance);
+    }
+
+    setIsLoading(false);
     setValue(elem);
   };
 
-  const [isOpenModal, setIsOpenModal] = useState(false);
-
   const handleReceive = () => setIsOpenModal(true);
-
-  const handleSend = () => {
-    router.push(routes.newTransaction);
-  };
+  const handleSend = () => router.push(routes.newTransaction);
 
   const handleCopyAddress = () => {
-    if (safeAddress) navigator.clipboard.writeText(safeAddress);
+    if (safeAddress) {
+      navigator.clipboard.writeText(safeAddress);
+      customToasty('Address was copy', 'success');
+    }
   };
-
-  const [linkOnScan, setLinkOnScan] = useState<string>('');
 
   useEffect(() => {
     if (chainId) {
@@ -86,7 +102,7 @@ export const Overview = () => {
 
         <TotalyBoxStyled>
           <WalletTypography style={styledHeader}>
-            {balanceAccount} {value?.label}
+            {balanceAccountLocal} {value?.label}
           </WalletTypography>
           <Box width={'223px'}>
             <WalletSelect
@@ -97,13 +113,18 @@ export const Overview = () => {
           </Box>
         </TotalyBoxStyled>
         <WalletTypography fontSize={17} fontWeight={600}>
-          {balanceAccount} tokens
+          {balanceAccountLocal} tokens
         </WalletTypography>
         <ButtonsGridStyled>
-          <WalletButton onClick={handleSend} variant="contained" disabled={balanceAccount === '0'}>
+          <WalletButton
+            onClick={handleSend}
+            variant="contained"
+            disabled={balanceAccountLocal === '0'}
+            loading={isLoading}
+          >
             Send
           </WalletButton>
-          <WalletButton onClick={handleReceive} variant="outlined" disabled={!address}>
+          <WalletButton onClick={handleReceive} variant="outlined" disabled={!address || isLoading}>
             Receive
           </WalletButton>
         </ButtonsGridStyled>

@@ -1,12 +1,26 @@
-import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
+import Safe, {
+  SafeAccountConfig,
+  SafeFactory,
+  createERC20TokenTransferTransaction,
+} from '@safe-global/protocol-kit';
 import { useEffect } from 'react';
 import { useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import * as ethers from 'ethers';
+import { Transaction } from '@safe-global/safe-core-sdk-types';
 
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
 import { safeNetworksObj } from '@/constants/networks';
+import usdABI from '@/app/contracts/abi/usd.json';
+import { CONTRACTS_TOKEN } from '@/constants/tokens-contract';
 
 import { useEthersAdapter } from './useEthersAdapter';
+
+export interface ICreateTrancationERC20 {
+  tokenAddress: string;
+  toAddress: string;
+  amount: string;
+}
 
 export function useSafeSdk(safeAddress: string | null = null) {
   const createEthAdapter = useEthersAdapter();
@@ -26,7 +40,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
   const deploySafe = async (owners: string[], threshold: number) => {
     try {
-      const ethAdapter = await createEthAdapter?.();
+      const ethAdapter = await createEthAdapter?.createEthAdapter?.();
       const safeAddress = await ethAdapter?.getSignerAddress();
 
       if (!safeAddress || !ethAdapter) return null;
@@ -62,7 +76,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
   const createSafe = async (safeAddress: string) => {
     try {
-      const ethAdapter = await createEthAdapter?.();
+      const ethAdapter = await createEthAdapter?.createEthAdapter?.();
 
       if (!ethAdapter) return null;
 
@@ -88,32 +102,26 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const contractVersion = await safeSdk.getContractVersion();
       const contractNonce = await safeSdk.getNonce();
       const accountThreshold = await safeSdk.getThreshold();
+
       return { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold };
     } catch (e) {
+      customToasty(`Error get info by account`, 'error');
       return null;
     }
   };
 
-  const removeAddress = async (ownerAddress: string, threshold?: number) => {
+  const removeAddress = async (ownerAddress: string) => {
     try {
       if (!safeSdk) return;
 
-      console.log('threshold', threshold);
+      // const safeTransactionRemoveOwner = await safeSdk.createRemoveOwnerTx({
+      //   ownerAddress: ownerAddress,
+      //   threshold: 1,
+      // });
 
-      const safeTransactionRemoveOwner = await safeSdk.createRemoveOwnerTx({
-        ownerAddress: ownerAddress,
-        threshold: 1,
-      });
-
-      console.log(safeTransactionRemoveOwner);
-
-      const signTrx = await safeSdk.signTransaction(safeTransactionRemoveOwner);
-      console.log(signTrx);
-
-      const res = await safeSdk.executeTransaction(safeTransactionRemoveOwner);
-
-      console.log(res);
-      await res.transactionResponse?.wait();
+      // const signTrx = await safeSdk.signTransaction(safeTransactionRemoveOwner);
+      // const res = await safeSdk.executeTransaction(safeTransactionRemoveOwner);
+      // await res.transactionResponse?.wait();
       customToasty(`Success remove address ${ownerAddress}`, 'success');
     } catch (e) {
       console.log(e);
@@ -129,7 +137,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const promises = ownerAddresses.map(async address => {
         try {
           const safeTrxAddAddress = await safeSdk.createAddOwnerTx({ ownerAddress: address });
-          // const signTrx = await safeSdk.signTransaction(safeTrxAddAddress);
           const txResponse = await safeSdk.executeTransaction(safeTrxAddAddress);
 
           await txResponse.transactionResponse?.wait();
@@ -161,5 +168,49 @@ export function useSafeSdk(safeAddress: string | null = null) {
     }
   };
 
-  return { deploySafe, createSafe, getInfoByAccount, removeAddress, changeThresholdTx, addAddress };
+  const createTrancationERC20 = async ({
+    tokenAddress,
+    toAddress,
+    amount,
+  }: ICreateTrancationERC20): Promise<Transaction | undefined> => {
+    try {
+      const transferData = createERC20TokenTransferTransaction(tokenAddress, toAddress, amount);
+      return transferData;
+    } catch (e) {
+      console.log('Error create token transfer transaction ERC20', e);
+    }
+  };
+
+  const getTokenERC20Balance = async (typeToken: string, chainId: number) => {
+    try {
+      if (!walletProvider) return;
+
+      const addressAccount = await safeSdk?.getAddress();
+      const etherProvider = new ethers.BrowserProvider(walletProvider);
+
+      const usdtContract = new ethers.Contract(
+        CONTRACTS_TOKEN[chainId][typeToken],
+        usdABI,
+        etherProvider
+      );
+      const balance = await usdtContract.balanceOf(addressAccount);
+
+      return balance;
+    } catch (error) {
+      customToasty(`Error get balance ERC20 token`, 'error');
+      console.log(error);
+      return null;
+    }
+  };
+
+  return {
+    deploySafe,
+    createSafe,
+    getInfoByAccount,
+    removeAddress,
+    changeThresholdTx,
+    addAddress,
+    createTrancationERC20,
+    getTokenERC20Balance,
+  };
 }

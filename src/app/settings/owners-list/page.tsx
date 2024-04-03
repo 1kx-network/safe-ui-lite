@@ -4,6 +4,7 @@ import { Box } from '@mui/system';
 import { CSVLink } from 'react-csv';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { SingleValue } from 'react-select';
+import * as utils from 'ethers';
 
 import {
   WalletButton,
@@ -22,6 +23,7 @@ import IconDelete from '@/assets/svg/delete.svg';
 import { networks } from '@/context/networks';
 import { CustomTabs } from '@/components';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import useSafeStore from '@/stores/safe-store';
 
 import {
   BoxStyled,
@@ -50,7 +52,8 @@ const selectDef = {
 export default function SettingsOwner() {
   const network = useNetwork();
   const { chainId } = useWeb3ModalAccount();
-  const { removeAddress, addAddress, changeThresholdTx } = useSafeSdk();
+  const { removeAddress, addAddress, changeThresholdTx, getInfoByAccount } = useSafeSdk();
+  const { safeSdk } = useSafeStore();
   const {
     needConfirmOwner,
     safeAccountOwners,
@@ -61,6 +64,9 @@ export default function SettingsOwner() {
     setIsLoading,
     setSafeAccountOwners,
     setNeedConfirmOwner,
+    setBalanceAccount,
+    setContractNonce,
+    setContractVersion,
   } = useActiveSafeAddress();
 
   const [csvData, setCsvData] = useState<Array<Array<string>>>([]);
@@ -83,9 +89,6 @@ export default function SettingsOwner() {
       value: index + 1,
     }));
 
-    console.log(needConfirmOwner);
-    console.log({ id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner });
-
     setNeedConfirmLocal(newCountNeedCormed);
   }, [countOwners, isLoading]);
 
@@ -94,8 +97,6 @@ export default function SettingsOwner() {
       { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
     ]);
   }, [needConfirmOwner]);
-
-  console.log(defCountConfirm);
 
   useEffect(() => {
     if (network && chainId) {
@@ -200,6 +201,19 @@ export default function SettingsOwner() {
       setNeedConfirmOwner(correctNeedConfirm);
       await addAddress(dataAddress);
       await changeThresholdTx(correctNeedConfirm);
+
+      const dataAcc = await getInfoByAccount(safeSdk);
+      if (!dataAcc) return;
+
+      const { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold } =
+        dataAcc;
+      const parceBalance = utils.formatEther(String(balanceAccount));
+
+      setBalanceAccount(parceBalance);
+      setSafeAccountOwners(ownersAccount);
+      setContractNonce(contractNonce);
+      setContractVersion(contractVersion);
+      setNeedConfirmOwner(accountThreshold);
 
       setNewCountNeedConfirm(correctNeedConfirm);
       setIsLoading(false);

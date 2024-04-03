@@ -75,7 +75,7 @@ export const stylesSelect = {
   control: (base: any) => ({
     ...base,
     borderRadius: '1.75rem',
-    height: '2.75rem',
+    height: '44px',
     padding: `0 ${themeMuiBase.spacing(2)}`,
     borderWidth: '1px',
     flexWrap: 'nowrap',
