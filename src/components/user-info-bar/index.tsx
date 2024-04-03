@@ -9,14 +9,15 @@ import * as utils from 'ethers';
 
 import { formattedLabel } from '@/utils/foramtters';
 import { WalletButton, WalletTypography } from '@/ui-kit';
-import IconDefaultAdd from '@/assets/svg/defult-icon-address.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';
-import { CustomModal } from '..';
+import { CustomModal, customToasty } from '..';
 import routes from '@/app/routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import { formatterIcon } from '@/utils/icon-formatter';
+import { useNetwork } from '@/hooks/useNetwork';
 
 import {
   WrapperStyled,
@@ -31,7 +32,7 @@ import {
 } from './user-info-bar.styles';
 
 export const UserInfoBar = () => {
-  const { address } = useWeb3ModalAccount();
+  const { address, chainId } = useWeb3ModalAccount();
   const { disconnect } = useDisconnect();
   const { open } = useWeb3Modal();
   const router = useRouter();
@@ -40,10 +41,15 @@ export const UserInfoBar = () => {
   const { getInfoByAccount } = useSafeSdk();
   const [balance, setBalance] = useState('0');
   const { setClearActiveSafeStore } = useActiveSafeAddress();
+  const network = useNetwork();
 
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
+
+  const networkName =
+    (network?.name || '').toString().charAt(0).toUpperCase() +
+    (network?.name || '').toString().slice(1);
 
   useEffect(() => {
     (async () => {
@@ -71,7 +77,10 @@ export const UserInfoBar = () => {
   }, []);
 
   const handleCopyAddress = () => {
-    if (address) navigator.clipboard.writeText(address);
+    if (address) {
+      navigator.clipboard.writeText(address);
+      customToasty('Address was copy', 'success');
+    }
   };
 
   const handleClickMenu = () => {
@@ -119,17 +128,14 @@ export const UserInfoBar = () => {
         {address ? (
           <>
             <Box display={'flex'} alignItems={'center'} gap={1} zIndex={0}>
-              <IconDefaultAdd width={'16px'} height={'16px'} />
+              {chainId && formatterIcon(chainId, '16px', '16px')}
               <WalletTypography
                 fontSize={12}
                 fontWeight={400}
                 color={themeMuiBase.palette.grey}
                 style={{ pointerEvents: 'none' }}
               >
-                <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
-                  gno:{' '}
-                </WalletTypography>
-                {formattedLabel(address, 6, 4)}
+                {formattedLabel(address, 5, 9)}
               </WalletTypography>
             </Box>
 
@@ -153,7 +159,7 @@ export const UserInfoBar = () => {
       <BodyOpenStyled isOpen={isOpenMenu}>
         <ItemInfoStyled noBorder>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
-            {address && formattedLabel(address, 6, 4)}
+            {address && formattedLabel(address, 6, 9)}
           </WalletTypography>
           <IconCopyStyled onClick={handleCopyAddress} />
         </ItemInfoStyled>
@@ -164,6 +170,17 @@ export const UserInfoBar = () => {
           <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
             MetaMask
           </WalletTypography>
+        </ItemInfoStyled>
+        <ItemInfoStyled>
+          <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
+            Network
+          </WalletTypography>
+          <Box display={'flex'} alignItems={'center'} gap={1}>
+            {chainId && formatterIcon(chainId, '16px', '16px')}
+            <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
+              {networkName}
+            </WalletTypography>
+          </Box>
         </ItemInfoStyled>
         <ItemInfoStyled>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>

@@ -18,5 +18,5 @@ export function useEthersAdapter() {
 
     return await ethAdapter;
   };
-  return createEthAdapter;
+  return { createEthAdapter };
 }

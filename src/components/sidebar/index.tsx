@@ -15,7 +15,7 @@ import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import { CustomModal } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
 import { formattedLabel } from '@/utils/foramtters';
-import { iconNetwork } from '@/utils/icon-formatter';
+import { formatterIcon } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { networks } from '@/context/networks';
 import useSafeStore from '@/stores/safe-store';
@@ -58,6 +58,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const router = useRouter();
   const { data } = useOwnerList(address);
   const { safeSdk, saveSdk } = useSafeStore();
+
   const {
     safeAddress,
     balanceAccount,
@@ -81,7 +82,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
     setIsLoading(true);
     createSafe(safeAddress);
-  }, [safeAddress]);
+  }, [safeAddress, address, chainId]);
 
   useEffect(() => {
     if (!safeSdk) return;
@@ -104,7 +105,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     };
 
     pendingBalance();
-  }, [safeSdk]);
+  }, [safeSdk, chainId]);
 
   useEffect(() => {
     if (chainId) {
@@ -137,11 +138,12 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         setSafeAddress(defaultAccount);
       }
     }
-  }, [data, chainId]);
+  }, [data, chainId, address]);
 
   useEffect(() => {
     if (!address) {
       saveSdk(null);
+      localStorage.removeItem('safeAddress');
       setClearActiveSafeStore();
     }
   }, [address]);
@@ -152,7 +154,9 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     setSafeAddress(address);
     setIsOpenAccount(false);
 
-    router.push(routes.walletPage);
+    if (address !== safeAddress) {
+      router.push(routes.walletPage);
+    }
   };
 
   const handleOpenAccount = () => {
@@ -170,7 +174,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   const headerAddress = useCallback(() => {
     if (address && safeAddress) {
-      return formattedLabel(safeAddress, 4, 7);
+      return formattedLabel(safeAddress);
     }
     return 'Safe account';
   }, [address, safeAddress]);
@@ -191,9 +195,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
           <Box sx={boxStyleInfoUser}>
             <Box sx={boxStyleInfoUserAddress}>
               <WalletTypography fontSize={12} fontWeight={400}>
-                <WalletTypography fontSize={12} fontWeight={500}>
-                  gno:
-                </WalletTypography>
                 {headerAddress()}
               </WalletTypography>
               {safeAddress && (
@@ -211,10 +212,11 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                 <IconLoading />
               </Box>
             ) : (
-              <Box height={'25px'}>
+              <Box height={'25px'} display={'flex'} alignItems={'center'} gap={2}>
                 <WalletTypography fontSize={14} fontWeight={500}>
                   {balanceAccount} ETH
                 </WalletTypography>
+                {chainId && formatterIcon(chainId, '19px', '19px')}
               </Box>
             )}
           </Box>
@@ -252,9 +254,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
           <Box sx={boxStyleInfoUser}>
             <WalletTypography fontSize={12} fontWeight={400} style={{ marginBottom: 2 }}>
-              <WalletTypography fontSize={12} fontWeight={500}>
-                gno:
-              </WalletTypography>
               {headerAddress()}
             </WalletTypography>
             <WalletTypography fontSize={14} fontWeight={500}>
@@ -277,16 +276,13 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                 <ItemAccountStyled key={index} onClick={() => handleClickAccount(item)}>
                   <Box display={'flex'} alignItems={'center'}>
                     <IconDefaultAddressStyled width={'24px'} height={'24px'} />
-                    <WalletTypography fontSize={12} fontWeight={500}>
-                      gno:
-                    </WalletTypography>
                     <WalletTypography fontSize={12} fontWeight={300}>
                       {formattedLabel(item, 4, 4)}
                     </WalletTypography>
                   </Box>
 
                   <Box display={'flex'} alignItems={'center'} gap={1}>
-                    {chainId && iconNetwork(chainId, '14px', '14px')}
+                    {chainId && formatterIcon(chainId, '14px', '14px')}
                     <WalletTypography fontSize={12} fontWeight={300}>
                       Ethereum
                     </WalletTypography>

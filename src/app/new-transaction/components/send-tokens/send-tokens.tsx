@@ -1,16 +1,16 @@
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import { SingleValue } from 'react-select';
 
+import { WalletButton, WalletInput, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
 import { NewTransactionSchema } from '@/utils/validations.utils';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import { WalletButton, WalletInput, WalletPaper, WalletTypography } from '@/ui-kit';
 import ConfirmIcon from '@/assets/svg/confirm-trx.svg';
 import TokensIcon from '@/assets/svg/tokens.svg';
 import TrxIcon from '@/assets/svg/trx-status.svg';
@@ -19,7 +19,11 @@ import routes from '../../../routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { useNetwork } from '@/hooks/useNetwork';
 import { db } from '@/db';
+import { IOptions } from '../../../wallet/fixtures';
+import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
+import { returnTransactionObj } from '@/utils/new-trx-functionals';
 
+import { options } from './fixutres';
 import {
   AmountSelectStyled,
   ConfirmedWaitStyled,
@@ -38,11 +42,9 @@ import {
   styledBtnNextStep,
   WrapPaperStyled,
   BtnMaxInputStyled,
-  CurrentNetworkStyled,
   BodyStyled,
 } from './send-tokens.styles';
 
-const nonceCount = 1;
 const isConfirmed = false;
 const isExecute = false;
 
@@ -56,16 +58,14 @@ interface SendTokensProps {}
 
 export const SendTokens = ({}: SendTokensProps) => {
   const { address, chainId } = useWeb3ModalAccount();
-  const { safeSdk, setSafeTransaction } = useSafeStore();
-  const { createSafe } = useSafeSdk();
+  const { safeSdk } = useSafeStore();
+  const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
   const network = useNetwork();
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
 
   const router = useRouter();
-  const capitalizedNetworkName = network
-    ? network?.name.toString().charAt(0).toUpperCase() + network?.name.toString().slice(1)
-    : '';
+
   const {
     handleSubmit,
     formState: { errors },
@@ -80,13 +80,19 @@ export const SendTokens = ({}: SendTokensProps) => {
     },
   });
 
+  const [nonceCount, setNonceCount] = useState(0);
+  const [tokenType, setTokenType] = useState<string>(NATIVE_TOKENS.ETH);
   const [balanceAcc, setBalanceAcc] = useState('');
 
   useEffect(() => {
     if (safeSdk) {
       const pendingBalance = async () => {
         const balanceAccount = await safeSdk.getBalance();
-        setBalanceAcc(String(balanceAccount));
+        const nonce = await safeSdk.getNonce();
+        const parceBalance = utils.formatEther(String(balanceAccount));
+
+        setNonceCount(nonce);
+        setBalanceAcc(parceBalance);
       };
 
       pendingBalance();
@@ -97,34 +103,48 @@ export const SendTokens = ({}: SendTokensProps) => {
     }
   }, [safeSdk, safeAddress]);
 
+  const handleChangeToken = async (elem: SingleValue<IOptions>) => {
+    if (!chainId || !safeSdk || !elem) return;
+    const { label } = elem;
+
+    if (label === NATIVE_TOKENS.ETH) {
+      const dataAcc = await safeSdk.getBalance();
+      if (!dataAcc) return;
+      const parceBalance = utils.formatEther(String(dataAcc));
+      setBalanceAcc(parceBalance);
+      setTokenType(NATIVE_TOKENS.ETH);
+    }
+    if (label === TOKENS_ERC20[label]) {
+      const balanceERC20 = await getTokenERC20Balance(TOKENS_ERC20[label], chainId);
+      const parceBalance = utils.formatUnits(String(balanceERC20), 6);
+
+      setBalanceAcc(parceBalance);
+      setTokenType(TOKENS_ERC20[label]);
+    }
+  };
+
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
-    const parseAmount = utils.parseUnits(data.amount, 'ether').toString();
-
-    const safeTransactionData: MetaTransactionData = {
-      to: data.address,
-      value: parseAmount,
-      data: data.calldata,
-    };
-
     if (!safeSdk || !chainId || !address) return;
+    const networkName =
+      (network?.name || '').toString().charAt(0).toUpperCase() +
+      (network?.name || '').toString().slice(1);
+
+    const transactionObj = await returnTransactionObj(
+      data.address,
+      data.amount,
+      tokenType,
+      chainId,
+      createTrancationERC20
+    );
+
+    if (!transactionObj) return;
 
     const safeTransaction = await safeSdk.createTransaction({
-      transactions: [safeTransactionData],
+      transactions: [transactionObj],
     });
 
-    setSafeTransaction(safeTransaction);
-
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-    const dataTxHash = JSON.parse(localStorage.getItem('dataTxHash') ?? '{}');
-
-    const updateDataTrxHash = {
-      ...dataTxHash,
-      [address]: {
-        [chainId]: dataTxHash[chainId],
-      },
-    };
-
-    localStorage.setItem('dataTxHash', JSON.stringify(updateDataTrxHash));
+    const thesholders = await safeSdk.getThreshold();
     const currentDate = new Date();
     const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
 
@@ -134,33 +154,22 @@ export const SendTokens = ({}: SendTokensProps) => {
         address: encodeURIComponent(safeAddress),
         amount: data.amount,
         destinationAddress: data.address,
+        tokenType,
+        networkName,
         safeTxHash,
       };
-
-      console.log('_DB___', {
-        id: uuid(),
-        date: dateTrx,
-        token: 'ETH',
-        theshold: 3,
-        hash: safeTxHash,
-        amount: data.amount,
-        destinationAddress: data.address,
-        signatures: [],
-      });
 
       await db.transactions.add({
         id: uuid(),
         date: dateTrx,
-        token: 'ETH',
-        theshold: 3,
+        tokenType,
+        theshold: thesholders,
         hash: safeTxHash,
         amount: data.amount,
         destinationAddress: data.address,
         signatures: [],
       });
-
       const queryString = new URLSearchParams(queryParams).toString();
-
       router.push(`${routes.signTransaction}?${queryString}`);
     }
   };
@@ -176,10 +185,7 @@ export const SendTokens = ({}: SendTokensProps) => {
   };
 
   const handleClickMax = async () => {
-    if (safeSdk) {
-      const parceBalance = utils.formatEther(String(balanceAcc));
-      setValue('amount', parceBalance);
-    }
+    setValue('amount', balanceAcc);
   };
 
   return (
@@ -205,7 +211,7 @@ export const SendTokens = ({}: SendTokensProps) => {
               </AlignCenterStyled>
             </HeaderTokensStyled>
 
-            <WalletTypography fontSize={17} fontWeight={600}>
+            <WalletTypography fontWeight={400} color={themeMuiBase.palette.tetriaryGrey}>
               Recipient address or ENS
             </WalletTypography>
 
@@ -225,7 +231,7 @@ export const SendTokens = ({}: SendTokensProps) => {
               )}
             />
 
-            <WalletTypography fontSize={17} fontWeight={600}>
+            <WalletTypography fontWeight={400} color={themeMuiBase.palette.tetriaryGrey}>
               Amount
             </WalletTypography>
             <GridBtnStyled>
@@ -243,11 +249,7 @@ export const SendTokens = ({}: SendTokensProps) => {
                       errorValue={errors.amount?.message}
                     />
                     <BtnMaxInputStyled>
-                      <WalletButton
-                        styles={styledBtxMax}
-                        variant="contained"
-                        onClick={handleClickMax}
-                      >
+                      <WalletButton styles={styledBtxMax} variant="text" onClick={handleClickMax}>
                         MAX
                       </WalletButton>
                     </BtnMaxInputStyled>
@@ -255,13 +257,15 @@ export const SendTokens = ({}: SendTokensProps) => {
                 )}
               />
               <AmountSelectStyled>
-                {/* <WalletSelect placeholder={'xDai'} isSearchable={false}  /> */}
-                <CurrentNetworkStyled>
-                  <WalletTypography fontWeight={600}>{capitalizedNetworkName}</WalletTypography>
-                </CurrentNetworkStyled>
+                <WalletSelect
+                  options={options}
+                  defaultValue={options[0]}
+                  isSearchable={false}
+                  onChange={handleChangeToken}
+                />
               </AmountSelectStyled>
             </GridBtnStyled>
-            <WalletTypography fontSize={17} fontWeight={600}>
+            <WalletTypography fontWeight={400} color={themeMuiBase.palette.tetriaryGrey}>
               Calldata
             </WalletTypography>
             <GridBtnStyled>

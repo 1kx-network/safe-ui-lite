@@ -15,7 +15,7 @@ export const Flex = styled('div')(
   display: flex;
   flex-direction: row;
   width: 100%;
-  jctify-content: center;
+  justify-content: center;
   align-items: center;
 `
 );

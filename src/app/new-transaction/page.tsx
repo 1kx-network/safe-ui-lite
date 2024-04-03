@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { WalletLayout, WalletTypography } from '@/ui-kit';
 import { ButtonStyled } from '@/ui-kit/wallet-button/wallet-button.styles';
 
-import { Flex, WrapperStyled } from './new-transaction.styles';
 import { TrxBuilder } from './components/trx-builder/trx-builder';
 import { SendTokens } from './components/send-tokens/send-tokens';
+import { Flex, WrapperStyled } from './new-transaction.styles';
 
 export default function NewTransaction() {
   const [state, setState] = useState<'send' | 'trx-builder'>('send');
