@@ -17,4 +17,5 @@ export const NewTransactionSchema = yup.object().shape({
       return value !== undefined && parseFloat(value) !== 0;
     })
     .required('This field is required'),
+  calldata: yup.string().required('This field is required'),
 });

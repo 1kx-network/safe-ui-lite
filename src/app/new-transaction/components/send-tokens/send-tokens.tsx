@@ -49,6 +49,7 @@ const isExecute = false;
 interface IInputsForm {
   amount: string;
   address: string;
+  calldata: string;
 }
 
 interface SendTokensProps {}
@@ -102,7 +103,7 @@ export const SendTokens = ({}: SendTokensProps) => {
     const safeTransactionData: MetaTransactionData = {
       to: data.address,
       value: parseAmount,
-      data: '0x',
+      data: data.calldata,
     };
 
     if (!safeSdk || !chainId || !address) return;
@@ -259,6 +260,26 @@ export const SendTokens = ({}: SendTokensProps) => {
                   <WalletTypography fontWeight={600}>{capitalizedNetworkName}</WalletTypography>
                 </CurrentNetworkStyled>
               </AmountSelectStyled>
+            </GridBtnStyled>
+            <WalletTypography fontSize={17} fontWeight={600}>
+              Calldata
+            </WalletTypography>
+            <GridBtnStyled>
+              <Controller
+                control={control}
+                name="calldata"
+                render={({ field }) => (
+                  <Box width={'100%'} position={'relative'}>
+                    <WalletInput
+                      {...field}
+                      placeholder="0x"
+                      style={{ ...styledInput }}
+                      error={!!errors.calldata}
+                      errorValue={errors.calldata?.message}
+                    />
+                  </Box>
+                )}
+              />
             </GridBtnStyled>
             <WalletButton type="submit" variant="contained" styles={styledBtnNextStep}>
               Next
