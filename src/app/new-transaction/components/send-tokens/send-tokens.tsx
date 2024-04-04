@@ -18,10 +18,10 @@ import useSafeStore from '@/stores/safe-store';
 import routes from '../../../routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { useNetwork } from '@/hooks/useNetwork';
-import { db } from '@/db';
 import { IOptions } from '../../../wallet/fixtures';
 import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
+import { setDataDB } from '@/db/set-info';
 
 import { options } from './fixutres';
 import {
@@ -159,7 +159,7 @@ export const SendTokens = ({}: SendTokensProps) => {
         safeTxHash,
       };
 
-      await db.transactions.add({
+      const transactionDB = {
         id: uuid(),
         date: dateTrx,
         tokenType,
@@ -167,8 +167,15 @@ export const SendTokens = ({}: SendTokensProps) => {
         hash: safeTxHash,
         amount: data.amount,
         destinationAddress: data.address,
+        calldata: '0x',
         signatures: [],
+      };
+
+      await setDataDB(safeAddress, {
+        address: safeAddress,
+        transactions: [transactionDB],
       });
+
       const queryString = new URLSearchParams(queryParams).toString();
       router.push(`${routes.signTransaction}?${queryString}`);
     }

@@ -19,7 +19,7 @@ export const HeaderListStyled = styled('div')(
 
     & > h3 {
       width: 33%;
-      max-width: 186px;
+      max-width: 33%;
       min-width: 80px;
     }
 `

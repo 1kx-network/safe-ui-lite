@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
+import Link from 'next/link';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
@@ -16,6 +17,8 @@ import { customToasty } from '@/components';
 import { useMultySign } from '@/hooks/useMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
+import { formattedLabel } from '@/utils/foramtters';
+import { networks } from '@/context/networks';
 
 import {
   BoxOwnerLinkStyled,
@@ -34,6 +37,7 @@ const SignTransactionComponent = () => {
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk } = useSafeStore();
   const { threshold, status, setStatus } = useSignStore();
+  const [linkOnScan, setLinkOnScan] = useState<string>('');
 
   const { address } = useWeb3ModalAccount();
 
@@ -56,6 +60,13 @@ const SignTransactionComponent = () => {
   });
 
   useEffect(() => {
+    if (chainIdUrl) {
+      const linkOnScan = networks.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
+      if (linkOnScan) {
+        setLinkOnScan(linkOnScan);
+      }
+    }
+
     const signatures = searchParams.getAll('signatures')[0];
     const signers = searchParams.getAll('signers')[0];
 
@@ -93,10 +104,10 @@ const SignTransactionComponent = () => {
     await multySign.executeMulty();
   }, [safeSdk, safeTransaction, searchParams]);
 
-  const handleCopy = () => {
-    if (!pathName || !searchParams) return;
-    navigator.clipboard.writeText(window.location.href);
-    customToasty('Link was copy', 'success');
+  const handleCopy = (address: string | null) => {
+    if (!address) return;
+    navigator.clipboard.writeText(address);
+    customToasty('Was copy', 'success');
   };
 
   let buttonText = 'Sign Transaction';
@@ -138,6 +149,15 @@ const SignTransactionComponent = () => {
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
                 {safeAddress}
               </WalletTypography>
+              <Link href={`${linkOnScan}address/${safeAddress}`} target="_blanck">
+                <OpenInNewIcon width="19px" height="22px" />
+              </Link>
+              <CopyIcon
+                width="18px"
+                height="19px"
+                cursor="pointer"
+                onClick={() => handleCopy(safeAddress)}
+              />
             </Box>
           </TransactionInfoStyled>
 
@@ -160,6 +180,15 @@ const SignTransactionComponent = () => {
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
                 {destinationAddress}
               </WalletTypography>
+              <Link href={`${linkOnScan}address/${destinationAddress}`} target="_blanck">
+                <OpenInNewIcon width="19px" height="18px" />
+              </Link>
+              <CopyIcon
+                width="18px"
+                height="19px"
+                cursor="pointer"
+                onClick={() => handleCopy(destinationAddress)}
+              />
             </Box>
           </TransactionInfoStyled>
 
@@ -180,7 +209,7 @@ const SignTransactionComponent = () => {
             )}
           </GridButtonStyled>
 
-          <WalletTypography fontSize={22} fontWeight={600}>
+          <WalletTypography fontSize={18} fontWeight={600}>
             Safe URL
           </WalletTypography>
 
@@ -196,11 +225,19 @@ const SignTransactionComponent = () => {
                 fontSize={17}
                 fontWeight={400}
               >
-                {`${pathName}?${searchParams.toString()}`}
+                {formattedLabel(`${pathName}?${searchParams.toString()}`, 17, 40)}
               </WalletTypography>
             </OwnerLinkStyled>
-            <OpenInNewIcon width="19px" height="18px" />
-            <CopyIcon width="18px" height="19px" cursor="pointer" onClick={handleCopy} />
+
+            <Link href={`${pathName}?${searchParams.toString()}`} target="_blanck">
+              <OpenInNewIcon width="19px" height="18px" />
+            </Link>
+            <CopyIcon
+              width="18px"
+              height="19px"
+              cursor="pointer"
+              onClick={() => handleCopy(window.location.href)}
+            />
           </BoxOwnerLinkStyled>
 
           <OwnersInfoStyled>
@@ -210,7 +247,8 @@ const SignTransactionComponent = () => {
 
             <WalletTypography fontSize={17}>
               <WalletTypography fontWeight={600}>{signedCount} </WalletTypography>
-              out of <WalletTypography fontWeight={600}>{threshold}</WalletTypography> owners
+              out of <WalletTypography fontWeight={600}>{threshold}</WalletTypography> Threshold
+              {threshold > 1 ? '' : 'ers'}
             </WalletTypography>
           </OwnersInfoStyled>
         </WalletPaper>

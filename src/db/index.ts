@@ -1,9 +1,10 @@
 import Dexie, { Table } from 'dexie';
 
-interface ISignature {
+export interface ISignature {
   signer: string;
   data: string;
 }
+
 export interface ITransaction {
   id: string;
   date: string;
@@ -12,12 +13,15 @@ export interface ITransaction {
   hash: string;
   amount: string;
   destinationAddress: string;
+  calldata: string;
   signatures: ISignature[];
 }
+
 export interface ISafe {
   id?: number;
   address: string;
   owners: string[];
+  transactions: ITransaction[];
 }
 
 export class MySubClassedDexie extends Dexie {
@@ -27,8 +31,8 @@ export class MySubClassedDexie extends Dexie {
   public constructor() {
     super('1kx');
     this.version(1).stores({
-      transactions: '++id, hash, signatures',
-      safes: '++id, address, owners',
+      transactions: '++id, hash, safeAccount',
+      safes: 'address, owners',
     });
   }
 }

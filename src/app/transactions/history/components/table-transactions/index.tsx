@@ -7,29 +7,34 @@ import { ItemTransaction } from '../item';
 import { WalletPaper, WalletTypography } from '@/ui-kit';
 import useTransactionsStore from '@/stores/transactions-store';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { getTransactionsDB } from '@/db/get-info';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import { HeaderListStyled, WrapperStyled, styledPaper } from './table-transactions.styles';
 
 export const TableTransaction = () => {
   const { chainId } = useWeb3ModalAccount();
-  const { transactions, transactionsFilter } = useTransactionsStore();
+  const { transactions, transactionsFilter, setTransactions, setTransactionsFilter } =
+    useTransactionsStore();
+  const { safeAddress } = useActiveSafeAddress();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
   useEffect(() => {
-    if (chainId) {
-      // const getTrxDb = async () => {
-      //   await db.transactions.filter(trx => {
-      //     return trx.amount !== '0';
-      //   });
-      // };
-
+    if (chainId && safeAddress) {
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
         setLinkOnScan(linkOnScan);
       }
+
+      (async () => {
+        const resTrx = await getTransactionsDB(safeAddress);
+
+        setTransactions(resTrx);
+        setTransactionsFilter(resTrx);
+      })();
     }
-  }, [chainId]);
+  }, [chainId, safeAddress]);
 
   return (
     <WrapperStyled>
@@ -43,7 +48,7 @@ export const TableTransaction = () => {
               Amount
             </WalletTypography>
             <WalletTypography component="h3" fontSize={18} fontWeight={600} textAlign="center">
-              Trasholder
+              Trasholders
             </WalletTypography>
           </HeaderListStyled>
           <WalletPaper style={styledPaper}>
