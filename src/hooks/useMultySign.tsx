@@ -100,13 +100,16 @@ export function useMultySign({
 
     const pendingCreateTrxData = async () => {
       if (conditionForCreateTrx) {
-        if (!chainId || !safeSdk || !tokenType) return;
+        if (!chainId || !safeSdk || !tokenType || !transactions) return;
+
+        const data = transactions[0].calldata;
 
         const transactionObj = await returnTransactionObj(
           destinationAddress,
           amount,
           tokenType,
           chainId,
+          data,
           createTrancationERC20
         );
         if (!transactionObj) return;

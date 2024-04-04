@@ -134,6 +134,7 @@ export const SendTokens = ({}: SendTokensProps) => {
       data.amount,
       tokenType,
       chainId,
+      data.calldata,
       createTrancationERC20
     );
 
@@ -166,6 +167,7 @@ export const SendTokens = ({}: SendTokensProps) => {
         theshold: thesholders,
         hash: safeTxHash,
         amount: data.amount,
+        calldata: data.calldata,
         destinationAddress: data.address,
         signatures: [],
       });

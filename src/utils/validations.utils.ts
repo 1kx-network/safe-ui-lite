@@ -17,5 +17,16 @@ export const NewTransactionSchema = yup.object().shape({
       return value !== undefined && parseFloat(value) !== 0;
     })
     .required('This field is required'),
-  calldata: yup.string().required('This field is required'),
+  calldata: yup
+    .string()
+    .required('This field is required')
+    .test(
+      'is-eth-calldata',
+      'Calldata must be a valid Ethereum calldata string',
+      value => isEthCalldata(value) // Call the ETH calldata validation function
+    ),
 });
+
+function isEthCalldata(calldata: string) {
+  return /^0x[0-9a-fA-F]+$/.test(calldata);
+}
