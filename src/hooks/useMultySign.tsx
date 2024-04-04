@@ -100,13 +100,16 @@ export function useMultySign({
 
     const pendingCreateTrxData = async () => {
       if (conditionForCreateTrx) {
-        if (!chainId || !safeSdk || !tokenType) return;
+        if (!chainId || !safeSdk || !tokenType || !transactions) return;
+
+        const data = transactions[0].calldata;
 
         const transactionObj = await returnTransactionObj(
           destinationAddress,
           amount,
           tokenType,
           chainId,
+          data,
           createTrancationERC20
         );
         if (!transactionObj) return;
@@ -200,7 +203,7 @@ export function useMultySign({
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       if ((error as { message: string }).message) {
-        customToasty('Something went wrong width sing!', 'error');
+        customToasty('Something went wrong with sign!', 'error');
         console.log((error as { message: string }).message as string);
       }
     }

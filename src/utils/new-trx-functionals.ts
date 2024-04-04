@@ -12,6 +12,7 @@ export const returnTransactionObj = async (
   amount: string,
   tokenType: string,
   chainId: number,
+  data: string,
   createTrancationERC20: (payload: ICreateTrancationERC20) => Promise<Transaction | undefined>
 ) => {
   if (TOKENS_ERC20[tokenType]) {
@@ -20,6 +21,7 @@ export const returnTransactionObj = async (
       tokenAddress: CONTRACTS_TOKEN[chainId][tokenType],
       toAddress: to,
       amount: parseAmount,
+      data,
     });
 
     if (!trxERC20Data) return;
@@ -31,7 +33,7 @@ export const returnTransactionObj = async (
   const safeTransactionData: MetaTransactionData = {
     to,
     value: parseAmount,
-    data: '0x',
+    data,
   };
 
   return safeTransactionData;

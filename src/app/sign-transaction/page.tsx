@@ -16,6 +16,7 @@ import { customToasty } from '@/components';
 import { useMultySign } from '@/hooks/useMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
+import { formattedLabel } from '@/utils/foramtters';
 
 import {
   BoxOwnerLinkStyled,
@@ -161,6 +162,18 @@ const SignTransactionComponent = () => {
                 {destinationAddress}
               </WalletTypography>
             </Box>
+
+            {safeTransaction?.data.data && (
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                  Calldata:{' '}
+                </WalletTypography>
+                <IconDefaultAddress width="21px" height="21px" />
+                <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                  {formattedLabel(safeTransaction?.data.data ?? '0x')}
+                </WalletTypography>
+              </Box>
+            )}
           </TransactionInfoStyled>
 
           <GridButtonStyled>

@@ -6,6 +6,8 @@ import { ButtonStyled } from './wallet-button.styles';
 
 interface IWalletButtonProps {
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onMouseOver?: () => void;
+  onMouseLeave?: () => void;
   children: React.ReactNode;
   styles?: React.CSSProperties;
   variant?: 'contained' | 'outlined' | 'text';
@@ -16,6 +18,8 @@ interface IWalletButtonProps {
 
 export function WalletButton({
   onClick,
+  onMouseOver,
+  onMouseLeave,
   children,
   styles,
   variant,
@@ -28,6 +32,8 @@ export function WalletButton({
       type={type}
       style={styles}
       onClick={onClick}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
       variant={variant}
       disabled={disabled || loading}
       loading={loading ? 'true' : 'false'}

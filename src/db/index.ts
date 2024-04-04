@@ -12,6 +12,7 @@ export interface ITransaction {
   hash: string;
   amount: string;
   destinationAddress: string;
+  calldata: string;
   signatures: ISignature[];
 }
 export interface ISafe {

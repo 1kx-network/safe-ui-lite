@@ -20,6 +20,7 @@ export interface ICreateTrancationERC20 {
   tokenAddress: string;
   toAddress: string;
   amount: string;
+  data: string;
 }
 
 export function useSafeSdk(safeAddress: string | null = null) {
