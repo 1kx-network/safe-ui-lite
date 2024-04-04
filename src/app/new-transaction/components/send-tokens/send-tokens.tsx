@@ -169,7 +169,6 @@ export const SendTokens = ({}: SendTokensProps) => {
         amount: data.amount ?? '0',
         calldata: data.calldata ?? '0x',
         destinationAddress: data.address,
-        calldata: '0x',
         signatures: [],
       };
 
