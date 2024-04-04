@@ -190,6 +190,18 @@ const SignTransactionComponent = () => {
                 onClick={() => handleCopy(destinationAddress)}
               />
             </Box>
+
+            {safeTransaction?.data.data && (
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                  Calldata:{' '}
+                </WalletTypography>
+                <IconDefaultAddress width="21px" height="21px" />
+                <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+                  {formattedLabel(safeTransaction?.data.data ?? '0x')}
+                </WalletTypography>
+              </Box>
+            )}
           </TransactionInfoStyled>
 
           <GridButtonStyled>
