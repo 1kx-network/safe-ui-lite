@@ -15,13 +15,12 @@ export const returnTransactionObj = async (
   data: string,
   createTrancationERC20: (payload: ICreateTrancationERC20) => Promise<Transaction | undefined>
 ) => {
-  if (TOKENS_ERC20[tokenType]) {
+  if (TOKENS_ERC20[tokenType] && data === '0x') {
     const parseAmount = parseUnits(amount, 6).toString();
     const trxERC20Data = await createTrancationERC20({
       tokenAddress: CONTRACTS_TOKEN[chainId][tokenType],
       toAddress: to,
       amount: parseAmount,
-      data,
     });
 
     if (!trxERC20Data) return;
