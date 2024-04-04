@@ -24,7 +24,7 @@ import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { safeNetworksObj } from '@/constants/networks';
 import { useNetwork } from '@/hooks/useNetwork';
 
-import { dataUserMock, menuList } from './ fixtures';
+import { dataUserMock, menuList } from './fixtures';
 import {
   MenuStyled,
   WrapperStyled,

@@ -51,8 +51,8 @@ const SignTransactionComponent = () => {
   const networkName = searchParams.get('networkName');
 
   const multySign = useMultySign({
-    safeAddress,
-    safeTxHash,
+    safeAddress: safeAddress ?? '',
+    safeTxHash: safeTxHash ?? '',
     destinationAddress,
     amount,
     chainIdUrl,

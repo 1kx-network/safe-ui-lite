@@ -10,8 +10,8 @@ import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 interface IUseMultySign {
-  safeAddress: string | null;
-  safeTxHash: string | null;
+  safeAddress: string;
+  safeTxHash: string;
   destinationAddress: string | null;
   amount: string | null;
   chainIdUrl: string | null;
@@ -57,14 +57,11 @@ export function useMultySign({
 
   useSafeSdk(safeAddress);
 
-  const transactions = useLiveQuery(
-    () =>
-      db.transactions
-        .where('hash')
-        .equals(safeTxHash ?? '')
-        .toArray(),
+  const safeFromDb = useLiveQuery(
+    () => db.safes.where('address').equals(safeAddress).first(),
     [safeTxHash]
   );
+  const transaction = safeFromDb?.transactions.find(tx => tx.hash === safeTxHash);
 
   const switchNetworkMulty = async (props: ICheckAndSwitchNetwork) => {
     if (conditionMulty) return;
@@ -100,9 +97,9 @@ export function useMultySign({
 
     const pendingCreateTrxData = async () => {
       if (conditionForCreateTrx) {
-        if (!chainId || !safeSdk || !tokenType || !transactions) return;
+        if (!chainId || !safeSdk || !tokenType || !transaction) return;
 
-        const data = transactions[0].calldata;
+        const data = transaction.calldata;
 
         const transactionObj = await returnTransactionObj(
           destinationAddress,
@@ -127,7 +124,7 @@ export function useMultySign({
 
   const getSignaturesFromDbMulty = useCallback(() => {
     return (
-      transactions![0]?.signatures.reduce(
+      transaction?.signatures.reduce(
         (acc: { signatures: string[]; signers: string[] }, sig) => {
           acc.signatures.push(sig.data);
           acc.signers.push(sig.signer);
@@ -136,14 +133,14 @@ export function useMultySign({
         { signatures: [], signers: [] }
       ) ?? { signatures: [], signers: [] }
     );
-  }, [transactions]);
+  }, [transaction]);
 
   const getSignaturesMulty = useCallback(() => {
     const originalUrl = new URL(window.location.href);
     const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
     const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
 
-    if (!!transactions?.length) {
+    if (transaction) {
       const { signatures: signaturesFromDb, signers: signersFromDb } = getSignaturesFromDbMulty();
       signersFromDb.map((s, idx) => {
         if (!signers.includes(s)) {
@@ -154,7 +151,7 @@ export function useMultySign({
     }
 
     return { signatures, signers };
-  }, [transactions]);
+  }, [transaction]);
 
   const saveSignaturesMulty = useCallback(
     (signatures: string[], signers: string[]) => {
@@ -169,10 +166,10 @@ export function useMultySign({
       originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
       originalUrl.searchParams.set('signers', encodedSigners.join(','));
 
-      if (transactions?.length) {
+      if (transaction) {
         const { signers: signersFromDb } = getSignaturesFromDbMulty();
-        if (transactions[0].signatures.length !== signers.length) {
-          db.transactions.where({ hash: transactions[0].hash }).modify(trx => {
+        if (transaction.signatures.length !== signers.length) {
+          db.transactions.where({ hash: transaction.hash }).modify(trx => {
             signers.map((s, idx) => {
               if (!signersFromDb.includes(s)) {
                 trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
@@ -183,7 +180,7 @@ export function useMultySign({
       }
       router.push(originalUrl.toString());
     },
-    [router, transactions]
+    [router, transaction]
   );
 
   const signTransactionMulty = useCallback(async () => {
@@ -204,7 +201,7 @@ export function useMultySign({
     } catch (error) {
       if ((error as { message: string }).message) {
         customToasty('Something went wrong with sign!', 'error');
-        console.log((error as { message: string }).message as string);
+        console.error((error as { message: string }).message as string);
       }
     }
   }, [safeSdk, safeTransaction, safeTxHash, status]);
@@ -243,11 +240,11 @@ export function useMultySign({
   };
 
   useEffect(() => {
-    if (transactions) {
+    if (transaction) {
       const { signatures, signers } = getSignaturesMulty();
       saveSignaturesMulty(signatures, signers);
     }
-  }, [transactions]);
+  }, [transaction]);
 
   return {
     thresholdMulty: threshold,
