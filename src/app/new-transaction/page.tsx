@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-import { WalletLayout, WalletTypography } from '@/ui-kit';
-import { ButtonStyled } from '@/ui-kit/wallet-button/wallet-button.styles';
+import { WalletLayout, WalletTypography, WalletButton } from '@/ui-kit';
 
 import { TrxBuilder } from './components/trx-builder/trx-builder';
 import { SendTokens } from './components/send-tokens/send-tokens';
@@ -31,14 +30,14 @@ export default function NewTransaction() {
           <WalletTypography fontSize={22} fontWeight={600}>
             New Transaction
           </WalletTypography>
-          <ButtonStyled
+          <WalletButton
             onClick={toggleState}
-            style={{ marginLeft: '2rem', width: '12rem', height: '2rem' }}
+            styles={{ marginLeft: '2rem', width: '12rem', height: '2rem' }}
             onMouseOver={onHoverHandler}
             onMouseLeave={onLeaveHandler}
           >
             {btnTitle}
-          </ButtonStyled>
+          </WalletButton>
         </Flex>
 
         {state === 'send' ? <SendTokens /> : <TrxBuilder />}

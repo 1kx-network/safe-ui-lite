@@ -203,7 +203,7 @@ export function useMultySign({
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       if ((error as { message: string }).message) {
-        customToasty('Something went wrong width sing!', 'error');
+        customToasty('Something went wrong with sign!', 'error');
         console.log((error as { message: string }).message as string);
       }
     }

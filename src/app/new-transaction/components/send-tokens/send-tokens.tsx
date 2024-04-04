@@ -49,9 +49,9 @@ const isConfirmed = false;
 const isExecute = false;
 
 interface IInputsForm {
-  amount: string;
+  amount?: string;
   address: string;
-  calldata: string;
+  calldata?: string;
 }
 
 interface SendTokensProps {}
@@ -131,10 +131,10 @@ export const SendTokens = ({}: SendTokensProps) => {
 
     const transactionObj = await returnTransactionObj(
       data.address,
-      data.amount,
+      data.amount ?? '0',
       tokenType,
       chainId,
-      data.calldata,
+      data.calldata ?? '0x',
       createTrancationERC20
     );
 
@@ -153,7 +153,7 @@ export const SendTokens = ({}: SendTokensProps) => {
       const queryParams = {
         chainId: String(chainId),
         address: encodeURIComponent(safeAddress),
-        amount: data.amount,
+        amount: data.amount ?? '0',
         destinationAddress: data.address,
         tokenType,
         networkName,
@@ -166,8 +166,8 @@ export const SendTokens = ({}: SendTokensProps) => {
         tokenType,
         theshold: thesholders,
         hash: safeTxHash,
-        amount: data.amount,
-        calldata: data.calldata,
+        amount: data.amount ?? '0',
+        calldata: data.calldata ?? '0x',
         destinationAddress: data.address,
         signatures: [],
       });
