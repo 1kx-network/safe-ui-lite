@@ -168,7 +168,7 @@ export default function SettingsOwner() {
       // await changeThresholdTx(owners.length);
       setNeedConfirmOwner(owners.length);
 
-      await removeAddress(address, owners.length);
+      await removeAddress(address);
     } else {
       await removeAddress(address);
     }

@@ -57,7 +57,6 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
         {startAdornment && (
           <Box display={'flex'} ml={3} gap={1}>
             <IconDefaultWalletStyled />
-            <WalletTypography fontSize={14} fontWeight={500}></WalletTypography>
           </Box>
         )}
 
