@@ -26,7 +26,7 @@ export const ItemFilterStyled = styled('div')(
     display: flex;
     aling-items: center;
     width: 33%;
-    max-width: 186px;
+    max-width: 33%;
     min-width: 80px;
 `
 );

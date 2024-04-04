@@ -2,6 +2,10 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { WalletButton, WalletInput, WalletSelect } from '@/ui-kit';
 import useTransactionsStore from '@/stores/transactions-store';
+import USDCIcon from '@/assets/svg/USDC.svg';
+import USDTIcon from '@/assets/svg/USDT.svg';
+import EthIcon from '@/assets/svg/eth-icon.svg';
+import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 
 import { ItemMenuStyled, WrapperStyled, styledBtn } from './filters-menu.styles';
 
@@ -10,18 +14,26 @@ interface IOption {
   label: string;
   value: string;
   item: number;
+  icon?: React.ReactNode;
 }
 
 const optionsDate: IOption[] = [
-  { id: 1, label: 'All', value: 'All', item: 0 },
+  { id: 1, label: 'All', value: 'All', item: -1 },
   { id: 2, label: 'Less 7 Days', value: 'Past 7 Days', item: 7 },
   { id: 3, label: 'Less 14 Days', value: 'Past 14 Days', item: 14 },
 ];
 
 const optionsAmount: IOption[] = [
-  { id: 1, label: 'All', value: 'All', item: 0 },
+  { id: 1, label: 'All', value: 'All', item: -1 },
   { id: 2, label: 'Less 100', value: 'Less 100', item: 100 },
   { id: 3, label: 'Less 200', value: 'Less 200', item: 200 },
+];
+
+const optionsToken: IOption[] = [
+  { id: 1, label: 'All', value: 'All', item: -1 },
+  { id: 2, label: NATIVE_TOKENS.ETH, value: NATIVE_TOKENS.ETH, item: 0, icon: EthIcon },
+  { id: 3, label: TOKENS_ERC20.USDT, value: TOKENS_ERC20.USDT, item: 0, icon: USDTIcon },
+  { id: 4, label: TOKENS_ERC20.USDC, value: TOKENS_ERC20.USDC, item: 0, icon: USDCIcon },
 ];
 
 export const MenuFilters = () => {
@@ -29,13 +41,13 @@ export const MenuFilters = () => {
   const [value, setValue] = useState('');
   const [selectedDate, setSelectedDate] = useState<IOption | null | undefined>(null);
   const [selectedAmount, setSelectedAmount] = useState<IOption | null | undefined>(null);
+  const [selectedToken, setSelectedToken] = useState<IOption | null | undefined>(null);
 
   const applyFilters = () => {
     if (!transactions) return;
 
     let filteredTransactions = transactions;
 
-    // Применяем фильтр по дате, если он установлен
     if (selectedDate !== null && selectedDate !== undefined) {
       filteredTransactions = filteredTransactions.filter(transaction => {
         const currentDate = new Date();
@@ -46,23 +58,28 @@ export const MenuFilters = () => {
       });
     }
 
-    console.log(selectedAmount);
-
-    // Применяем фильтр по сумме, если он установлен
     if (selectedAmount !== null && selectedAmount !== undefined) {
       filteredTransactions = filteredTransactions.filter(
         transaction => parseFloat(transaction.amount) <= selectedAmount.item
       );
     }
 
-    // Применяем фильтр по значению, если оно установлено
     if (value) {
       const lowercaseValue = value.toLowerCase();
       filteredTransactions = filteredTransactions.filter(
         transaction =>
           transaction.date.toLowerCase().includes(lowercaseValue) ||
-          transaction.owners.some(owner => owner.toLowerCase().includes(lowercaseValue)) ||
-          parseFloat(transaction.amount) <= parseFloat(lowercaseValue)
+          transaction.signatures.some(({ signer }) =>
+            signer.toLowerCase().includes(lowercaseValue)
+          ) ||
+          parseFloat(transaction.amount) <= parseFloat(lowercaseValue) ||
+          transaction.destinationAddress.toLowerCase().includes(lowercaseValue)
+      );
+    }
+
+    if (selectedToken && selectedToken.value !== 'All') {
+      filteredTransactions = filteredTransactions.filter(
+        transaction => transaction.tokenType === selectedToken.value
       );
     }
 
@@ -74,11 +91,12 @@ export const MenuFilters = () => {
     setValue('');
     setSelectedDate(null);
     setSelectedAmount(null);
+    setSelectedToken(null);
   };
 
   useEffect(() => {
     applyFilters();
-  }, [selectedDate, selectedAmount, value]);
+  }, [selectedDate, selectedAmount, value, selectedToken]);
 
   return (
     transactions && (
@@ -89,7 +107,7 @@ export const MenuFilters = () => {
             options={optionsDate}
             value={selectedDate}
             onChange={(newValue: IOption | null | undefined) => {
-              if (newValue?.item === 0) {
+              if (newValue?.item === -1) {
                 setSelectedDate(null);
                 return;
               }
@@ -103,7 +121,7 @@ export const MenuFilters = () => {
             options={optionsAmount}
             value={selectedAmount}
             onChange={(newValue: IOption | null | undefined) => {
-              if (newValue?.item === 0) {
+              if (newValue?.item === -1) {
                 setSelectedAmount(null);
                 return;
               }
@@ -111,9 +129,24 @@ export const MenuFilters = () => {
             }}
           />
         </ItemMenuStyled>
+        <ItemMenuStyled>
+          <WalletSelect
+            placeholder="Token"
+            options={optionsToken}
+            value={selectedToken}
+            onChange={(newValue: IOption | null | undefined) => {
+              if (newValue?.item === -1) {
+                setSelectedToken(null);
+                return;
+              }
+              setSelectedToken(newValue);
+            }}
+          />
+        </ItemMenuStyled>
         <ItemMenuStyled isSearch>
           <WalletInput
             isSearch
+            style={{ paddingTop: '11px', paddingBottom: '11px' }}
             placeholder="Search..."
             value={value}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}

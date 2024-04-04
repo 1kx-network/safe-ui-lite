@@ -135,10 +135,7 @@ export default function CreatePageAccount() {
                     <Box display={'flex'} gap={1.5} key={index}>
                       <IconDefualtAddress width={'16px'} height={'16px'} />
 
-                      <WalletTypography fontSize={14}>
-                        <WalletTypography fontSize={14} fontWeight={500}></WalletTypography>
-                        {formattedLabel(owner)}
-                      </WalletTypography>
+                      <WalletTypography fontSize={14}>{formattedLabel(owner)}</WalletTypography>
 
                       <LinkOpenInNewIconStyled
                         href={`${linkOnScan}address/${owner}`}

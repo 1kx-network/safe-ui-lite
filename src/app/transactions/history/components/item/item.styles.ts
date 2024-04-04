@@ -29,7 +29,7 @@ export const ItemInfoStyled = styled('div')<{ isFirst?: boolean }>(
   display: flex;
   justify-content: ${!isFirst ? 'center' : 'left'};
   width: 33%;
-  max-width: 186px;
+  max-width: 33%;
   min-width: 80px;
   overflow: hidder;
   gap: ${theme.spacing(1.5)};
