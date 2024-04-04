@@ -1,6 +1,6 @@
 'use client';
 import { Box } from '@mui/system';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useCallback, useEffect, useState } from 'react';
 import * as utils from 'ethers';
@@ -22,6 +22,7 @@ import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { safeNetworksObj } from '@/constants/networks';
+import { useNetwork } from '@/hooks/useNetwork';
 
 import { dataUserMock, menuList } from './ fixtures';
 import {
@@ -38,7 +39,6 @@ import {
   ItemAccountStyled,
   IconDefaultAddressStyled,
   modalStyled,
-  IconRemoveAccountStyled,
   CopyIconStyled,
   boxStyleInfoUserAddress,
   BodyMainInfoStyled,
@@ -55,9 +55,9 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const pathname = usePathname();
   const { address, chainId } = useWeb3ModalAccount();
   const [dataList, setDataList] = useState([]);
-  const router = useRouter();
   const { data } = useOwnerList(address);
   const { safeSdk, saveSdk } = useSafeStore();
+  const network = useNetwork();
 
   const {
     safeAddress,
@@ -76,6 +76,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   const [isOpenAccount, setIsOpenAccount] = useState(false);
   const [linkOnScan, setLinkOnScan] = useState<string>('');
+
+  const networkName =
+    (network?.name || '').toString().charAt(0).toUpperCase() +
+    (network?.name || '').toString().slice(1);
 
   useEffect(() => {
     if (!safeAddress) return;
@@ -153,23 +157,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
     setSafeAddress(address);
     setIsOpenAccount(false);
-
-    if (address !== safeAddress) {
-      router.push(routes.walletPage);
-    }
   };
 
   const handleOpenAccount = () => {
     setIsOpenAccount(!isOpenAccount);
-  };
-
-  const handleRemoveAccount = async (e: React.MouseEvent<HTMLElement>, address: string) => {
-    e.stopPropagation();
-
-    // TODO - need create logic if user want remove yourself active account
-    if (safeAddress === address) {
-      router.push(routes.home);
-    }
   };
 
   const headerAddress = useCallback(() => {
@@ -282,15 +273,15 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                   </Box>
 
                   <Box display={'flex'} alignItems={'center'} gap={1}>
-                    {chainId && formatterIcon(chainId, '14px', '14px')}
+                    {chainId && formatterIcon(chainId, '15px', '15px')}
                     <WalletTypography fontSize={12} fontWeight={300}>
-                      Ethereum
+                      {networkName}
                     </WalletTypography>
                   </Box>
 
-                  <IconRemoveAccountStyled
+                  {/* <IconRemoveAccountStyled
                     onClick={(e: React.MouseEvent<HTMLElement>) => handleRemoveAccount(e, item)}
-                  />
+                  /> */}
                 </ItemAccountStyled>
               ))}
             </Box>
