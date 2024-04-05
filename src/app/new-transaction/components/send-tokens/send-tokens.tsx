@@ -22,6 +22,7 @@ import { IOptions } from '../../../wallet/fixtures';
 import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { setDataDB } from '@/db/set-info';
+import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 
 import { options } from './fixutres';
 import {
@@ -159,6 +160,7 @@ export const SendTokens = ({}: SendTokensProps) => {
         tokenType,
         networkName,
         safeTxHash,
+        typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
       };
 
       const transactionDB = {

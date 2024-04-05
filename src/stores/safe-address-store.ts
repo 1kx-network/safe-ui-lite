@@ -39,7 +39,8 @@ const useActiveSafeAddress = create<Store>(set => ({
   setSafeAccountOwners: (payload: string[]) => {
     set(state => ({
       ...state,
-      safeAccountOwners: Array.from(new Set([...state.safeAccountOwners, ...payload])),
+      safeAccountOwners: payload,
+      //  Array.from(new Set([...state.safeAccountOwners, ...payload])),
     }));
   },
 

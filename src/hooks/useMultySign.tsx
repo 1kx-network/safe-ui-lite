@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 
 import { db } from '@/db';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
@@ -9,13 +10,17 @@ import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
+import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 interface IUseMultySign {
   safeAddress: string;
   safeTxHash: string;
-  destinationAddress: string | null;
+  destinationAddress?: string | null;
+  address: string | null;
   amount: string | null;
   chainIdUrl: string | null;
   tokenType: string | null;
+  typeSignTrx: keyof ITypeSignTrx | null;
+  newThresholdUrl: string | null;
 }
 
 interface IMultySignResult {
@@ -37,13 +42,16 @@ interface ICheckAndSwitchNetwork {
 export function useMultySign({
   safeAddress,
   safeTxHash,
-  destinationAddress,
   amount,
   chainIdUrl,
   tokenType,
+  typeSignTrx,
+  address,
+  newThresholdUrl,
 }: IUseMultySign): IMultySignResult | undefined {
   const conditionMulty = !safeAddress || !safeTxHash;
-  !destinationAddress || !amount || !chainIdUrl;
+  !address || !chainIdUrl;
+  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
 
   const { chainId } = useWeb3ModalAccount();
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
@@ -57,6 +65,8 @@ export function useMultySign({
 
   useSafeSdk(safeAddress);
 
+  // const conditionForCreateTrx = address && !safeTransaction && safeSdk && safeAddress;
+
   const safeFromDb = useLiveQuery(
     () => db.safes.where('address').equals(safeAddress).first(),
     [safeTxHash]
@@ -65,7 +75,6 @@ export function useMultySign({
 
   const switchNetworkMulty = async (props: ICheckAndSwitchNetwork) => {
     if (conditionMulty) return;
-
     const { chainIdUrl, chainId, switchNetwork, open } = props;
     const shouldSwitchNetwork = chainIdUrl && +chainIdUrl !== chainId;
     const isNewNetwork = !chainId && chainIdUrl;
@@ -87,36 +96,65 @@ export function useMultySign({
     setStatus('');
   };
 
+  const trxResponseByType = async () => {
+    if (!safeSdk || !address) return null;
+
+    let resTrx: SafeTransaction | null = null;
+
+    switch (typeSignTrx) {
+      case ADD_OWNER:
+        resTrx = await safeSdk.createAddOwnerTx({ ownerAddress: address });
+        break;
+
+      case REMOVE_OWNER:
+        resTrx = await safeSdk.createRemoveOwnerTx({
+          ownerAddress: address,
+          threshold: newThresholdUrl ? +newThresholdUrl : 1,
+        });
+        break;
+
+      case CHANGE_THRESHOLD:
+        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1);
+        break;
+
+      default:
+        break;
+    }
+
+    return resTrx;
+  };
+
   useEffect(() => {
     switchNetworkMulty({ chainIdUrl, chainId, switchNetwork, open });
+
     if (conditionMulty) return;
 
     getOwners();
-    const conditionForCreateTrx =
-      amount && destinationAddress && !safeTransaction && safeSdk && safeAddress;
-
+    const conditionForCreateTrx = amount && address && !safeTransaction && safeSdk && safeAddress;
     const pendingCreateTrxData = async () => {
-      if (conditionForCreateTrx) {
-        if (!chainId || !safeSdk || !tokenType || !transaction) return;
-
+      if (!safeSdk || !conditionForCreateTrx) return;
+      if (typeSignTrx === SEND_TOKEN) {
+        if (!chainId || !safeSdk || !tokenType || !transaction) return null;
         const data = transaction.calldata;
-
-        const transactionObj = await returnTransactionObj(
-          destinationAddress,
+        const objTrx = await returnTransactionObj(
+          address,
           amount,
           tokenType,
           chainId,
           data,
           createTrancationERC20
         );
-        if (!transactionObj) return;
 
-        const safeTransaction = await safeSdk.createTransaction({
-          transactions: [transactionObj],
-        });
+        if (!objTrx) return;
+        const safeTransaction = await safeSdk.createTransaction({ transactions: [objTrx] });
 
         setSafeTransaction(safeTransaction);
+        return;
       }
+
+      const resTransaction = await trxResponseByType();
+      if (!resTransaction) return;
+      setSafeTransaction(resTransaction);
     };
 
     pendingCreateTrxData();

@@ -61,3 +61,21 @@ export const BodyListAccountsStyled = styled('div')`
   height: auto;
   max-height: 350px;
 `;
+
+export const AddOwnerStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  flex-direction: column;
+  gap:${theme.spacing(6)};
+  width: 100%;
+`
+);
+
+export const GridBtnAddOwnerStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  justify-content:space-between;
+  aling-items: center;
+  gap: ${theme.spacing(3)};
+`
+);
