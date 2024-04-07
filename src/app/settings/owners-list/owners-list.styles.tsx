@@ -79,3 +79,10 @@ export const GridBtnAddOwnerStyled = styled('div')(
   gap: ${theme.spacing(3)};
 `
 );
+
+export const styledNonce = {
+  display: 'flex',
+  alignItems: 'center',
+  width: '5.25rem',
+  overflow: 'hidden',
+};

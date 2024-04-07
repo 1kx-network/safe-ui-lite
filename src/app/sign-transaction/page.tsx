@@ -52,6 +52,7 @@ const SignTransactionComponent = () => {
   const networkName = searchParams.get('networkName');
   const thresholdUrl = searchParams.get('thresholdUrl');
   const newThreshold = searchParams.get('newThreshold');
+  const nonceUrl = searchParams.get('nonce');
   const typeSignTrx: keyof ITypeSignTrx | null = searchParams.get('typeSignTrx') as
     | keyof ITypeSignTrx
     | null;
@@ -64,7 +65,6 @@ const SignTransactionComponent = () => {
     chainIdUrl,
     amount,
     address: destinationAddress,
-    // destinationAddress,
     safeTxHash: safeTxHashJSON,
     tokenType,
     networkName,
@@ -73,6 +73,7 @@ const SignTransactionComponent = () => {
     safeTransaction,
     threshold: thresholdUrl,
     newThresholdUrl: newThreshold,
+    nonce: nonceUrl,
   };
 
   const multySign = useMultySign({

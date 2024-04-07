@@ -21,6 +21,7 @@ interface IUseMultySign {
   tokenType: string | null;
   typeSignTrx: keyof ITypeSignTrx | null;
   newThresholdUrl: string | null;
+  nonce: string | null;
 }
 
 interface IMultySignResult {
@@ -48,6 +49,7 @@ export function useMultySign({
   typeSignTrx,
   address,
   newThresholdUrl,
+  nonce,
 }: IUseMultySign): IMultySignResult | undefined {
   const conditionMulty = !safeAddress || !safeTxHash;
   !address || !chainIdUrl;
@@ -103,18 +105,32 @@ export function useMultySign({
 
     switch (typeSignTrx) {
       case ADD_OWNER:
-        resTrx = await safeSdk.createAddOwnerTx({ ownerAddress: address });
+        resTrx = await safeSdk.createAddOwnerTx(
+          {
+            ownerAddress: address,
+          },
+          {
+            nonce: nonce ? +nonce : 0,
+          }
+        );
         break;
 
       case REMOVE_OWNER:
-        resTrx = await safeSdk.createRemoveOwnerTx({
-          ownerAddress: address,
-          threshold: newThresholdUrl ? +newThresholdUrl : 1,
-        });
+        resTrx = await safeSdk.createRemoveOwnerTx(
+          {
+            ownerAddress: address,
+            threshold: newThresholdUrl ? +newThresholdUrl : 1,
+          },
+          {
+            nonce: nonce ? +nonce : 0,
+          }
+        );
         break;
 
       case CHANGE_THRESHOLD:
-        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1);
+        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1, {
+          nonce: nonce ? +nonce : 0,
+        });
         break;
 
       default:
@@ -146,7 +162,12 @@ export function useMultySign({
         );
 
         if (!objTrx) return;
-        const safeTransaction = await safeSdk.createTransaction({ transactions: [objTrx] });
+        const safeTransaction = await safeSdk.createTransaction({
+          transactions: [objTrx],
+          options: {
+            nonce: nonce ? +nonce : 0,
+          },
+        });
 
         setSafeTransaction(safeTransaction);
         return;

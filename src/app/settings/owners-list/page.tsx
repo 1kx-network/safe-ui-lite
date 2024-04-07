@@ -7,6 +7,7 @@ import { SingleValue } from 'react-select';
 import { useRouter } from 'next/navigation';
 
 import IconUser from '@/assets/svg/user.svg';
+import IconLoading from '@/assets/svg/loader.svg';
 import {
   WalletButton,
   WalletInput,
@@ -38,6 +39,7 @@ import {
   BodyListAccountsStyled,
   AddOwnerStyled,
   GridBtnAddOwnerStyled,
+  styledNonce,
 } from './owners-list.styles';
 import { ListAccount } from './components/list-account/list-account';
 import { settingsMenu } from './fixutres';
@@ -62,35 +64,20 @@ export default function SettingsOwner() {
   } = useActiveSafeAddress();
 
   const [csvData, setCsvData] = useState<Array<Array<string>>>([]);
-  const [countNeedCorfimLocal, setNeedConfirmLocal] = useState([
-    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-  ]);
-  const [defCountConfirm, setDefCountConfirm] = useState([
-    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-  ]);
   const [newCountNeedConfirm, setNewCountNeedConfirm] = useState(needConfirmOwner);
+
+  // eslint-disable-next-line
+  const [optionsCount, setOptionsCount] = useState<any>(null);
+  const [defOptionsCount, setDefOptionsCount] = useState(1);
+
   const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [nonce, setNonce] = useState(contractNonce);
 
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
   const networkName =
     (network?.name || '').toString().charAt(0).toUpperCase() +
     (network?.name || '').toString().slice(1);
-
-  useEffect(() => {
-    const newCountNeedCormed = Array.from({ length: needConfirmOwner }, (_, index) => ({
-      id: index + 1,
-      label: index + 1,
-      value: index + 1,
-    }));
-    setNeedConfirmLocal(newCountNeedCormed);
-  }, [isLoading]);
-
-  useEffect(() => {
-    setDefCountConfirm([
-      { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-    ]);
-  }, [needConfirmOwner]);
 
   useEffect(() => {
     if (!safeSdk) return;
@@ -113,10 +100,15 @@ export default function SettingsOwner() {
       setContractNonce(contractNonce);
       setContractVersion(contractVersion);
       setNeedConfirmOwner(accountThreshold);
-      setDefCountConfirm([
-        { id: accountThreshold, label: accountThreshold, value: accountThreshold },
-      ]);
 
+      setDefOptionsCount(accountThreshold);
+      const newCountNeedCormed = Array.from({ length: accountThreshold }, (_, index) => ({
+        id: index + 1,
+        label: index + 1,
+        value: index + 1,
+      }));
+
+      setOptionsCount(newCountNeedCormed);
       setIsLoading(false);
     };
 
@@ -129,16 +121,6 @@ export default function SettingsOwner() {
 
       setCsvData([['Address', 'Network'], ...safeAccountOwners.map(owner => [owner, networkName])]);
     }
-  };
-
-  const handleChooseAccounConfirm = (
-    elem: SingleValue<{
-      value: number;
-      label: number;
-      id: number;
-    }>
-  ) => {
-    elem && setNewCountNeedConfirm(elem.label);
   };
 
   const handleRemoveOwnerAddress = async (address: string) => {
@@ -160,6 +142,7 @@ export default function SettingsOwner() {
       networkName: networkName,
       safeTxHash: JSON.stringify(safeTxHash),
       newThreshold: String(needConfirmOwner),
+      nonce: String(nonce),
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
@@ -182,6 +165,7 @@ export default function SettingsOwner() {
       networkName: networkName,
       safeTxHash: JSON.stringify(safeTxHash),
       newThreshold: String(newCountNeedConfirm),
+      nonce: String(nonce),
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
@@ -233,10 +217,27 @@ export default function SettingsOwner() {
       tokenType: '',
       networkName: networkName,
       safeTxHash: JSON.stringify(safeTxHash),
+      nonce: String(contractNonce),
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
     router.push(`${routes.signTransaction}?${queryString}`);
+  };
+
+  const handleChangeNonce = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newValue = value.replace(/\D/g, '');
+    setNonce(newValue);
+  };
+
+  const handleChooseAccounConfirm = (
+    elem: SingleValue<{
+      value: number | string;
+      label: number | string;
+      id: number | string;
+    }>
+  ) => {
+    elem && setNewCountNeedConfirm(+elem.label);
   };
 
   return (
@@ -332,16 +333,23 @@ export default function SettingsOwner() {
 
             <Box mt={3} display="flex" alignItems="center">
               <Box mr={3} width={'84px'}>
-                <WalletSelect
-                  isDisabled={isLoading}
-                  options={countNeedCorfimLocal}
-                  controlShouldRenderValue
-                  defaultValue={defCountConfirm}
-                  onChange={handleChooseAccounConfirm}
-                />
+                {optionsCount ? (
+                  <WalletSelect
+                    controlShouldRenderValue
+                    defaultInputValue={String(needConfirmOwner)}
+                    isDisabled={isLoading}
+                    options={optionsCount}
+                    defaultValue={[
+                      { id: defOptionsCount, label: defOptionsCount, value: defOptionsCount },
+                    ]}
+                    onChange={handleChooseAccounConfirm}
+                  />
+                ) : (
+                  <IconLoading />
+                )}
               </Box>
               <WalletTypography fontSize={13} fontWeight={600}>
-                out of {needConfirmOwner} owner(s)
+                out of {safeAccountOwners.length} owner(s)
               </WalletTypography>
             </Box>
 
@@ -374,9 +382,15 @@ export default function SettingsOwner() {
                   Add signer
                 </WalletTypography>
               </Box>
-              <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                Current nonce: {contractNonce}
-              </WalletTypography>
+
+              <Box display={'flex'} alignItems={'center'} gap={2}>
+                <WalletTypography style={{ textWrap: 'nowrap' }}>Nonce #:</WalletTypography>
+                <WalletInput
+                  style={styledNonce}
+                  value={nonce ?? '1'}
+                  onChange={handleChangeNonce}
+                />
+              </Box>
             </Box>
             <WalletInput
               label="New owner address"

@@ -82,7 +82,7 @@ export const SendTokens = ({}: SendTokensProps) => {
     },
   });
 
-  const [nonceCount, setNonceCount] = useState(0);
+  const [nonce, setNonce] = useState('1');
   const [tokenType, setTokenType] = useState<string>(NATIVE_TOKENS.ETH);
   const [balanceAcc, setBalanceAcc] = useState('');
 
@@ -93,7 +93,7 @@ export const SendTokens = ({}: SendTokensProps) => {
         const nonce = await safeSdk.getNonce();
         const parceBalance = utils.formatEther(String(balanceAccount));
 
-        setNonceCount(nonce);
+        setNonce(String(nonce));
         setBalanceAcc(parceBalance);
       };
 
@@ -160,6 +160,7 @@ export const SendTokens = ({}: SendTokensProps) => {
         tokenType,
         networkName,
         safeTxHash,
+        nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
       };
 
@@ -172,6 +173,7 @@ export const SendTokens = ({}: SendTokensProps) => {
         amount: data.amount,
         calldata: data.calldata,
         destinationAddress: data.address,
+        nonce,
         signatures: [],
       };
 
@@ -199,26 +201,30 @@ export const SendTokens = ({}: SendTokensProps) => {
     setValue('amount', balanceAcc);
   };
 
+  const handleChangeNonce = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newValue = value.replace(/\D/g, '');
+    setNonce(newValue);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <BodyStyled>
-        {/*  <Switch value="checkedA" inputProps={{ 'aria-label': 'Switch A' }} /> */}
-
         <WrapPaperStyled>
           <WalletPaper style={styledPaper}>
             <HeaderTokensStyled>
-              <AlignCenterStyled sx={{ gap: themeMuiBase.spacing(2) }}>
+              <AlignCenterStyled>
                 <TokensIcon />
                 <WalletTypography fontSize={17} fontWeight={600}>
                   Send Tokens
                 </WalletTypography>
               </AlignCenterStyled>
 
-              <AlignCenterStyled sx={{ gap: themeMuiBase.spacing(2) }}>
-                <WalletTypography fontSize={17} fontWeight={600}>
+              <AlignCenterStyled>
+                <WalletTypography fontSize={17} fontWeight={600} style={{ whiteSpace: 'nowrap' }}>
                   Nonce #
                 </WalletTypography>
-                <NonceBoxStyled>{nonceCount}</NonceBoxStyled>
+                <WalletInput style={NonceBoxStyled} value={nonce} onChange={handleChangeNonce} />
               </AlignCenterStyled>
             </HeaderTokensStyled>
 
