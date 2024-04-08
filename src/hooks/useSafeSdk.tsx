@@ -110,64 +110,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
     }
   };
 
-  const removeAddress = async (ownerAddress: string) => {
-    try {
-      if (!safeSdk) return;
-
-      // const safeTransactionRemoveOwner = await safeSdk.createRemoveOwnerTx({
-      //   ownerAddress: ownerAddress,
-      //   threshold: 1,
-      // });
-
-      // const signTrx = await safeSdk.signTransaction(safeTransactionRemoveOwner);
-      // const res = await safeSdk.executeTransaction(safeTransactionRemoveOwner);
-      // await res.transactionResponse?.wait();
-      customToasty(`Success remove address ${ownerAddress}`, 'success');
-    } catch (e) {
-      console.log(e);
-      customToasty(`Error remove address ${ownerAddress}`, 'error');
-      return null;
-    }
-  };
-
-  const addAddress = async (ownerAddresses: string[]) => {
-    try {
-      if (!safeSdk) return;
-
-      const promises = ownerAddresses.map(async address => {
-        try {
-          const safeTrxAddAddress = await safeSdk.createAddOwnerTx({ ownerAddress: address });
-          const txResponse = await safeSdk.executeTransaction(safeTrxAddAddress);
-
-          await txResponse.transactionResponse?.wait();
-
-          return address;
-        } catch (e) {
-          throw new Error(`Failed to add owner at address: ${address}`);
-        }
-      });
-
-      await Promise.all(promises);
-
-      customToasty(`Success add addresses`, 'success');
-    } catch (e) {
-      customToasty(`Error add address`, 'error');
-    }
-  };
-
-  const changeThresholdTx = async (count: number) => {
-    try {
-      if (!safeSdk) return;
-
-      await safeSdk.createChangeThresholdTx(count).then(() => {
-        customToasty(`Success change thresholder count on ${count}`, 'success');
-        return true;
-      });
-    } catch (e) {
-      customToasty(`Error change thresholder count on ${count}`, 'error');
-    }
-  };
-
   const createTrancationERC20 = async ({
     tokenAddress,
     toAddress,
@@ -207,9 +149,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
     deploySafe,
     createSafe,
     getInfoByAccount,
-    removeAddress,
-    changeThresholdTx,
-    addAddress,
     createTrancationERC20,
     getTokenERC20Balance,
   };

@@ -65,10 +65,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     setSafeAddress,
     setBalanceAccount,
     setClearActiveSafeStore,
-    setSafeAccountOwners,
-    setNeedConfirmOwner,
-    setContractNonce,
-    setContractVersion,
     isLoading,
     setIsLoading,
   } = useActiveSafeAddress();
@@ -82,43 +78,42 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     (network?.name || '').toString().slice(1);
 
   useEffect(() => {
+    if (!address && !chainId) {
+      saveSdk(null);
+      localStorage.removeItem('safeAddress');
+      setClearActiveSafeStore();
+    }
+  }, [address, chainId, safeAddress]);
+
+  useEffect(() => {
     if (!safeAddress) return;
 
     setIsLoading(true);
+    setSafeAddress(safeAddress);
     createSafe(safeAddress);
   }, [safeAddress, address, chainId]);
 
   useEffect(() => {
-    if (!safeSdk) return;
+    if (!safeSdk || !chainId) return;
+
+    const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
+    if (linkOnScan) {
+      setLinkOnScan(linkOnScan);
+    }
 
     const pendingBalance = async () => {
       const dataAcc = await getInfoByAccount(safeSdk);
       if (!dataAcc) return;
 
-      const { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold } =
-        dataAcc;
+      const { balanceAccount } = dataAcc;
       const parceBalance = utils.formatEther(String(balanceAccount));
 
       setBalanceAccount(parceBalance);
-      setSafeAccountOwners(ownersAccount);
-      setContractNonce(contractNonce);
-      setContractVersion(contractVersion);
-      setNeedConfirmOwner(accountThreshold);
-
       setIsLoading(false);
     };
 
     pendingBalance();
   }, [safeSdk, chainId]);
-
-  useEffect(() => {
-    if (chainId) {
-      const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
-      if (linkOnScan) {
-        setLinkOnScan(linkOnScan);
-      }
-    }
-  }, [chainId]);
 
   useEffect(() => {
     if (!chainId) return;
@@ -144,17 +139,8 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     }
   }, [data, chainId, address]);
 
-  useEffect(() => {
-    if (!address) {
-      saveSdk(null);
-      localStorage.removeItem('safeAddress');
-      setClearActiveSafeStore();
-    }
-  }, [address]);
-
   const handleClickAccount = (address: string) => {
     localStorage.setItem('safeAddress', address);
-
     setSafeAddress(address);
     setIsOpenAccount(false);
   };
@@ -164,7 +150,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   };
 
   const headerAddress = useCallback(() => {
-    if (address && safeAddress) {
+    if (safeAddress) {
       return formattedLabel(safeAddress);
     }
     return 'Safe account';

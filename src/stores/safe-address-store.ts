@@ -5,7 +5,7 @@ type Store = {
   balanceAccount: string;
   safeAccountOwners: string[]; // owners
   needConfirmOwner: number;
-  contractNonce: number | null;
+  contractNonce: number | string | null;
   contractVersion: string | null;
   isLoading: boolean;
 
@@ -16,7 +16,7 @@ type Store = {
   setSafeAccountOwners: (payload: string[]) => void; // setOwners
 
   setNeedConfirmOwner: (payload: number) => void;
-  setContractNonce: (payload: number) => void;
+  setContractNonce: (payload: number | string) => void;
   setContractVersion: (payload: string) => void;
 };
 
@@ -39,12 +39,14 @@ const useActiveSafeAddress = create<Store>(set => ({
   setSafeAccountOwners: (payload: string[]) => {
     set(state => ({
       ...state,
-      safeAccountOwners: Array.from(new Set([...state.safeAccountOwners, ...payload])),
+      safeAccountOwners: payload,
+      //  Array.from(new Set([...state.safeAccountOwners, ...payload])),
     }));
   },
 
   setNeedConfirmOwner: (payload: number) => set(state => ({ ...state, needConfirmOwner: payload })),
-  setContractNonce: (payload: number) => set(state => ({ ...state, contractNonce: payload })),
+  setContractNonce: (payload: number | string) =>
+    set(state => ({ ...state, contractNonce: payload })),
   setContractVersion: (payload: string) => set(state => ({ ...state, contractVersion: payload })),
   setIsLoading: (payload: boolean) => set(state => ({ ...state, isLoading: payload })),
 

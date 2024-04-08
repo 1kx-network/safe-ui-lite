@@ -44,7 +44,7 @@ export default function SafeWallet() {
   };
 
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
-    console.log('_data_', data);
+    console.log(data);
   };
 
   const handleAddNewWallet = () => {
