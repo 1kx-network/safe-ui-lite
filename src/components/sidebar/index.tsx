@@ -23,6 +23,7 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { safeNetworksObj } from '@/constants/networks';
 import { useNetwork } from '@/hooks/useNetwork';
+import { getNetworksDB } from '@/db/get-info';
 
 import { dataUserMock, menuList } from './fixtures';
 import {
@@ -78,6 +79,8 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     (network?.name || '').toString().slice(1);
 
   useEffect(() => {
+    (async () => await getNetworksDB())();
+
     if (!address && !chainId) {
       saveSdk(null);
       localStorage.removeItem('safeAddress');
@@ -117,7 +120,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   useEffect(() => {
     if (!chainId) return;
-    if (!data) return;
+    if (!data || !data.length) return;
 
     const localList = localStorage.getItem('createdSafes');
     const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;

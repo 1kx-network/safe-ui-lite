@@ -1,3 +1,6 @@
+import { networks } from '@/context/networks';
+import { formatterIcon } from '@/utils/icon-formatter';
+
 export const safeNetworksObj = {
   '1': [],
   '10': [],
@@ -14,3 +17,19 @@ export const safeNetworksObj = {
   '11155111': [],
   '1313161554': [],
 };
+
+export interface IOptionNetwork {
+  chainId: number;
+  label: string;
+  value: string;
+  rpc: string;
+  icon?: () => React.ReactNode;
+}
+
+export const optionsNetwork: IOptionNetwork[] = networks.map(({ chainId, name, rpcUrl }) => ({
+  chainId: chainId,
+  label: name,
+  value: name,
+  rpc: rpcUrl,
+  icon: () => formatterIcon(chainId),
+}));

@@ -35,7 +35,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (chainId && data) {
+    if (chainId && data && data.length) {
       const fetchedList = data[chainId];
       const localList = localStorage.getItem('createdSafes');
       const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
