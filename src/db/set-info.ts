@@ -1,7 +1,8 @@
-import { ISafe, db } from '.';
+import { networks } from '@/context/networks';
+
+import { INetworkDB, ISafe, db } from '.';
 
 export async function setDataDB(safeAddress: string, data: Partial<ISafe>): Promise<void> {
-  // Проверяем, существует ли запись в базе данных для указанного safeAddress
   const existingSafe: ISafe | undefined = await db.safes.get({ address: safeAddress });
 
   if (existingSafe) {
@@ -19,5 +20,17 @@ export async function setDataDB(safeAddress: string, data: Partial<ISafe>): Prom
       transactions: data.transactions || [],
     };
     await db.safes.add(newSafe);
+  }
+}
+
+export async function addCustomNetworkDB(network: INetworkDB): Promise<void> {
+  try {
+    const networkWithId: INetworkDB = { ...network, id: String(network.chainId) };
+    networks.push(network);
+
+    await db.networks.add(networkWithId);
+    console.log('New network added:', networkWithId);
+  } catch (error) {
+    console.error('Error adding network:', error);
   }
 }

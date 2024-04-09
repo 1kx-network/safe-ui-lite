@@ -28,3 +28,18 @@ function isEthCalldata(calldata: string) {
   if (calldata === '0x') return true;
   return /^0x[0-9a-fA-F]+$/.test(calldata);
 }
+
+export const AddNetworkSchema = yup.object().shape({
+  name: yup.string().required('Name is required'),
+  chainId: yup
+    .string()
+    .required('Chain ID is required')
+    .matches(/^\d+$/, 'Chain ID must be a number'),
+  rpc: yup.string().required('RPC URL is required').url('RPC URL must be a valid URL'),
+  symbol: yup.string().required('Symbol is required'),
+  decimals: yup
+    .string()
+    .required('Decimals is required')
+    .matches(/^\d+$/, 'Chain ID must be a number'),
+  explorerUrl: yup.string().required('Explorer URL is required').url('RPC URL must be a valid URL'),
+});

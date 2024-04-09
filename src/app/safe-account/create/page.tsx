@@ -1,8 +1,11 @@
 'use client';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { v4 as uuid } from 'uuid';
 
 import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
@@ -19,24 +22,37 @@ import {
   GridButtonStyled,
   GridContainer,
   StepStyled,
+  WarningCreateAccounStyled,
   WrapperStyled,
   styleWalletPaper,
+  styledBtnSwitchNetwork,
+  styledCustomNetworkBtn,
 } from '../safe-account.styles';
-import { optionsNetwork } from '../constants';
-import ETHIcon from '@/assets/svg/eth-icon.svg';
+import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
 import { AccountInfo } from '../components/account-info/account-info';
+import { formatterIcon } from '@/utils/icon-formatter';
+import IconInfo from '@/assets/svg/infoIcon.svg';
+import IconPlus from '@/assets/svg/plus.svg';
+import { AddNetworkSchema } from '@/utils/validations.utils';
+import { addCustomNetworkDB } from '@/db/set-info';
+import { getNetworksDB } from '@/db/get-info';
+import { customToasty } from '@/components';
 
-interface IOption {
-  chainId: number;
-  label: string;
-  value: string;
-  icon: React.ReactNode;
+interface IAddNetwork {
+  name: string;
+  chainId: string;
+  rpc: string;
+  symbol: string;
+  decimals: string;
+  explorerUrl: string;
 }
 
 export default function CreatePageAccount() {
-  const [options, setOptions] = useState<IOption[]>(optionsNetwork);
+  const [options, setOptions] = useState<IOptionNetwork[]>(optionsNetwork);
   const [chooseOpt, setChooseOpt] = useState(optionsNetwork[0]);
   const [valueAcc, setValueAcc] = useState('');
+  const [chooseNetwork, setChooseNetwork] = useState<IOptionNetwork>(optionsNetwork[0]);
+  const [errorNewNetwork, setErrorNewNetwork] = useState<string | null>(null);
 
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
@@ -46,19 +62,30 @@ export default function CreatePageAccount() {
   const chainId = Number(network?.chainId);
 
   useEffect(() => {
+    (async () => {
+      const networksDB = await getNetworksDB();
+      const updateNetwork = networksDB.map(elem => ({
+        label: elem.name,
+        value: elem.name,
+        rpc: elem.rpcUrl,
+        icon: () => formatterIcon(0),
+        ...elem,
+      }));
+
+      setOptions(prevOptions => {
+        const uniqueNetworks = updateNetwork.filter(
+          network => !prevOptions.some(option => option.rpc === network.rpcUrl)
+        );
+        return [...prevOptions, ...uniqueNetworks];
+      });
+    })();
+  }, []);
+
+  useEffect(() => {
     if (chainId) {
-      const updatedOption = optionsNetwork.find(option => option.chainId === +chainId);
+      const updatedOption = options.find(option => option.chainId === +chainId);
       if (updatedOption) {
         setChooseOpt(updatedOption);
-      } else if (chainId && networkName) {
-        const newOption: IOption = {
-          chainId: +chainId,
-          label: networkName,
-          value: networkName,
-          icon: ETHIcon,
-        };
-        setOptions(prevOptions => [...prevOptions, newOption]);
-        setChooseOpt(newOption);
       }
     }
   }, [chainId]);
@@ -73,13 +100,74 @@ export default function CreatePageAccount() {
     router.push(routes.safeAccountOwners);
   };
 
-  const handleChooseNetwork = async (network: number) => {
-    console.log(network, chainId);
+  const handleChooseNetwork = async (chooseNetwork: IOptionNetwork) => {
+    setChooseNetwork(chooseNetwork);
+  };
+
+  const { switchNetwork } = useSwitchNetwork();
+
+  const handleSwitchNetwork = async () => {
+    if (!chooseNetwork.chainId) return;
+    await switchNetwork(chooseNetwork.chainId);
   };
 
   const handleSetValueAcc = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setValueAcc(value);
+  };
+
+  const condNetwork = chooseNetwork && chainId !== chooseNetwork.chainId;
+
+  const [isAddNewNetwork, setIsAddNewNetwork] = useState(false);
+
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+    reset,
+  } = useForm<IAddNetwork>({
+    mode: 'onSubmit',
+    resolver: yupResolver(AddNetworkSchema),
+  });
+
+  const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
+    const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
+    if (options.find(({ rpc }) => rpc === rpc)) {
+      setErrorNewNetwork('This RPC was added');
+      customToasty('Error with adding a new network', 'error');
+      return;
+    }
+
+    const newNetwork = {
+      label: name,
+      value: name,
+      rpc: rpc,
+      chainId: +chainId,
+    };
+
+    const objNetworkDB = {
+      ...newNetwork,
+      id: uuid(),
+      name,
+      currency: name,
+      explorerUrl,
+      rpcUrl: rpc,
+      symbol: symbol,
+      decimals: +decimals,
+    };
+
+    setOptions(prevOptions => {
+      return [...prevOptions, { ...newNetwork, icon: () => formatterIcon(0) }];
+    });
+
+    await addCustomNetworkDB(objNetworkDB);
+    setIsAddNewNetwork(false);
+    customToasty('Network was add', 'success');
+  };
+
+  const handleCancelAddNetwork = () => {
+    setIsAddNewNetwork(false);
+    reset();
   };
 
   return (
@@ -90,52 +178,208 @@ export default function CreatePageAccount() {
         </WalletTypography>
 
         <GridContainer>
-          <WalletPaper style={styleWalletPaper} minWidth="653px">
-            <Box display="flex" alignItems="center">
-              <StepStyled>
-                <WalletTypography fontSize={18} fontWeight={600} color="#fff">
-                  1
+          <Box display={'flex'} flexDirection={'column'} gap={4}>
+            <WalletPaper style={styleWalletPaper} minWidth="653px">
+              <Box display="flex" alignItems="center">
+                <StepStyled>
+                  <WalletTypography fontSize={18} fontWeight={600} color="#fff">
+                    1
+                  </WalletTypography>
+                </StepStyled>
+                <WalletTypography component="h2" fontSize={18} fontWeight={600}>
+                  Select network and name of your Safe Account
                 </WalletTypography>
-              </StepStyled>
-              <WalletTypography component="h2" fontSize={18} fontWeight={600}>
-                Select network and name of your Safe Account
-              </WalletTypography>
-            </Box>
-
-            <Box display="flex" gap={themeMuiBase.spacing(3)}>
-              <WalletInput
-                label="Name"
-                placeholder="Enter name"
-                value={valueAcc}
-                onChange={handleSetValueAcc}
-              />
-
-              <Box minWidth={'177px'} display={'flex'} alignItems={'end'}>
-                <WalletSelect
-                  options={options}
-                  defaultValue={chooseOpt}
-                  onChange={(newValue: IOption | null | undefined) =>
-                    newValue && handleChooseNetwork(newValue.chainId)
-                  }
-                />
               </Box>
-            </Box>
 
-            <Box mt={3}>
+              <Box display="flex" gap={themeMuiBase.spacing(3)}>
+                <WalletInput
+                  label="Name"
+                  placeholder="Enter name"
+                  value={valueAcc}
+                  onChange={handleSetValueAcc}
+                />
+
+                <Box minWidth={'177px'} display={'flex'} alignItems={'end'}>
+                  <WalletSelect
+                    options={options}
+                    defaultValue={chooseOpt}
+                    onChange={(newValue: IOptionNetwork | null | undefined) =>
+                      newValue && handleChooseNetwork(newValue)
+                    }
+                  />
+                </Box>
+              </Box>
+              <Box display={'flex'} flexDirection={'row-reverse'}>
+                <WalletButton
+                  onClick={() => setIsAddNewNetwork(true)}
+                  variant="text"
+                  styles={styledCustomNetworkBtn}
+                >
+                  <IconPlus color={themeMuiBase.palette.success} width="21px" height="21px" /> Add
+                  custom network
+                </WalletButton>
+              </Box>
+
               <WalletTypography fontWeight={500} fontSize={14}>
                 By continuing, you agree to our terms of use and privacy policy.
               </WalletTypography>
-            </Box>
 
-            <GridButtonStyled>
-              <WalletButton onClick={handleClickCancel} variant="outlined">
-                Cancel
-              </WalletButton>
-              <WalletButton onClick={handleNext} variant="contained">
-                Next
-              </WalletButton>
-            </GridButtonStyled>
-          </WalletPaper>
+              {condNetwork && (
+                <WarningCreateAccounStyled>
+                  <Box
+                    display={'flex'}
+                    sx={{ height: '100%', width: '44px', color: themeMuiBase.palette.error }}
+                  >
+                    <IconInfo />
+                  </Box>
+                  <Box display={'flex'} flexDirection={'column'} gap={2}>
+                    <WalletTypography fontWeight={500}>Change your wallet network</WalletTypography>
+                    <WalletTypography fontSize={14} fontWeight={400}>
+                      Change your wallet network You are trying to create an account on{' '}
+                      {chooseNetwork.label}. Make sure that your wallet is set to the same network.
+                    </WalletTypography>
+                    <WalletButton
+                      variant="outlined"
+                      styles={styledBtnSwitchNetwork}
+                      onClick={handleSwitchNetwork}
+                    >
+                      Switch to{' '}
+                      <Box display={'flex'} minWidth={'18px'}>
+                        {formatterIcon(chooseNetwork.chainId, '18px', '18px')}
+                      </Box>
+                      {chooseNetwork.label}
+                    </WalletButton>
+                  </Box>
+                </WarningCreateAccounStyled>
+              )}
+
+              <GridButtonStyled>
+                <WalletButton onClick={handleClickCancel} variant="outlined">
+                  Cancel
+                </WalletButton>
+                <WalletButton onClick={handleNext} variant="contained" disabled={!!condNetwork}>
+                  Next
+                </WalletButton>
+              </GridButtonStyled>
+            </WalletPaper>
+
+            {isAddNewNetwork && (
+              <WalletPaper>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <Box display={'flex'} width="100%" gap={4}>
+                    <Box display={'flex'} flexDirection={'column'} gap={1} width="50%">
+                      <Controller
+                        control={control}
+                        name="name"
+                        render={({ field }) => (
+                          <Box width={'100%'}>
+                            <WalletInput
+                              {...field}
+                              label="Name"
+                              error={!!errors.name}
+                              errorValue={errors.name?.message}
+                            />
+                          </Box>
+                        )}
+                      />
+
+                      <Controller
+                        control={control}
+                        name="chainId"
+                        render={({ field }) => (
+                          <Box width={'100%'}>
+                            <WalletInput
+                              {...field}
+                              label="Chain ID"
+                              error={!!errors.chainId}
+                              errorValue={errors.chainId?.message}
+                            />
+                          </Box>
+                        )}
+                      />
+                      <Controller
+                        control={control}
+                        name="rpc"
+                        render={({ field }) => (
+                          <Box width={'100%'}>
+                            <WalletInput
+                              {...field}
+                              label="RPC URL"
+                              error={!!errors.rpc}
+                              errorValue={errors.rpc?.message}
+                            />
+                          </Box>
+                        )}
+                      />
+                    </Box>
+                    <Box display={'flex'} flexDirection={'column'} gap={1} width="50%">
+                      <Controller
+                        control={control}
+                        name="symbol"
+                        render={({ field }) => (
+                          <Box width={'100%'}>
+                            <WalletInput
+                              {...field}
+                              label="Symbol"
+                              error={!!errors.symbol}
+                              errorValue={errors.symbol?.message}
+                            />
+                          </Box>
+                        )}
+                      />
+
+                      <Controller
+                        control={control}
+                        name="decimals"
+                        render={({ field }) => (
+                          <Box width={'100%'}>
+                            <WalletInput
+                              {...field}
+                              label="Decimals"
+                              error={!!errors.decimals}
+                              errorValue={errors.decimals?.message}
+                            />
+                          </Box>
+                        )}
+                      />
+                      <Controller
+                        control={control}
+                        name="explorerUrl"
+                        render={({ field }) => (
+                          <Box width={'100%'}>
+                            <WalletInput
+                              {...field}
+                              label="Explorer url"
+                              error={!!errors.explorerUrl}
+                              errorValue={errors.explorerUrl?.message}
+                            />
+                          </Box>
+                        )}
+                      />
+                    </Box>
+                  </Box>
+                  <GridButtonStyled>
+                    <WalletButton onClick={handleCancelAddNetwork} variant="outlined">
+                      Cancel
+                    </WalletButton>
+                    <WalletButton type="submit" variant="contained">
+                      <IconPlus color={themeMuiBase.palette.success} width="21px" height="21px" />
+                      Add network
+                    </WalletButton>
+                  </GridButtonStyled>
+                </form>
+                <Box mt={4}>
+                  <WalletTypography
+                    fontWeight={400}
+                    fontSize={14}
+                    color={themeMuiBase.palette.error}
+                  >
+                    {errorNewNetwork}
+                  </WalletTypography>
+                </Box>
+              </WalletPaper>
+            )}
+          </Box>
 
           {/* --- */}
           <AccountInfo account={address} networkName={networkName} chainId={chainId} />
