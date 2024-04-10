@@ -207,7 +207,7 @@ export const UserInfoBar = () => {
   const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
     const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
 
-    if (options.find(({ rpc }) => rpc === rpc)) {
+    if (options.some(option => option.rpc === rpc)) {
       setErrorNewNetwork('This RPC was added');
       customToasty('Error with adding a new network', 'error');
       return;

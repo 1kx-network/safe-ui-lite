@@ -82,6 +82,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     (async () => await getNetworksDB())();
 
     if (!address && !chainId) {
+      console.log('_1_');
       saveSdk(null);
       localStorage.removeItem('safeAddress');
       setClearActiveSafeStore();
@@ -91,6 +92,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   useEffect(() => {
     if (!safeAddress) return;
 
+    console.log('_2_');
     setIsLoading(true);
     setSafeAddress(safeAddress);
     createSafe(safeAddress);
