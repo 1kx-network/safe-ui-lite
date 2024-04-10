@@ -1,6 +1,7 @@
 const routes = {
   home: '/',
   safeAccountCreate: '/safe-account/create',
+  safeAccountImport: '/safe-account/import',
   safeAccountOwners: '/safe-account/owners',
   safeAccountReview: '/safe-account/review',
   settingsOwnersList: '/settings/owners-list',

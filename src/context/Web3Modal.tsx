@@ -1,5 +1,8 @@
 'use client';
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
+import { useEffect } from 'react';
+
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import { networks } from './networks';
 
@@ -22,5 +25,13 @@ createWeb3Modal({
 });
 
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
+  const { setSafeAddress } = useActiveSafeAddress();
+  const safeAddress: string | null =
+    typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
+
+  useEffect(() => {
+    setSafeAddress(safeAddress);
+  }, [safeAddress]);
+
   return children;
 }

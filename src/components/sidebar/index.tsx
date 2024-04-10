@@ -12,7 +12,7 @@ import IconOpenAccount from '@/assets/svg/arrow-r.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import IconLoading from '@/assets/svg/loader.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
-import { CustomModal } from '..';
+import { CustomModal, customToasty } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
 import { formattedLabel } from '@/utils/foramtters';
 import { formatterIcon } from '@/utils/icon-formatter';
@@ -43,6 +43,7 @@ import {
   CopyIconStyled,
   boxStyleInfoUserAddress,
   BodyMainInfoStyled,
+  BoxAccountActionStyled,
 } from './sidebar.styles';
 
 interface ISidebar {
@@ -79,6 +80,45 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     (network?.name || '').toString().slice(1);
 
   useEffect(() => {
+    if (!safeAddress) return;
+
+    setIsLoading(true);
+    setSafeAddress(safeAddress);
+    createSafe(safeAddress);
+  }, [safeAddress, address, chainId]);
+
+  useEffect(() => {
+    if (chainId) {
+      const localList = localStorage.getItem('createdSafes');
+      const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+
+      const listAccount =
+        data && data.length
+          ? data[chainId].concat(localListParsed[chainId])
+          : localListParsed[chainId];
+
+      console.log('_1_listAccount_', listAccount, 'safeAddress', safeAddress);
+
+      if (listAccount !== undefined) {
+        setDataList(listAccount);
+
+        const defaultAccount = listAccount[0]; // 1
+
+        if (listAccount.some((elem: string) => elem === safeAddress)) {
+          setSafeAddress(safeAddress);
+        }
+
+        if (defaultAccount) {
+          localStorage.setItem('safeAddress', defaultAccount);
+          setSafeAddress(defaultAccount);
+        }
+      }
+
+      console.log('_need create new account with new network_');
+    }
+  }, [data, chainId, address]);
+
+  useEffect(() => {
     (async () => await getNetworksDB())();
 
     if (!address && !chainId) {
@@ -87,14 +127,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       setClearActiveSafeStore();
     }
   }, [address, chainId, safeAddress]);
-
-  useEffect(() => {
-    if (!safeAddress) return;
-
-    setIsLoading(true);
-    setSafeAddress(safeAddress);
-    createSafe(safeAddress);
-  }, [safeAddress, address, chainId]);
 
   useEffect(() => {
     if (!safeSdk || !chainId) return;
@@ -118,30 +150,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     pendingBalance();
   }, [safeSdk, chainId]);
 
-  useEffect(() => {
-    if (!chainId) return;
-    if (!data || !data.length) return;
-
-    const localList = localStorage.getItem('createdSafes');
-    const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
-    const listAccount = data[chainId].concat(localListParsed[chainId]);
-
-    if (listAccount !== undefined) {
-      setDataList(listAccount);
-      const safeAddressFromStore = localStorage.getItem('safeAddress');
-      const defaultAccount = listAccount[0];
-
-      if (safeAddressFromStore && !safeAddress) {
-        setSafeAddress(safeAddressFromStore);
-      }
-
-      if (!safeAddress && !safeAddressFromStore) {
-        localStorage.setItem('safeAddress', defaultAccount);
-        setSafeAddress(defaultAccount);
-      }
-    }
-  }, [data, chainId, address]);
-
   const handleClickAccount = (address: string) => {
     localStorage.setItem('safeAddress', address);
     setSafeAddress(address);
@@ -161,7 +169,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   const handleCopyAddress = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    if (safeAddress) navigator.clipboard.writeText(safeAddress);
+    if (safeAddress) {
+      navigator.clipboard.writeText(safeAddress);
+      customToasty('Address was copy', 'success');
+    }
   };
 
   const condMenuList = address ? menuList : [menuList[0]];
@@ -267,24 +278,29 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                       {networkName}
                     </WalletTypography>
                   </Box>
-
-                  {/* <IconRemoveAccountStyled
-                    onClick={(e: React.MouseEvent<HTMLElement>) => handleRemoveAccount(e, item)}
-                  /> */}
                 </ItemAccountStyled>
               ))}
             </Box>
           </Box>
 
-          <Box display={'flex'} flexDirection={'row-reverse'} mt={5}>
-            <Box display={'flex'} alignItems={'end'} gap={1}>
-              <IconPlus width="17px" height="17px" color={themeMuiBase.palette.success} />
-              <Link href={routes.safeAccountCreate}>
-                <WalletTypography fontSize={12} fontWeight={500}>
-                  Add
+          <Box display={'flex'} flexDirection={'column'} mt={5} gap={0.5}>
+            <Link href={routes.safeAccountCreate}>
+              <BoxAccountActionStyled>
+                <IconPlus width="17px" height="17px" color={themeMuiBase.palette.success} />
+                <WalletTypography fontSize={14} fontWeight={500}>
+                  Add new account
                 </WalletTypography>
-              </Link>
-            </Box>
+              </BoxAccountActionStyled>
+            </Link>
+
+            <Link href={routes.safeAccountImport}>
+              <BoxAccountActionStyled>
+                <IconPlus width="17px" height="17px" color={themeMuiBase.palette.success} />
+                <WalletTypography fontSize={14} fontWeight={500}>
+                  Import new account
+                </WalletTypography>
+              </BoxAccountActionStyled>
+            </Link>
           </Box>
         </AccountWrapperStyled>
       </CustomModal>

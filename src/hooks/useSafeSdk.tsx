@@ -49,22 +49,27 @@ export function useSafeSdk(safeAddress: string | null = null) {
         owners,
         threshold,
       };
-      const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true }).catch(
-        res => {
-          return res;
-        }
-      );
-
+      const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true });
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
       const addressAccount = await safeSdk.getAddress();
 
       const localList = localStorage.getItem('createdSafes')
         ? localStorage.getItem('createdSafes')
         : null;
+
       const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
 
-      localListParsed[chainId ?? 1].push(addressAccount);
-      localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
+      const updateLocalList =
+        chainId && localListParsed[String(chainId)] === undefined
+          ? {
+              ...localListParsed,
+              [chainId]: [],
+            }
+          : localList;
+
+      updateLocalList[chainId ?? 1].push(addressAccount);
+
+      localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
       localStorage.setItem('safeAddress', addressAccount);
 
       return safeSdk;
@@ -77,7 +82,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const createSafe = async (safeAddress: string) => {
     try {
       const ethAdapter = await createEthAdapter?.createEthAdapter?.();
-
       if (!ethAdapter) return null;
 
       const safeSdk = await Safe.create({
@@ -97,6 +101,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const getInfoByAccount = async (safeSdk: null | Safe) => {
     try {
       if (!safeSdk) return;
+
       const balanceAccount = await safeSdk.getBalance();
       const ownersAccount = await safeSdk.getOwners();
       const contractVersion = await safeSdk.getContractVersion();
@@ -105,7 +110,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
       return { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold };
     } catch (e) {
-      customToasty(`Error get info by account`, 'error');
       return null;
     }
   };

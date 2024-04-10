@@ -185,3 +185,19 @@ export const CopyIconStyled = styled(CopyIcon)`
   margin-left: 8px;
   maring: 4px;
 `;
+
+export const BoxAccountActionStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing(1)};
+  padding: ${theme.spacing(2.5)};
+  border-radius: 8px;
+  transition: 0.25s ease all;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #00000021;
+  }
+`
+);

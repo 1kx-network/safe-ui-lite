@@ -65,9 +65,9 @@ export const UserInfoBar = () => {
   const wrapperRef = useRef(null);
   const { safeSdk } = useSafeStore();
   const { getInfoByAccount } = useSafeSdk();
-  const { setClearActiveSafeStore } = useActiveSafeAddress();
   const network = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
+  const { setClearActiveSafeStore } = useActiveSafeAddress();
 
   const [balance, setBalance] = useState('0');
   const [options, setOptions] = useState<IOptionNetwork[]>(optionsNetwork);
@@ -207,7 +207,7 @@ export const UserInfoBar = () => {
   const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
     const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
 
-    if (options.find(({ rpc }) => rpc === rpc)) {
+    if (options.some(option => option.rpc === rpc)) {
       setErrorNewNetwork('This RPC was added');
       customToasty('Error with adding a new network', 'error');
       return;
