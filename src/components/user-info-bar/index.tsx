@@ -65,9 +65,9 @@ export const UserInfoBar = () => {
   const wrapperRef = useRef(null);
   const { safeSdk } = useSafeStore();
   const { getInfoByAccount } = useSafeSdk();
-  const { setClearActiveSafeStore } = useActiveSafeAddress();
   const network = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
+  const { setClearActiveSafeStore } = useActiveSafeAddress();
 
   const [balance, setBalance] = useState('0');
   const [options, setOptions] = useState<IOptionNetwork[]>(optionsNetwork);

@@ -46,6 +46,7 @@ import { settingsMenu } from './fixutres';
 
 export default function SettingsOwner() {
   const network = useNetwork();
+  const router = useRouter();
   const { chainId } = useWeb3ModalAccount();
   const { getInfoByAccount } = useSafeSdk();
   const { safeSdk } = useSafeStore();
@@ -80,6 +81,15 @@ export default function SettingsOwner() {
     (network?.name || '').toString().slice(1);
 
   useEffect(() => {
+    const newCountNeedCormed = Array.from({ length: safeAccountOwners.length }, (_, index) => ({
+      id: index + 1,
+      label: index + 1,
+      value: index + 1,
+    }));
+    setOptionsCount(newCountNeedCormed);
+  }, [safeAccountOwners]);
+
+  useEffect(() => {
     if (!safeSdk) return;
 
     const pendingBalance = async () => {
@@ -102,13 +112,6 @@ export default function SettingsOwner() {
       setNeedConfirmOwner(accountThreshold);
 
       setDefOptionsCount(accountThreshold);
-      const newCountNeedCormed = Array.from({ length: accountThreshold }, (_, index) => ({
-        id: index + 1,
-        label: index + 1,
-        value: index + 1,
-      }));
-
-      setOptionsCount(newCountNeedCormed);
       setIsLoading(false);
     };
 
@@ -169,8 +172,9 @@ export default function SettingsOwner() {
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
-    router.push(`${routes.signTransaction}?${queryString}`);
     setIsLoading(false);
+
+    router.push(`${routes.signTransaction}?${queryString}`);
   };
 
   const [isOpenAddOwner, setIsOpenAddOwner] = useState(false);
@@ -202,8 +206,6 @@ export default function SettingsOwner() {
       setValueNewOwnerError('Invalid address format');
     }
   };
-
-  const router = useRouter();
 
   const handleAddOwner = async () => {
     if (!safeAddress || !safeSdk) return;
@@ -336,7 +338,7 @@ export default function SettingsOwner() {
                 {optionsCount ? (
                   <WalletSelect
                     controlShouldRenderValue
-                    defaultInputValue={String(needConfirmOwner)}
+                    placeholder={String(needConfirmOwner)}
                     isDisabled={isLoading}
                     options={optionsCount}
                     defaultValue={[
