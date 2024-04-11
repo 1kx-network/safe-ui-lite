@@ -1,7 +1,7 @@
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
@@ -62,6 +62,9 @@ export const SendTokens = ({}: SendTokensProps) => {
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
   const network = useNetwork();
+  const searchParams = useSearchParams();
+  const recipientAddress = searchParams.get('recipientAddress');
+
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
 
@@ -77,7 +80,7 @@ export const SendTokens = ({}: SendTokensProps) => {
     resolver: yupResolver(NewTransactionSchema),
     defaultValues: {
       amount: '0',
-      address: '',
+      address: recipientAddress ? recipientAddress : '',
       calldata: '0x',
     },
   });

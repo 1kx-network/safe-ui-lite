@@ -175,6 +175,8 @@ export const IconRemoveAccountStyled = styled(IconTrash)`
   align-items: center;
   cursor: pointer;
   z-index: 999;
+  width: 18px;
+  height: 19px;
 `;
 
 export const CopyIconStyled = styled(CopyIcon)`
@@ -197,7 +199,7 @@ export const BoxAccountActionStyled = styled('div')(
   cursor: pointer;
 
   &:hover {
-    background-color: #00000021;
+    background-color: ${theme.palette.hover};
   }
 `
 );

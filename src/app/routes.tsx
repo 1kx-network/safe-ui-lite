@@ -14,6 +14,8 @@ const routes = {
   walletPage: '/wallet',
   walletSetup: '/wallet-setup',
 
+  safeAddressBook: '/address-book',
+
   transactionsHistory: '/transactions/history',
   newTransaction: '/new-transaction',
   signTransaction: '/sign-transaction',

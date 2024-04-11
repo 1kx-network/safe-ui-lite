@@ -17,6 +17,7 @@ export const themeMuiBase = {
     tetriaryGrey: '#777F88', // label text
     greyToo: '#636363', // label grey2
     success: '#43C057',
+    hover: '#00000021', // hover bg
   },
 
   spacing: (factor: number) => `${0.25 * factor}rem`,
