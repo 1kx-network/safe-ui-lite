@@ -51,7 +51,9 @@ export const CreateEntryModal = ({ isOpen, closeModal, setAddressBook }: ICreate
       address: valueAddress,
       chainId,
     });
-    customToasty('New contact was add', 'success');
+    customToasty('New contact was add', 'success', { duration: 1500 });
+    setValueName('');
+    setValueAddress('');
     closeModal();
   };
 

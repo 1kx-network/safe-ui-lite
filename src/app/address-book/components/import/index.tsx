@@ -37,7 +37,9 @@ export const ImportModal = ({ isOpen, closeModal, setAddressBookArray }: IImport
     reader.readAsText(file);
     reader.onload = () => {
       const csvData = reader.result as string;
-      const csvArray = csvData.split('\n').map(row => {
+      const csvDataWithoutQuotes = csvData.replace(/['"]/g, '');
+
+      const csvArray = csvDataWithoutQuotes.split('\n').map(row => {
         const [address, name, chainId] = row.split(',');
         return { address, chainId, name };
       });

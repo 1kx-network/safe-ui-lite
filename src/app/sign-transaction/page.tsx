@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
 import Link from 'next/link';
 
@@ -20,6 +20,8 @@ import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/foramtters';
 import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
+import { addCustomNetworkDB } from '@/db/set-info';
+import { INetworkDB } from '@/db';
 
 import {
   BoxOwnerLinkStyled,
@@ -39,9 +41,10 @@ const SignTransactionComponent = () => {
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk } = useSafeStore();
   const { threshold, status, setStatus } = useSignStore();
-  const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const { address, chainId } = useWeb3ModalAccount();
+  const { switchNetwork } = useSwitchNetwork();
 
-  const { address } = useWeb3ModalAccount();
+  const [linkOnScan, setLinkOnScan] = useState<string>('');
 
   const safeAddress = typeof window !== 'undefined' ? searchParams.get('address') : null;
   const chainIdUrl = searchParams.get('chainId');
@@ -53,12 +56,14 @@ const SignTransactionComponent = () => {
   const thresholdUrl = searchParams.get('thresholdUrl');
   const newThreshold = searchParams.get('newThreshold');
   const nonceUrl = searchParams.get('nonce');
+  const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
+
   const typeSignTrx: keyof ITypeSignTrx | null = searchParams.get('typeSignTrx') as
     | keyof ITypeSignTrx
     | null;
 
   const safeTxHashParam = searchParams.get('safeTxHash');
-  const safeTxHashJSON = safeTxHashParam ? JSON.parse(safeTxHashParam) : null;
+  const safeTxHashJSON = safeTxHashParam ? JSON.parse(JSON.stringify(safeTxHashParam)) : null;
 
   const trxUrlInfo = {
     safeAddress,
@@ -82,7 +87,26 @@ const SignTransactionComponent = () => {
     safeTxHash: safeTxHash ?? '',
   });
 
+  const addNetworkForUserSign = async () => {
+    if (!userNetworkTrxUrl) return;
+    const userNetwork = JSON.parse(userNetworkTrxUrl) as INetworkDB;
+    const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
+
+    if (!existingNetwork) {
+      await addCustomNetworkDB(userNetwork);
+      networks.push(userNetwork);
+    }
+
+    if (userNetwork.chainId !== chainId) {
+      await switchNetwork(userNetwork.chainId);
+    }
+  };
+
   useEffect(() => {
+    if (userNetworkTrxUrl) {
+      async () => await addNetworkForUserSign();
+    }
+
     if (chainIdUrl) {
       const linkOnScan = networks.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
       if (linkOnScan) {

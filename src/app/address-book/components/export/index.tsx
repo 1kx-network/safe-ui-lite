@@ -15,7 +15,20 @@ interface IExportModal {
 
 export const ExportModal = ({ isOpen, closeModal, addressBook }: IExportModal) => {
   const handleExport = () => {
-    console.log('_export_as_addressBook', addressBook);
+    const csvContent = addressBook
+      .map(entry => `${entry.address},${entry.name},${entry.chainId}`)
+      .join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'address_book.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
     closeModal();
   };
 

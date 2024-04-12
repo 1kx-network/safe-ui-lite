@@ -28,7 +28,7 @@ import {
 interface ITableAddressBook {
   linkOnScan: string;
   chainId?: number;
-  addressBook: IAddressBook;
+  addressBook: IAddressBook[];
   setAddressBook: (payload: IAddressBook) => void;
   removeAddressBook: (payload: string) => void;
 }
@@ -55,7 +55,9 @@ export const TableAddressBook = ({
 
   const handleRemoveAddress = (address: string) => {
     removeAddressBook(address);
-    customToasty('Addres was remove', 'success');
+    customToasty('Addres was remove', 'success', {
+      duration: 1500,
+    });
   };
 
   const handleCopy = (address: string) => {
@@ -191,6 +193,7 @@ export const TableAddressBook = ({
           <Box display={'flex'} flexDirection={'column'} gap={3}>
             <WalletInput label="Name" onChange={handleChangeUserName} value={userName} />
             <WalletInput
+              disabled={isOpenChangeAddress}
               label="Address"
               onChange={handleChangeUserAddress}
               value={userAddress}

@@ -126,7 +126,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       localStorage.removeItem('safeAddress');
       setClearActiveSafeStore();
     }
-  }, [address, chainId, safeAddress]);
+  }, [address, chainId, safeAddress, networks]);
 
   useEffect(() => {
     if (!safeSdk || !chainId) return;

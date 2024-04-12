@@ -14,7 +14,7 @@ import {
 } from '@wagmi/core/chains';
 
 export const chains = [
-  // mainnet,
+  // mainnet,Error with adding a new network
   // sepolia,
   bsc,
   polygon,

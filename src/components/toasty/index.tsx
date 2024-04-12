@@ -14,7 +14,7 @@ export const customToasty = (title: string, type?: ToastType, opt?: ToastOptions
       </div>
     ),
     {
-      duration: 3000,
+      duration: 2500,
       position: 'top-right',
       style: styledToaster,
       ...opt,

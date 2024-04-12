@@ -105,32 +105,20 @@ export function useMultySign({
 
     switch (typeSignTrx) {
       case ADD_OWNER:
-        resTrx = await safeSdk.createAddOwnerTx(
-          {
-            ownerAddress: address,
-          },
-          {
-            nonce: nonce ? +nonce : 0,
-          }
-        );
+        resTrx = await safeSdk.createAddOwnerTx({
+          ownerAddress: address,
+        });
         break;
 
       case REMOVE_OWNER:
-        resTrx = await safeSdk.createRemoveOwnerTx(
-          {
-            ownerAddress: address,
-            threshold: newThresholdUrl ? +newThresholdUrl : 1,
-          },
-          {
-            nonce: nonce ? +nonce : 0,
-          }
-        );
+        resTrx = await safeSdk.createRemoveOwnerTx({
+          ownerAddress: address,
+          threshold: newThresholdUrl ? +newThresholdUrl : 1,
+        });
         break;
 
       case CHANGE_THRESHOLD:
-        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1, {
-          nonce: nonce ? +nonce : 0,
-        });
+        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1);
         break;
 
       default:

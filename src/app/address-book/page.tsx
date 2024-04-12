@@ -10,6 +10,7 @@ import IconPlus from '@/assets/svg/plus.svg';
 import IconImport from '@/assets/svg/import.svg';
 import IconExport from '@/assets/svg/export.svg';
 import useAddressBookStore from '@/stores/address-book-store';
+import { getAddressBook } from '@/db/get-info';
 
 import { TableAddressBook } from './components/table/table';
 import { WrapperStyled, styledBtn, InputStyled, BoxSearchStyled } from './address-book.styles';
@@ -24,13 +25,20 @@ export default function AddressBoook() {
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [value, setValue] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const [isOpenExportModal, setIsOpenExportModal] = useState(false);
   const [isOpenCreateEntry, setIsOpenCreateEntry] = useState(false);
   const [isOpenImportModal, setIsOpenImportModal] = useState(false);
 
   useEffect(() => {
-    setAddressBookArray([{ address: 'address1', chainId: 1, name: 'Name 1' }]);
+    (async () => {
+      setIsLoading(true);
+      const res = await getAddressBook();
+
+      setAddressBookArray(res);
+      setIsLoading(false);
+    })();
   }, [chainId]);
 
   useEffect(() => {
@@ -102,7 +110,9 @@ export default function AddressBoook() {
           </Box>
         </BoxSearchStyled>
 
-        {filteredAddressBook.length ? (
+        {isLoading ? (
+          ''
+        ) : filteredAddressBook.length ? (
           <TableAddressBook
             linkOnScan={linkOnScan}
             chainId={chainId}

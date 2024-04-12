@@ -61,6 +61,7 @@ export const TableStringItemStyled = styled('div')(
 
 export const IconCopyStyled = styled(IconCopy)(
   ({ theme }) => `
+       min-width: 14px;
        width: 14px;
        height: 14px;
        cursor: pointer;
