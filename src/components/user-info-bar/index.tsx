@@ -18,6 +18,7 @@ import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { useNetwork } from '@/hooks/useNetwork';
+import WCIcon from '@/assets/svg/wc.svg';
 
 import {
   WrapperStyled,
@@ -29,7 +30,9 @@ import {
   IconCopyStyled,
   styledBtn,
   styledBtnDisconnect,
+  WCButton,
 } from './user-info-bar.styles';
+import { WalletConnectPopup } from './wallet-connect-popup';
 
 export const UserInfoBar = () => {
   const { address, chainId } = useWeb3ModalAccount();
@@ -44,6 +47,7 @@ export const UserInfoBar = () => {
   const network = useNetwork();
 
   const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const [isWCPopupOpen, setIsWCPopupOpen] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
 
@@ -122,8 +126,15 @@ export const UserInfoBar = () => {
     router.push(routes.home);
   };
 
+  const toggleWCPopup = () => {
+    setIsWCPopupOpen(!isWCPopupOpen);
+  };
+
   return (
     <WrapperStyled ref={wrapperRef}>
+      <WCButton onClick={toggleWCPopup}>
+        <WCIcon />
+      </WCButton>
       <InfoUserStyled onClick={handleClickMenu}>
         {address ? (
           <>
@@ -149,7 +160,7 @@ export const UserInfoBar = () => {
             fontWeight={400}
             textAlign="center"
             style={{ width: '100%' }}
-            color={themeMuiBase.palette.white}
+            color={themeMuiBase.palette.grey}
           >
             Create accont
           </WalletTypography>
@@ -237,6 +248,7 @@ export const UserInfoBar = () => {
           </WalletButton>
         </Box>
       </CustomModal>
+      <WalletConnectPopup isOpen={isWCPopupOpen} toggle={toggleWCPopup} />
     </WrapperStyled>
   );
 };

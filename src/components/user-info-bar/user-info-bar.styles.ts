@@ -9,6 +9,7 @@ export const WrapperStyled = styled('div')(
     padding-right: ${theme.spacing(6)};
     cursor: pointer;
     margin-bottom: ${theme.spacing(1)};
+    display: flex;
 `
 );
 
@@ -41,6 +42,19 @@ export const BodyOpenStyled = styled('div')<{ isOpen: boolean }>(
       flex-direction: column;
       padding: ${theme.spacing(3)};
   `
+);
+
+export const WCButton = styled('div')(
+  () => `
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 36px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background-color: ${themeMuiBase.palette.white};
+`
 );
 
 export const ItemInfoStyled = styled('div')<{ noBorder?: boolean }>(
