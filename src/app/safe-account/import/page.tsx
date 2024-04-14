@@ -21,14 +21,13 @@ import {
 import {
   GridButtonStyled,
   GridContainer,
-  StepStyled,
   WarningCreateAccounStyled,
   WrapperStyled,
   styleWalletPaper,
   styledBtnSwitchNetwork,
   styledCustomNetworkBtn,
 } from '../safe-account.styles';
-import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
+import { IOptionNetwork, optionsNetwork, safeNetworksObj } from '@/constants/networks';
 import { AccountInfo } from '../components/account-info/account-info';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconInfo from '@/assets/svg/infoIcon.svg';
@@ -37,6 +36,8 @@ import { AddNetworkSchema } from '@/utils/validations.utils';
 import { addCustomNetworkDB } from '@/db/set-info';
 import { getNetworksDB } from '@/db/get-info';
 import { customToasty } from '@/components';
+import useActiveSafeAddress from '@/stores/safe-address-store';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 interface IAddNetwork {
   name: string;
@@ -57,6 +58,9 @@ export default function CreatePageAccount() {
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
   const network = useNetwork();
+
+  const { setIsLoading, safeAddress } = useActiveSafeAddress();
+  const { createSafe } = useSafeSdk();
 
   const networkName = network?.name.toString();
   const chainId = Number(network?.chainId);
@@ -96,8 +100,58 @@ export default function CreatePageAccount() {
     router.push(routes.home);
   };
 
-  const handleNext = () => {
-    router.push(routes.safeAccountOwners);
+  const [errorValueAcc, setErrorValueAcc] = useState<string | null>(null);
+
+  const handleNext = async () => {
+    const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+
+    if (addressRegex.test(valueAcc)) {
+      setErrorValueAcc(null);
+
+      setIsLoading(true);
+      const safeSdkLocal = await createSafe(valueAcc);
+      if (!safeSdkLocal) {
+        console.log('Error width address');
+      }
+      const isOwner = await safeSdkLocal?.isOwner(valueAcc);
+
+      if (isOwner) {
+        const localList = localStorage.getItem('createdSafes')
+          ? localStorage.getItem('createdSafes')
+          : null;
+        const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+        const updateLocalList =
+          chainId && localListParsed[String(chainId)] === undefined
+            ? {
+                ...localListParsed,
+                [chainId]: [],
+              }
+            : localList;
+        updateLocalList[chainId ?? 1].push(valueAcc);
+        localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
+        localStorage.setItem('safeAddress', valueAcc);
+
+        customToasty('Address was added', 'success');
+        setIsLoading(false);
+        router.push(routes.home);
+        return;
+      }
+
+      if (safeAddress) {
+        await createSafe(safeAddress);
+      }
+
+      customToasty(
+        'Please check the correctness of the address or check that you are the owner this account',
+        'error',
+        {
+          duration: 5000,
+        }
+      );
+      setIsLoading(false);
+    } else {
+      setErrorValueAcc('Account address must be correct');
+    }
   };
 
   const handleChooseNetwork = async (chooseNetwork: IOptionNetwork) => {
@@ -174,29 +228,31 @@ export default function CreatePageAccount() {
     <WalletLayout hideSidebar>
       <WrapperStyled style={{ height: 'fit-content' }}>
         <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
-          Create new Safe Account
+          Import Safe Account
         </WalletTypography>
 
         <GridContainer>
           <Box display={'flex'} flexDirection={'column'} gap={4}>
             <WalletPaper style={styleWalletPaper} minWidth="653px">
               <Box display="flex" alignItems="center">
-                <StepStyled>
+                {/* <StepStyled>
                   <WalletTypography fontSize={18} fontWeight={600} color="#fff">
                     1
                   </WalletTypography>
-                </StepStyled>
+                </StepStyled> */}
                 <WalletTypography component="h2" fontSize={18} fontWeight={600}>
-                  Select network and name of your Safe Account
+                  Select network and enter of address import account
                 </WalletTypography>
               </Box>
 
               <Box display="flex" gap={themeMuiBase.spacing(3)}>
                 <WalletInput
-                  label="Name"
-                  placeholder="Enter name"
+                  label="Safe address"
+                  placeholder="Enter account address"
                   value={valueAcc}
                   onChange={handleSetValueAcc}
+                  error={!!errorValueAcc}
+                  errorValue={errorValueAcc}
                 />
 
                 <Box minWidth={'177px'} display={'flex'} alignItems={'end'}>
@@ -257,7 +313,11 @@ export default function CreatePageAccount() {
                 <WalletButton onClick={handleClickCancel} variant="outlined">
                   Cancel
                 </WalletButton>
-                <WalletButton onClick={handleNext} variant="contained" disabled={!!condNetwork}>
+                <WalletButton
+                  onClick={handleNext}
+                  variant="contained"
+                  disabled={!!condNetwork || !valueAcc.length}
+                >
                   Next
                 </WalletButton>
               </GridButtonStyled>

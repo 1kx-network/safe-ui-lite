@@ -11,9 +11,7 @@ import { safeNetworksObj } from '@/constants/networks';
 
 import {
   GridStepsStyled,
-  IconDoneOpacityStyled,
   IconPlusStyled,
-  IconProgressStyled,
   ItemStepPaperStyled,
   WrapperStyled,
   styledBtn,
@@ -35,7 +33,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (chainId && data) {
+    if (chainId && data && data.length) {
       const fetchedList = data[chainId];
       const localList = localStorage.getItem('createdSafes');
       const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
@@ -49,18 +47,18 @@ export default function Home() {
     }
   }, [data, chainId]);
 
-  const handleAddfunds = async () => {
-    if (address) {
-      router.push(routes.walletPage);
-    } else {
-      await open();
-    }
-  };
+  // const handleAddfunds = async () => {
+  //   if (address) {
+  //     router.push(routes.walletPage);
+  //   } else {
+  //     await open();
+  //   }
+  // };
 
   return (
     <WalletLayout>
       <WrapperStyled>
-        <Box mb={9} display={'flex'} alignItems={'center'} gap={4}>
+        {/* <Box mb={9} display={'flex'} alignItems={'center'} gap={4}>
           <IconProgressStyled />
           <Box display={'flex'} flexDirection={'column'} gap={4}>
             <WalletTypography fontSize={22} fontWeight={600}>
@@ -71,10 +69,10 @@ export default function Home() {
               features:
             </WalletTypography>
           </Box>
-        </Box>
+        </Box> */}
         {/*  */}
         <GridStepsStyled>
-          <ItemStepPaperStyled>
+          {/* <ItemStepPaperStyled>
             <WalletPaper>
               <IconPlusStyled />
               <Box display={'flex'} flexDirection={'column'} gap={4}>
@@ -89,7 +87,7 @@ export default function Home() {
                 Add funds
               </WalletButton>
             </WalletPaper>
-          </ItemStepPaperStyled>
+          </ItemStepPaperStyled> */}
           <ItemStepPaperStyled>
             <WalletPaper>
               <IconPlusStyled />
@@ -108,7 +106,7 @@ export default function Home() {
           </ItemStepPaperStyled>
         </GridStepsStyled>
         {/*  */}
-        <WalletPaper>
+        {/* <WalletPaper>
           <IconDoneOpacityStyled />
 
           <Box display={'flex'} flexDirection={'column'} gap={4}>
@@ -119,7 +117,7 @@ export default function Home() {
               Continue to improve your account security and unlock more features.
             </WalletTypography>
           </Box>
-        </WalletPaper>
+        </WalletPaper> */}
       </WrapperStyled>
     </WalletLayout>
   );
