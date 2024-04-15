@@ -1,4 +1,5 @@
 import { networks } from '@/context/networks';
+import { IAddressBook } from '@/stores/address-book-store';
 
 import { INetworkDB, ISafe, ITransaction, db } from '.';
 
@@ -31,3 +32,14 @@ export async function getNetworksDB(): Promise<INetworkDB[]> {
     return [];
   }
 }
+
+export const getAddressBook = async (): Promise<IAddressBook[]> => {
+  try {
+    const addressBooks = await db.addressBook.toArray();
+    console.log('All address books retrieved from the addressBook:', addressBooks);
+    return addressBooks;
+  } catch (error) {
+    console.error('Error retrieving address books from the addressBook:', error);
+    return [];
+  }
+};

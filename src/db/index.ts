@@ -1,5 +1,7 @@
 import Dexie, { Table } from 'dexie';
 
+import { IAddressBook } from '@/stores/address-book-store';
+
 export interface INetworkDB {
   id?: string;
   name: string;
@@ -42,6 +44,7 @@ export class MySubClassedDexie extends Dexie {
   public transactions!: Table<ITransaction>;
   public safes!: Table<ISafe>;
   public networks!: Table<INetworkDB>;
+  public addressBook!: Table<IAddressBook>;
 
   public constructor() {
     super('1kx');
@@ -49,6 +52,7 @@ export class MySubClassedDexie extends Dexie {
       transactions: '++id, hash, safeAccount',
       safes: 'address, owners',
       networks: '++id',
+      addressBook: 'address',
     });
   }
 }

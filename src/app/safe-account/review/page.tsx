@@ -53,6 +53,7 @@ export default function CreatePageAccount() {
 
   const handleCopyAddress = (address: string) => {
     navigator.clipboard.writeText(address);
+    customToasty('Was copy', 'success');
   };
 
   const handleCreate = async () => {

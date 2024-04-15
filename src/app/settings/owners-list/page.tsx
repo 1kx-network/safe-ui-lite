@@ -64,6 +64,7 @@ export default function SettingsOwner() {
     setContractVersion,
   } = useActiveSafeAddress();
 
+  // eslint-disable-next-line
   const [csvData, setCsvData] = useState<Array<Array<string>>>([]);
   const [newCountNeedConfirm, setNewCountNeedConfirm] = useState(needConfirmOwner);
 
@@ -119,11 +120,17 @@ export default function SettingsOwner() {
   }, [network, chainId, safeSdk, safeAddress]);
 
   const handleGetCSV = () => {
-    if (network && chainId) {
-      const networkName = network.name.toString();
+    const csvContent = safeAccountOwners.map(address => `${address},"",${chainId}`).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
 
-      setCsvData([['Address', 'Network'], ...safeAccountOwners.map(owner => [owner, networkName])]);
-    }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'owners-list.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const handleRemoveOwnerAddress = async (address: string) => {

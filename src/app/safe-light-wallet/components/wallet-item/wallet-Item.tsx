@@ -46,7 +46,7 @@ export const WalletItem = ({ dataItem, handleAddWallet, handleRemoveWallet }: IW
           variant="outlined"
           styles={styledButtonDelete}
         >
-          <DeleteIcon />
+          <DeleteIcon width="18px" height="19px" />
         </WalletButton>
       )}
     </InputWrapperStyled>
