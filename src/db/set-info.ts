@@ -36,6 +36,7 @@ export async function addCustomNetworkDB(network: INetworkDB): Promise<void> {
   }
 }
 
+// Function work width Address book DB
 export const removeAddressFromDB = async (address: string) => {
   try {
     await db.addressBook.where('address').equals(address).delete();

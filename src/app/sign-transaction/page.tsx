@@ -2,9 +2,14 @@
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import {
+  useSwitchNetwork,
+  useWeb3ModalAccount,
+  useWeb3ModalProvider,
+} from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
 import Link from 'next/link';
+import * as ethers from 'ethers';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
@@ -20,7 +25,7 @@ import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/foramtters';
 import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
-import { addCustomNetworkDB } from '@/db/set-info';
+import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
 
 import {
@@ -43,6 +48,7 @@ const SignTransactionComponent = () => {
   const { threshold, status, setStatus } = useSignStore();
   const { address, chainId } = useWeb3ModalAccount();
   const { switchNetwork } = useSwitchNetwork();
+  const { walletProvider } = useWeb3ModalProvider();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
@@ -57,6 +63,8 @@ const SignTransactionComponent = () => {
   const newThreshold = searchParams.get('newThreshold');
   const nonceUrl = searchParams.get('nonce');
   const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
+  const signatures = searchParams.getAll('signatures')[0];
+  const signers = searchParams.getAll('signers')[0];
 
   const typeSignTrx: keyof ITypeSignTrx | null = searchParams.get('typeSignTrx') as
     | keyof ITypeSignTrx
@@ -81,20 +89,37 @@ const SignTransactionComponent = () => {
     nonce: nonceUrl,
   };
 
-  const multySign = useMultySign({
-    ...trxUrlInfo,
-    safeAddress: safeAddress ?? '',
-    safeTxHash: safeTxHash ?? '',
-  });
-
   const addNetworkForUserSign = async () => {
     if (!userNetworkTrxUrl) return;
     const userNetwork = JSON.parse(userNetworkTrxUrl) as INetworkDB;
     const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
 
+    const decimalChainId = ethers.toBeHex(userNetwork.chainId);
+
     if (!existingNetwork) {
       await addCustomNetworkDB(userNetwork);
+
+      if (safeAddress) {
+        await setDataDB(safeAddress, {});
+      }
+
       networks.push(userNetwork);
+
+      if (!walletProvider) return;
+      await walletProvider.request({
+        method: 'wallet_addEthereumChain',
+        params: {
+          chainId: decimalChainId,
+          chainName: userNetwork.name + 'custom_',
+          nativeCurrency: {
+            name: userNetwork.name,
+            symbol: userNetwork.symbol,
+            decimals: userNetwork.decimals,
+          },
+          rpcUrls: [userNetwork.rpcUrl],
+          blockExplorerUrls: [userNetwork.explorerUrl],
+        },
+      });
     }
 
     if (userNetwork.chainId !== chainId) {
@@ -103,9 +128,7 @@ const SignTransactionComponent = () => {
   };
 
   useEffect(() => {
-    if (userNetworkTrxUrl) {
-      async () => await addNetworkForUserSign();
-    }
+    if (userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
 
     if (chainIdUrl) {
       const linkOnScan = networks.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
@@ -113,9 +136,6 @@ const SignTransactionComponent = () => {
         setLinkOnScan(linkOnScan);
       }
     }
-
-    const signatures = searchParams.getAll('signatures')[0];
-    const signers = searchParams.getAll('signers')[0];
 
     if (signatures && signers) {
       if (signedCount !== signatures.split(',').length) {
@@ -126,6 +146,12 @@ const SignTransactionComponent = () => {
       }
     }
   }, [router, searchParams]);
+
+  const multySign = useMultySign({
+    ...trxUrlInfo,
+    safeAddress: safeAddress ?? '',
+    safeTxHash: safeTxHash ?? '',
+  });
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
