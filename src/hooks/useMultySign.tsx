@@ -24,7 +24,7 @@ interface IUseMultySign {
   nonce: string | null;
 }
 
-interface IMultySignResult {
+export interface IMultySignResult {
   thresholdMulty: number;
   getSignaturesFromDbMulty: () => { signatures: string[]; signers: string[] };
   getSignaturesMulty: () => { signatures: string[]; signers: string[] };
@@ -87,6 +87,7 @@ export function useMultySign({
       open();
       switchNetwork(+chainIdUrl);
     }
+    getOwners();
   };
 
   const getOwners = async () => {
@@ -105,32 +106,20 @@ export function useMultySign({
 
     switch (typeSignTrx) {
       case ADD_OWNER:
-        resTrx = await safeSdk.createAddOwnerTx(
-          {
-            ownerAddress: address,
-          },
-          {
-            nonce: nonce ? +nonce : 0,
-          }
-        );
+        resTrx = await safeSdk.createAddOwnerTx({
+          ownerAddress: address,
+        });
         break;
 
       case REMOVE_OWNER:
-        resTrx = await safeSdk.createRemoveOwnerTx(
-          {
-            ownerAddress: address,
-            threshold: newThresholdUrl ? +newThresholdUrl : 1,
-          },
-          {
-            nonce: nonce ? +nonce : 0,
-          }
-        );
+        resTrx = await safeSdk.createRemoveOwnerTx({
+          ownerAddress: address,
+          threshold: newThresholdUrl ? +newThresholdUrl : 1,
+        });
         break;
 
       case CHANGE_THRESHOLD:
-        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1, {
-          nonce: nonce ? +nonce : 0,
-        });
+        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1);
         break;
 
       default:
@@ -179,7 +168,7 @@ export function useMultySign({
     };
 
     pendingCreateTrxData();
-  }, [safeSdk, conditionMulty]);
+  }, [safeSdk, conditionMulty, chainId]);
 
   const getSignaturesFromDbMulty = useCallback(() => {
     return (
@@ -192,7 +181,7 @@ export function useMultySign({
         { signatures: [], signers: [] }
       ) ?? { signatures: [], signers: [] }
     );
-  }, [transaction]);
+  }, [transaction, chainId]);
 
   const getSignaturesMulty = useCallback(() => {
     const originalUrl = new URL(window.location.href);
@@ -210,7 +199,7 @@ export function useMultySign({
     }
 
     return { signatures, signers };
-  }, [transaction]);
+  }, [transaction, chainId]);
 
   const saveSignaturesMulty = useCallback(
     (signatures: string[], signers: string[]) => {
@@ -239,7 +228,7 @@ export function useMultySign({
       }
       router.push(originalUrl.toString());
     },
-    [router, transaction]
+    [router, transaction, chainId]
   );
 
   const signTransactionMulty = useCallback(async () => {
@@ -263,7 +252,7 @@ export function useMultySign({
         console.error((error as { message: string }).message as string);
       }
     }
-  }, [safeSdk, safeTransaction, safeTxHash, status]);
+  }, [safeSdk, safeTransaction, safeTxHash, status, chainId]);
 
   const executeMulty = async () => {
     try {
@@ -303,7 +292,7 @@ export function useMultySign({
       const { signatures, signers } = getSignaturesMulty();
       saveSignaturesMulty(signatures, signers);
     }
-  }, [transaction]);
+  }, [transaction, chainId]);
 
   return {
     thresholdMulty: threshold,

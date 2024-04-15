@@ -36,7 +36,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
   useEffect(() => {
     createSdkInstance();
-  }, [safeAddress, walletProvider]);
+  }, [safeAddress, walletProvider, chainId]);
 
   const deploySafe = async (owners: string[], threshold: number) => {
     try {

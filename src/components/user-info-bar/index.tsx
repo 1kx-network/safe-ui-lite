@@ -33,6 +33,7 @@ import { getNetworksDB } from '@/db/get-info';
 import { AddNetworkSchema } from '@/utils/validations.utils';
 import { addCustomNetworkDB } from '@/db/set-info';
 import WalletConnectUi from '@/features/walletconnect/components';
+import { networks } from '@/context/networks';
 
 import {
   WrapperStyled,
@@ -111,7 +112,7 @@ export const UserInfoBar = () => {
         return [...prevOptions, ...uniqueNetworks];
       });
     })();
-  }, []);
+  }, [networks]);
 
   useEffect(() => {
     (async () => {

@@ -48,7 +48,7 @@ export const ListAccount = ({
                     sx={{ display: 'flex', cursor: 'pointer' }}
                     onClick={() => handleRemoveOwnerAddress(address)}
                   >
-                    <IconTrash />
+                    <IconTrash width="18px" height="19px" />
                   </Box>
                 )}
               </ItemStyled>

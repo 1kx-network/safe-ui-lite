@@ -1,7 +1,7 @@
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
@@ -17,12 +17,12 @@ import TrxIcon from '@/assets/svg/trx-status.svg';
 import useSafeStore from '@/stores/safe-store';
 import routes from '../../../routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
-import { useNetwork } from '@/hooks/useNetwork';
 import { IOptions } from '../../../wallet/fixtures';
 import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { setDataDB } from '@/db/set-info';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
+import { networks } from '@/context/networks';
 
 import { options } from './fixutres';
 import {
@@ -61,7 +61,10 @@ export const SendTokens = ({}: SendTokensProps) => {
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
-  const network = useNetwork();
+  // const network = useNetwork();
+  const searchParams = useSearchParams();
+  const recipientAddress = searchParams.get('recipientAddress');
+
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
 
@@ -77,7 +80,7 @@ export const SendTokens = ({}: SendTokensProps) => {
     resolver: yupResolver(NewTransactionSchema),
     defaultValues: {
       amount: '0',
-      address: '',
+      address: recipientAddress ? recipientAddress : '',
       calldata: '0x',
     },
   });
@@ -127,10 +130,8 @@ export const SendTokens = ({}: SendTokensProps) => {
 
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
     if (!safeSdk || !chainId || !address) return;
-    const networkName =
-      (network?.name || '').toString().charAt(0).toUpperCase() +
-      (network?.name || '').toString().slice(1);
 
+    const networkUserInfo = networks.find(elem => elem.chainId === chainId);
     const transactionObj = await returnTransactionObj(
       data.address,
       data.amount,
@@ -158,10 +159,11 @@ export const SendTokens = ({}: SendTokensProps) => {
         amount: data.amount,
         destinationAddress: data.address,
         tokenType,
-        networkName,
+        networkName: networkUserInfo?.name ?? '',
         safeTxHash,
         nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
+        userNetworkTrx: JSON.stringify(networkUserInfo),
       };
 
       const transactionDB = {

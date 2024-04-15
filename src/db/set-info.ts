@@ -1,4 +1,5 @@
 import { networks } from '@/context/networks';
+import { IAddressBook } from '@/stores/address-book-store';
 
 import { INetworkDB, ISafe, db } from '.';
 
@@ -34,3 +35,35 @@ export async function addCustomNetworkDB(network: INetworkDB): Promise<void> {
     console.error('Error adding network:', error);
   }
 }
+
+// Function work width Address book DB
+export const removeAddressFromDB = async (address: string) => {
+  try {
+    await db.addressBook.where('address').equals(address).delete();
+    console.log('Record removed from the addressBook:', address);
+  } catch (error) {
+    console.error('Error removing record from the addressBook:', error);
+  }
+};
+
+export const addAddressToDB = async (payload: IAddressBook) => {
+  try {
+    await db.addressBook.put(payload);
+    console.log('Record added to the addressBook:', payload);
+  } catch (error) {
+    console.error('Error adding record to the addressBook:', error);
+  }
+};
+
+export const addAddressesArrayToDB = async (payload: IAddressBook[]) => {
+  try {
+    await db.transaction('rw', db.addressBook, async () => {
+      for (const entry of payload) {
+        await db.addressBook.put(entry);
+      }
+    });
+    console.log('Records added to the addressBook:', payload);
+  } catch (error) {
+    console.error('Error adding records to the addressBook:', error);
+  }
+};
