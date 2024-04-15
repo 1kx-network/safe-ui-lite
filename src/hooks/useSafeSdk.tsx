@@ -65,9 +65,13 @@ export function useSafeSdk(safeAddress: string | null = null) {
               ...localListParsed,
               [chainId]: [],
             }
-          : localList;
+          : localListParsed;
 
-      updateLocalList[chainId ?? 1].push(addressAccount);
+      if (chainId && updateLocalList && updateLocalList[chainId]) {
+        updateLocalList[chainId].push(addressAccount);
+      } else {
+        updateLocalList[chainId ?? 1] = [addressAccount];
+      }
 
       localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
       localStorage.setItem('safeAddress', addressAccount);

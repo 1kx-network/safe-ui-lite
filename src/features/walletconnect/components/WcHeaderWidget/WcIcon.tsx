@@ -15,7 +15,20 @@ const WcIcon = ({ sessionCount, sessionIcon, isError, onClick }: WcIconProps): R
   const showIcon = sessionCount === 1 && !!sessionIcon;
 
   return (
-    <ButtonBase onClick={onClick} title="WalletConnect" sx={{ p: 2 }}>
+    <ButtonBase
+      onClick={onClick}
+      title="WalletConnect"
+      sx={{
+        p: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '36px',
+        width: '36px',
+        borderRadius: '50%',
+        backgroundColor: '#fff',
+      }}
+    >
       <Badge
         variant={isError ? 'dot' : 'standard'}
         badgeContent={

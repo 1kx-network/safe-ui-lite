@@ -1,4 +1,6 @@
 import { useCallback, useContext, useEffect } from 'react';
+import { Theme } from '@mui/material';
+import { ThemeProvider as Provider } from '@emotion/react';
 
 import useWalletConnectSessions from '@/features/walletconnect/hooks/useWalletConnectSessions';
 import { WalletConnectContext } from '@/features/walletconnect/WalletConnectContext';
@@ -7,6 +9,7 @@ import WcHeaderWidget from '../WcHeaderWidget';
 import WcSessionManager from '../WcSessionMananger';
 import { WalletConnectProvider } from '../WalletConnectProvider';
 import useSafeStore from '@/stores/safe-store';
+import SafeThemeProvider from '@/components/theme/SafeThemeProvider';
 
 const WalletConnectWidget = () => {
   const { walletConnect, error, open, setOpen } = useContext(WalletConnectContext);
@@ -24,7 +27,7 @@ const WalletConnectWidget = () => {
 
   // Open the popup if there is a pairing code in the URL or clipboard
   useEffect(() => {
-    if (safeSdk && uri) {
+    if (safeSdk) {
       onOpen();
     }
   }, [safeSdk, uri, onOpen]);
@@ -47,9 +50,13 @@ const WalletConnectWidget = () => {
   );
 };
 
+const themeMode = 'dark';
+
 const WalletConnectUi = () => (
   <WalletConnectProvider>
-    <WalletConnectWidget />
+    <SafeThemeProvider mode={themeMode}>
+      {(safeTheme: Theme) => <Provider theme={safeTheme}>{<WalletConnectWidget />}</Provider>}
+    </SafeThemeProvider>
   </WalletConnectProvider>
 );
 

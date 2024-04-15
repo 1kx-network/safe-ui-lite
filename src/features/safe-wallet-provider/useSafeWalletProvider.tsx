@@ -1,5 +1,7 @@
+'use client';
+
 import { useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Methods } from '@safe-global/safe-apps-sdk';
 import type { EIP712TypedData, SafeSettings } from '@safe-global/safe-apps-sdk';
 import { getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk';

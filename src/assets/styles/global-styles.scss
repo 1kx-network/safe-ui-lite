@@ -1,9 +1,13 @@
+@import 'vars';
+
 html,
 body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
   height: 100%;
+  --header-height: 88px;
+  --footer-height: 67px;
 }
 
 * {

@@ -1,30 +1,10 @@
 'use client';
-import { FC } from 'react';
-
-import WalletConnectUi from '@/features/walletconnect/components';
-
-import { Overlay } from './wallet-connect-popup.styles';
-
-interface WalletConnectPopupProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-export const WalletConnectPopup: FC<WalletConnectPopupProps> = ({ isOpen, toggle }) => {
-  if (!isOpen) return null;
-  return (
-    <>
-      <Overlay onClick={toggle} />
-      <WalletConnectUi />
-    </>
-  );
-};
-
 /* import { FC, useEffect } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
+import WalletConnectUi from '@/features/walletconnect/components';
 import { WalletInput } from '@/ui-kit';
 
 import {

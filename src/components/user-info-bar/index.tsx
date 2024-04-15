@@ -28,11 +28,11 @@ import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { useNetwork } from '@/hooks/useNetwork';
-import WCIcon from '@/assets/svg/wc.svg';
 import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
 import { getNetworksDB } from '@/db/get-info';
 import { AddNetworkSchema } from '@/utils/validations.utils';
 import { addCustomNetworkDB } from '@/db/set-info';
+import WalletConnectUi from '@/features/walletconnect/components';
 
 import {
   WrapperStyled,
@@ -44,12 +44,10 @@ import {
   IconCopyStyled,
   styledBtn,
   styledBtnDisconnect,
-  WCButton,
   ItemInfoNetworkStyled,
   styledNetworks,
   styledBtnAddNetwork,
 } from './user-info-bar.styles';
-import { WalletConnectPopup } from './wallet-connect-popup';
 
 interface IAddNetwork {
   name: string;
@@ -75,7 +73,6 @@ export const UserInfoBar = () => {
   const [balance, setBalance] = useState('0');
   const [options, setOptions] = useState<IOptionNetwork[]>(optionsNetwork);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
-  const [isWCPopupOpen, setIsWCPopupOpen] = useState(false);
   const [isOpenNetworkMenu, setIsOpenNetworkMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenNetworkModal, setIsOpenNetworkModal] = useState(false);
@@ -193,10 +190,6 @@ export const UserInfoBar = () => {
     router.push(routes.home);
   };
 
-  const toggleWCPopup = () => {
-    setIsWCPopupOpen(!isWCPopupOpen);
-  };
-
   const handleAddNetwork = async () => {
     reset();
     setIsOpenMenu(false);
@@ -251,9 +244,8 @@ export const UserInfoBar = () => {
 
   return (
     <WrapperStyled ref={wrapperRef}>
-      <WCButton onClick={toggleWCPopup}>
-        <WCIcon />
-      </WCButton>
+      <WalletConnectUi />
+
       <InfoUserStyled onClick={handleClickMenu}>
         {address ? (
           <>
@@ -420,7 +412,6 @@ export const UserInfoBar = () => {
           </WalletButton>
         </Box>
       </CustomModal>
-      <WalletConnectPopup isOpen={isWCPopupOpen} toggle={toggleWCPopup} />
 
       <CustomModal
         title=""

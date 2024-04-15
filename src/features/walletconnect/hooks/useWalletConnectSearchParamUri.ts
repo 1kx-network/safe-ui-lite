@@ -1,26 +1,30 @@
-import { useRouter } from 'next/router';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
 export const WC_URI_SEARCH_PARAM = 'wc';
 
 export function useWalletConnectSearchParamUri(): [string | null, (wcUri: string | null) => void] {
   const router = useRouter();
-  const wcUri = (router.query[WC_URI_SEARCH_PARAM] || '').toString() || null;
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const wcUri = (searchParams.get(WC_URI_SEARCH_PARAM) || '').toString() || null;
 
   const setWcUri = useCallback(
     (wcUri: string | null) => {
-      const newQuery = { ...router.query };
+      const current = new URLSearchParams(Array.from(searchParams.entries())); // -> has to use this form
 
       if (!wcUri) {
-        delete newQuery[WC_URI_SEARCH_PARAM];
+        current.delete(WC_URI_SEARCH_PARAM);
       } else {
-        newQuery[WC_URI_SEARCH_PARAM] = wcUri;
+        current.set(WC_URI_SEARCH_PARAM, wcUri);
       }
 
-      router.replace({
-        pathname: router.pathname,
-        query: newQuery,
-      });
+      // cast to string
+      const search = current.toString();
+      // or const query = `${'?'.repeat(search.length && 1)}${search}`;
+      const query = search ? `?${search}` : '';
+
+      router.push(`${pathname}${query}`);
     },
     [router]
   );
