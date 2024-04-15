@@ -245,6 +245,7 @@ class WalletConnectWallet {
    * Subscribe to session add
    */
   public onSessionAdd = (handler: (e: SessionTypes.Struct) => void) => {
+    console.log(`[WalletConnect] onSessionAdd`);
     // @ts-expect-error - custom event payload
     this.web3Wallet?.on(SESSION_ADD_EVENT, handler);
 

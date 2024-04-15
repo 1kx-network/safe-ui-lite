@@ -7,7 +7,7 @@ type Store = {
 };
 
 const useChainStore = create<Store>()(set => ({
-  chains: null,
+  chains: [],
   setChains: (payload: ChainInfo[] | null) => set(() => ({ chains: payload })),
 }));
 

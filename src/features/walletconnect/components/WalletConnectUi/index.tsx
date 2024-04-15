@@ -27,7 +27,7 @@ const WalletConnectWidget = () => {
 
   // Open the popup if there is a pairing code in the URL or clipboard
   useEffect(() => {
-    if (safeSdk) {
+    if (safeSdk && uri) {
       onOpen();
     }
   }, [safeSdk, uri, onOpen]);

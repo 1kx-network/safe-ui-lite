@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { getSdkError } from '@walletconnect/utils';
 import { formatJsonRpcError } from '@walletconnect/jsonrpc-utils';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { ChainInfo, getChainsConfig } from '@safe-global/safe-gateway-typescript-sdk';
 
 import useSafeWalletProvider from '@/features/safe-wallet-provider/useSafeWalletProvider';
 import { asError } from '@/features/exceptions/utils';
@@ -11,6 +12,7 @@ import { wcPopupStore } from '@/features/walletconnect/components';
 import WalletConnectWallet from '@/features/walletconnect/services/WalletConnectWallet';
 import { WalletConnectContext } from '@/features/walletconnect/WalletConnectContext';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import useChainStore from '@/stores/chains-store';
 
 enum Errors {
   WRONG_CHAIN = '%%dappName%% made a request on a different chain than the one you are connected to',
@@ -33,6 +35,7 @@ const getWrongChainError = (dappName: string): Error => {
 };
 
 export const WalletConnectProvider = ({ children }: { children: ReactNode }) => {
+  const { setChains } = useChainStore();
   const { chainId } = useWeb3ModalAccount();
   const { safeAddress } = useActiveSafeAddress();
 
@@ -50,6 +53,15 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
       .then(() => setWalletConnect(walletConnectSingleton))
       .catch(setError);
   }, []);
+
+  useEffect(() => {
+    const getConfigs = async (): Promise<ChainInfo[]> => {
+      const data = await getChainsConfig();
+      console.log(`data FROM set chains`, data);
+      return data.results || [];
+    };
+    getConfigs().then(chains => setChains(chains));
+  }, [setChains]);
 
   // Update chainId/safeAddress
   useEffect(() => {
