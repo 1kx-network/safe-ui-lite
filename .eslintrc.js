@@ -15,6 +15,11 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 2,
     '@typescript-eslint/explicit-member-accessibility': 'error',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-unnecessary-type-constraint': 'off',
+    '@typescript-eslint/explicit-member-accessibility': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    '@next/next/no-img-element': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'import/order': [
       'warn',

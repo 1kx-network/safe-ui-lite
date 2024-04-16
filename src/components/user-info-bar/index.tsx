@@ -32,6 +32,7 @@ import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
 import { getNetworksDB } from '@/db/get-info';
 import { AddNetworkSchema } from '@/utils/validations.utils';
 import { addCustomNetworkDB } from '@/db/set-info';
+import WalletConnectUi from '@/features/walletconnect/components';
 import { networks } from '@/context/networks';
 
 import {
@@ -244,6 +245,8 @@ export const UserInfoBar = () => {
 
   return (
     <WrapperStyled ref={wrapperRef}>
+      <WalletConnectUi />
+
       <InfoUserStyled onClick={handleClickMenu}>
         {address ? (
           <>
@@ -269,7 +272,7 @@ export const UserInfoBar = () => {
             fontWeight={400}
             textAlign="center"
             style={{ width: '100%' }}
-            color={themeMuiBase.palette.white}
+            color={themeMuiBase.palette.grey}
           >
             Create accont
           </WalletTypography>
