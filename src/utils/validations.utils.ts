@@ -43,3 +43,8 @@ export const AddNetworkSchema = yup.object().shape({
     .matches(/^\d+$/, 'Chain ID must be a number'),
   explorerUrl: yup.string().required('Explorer URL is required').url('RPC URL must be a valid URL'),
 });
+
+export const ChangeNetworkEnvSchema = yup.object().shape({
+  name: yup.string().required('Name is required'),
+  rpc: yup.string().required('RPC URL is required').url('RPC URL must be a valid URL'),
+});

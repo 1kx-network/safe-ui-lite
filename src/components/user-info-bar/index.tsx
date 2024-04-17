@@ -8,7 +8,7 @@ import {
 } from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Cookies from 'js-cookie';
 import * as utils from 'ethers';
 import { v4 as uuid } from 'uuid';
@@ -28,12 +28,16 @@ import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { useNetwork } from '@/hooks/useNetwork';
-import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
+import { optionsNetwork } from '@/constants/networks';
 import { getNetworksDB } from '@/db/get-info';
 import { AddNetworkSchema } from '@/utils/validations.utils';
 import { addCustomNetworkDB } from '@/db/set-info';
+import { TYPE_IMPORT } from '@/constants/types';
+import { INetworkDB } from '@/db';
+import useNetworkStore from '@/stores/networks-store';
+import { networks as defaultNetworks } from '@/context/networks';
 import WalletConnectUi from '@/features/walletconnect/components';
-import { networks } from '@/context/networks';
+
 
 import {
   WrapperStyled,
@@ -70,15 +74,20 @@ export const UserInfoBar = () => {
   const network = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const { setClearActiveSafeStore } = useActiveSafeAddress();
+  const searchParams = useSearchParams();
+  const { networks, setNetwork, setNetworksArray } = useNetworkStore();
+
+  const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
 
   const [balance, setBalance] = useState('0');
-  const [options, setOptions] = useState<IOptionNetwork[]>(optionsNetwork);
+  // const [options, setOptions] = useState<IOptionNetwork[]>(networks);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isOpenNetworkMenu, setIsOpenNetworkMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenNetworkModal, setIsOpenNetworkModal] = useState(false);
   const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
   const [errorNewNetwork, setErrorNewNetwork] = useState<string | null>(null);
+  const [networksDBState, setNetworksDB] = useState<INetworkDB[]>([]);
 
   const networkName =
     (network?.name || '').toString().charAt(0).toUpperCase() +
@@ -95,24 +104,63 @@ export const UserInfoBar = () => {
   });
 
   useEffect(() => {
+    if (isShareAcc) {
+      (async () => {
+        const fetchedNetworks = await getNetworksDB();
+        setNetworksDB(fetchedNetworks);
+      })();
+    }
+  }, [isShareAcc, defaultNetworks]);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const networksDB = await getNetworksDB();
+  //     const updateNetwork: IOptionNetwork[] = networksDB.map(elem => ({
+  //       id: elem.id,
+  //       name: elem.name,
+  //       currency: elem.currency,
+  //       explorerUrl: elem.explorerUrl,
+  //       rpcUrl: elem.rpcUrl,
+  //       symbol: elem.symbol,
+  //       decimals: elem.decimals,
+  //       chainId: elem.chainId,
+  //       label: elem.name,
+  //       value: elem.name,
+  //       rpc: elem.rpcUrl,
+  //       icon: () => formatterIcon(elem.chainId ?? 0),
+  //     }));
+
+  //     const networksArrayDB =[...optionsNetwork, ...updateNetwork].filter(elem => elem.chainId)
+
+  //     setNetworksArray([...optionsNetwork, ...updateNetwork]);
+  //   })();
+  // }, [networks, networksDB]);
+
+  useEffect(() => {
     (async () => {
       const networksDB = await getNetworksDB();
+
       const updateNetwork = networksDB.map(elem => ({
+        ...elem,
         label: elem.name,
         value: elem.name,
         rpc: elem.rpcUrl,
-        icon: () => formatterIcon(0),
-        ...elem,
+        icon: () => formatterIcon(elem.chainId ?? 0),
       }));
 
-      setOptions(prevOptions => {
-        const uniqueNetworks = updateNetwork.filter(
-          network => !prevOptions.some(option => option.rpc === network.rpcUrl)
-        );
-        return [...prevOptions, ...uniqueNetworks];
-      });
+      const updatedArray = optionsNetwork.map(
+        option => updateNetwork.find(network => network.chainId === option.chainId) || option
+      );
+
+      const networkArray = [
+        ...updatedArray,
+        ...updateNetwork.filter(network => !updatedArray.some(n => n.chainId === network.chainId)),
+      ];
+      console.log(networkArray);
+
+      setNetworksArray(networkArray);
     })();
-  }, [networks]);
+  }, [defaultNetworks, networksDBState]);
 
   useEffect(() => {
     (async () => {
@@ -199,6 +247,8 @@ export const UserInfoBar = () => {
     setIsOpenNetworkModal(true);
   };
 
+  // const { walletProvider } = useWeb3ModalProvider();
+
   const handleChangeNetwork = async (chainId: number) => {
     await switchNetwork(chainId).finally(() => {
       setIsOpenNetworkMenu(false);
@@ -206,10 +256,70 @@ export const UserInfoBar = () => {
     });
   };
 
+  // const network = networks.find(elem => elem.chainId === chainId);
+  // if (!network) return;
+  // try {
+  //   // Пытаемся переключиться на указанный RPC
+  //   await walletProvider
+  //     .request({
+  //       method: 'wallet_switchToNetwork',
+  //       params: [
+  //         {
+  //           chainId: network.rpcUrl,
+  //           chainName: 'Custom Network',
+  //           rpcUrl: network.rpcUrl,
+  //           chainId: `0x${(await walletProvider.request({ method: 'net_version' })).toString(16)}`,
+  //         },
+  //       ],
+  //     })
+  //     .catch(err => console.log(err));
+  //   console.log('Switched to RPC:', network.rpcUrl);
+  // } catch (error) {
+  //   // Если сеть не найдена, добавляем её
+  //   if (error.code === 4902) {
+  //     console.log('Network not added, adding now...');
+
+  // try {
+  //   await walletProvider.request({
+  //     method: 'wallet_addEthereumChain',
+  //     params: {
+  //       chainId: network.rpcUrl,
+  //       chainName: 'Custom Network',
+  //       nativeCurrency: {
+  //         name: 'Custom',
+  //         symbol: 'CST',
+  //         decimals: 18,
+  //       },
+  //       rpcUrls: [network.rpcUrl],
+  //       blockExplorerUrls: ['https://explorer.example.com'], // Замените на ваш URL блокчейн-эксплорера
+  //     },
+  //   });
+  //   console.log('Added and switched to RPC:', network.rpcUrl);
+  // } catch (addError) {
+  //   console.error('Failed to add network:', addError);
+  // }
+  //   } else {
+  //     console.error('Failed to switch network:', error);
+  //   }
+  // }
+
+  //   console.log('_rpcUrl_', network?.rpcUrl);
+
+  //   try {
+  //     await walletProvider.request({
+  //       method: 'wallet_switchEthereumChain',
+  //       params: [{ chainId: network?.rpcUrl }],
+  //     });
+  //     console.log('Switched to RPC:', network?.rpcUrl);
+  //   } catch (error) {
+  //     console.error('Failed to switch network:', error);
+  //   }
+  // };
+
   const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
     const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
 
-    if (options.some(option => option.rpc === rpc)) {
+    if (networks && networks.some(option => option.rpc === rpc)) {
       setErrorNewNetwork('This RPC was added');
       customToasty('Error with adding a new network', 'error');
       return;
@@ -234,9 +344,7 @@ export const UserInfoBar = () => {
     };
 
     setErrorNewNetwork(null);
-    setOptions(prevOptions => {
-      return [...prevOptions, { ...newNetwork, icon: () => formatterIcon(0) }];
-    });
+    setNetwork(newNetwork);
 
     await addCustomNetworkDB(objNetworkDB);
     setIsOpenNetworkModal(false);
@@ -306,21 +414,26 @@ export const UserInfoBar = () => {
           {isOpenNetworkMenu && !isOpenNetworkModal && (
             <BodyOpenStyled isOpen={true} sx={styledNetworks}>
               <Box display={'flex'} flexDirection={'column'} gap={1}>
-                {options.map(elem => (
-                  <ItemInfoNetworkStyled
-                    onClick={() => handleChangeNetwork(elem.chainId)}
-                    key={elem.chainId}
-                  >
-                    {formatterIcon(elem.chainId, '16px', '16px')}
-                    <WalletTypography
-                      fontSize={14}
-                      color={themeMuiBase.palette.grey}
-                      style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                {networks &&
+                  networks.map(elem => (
+                    <ItemInfoNetworkStyled
+                      onClick={() => handleChangeNetwork(elem.chainId)}
+                      key={elem.chainId}
                     >
-                      {elem.value}
-                    </WalletTypography>
-                  </ItemInfoNetworkStyled>
-                ))}
+                      {formatterIcon(elem.chainId, '16px', '16px')}
+                      <WalletTypography
+                        fontSize={14}
+                        color={themeMuiBase.palette.grey}
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {elem.value}
+                      </WalletTypography>
+                    </ItemInfoNetworkStyled>
+                  ))}
               </Box>
 
               <WalletButton variant="text" styles={styledBtnAddNetwork} onClick={handleAddNetwork}>

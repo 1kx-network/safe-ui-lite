@@ -1,12 +1,13 @@
 'use client';
 import { Box } from '@mui/system';
-import { usePathname } from 'next/navigation';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useCallback, useEffect, useState } from 'react';
 import * as utils from 'ethers';
 import Link from 'next/link';
+import { MultiValue } from 'react-select';
 
-import { WalletTypography } from '@/ui-kit';
+import { WalletButton, WalletSelect, WalletTypography } from '@/ui-kit';
 import routes from '@/app/routes';
 import IconOpenAccount from '@/assets/svg/arrow-r.svg';
 import IconPlus from '@/assets/svg/plus.svg';
@@ -24,8 +25,10 @@ import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { safeNetworksObj } from '@/constants/networks';
 import { useNetwork } from '@/hooks/useNetwork';
 import { getNetworksDB } from '@/db/get-info';
+import { TYPE_IMPORT } from '@/constants/types';
+import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
+import { INetworkDB } from '@/db';
 
-import { dataUserMock, menuList } from './fixtures';
 import {
   MenuStyled,
   WrapperStyled,
@@ -44,7 +47,10 @@ import {
   boxStyleInfoUserAddress,
   BodyMainInfoStyled,
   BoxAccountActionStyled,
+  ShareAccountsListStyled,
+  ShareAccountItemStyled,
 } from './sidebar.styles';
+import { dataUserMock, menuList } from './fixtures';
 
 interface ISidebar {
   icon?: string;
@@ -53,13 +59,26 @@ interface ISidebar {
   count?: string;
 }
 
+interface IOptionShareAcc {
+  id: number;
+  value: string;
+  label: string;
+}
+
 export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock.icon }) => {
   const pathname = usePathname();
   const { address, chainId } = useWeb3ModalAccount();
-  const [dataList, setDataList] = useState([]);
   const { data } = useOwnerList(address);
   const { safeSdk, saveSdk } = useSafeStore();
   const network = useNetwork();
+  const searchParams = useSearchParams();
+  const { switchNetwork } = useSwitchNetwork();
+
+  const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
+
+  const shareAccounts = isShareAcc ? searchParams.get('accounts') : null;
+  const networkParam = searchParams.get('network');
+  const shareNetwork = isShareAcc && networkParam ? JSON.parse(networkParam) : null;
 
   const {
     safeAddress,
@@ -72,12 +91,30 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   } = useActiveSafeAddress();
   const { createSafe, getInfoByAccount } = useSafeSdk();
 
+  const [dataList, setDataList] = useState<string[] | []>([]);
   const [isOpenAccount, setIsOpenAccount] = useState(false);
   const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [isOpenShareModal, setIsOpenShareModal] = useState(false);
+  const [isShareAccModal, setIsShareAccModal] = useState(Boolean(isShareAcc));
+  const [optionsShareAcc, setOptionsShareAcc] = useState<IOptionShareAcc[] | []>([]);
+  const [chooseOptionsShareAcc, setChooseOptionsShareAcc] = useState<IOptionShareAcc[]>([]);
 
   const networkName =
     (network?.name || '').toString().charAt(0).toUpperCase() +
     (network?.name || '').toString().slice(1);
+
+  useEffect(() => {
+    if (!!dataList.length) {
+      const upDataList = dataList.map(elem => ({
+        id: Number(dataList.length + 1),
+        value: elem,
+        label: elem,
+        icon: () => formatterIcon(0),
+      }));
+
+      setOptionsShareAcc(upDataList);
+    }
+  }, [dataList]);
 
   useEffect(() => {
     if (!safeAddress) return;
@@ -93,11 +130,11 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
 
       const listAccount =
-        data && data.length
-          ? data[chainId].concat(localListParsed[chainId])
-          : localListParsed[chainId];
-
-      console.log('_1_listAccount_', listAccount, 'safeAddress', safeAddress);
+        data && data[chainId] && localListParsed[chainId]
+          ? [...data[chainId], ...localListParsed[chainId]]
+          : data && data[chainId]
+            ? data[chainId]
+            : localListParsed[chainId];
 
       if (listAccount !== undefined) {
         setDataList(listAccount);
@@ -114,12 +151,41 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         }
       }
 
-      console.log('_need create new account with new network_');
+      console.log('Need create new account with new network');
     }
   }, [data, chainId, address]);
 
   useEffect(() => {
-    (async () => await getNetworksDB())();
+    (async () => {
+      if (shareNetwork) {
+        await addCustomNetworkDB(shareNetwork as INetworkDB);
+
+        const accountsNet = shareAccounts ? JSON.parse(shareAccounts) : null;
+        if (accountsNet && accountsNet.length) {
+          const localList = localStorage.getItem('createdSafes');
+          const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+
+          const chainId = String(shareNetwork.chainId);
+
+          if (localListParsed[chainId]) {
+            const uniqueAddresses = accountsNet.filter(
+              (address: string) => !localListParsed[chainId].includes(address)
+            );
+            localListParsed[chainId].push(...uniqueAddresses);
+          } else {
+            localListParsed[chainId] = accountsNet;
+          }
+
+          localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
+        }
+      }
+      await getNetworksDB();
+
+      if (shareAccounts) {
+        const accounts: string[] = JSON.parse(shareAccounts);
+        await setDataDB(accounts[0], {});
+      }
+    })();
 
     if (!address && !chainId) {
       saveSdk(null);
@@ -177,6 +243,44 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   const condMenuList = address ? menuList : [menuList[0]];
 
+  // share account
+  const handleChangeSelect = (elems: MultiValue<IOptionShareAcc>) => {
+    setChooseOptionsShareAcc(elems as IOptionShareAcc[]);
+  };
+
+  const handleCopyShareAccount = () => {
+    const networkUserInfo = networks.find(elem => elem.chainId === chainId);
+    const accounts = chooseOptionsShareAcc.map(({ value }) => value);
+
+    const host = window.location.hostname;
+
+    const queryParams = {
+      import: TYPE_IMPORT.SHARE_ACC,
+      network: JSON.stringify(networkUserInfo),
+      accounts: JSON.stringify(accounts),
+    };
+
+    const queryString = new URLSearchParams(queryParams).toString();
+
+    navigator.clipboard.writeText(`${host}${routes.home}?${queryString}`);
+    setChooseOptionsShareAcc([]);
+    setIsOpenShareModal(false);
+
+    customToasty('Link width account(s) was copy!', 'success');
+  };
+
+  const handleCancelShareAccount = () => {
+    setIsShareAccModal(false);
+    setChooseOptionsShareAcc([]);
+    setIsOpenShareModal(false);
+  };
+
+  const handleSwitchNetwork = async () => {
+    if (!shareNetwork) return;
+    await switchNetwork(shareNetwork.chainId);
+    handleCancelShareAccount();
+  };
+
   return (
     <WrapperStyled>
       <BodyMainInfoStyled>
@@ -190,7 +294,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
               </WalletTypography>
               {safeAddress && (
                 <Box display={'flex'} alignItems={'center'}>
-                  <Link href={`${linkOnScan}address/${safeAddress}`} target="_blank">
+                  <Link href={`${linkOnScan}/address/${safeAddress}`} target="_blank">
                     <OpenInNewIcon width="14px" height="14px" />
                   </Link>
                   <CopyIconStyled onClick={handleCopyAddress} />
@@ -205,7 +309,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             ) : (
               <Box height={'25px'} display={'flex'} alignItems={'center'} gap={2}>
                 <WalletTypography fontSize={14} fontWeight={500}>
-                  {balanceAccount} ETH
+                  {balanceAccount} {networkName}
                 </WalletTypography>
                 {chainId && formatterIcon(chainId, '19px', '19px')}
               </Box>
@@ -301,8 +405,70 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                 </WalletTypography>
               </BoxAccountActionStyled>
             </Link>
+
+            <BoxAccountActionStyled onClick={() => setIsOpenShareModal(true)}>
+              <IconPlus width="17px" height="17px" color={themeMuiBase.palette.success} />
+              <WalletTypography fontSize={14} fontWeight={500}>
+                Share your account
+              </WalletTypography>
+            </BoxAccountActionStyled>
           </Box>
         </AccountWrapperStyled>
+      </CustomModal>
+
+      <CustomModal isOpen={isOpenShareModal} closeModal={() => setIsOpenShareModal(false)}>
+        <Box display="flex" flexDirection={'column'} gap={1}>
+          <WalletTypography fontSize={18} fontWeight={600}>
+            Share account(s)
+          </WalletTypography>
+
+          <WalletTypography fontSize={14} fontWeight={500}>
+            Select one or more accounts that you want to send.
+          </WalletTypography>
+
+          <Box my={4} width={'500px'}>
+            <WalletSelect options={optionsShareAcc} onChange={handleChangeSelect} isMulti />
+          </Box>
+
+          <WalletTypography fontSize={14} fontWeight={400}>
+            Copy the link and send it to the user with whom you want to share your account
+          </WalletTypography>
+
+          <Box display="flex" justifyContent={'space-between'} gap={4} mt={3}>
+            <WalletButton variant="outlined" onClick={handleCancelShareAccount}>
+              Cancel
+            </WalletButton>
+            <WalletButton variant="contained" onClick={handleCopyShareAccount}>
+              Copy
+            </WalletButton>
+          </Box>
+        </Box>
+      </CustomModal>
+
+      <CustomModal isOpen={isShareAccModal} closeModal={() => setIsShareAccModal(false)}>
+        <Box display="flex" flexDirection={'column'} gap={1}>
+          <WalletTypography fontSize={18} fontWeight={600}>
+            Was import account(s)
+          </WalletTypography>
+          <ShareAccountsListStyled>
+            {shareAccounts &&
+              JSON.parse(shareAccounts).map((elem: string) => (
+                <ShareAccountItemStyled key={elem}>
+                  {formatterIcon(0)} {elem}
+                </ShareAccountItemStyled>
+              ))}
+          </ShareAccountsListStyled>
+
+          <Box display={'flex'} justifyContent={'space-between'} gap={4}>
+            <WalletButton variant="outlined" onClick={handleCancelShareAccount}>
+              Close
+            </WalletButton>
+
+            <WalletButton variant="contained" onClick={handleSwitchNetwork} styles={{ gap: '4px' }}>
+              Switch on {shareNetwork && formatterIcon(shareNetwork.chainId)} {shareNetwork?.value}
+            </WalletButton>
+          </Box>
+        </Box>
       </CustomModal>
     </WrapperStyled>
   );

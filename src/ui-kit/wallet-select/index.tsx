@@ -2,6 +2,7 @@ import React from 'react';
 import Select, { Props, GroupBase } from 'react-select';
 
 import { CustomOption, CustomSingleValue, stylesSelect } from './wallet-select.styles';
+import { LoadingSelect } from './select-loading';
 
 export type SelectProps<
   Option,
@@ -14,7 +15,8 @@ export const WalletSelect = <
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>,
 >(
-  props: SelectProps<Option, IsMulti, Group>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: SelectProps<Option, IsMulti, Group> & { ref?: any }
 ) => {
   //   const id = props.id || Math.random().toString();
 
@@ -24,12 +26,15 @@ export const WalletSelect = <
     IndicatorSeparator: () => null,
   };
 
-  return (
+  return props.isLoading ? (
+    <LoadingSelect />
+  ) : (
     <Select
       isClearable={false}
       isSearchable={false}
       components={components}
       {...props}
+      ref={props.ref}
       styles={stylesSelect}
     />
   );
