@@ -4,9 +4,11 @@ const routes = {
   safeAccountImport: '/safe-account/import',
   safeAccountOwners: '/safe-account/owners',
   safeAccountReview: '/safe-account/review',
-  settingsOwnersList: '/settings/owners-list',
 
   settings: '/settings',
+  settingsOwnersList: '/settings/owners-list',
+  settingsEnvironmentVariables: '/settings/environment-variables',
+
   transactions: '/transactions',
 
   safeLightWallet: '/safe-light-wallet',

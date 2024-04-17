@@ -90,14 +90,21 @@ export interface IOptionNetwork {
   chainId: number;
   label: string;
   value: string;
+  name?: string;
+  currency?: string;
   rpc: string;
+  explorerUrl?: string;
   icon?: () => React.ReactNode;
 }
 
-export const optionsNetwork: IOptionNetwork[] = networks.map(({ chainId, name, rpcUrl }) => ({
-  chainId: chainId,
-  label: name,
-  value: name,
-  rpc: rpcUrl,
-  icon: () => formatterIcon(chainId),
-}));
+export const optionsNetwork: IOptionNetwork[] = networks.map(
+  ({ chainId, name, rpcUrl, explorerUrl, currency }) => ({
+    chainId: chainId,
+    label: name,
+    value: name,
+    rpc: rpcUrl,
+    explorerUrl,
+    currency,
+    icon: () => formatterIcon(chainId),
+  })
+);

@@ -1,4 +1,3 @@
-import { networks } from '@/context/networks';
 import { IAddressBook } from '@/stores/address-book-store';
 
 import { INetworkDB, ISafe, db } from '.';
@@ -24,15 +23,64 @@ export async function setDataDB(safeAddress: string, data: Partial<ISafe>): Prom
   }
 }
 
+export async function setMultipleDataDB(data: Record<string, Partial<ISafe>>): Promise<void> {
+  try {
+    const safeAddresses = Object.keys(data);
+
+    const existingSafes: ISafe[] = await db.safes.where('address').anyOf(safeAddresses).toArray();
+
+    const updatedSafes: ISafe[] = [];
+    const newSafes: ISafe[] = [];
+
+    for (const address of safeAddresses) {
+      const existingSafe = existingSafes.find(safe => safe.address === address);
+      const partialData = data[address];
+
+      if (existingSafe) {
+        if (partialData.owners && partialData.owners.length > 0) {
+          existingSafe.owners = partialData.owners;
+        }
+        if (partialData.transactions && partialData.transactions.length > 0) {
+          existingSafe.transactions.unshift(...partialData.transactions);
+        }
+        updatedSafes.push(existingSafe);
+      } else {
+        const newSafe: ISafe = {
+          address: address,
+          owners: partialData.owners || [],
+          transactions: partialData.transactions || [],
+        };
+        newSafes.push(newSafe);
+      }
+    }
+
+    if (updatedSafes.length > 0) {
+      await db.safes.bulkPut(updatedSafes);
+      console.log('Updated safes:', updatedSafes);
+    }
+
+    if (newSafes.length > 0) {
+      await db.safes.bulkAdd(newSafes);
+      console.log('Added new safes:', newSafes);
+    }
+  } catch (error) {
+    console.error('Error updating or adding safes:', error);
+  }
+}
+
 export async function addCustomNetworkDB(network: INetworkDB): Promise<void> {
   try {
     const networkWithId: INetworkDB = { ...network, id: String(network.chainId) };
-    networks.push(network);
 
-    await db.networks.add(networkWithId);
-    console.log('New network added:', networkWithId);
+    const existingNetwork = await db.networks.get(networkWithId.id || '');
+
+    if (existingNetwork) {
+      await db.networks.update(networkWithId.id || '', networkWithId);
+    } else {
+      await db.networks.add(networkWithId);
+    }
   } catch (error) {
-    console.error('Error adding network:', error);
+    console.error('Error adding or updating network:', error);
   }
 }
 

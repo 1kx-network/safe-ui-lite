@@ -14,7 +14,6 @@ const stylesOption = {
   width: '100%',
 };
 
-// TODO type any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CustomOption = (props: OptionProps<any>) => {
   const IconOption = props.data.icon;
@@ -23,8 +22,14 @@ export const CustomOption = (props: OptionProps<any>) => {
       <Box sx={stylesOption}>
         <Box display={'flex'} alignItems={'center'} gap={'8px'}>
           {IconOption && (
-            <Box minWidth={'19px'}>
-              <IconOption width={'19px'} height={'19px'} />
+            <Box
+              minWidth={'19px'}
+              width={'19px'}
+              height={'19px'}
+              display={'flex'}
+              alignItems={'center'}
+            >
+              <IconOption />
             </Box>
           )}
           {props.data.label}
@@ -35,7 +40,6 @@ export const CustomOption = (props: OptionProps<any>) => {
   );
 };
 
-// TODO type any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CustomSingleValue = (props: SingleValueProps<any>) => {
   const IconOption = props.data.icon;
