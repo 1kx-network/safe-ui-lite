@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Methods } from '@safe-global/safe-apps-sdk';
 import type { EIP712TypedData, SafeSettings } from '@safe-global/safe-apps-sdk';
@@ -15,7 +15,7 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 //   SignMessageOnChainFlow,
 // } from '@/components/tx-flow/flows';
 // import { safeMsgSubscribe, SafeMsgEvent } from '@/services/safe-messages/safeMsgEvents';
-// import { TxEvent, txSubscribe } from '@/services/tx/txEvents';
+import { TxEvent, txSubscribe } from '@/features/tx/txEvents';
 import { useWeb3ReadOnly } from '@/features/web3';
 // import { AppRoutes } from '@/config/routes';
 // import useChains, { useCurrentChain } from '@/hooks/useChains';
@@ -39,7 +39,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
 
   const router = useRouter();
 
-  const _pendingTxs = useRef<Record<string, string>>({});
+  const pendingTxs = useRef<Record<string, string>>({});
 
   const web3ReadOnly = useWeb3ReadOnly();
   // const { configs } = useChains();
@@ -48,13 +48,15 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
     offChainSigning: true,
   });
 
-  /* useEffect(() => {
+  useEffect(() => {
     const unsubscribe = txSubscribe(TxEvent.PROCESSING, async ({ txId, txHash }) => {
+      console.log(`txId`, txId);
+      console.log(`txHash`, txHash);
       if (!txId) return;
       pendingTxs.current[txId] = txHash;
     });
     return unsubscribe;
-  }, []); */
+  }, []);
 
   return useMemo<WalletSDK | undefined>(() => {
     if (!chainId || !safeAddress) return;
@@ -121,6 +123,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async send(params: { txs: any[]; params: { safeTxGas: number } }, appInfo) {
+        console.log(`params`, params);
         // const id = Math.random().toString(36).slice(2);
 
         // const transactions = params.txs.map(({ to, value, data }) => {
@@ -167,6 +170,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async switchChain(hexChainId, appInfo) {
+        console.log(`changing chain to ${hexChainId}`);
         const decimalChainId = parseInt(hexChainId, 16).toString();
         if (decimalChainId === chainId) {
           return null;
@@ -177,7 +181,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
         if (!cfg) {
           throw new Error(`Chain ${chainId} not supported`);
         }
-
         if (
           prompt(`${appInfo.name} wants to switch to ${cfg.shortName}. Do you want to continue?`)
         ) {
@@ -193,6 +196,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async showTxStatus(_safeTxHash) {
+        console.log(`SHOW tx status`, _safeTxHash);
         // router.push({
         //   pathname: AppRoutes.transactions.tx,
         //   query: {
@@ -243,7 +247,7 @@ const useSafeWalletProvider = (): SafeWalletProvider | undefined => {
     return new SafeWalletProvider(
       {
         safeAddress,
-        chainId: Number(chainId),
+        chainId: chainId,
       },
       txFlowApi
     );
