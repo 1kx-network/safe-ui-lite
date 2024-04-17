@@ -25,6 +25,9 @@ export const WC_APP_DEV = {
 };
 
 export const LS_NAMESPACE = 'SAFE_v2__';
+export const LATEST_SAFE_VERSION = process.env.NEXT_PUBLIC_SAFE_VERSION || '1.3.0';
 
 export const SAFE_APPS_INFURA_TOKEN = '6435197616d1417692b3d60c41f7d13d';
 export const INFURA_TOKEN = '6435197616d1417692b3d60c41f7d13d';
+
+export const POLLING_INTERVAL = 15_000;

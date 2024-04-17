@@ -57,7 +57,6 @@ export const WalletConnectProvider = ({ children }: { children: ReactNode }) => 
   useEffect(() => {
     const getConfigs = async (): Promise<ChainInfo[]> => {
       const data = await getChainsConfig();
-      console.log(`data FROM set chains`, data);
       return data.results || [];
     };
     getConfigs().then(chains => setChains(chains));
