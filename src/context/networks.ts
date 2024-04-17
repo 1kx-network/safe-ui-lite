@@ -1,9 +1,9 @@
 import {
-  // mainnet, // 1
+  mainnet, // 1
   bsc, // 56
   polygon, // 137
   gnosis, // 100
-  arbitrum, // 42161
+  // arbitrum, // 42161
   optimism, // 10
   celo, // 42220
   avalanche, // 43114
@@ -14,12 +14,12 @@ import {
 } from '@wagmi/core/chains';
 
 export const chains = [
-  // mainnet,Error with adding a new network
+  mainnet, // Error with adding a new network
   // sepolia,
   bsc,
   polygon,
   gnosis,
-  arbitrum,
+  // arbitrum,
   optimism,
   celo,
   avalanche,
@@ -29,6 +29,13 @@ export const chains = [
 ];
 
 export const networks = [
+  ...chains.map(elem => ({
+    chainId: elem.id,
+    name: elem.name,
+    currency: elem.nativeCurrency.symbol,
+    explorerUrl: elem.blockExplorers.default.apiUrl,
+    rpcUrl: elem.rpcUrls.default.http[0],
+  })),
   {
     chainId: 11155111,
     name: 'Sepolia',

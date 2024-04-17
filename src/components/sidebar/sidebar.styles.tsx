@@ -102,6 +102,10 @@ export const styleBtnTransaction = {
   padding: '0.719rem 0.75rem',
 };
 
+export const styledBtn = {
+  width: '40%',
+};
+
 export const boxStyleInfoUser = {
   display: 'flex',
   flexDirection: 'column',
@@ -201,5 +205,24 @@ export const BoxAccountActionStyled = styled('div')(
   &:hover {
     background-color: ${theme.palette.hover};
   }
+`
+);
+
+export const ShareAccountsListStyled = styled('div')(
+  ({ theme }) => `
+  display:flex;
+  flex-direction: column;
+  gap: ${theme.spacing(1)};
+  overflow-y: scroll;
+  max-height: 400px;
+  margin: ${theme.spacing(3)} 0;
+  // min-height: 200px;
+`
+);
+export const ShareAccountItemStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  gap: ${theme.spacing(2)};
+  padding: ${theme.spacing(2)} 0;
 `
 );
