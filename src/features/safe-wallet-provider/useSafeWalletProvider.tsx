@@ -1,10 +1,11 @@
 'use client';
-
+import { v4 as uuid } from 'uuid';
+import { getAddress } from 'ethers';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Methods } from '@safe-global/safe-apps-sdk';
 import type { EIP712TypedData, SafeSettings } from '@safe-global/safe-apps-sdk';
-import { getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk';
+import { ChainInfo, getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk';
 // import { getAddress } from 'ethers';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
@@ -18,13 +19,17 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { TxEvent, txSubscribe } from '@/features/tx/txEvents';
 import { useWeb3ReadOnly } from '@/features/web3';
 // import { AppRoutes } from '@/config/routes';
-// import useChains, { useCurrentChain } from '@/hooks/useChains';
+import useChains from '@/hooks/useChains';
 // import { useAppSelector } from '@/store';
 // import { selectOnChainSigning } from '@/store/settingsSlice';
 // import { isOffchainEIP1271Supported } from '@/utils/safe-messages';
 // import useActiveSafeAddress from '@/stores/safe-address-store';
 import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import { NATIVE_TOKENS } from '@/constants/tokens';
+import { TYPE_SIGN_TRX } from '@/constants/type-sign';
+import { setDataDB } from '@/db/set-info';
+import routes from '@/app/routes';
 
 import { NotificationMessages, showNotification } from './notifications';
 
@@ -33,7 +38,6 @@ import type { AppInfo, WalletSDK } from '.';
 
 export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK | undefined => {
   const { safeSdk: safe } = useSafeStore();
-  // const currentChain = useCurrentChain();
   // const { setTxFlow } = useContext(TxModalContext);
   const setTxFlow = () => {};
 
@@ -42,7 +46,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
   const pendingTxs = useRef<Record<string, string>>({});
 
   const web3ReadOnly = useWeb3ReadOnly();
-  // const { configs } = useChains();
+  const { configs } = useChains();
   // const onChainSigning = useAppSelector(selectOnChainSigning);
   const [settings, setSettings] = useState<SafeSettings>({
     offChainSigning: true,
@@ -72,6 +76,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       //   !onChainSigning &&
       //   settings.offChainSigning;
 
+      console.log(`SIGN MESSAGE ${_message} from ${appInfo.name}`);
       const { title, options } = NotificationMessages.SIGNATURE_REQUEST(appInfo);
       showNotification(title, options);
 
@@ -123,19 +128,71 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async send(params: { txs: any[]; params: { safeTxGas: number } }, appInfo) {
-        console.log(`params`, params);
-        // const id = Math.random().toString(36).slice(2);
+        console.log(`transactions from wallet connect`, params);
+        const id = uuid();
 
-        // const transactions = params.txs.map(({ to, value, data }) => {
-        //   return {
-        //     to: getAddress(to),
-        //     value: BigInt(value).toString(),
-        //     data,
-        //   };
-        // });
+        const transactions = params.txs.map(({ to, value, data }) => {
+          return {
+            to: getAddress(to),
+            value: BigInt(value).toString(),
+            data,
+          };
+        });
 
         const { title, options } = NotificationMessages.TRANSACTION_REQUEST(appInfo);
         showNotification(title, options);
+        if (!safe) {
+          return new Promise((_resolve, reject) => {
+            reject('No Safe SDK');
+          });
+        }
+
+        const safeSdk = safe;
+        const safeTransaction = await safeSdk.createTransaction({
+          transactions,
+        });
+
+        const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+        const thesholders = await safeSdk.getThreshold();
+        const currentDate = new Date();
+        const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
+        const networkUserInfo = configs.find((elem: ChainInfo) => elem.chainId === chainId);
+
+        if (chainId && safeAddress) {
+          const queryParams = {
+            chainId: String(chainId),
+            address: encodeURIComponent(safeAddress),
+            amount: safeTransaction.data.value.toString(),
+            destinationAddress: transactions[0].to,
+            tokenType: NATIVE_TOKENS.ETH,
+            networkName: networkUserInfo?.chainName ?? 'Ethereum',
+            safeTxHash,
+            nonce: safeTransaction.data.nonce.toString(),
+            typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
+            userNetworkTrx: JSON.stringify(networkUserInfo),
+          };
+
+          const transactionDB = {
+            id,
+            date: dateTrx,
+            tokenType: NATIVE_TOKENS.ETH,
+            theshold: thesholders,
+            hash: safeTxHash,
+            amount: safeTransaction.data.value.toString(),
+            calldata: safeTransaction.data.data,
+            destinationAddress: safeTransaction.data.to,
+            nonce: safeTransaction.data.nonce.toString(),
+            signatures: [],
+          };
+
+          await setDataDB(safeAddress, {
+            address: safeAddress,
+            transactions: [transactionDB],
+          });
+
+          const queryString = new URLSearchParams(queryParams).toString();
+          router.push(`${routes.signTransaction}?${queryString}`);
+        }
 
         return new Promise((_resolve, _reject) => {
           // let onClose = () => {
@@ -170,7 +227,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async switchChain(hexChainId, appInfo) {
-        console.log(`changing chain to ${hexChainId}`);
         const decimalChainId = parseInt(hexChainId, 16).toString();
         if (decimalChainId === chainId) {
           return null;
