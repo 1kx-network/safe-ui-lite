@@ -36,6 +36,8 @@ import { TYPE_IMPORT } from '@/constants/types';
 import { INetworkDB } from '@/db';
 import useNetworkStore from '@/stores/networks-store';
 import { networks as defaultNetworks } from '@/context/networks';
+import WalletConnectUi from '@/features/walletconnect/components';
+
 
 import {
   WrapperStyled,
@@ -351,6 +353,8 @@ export const UserInfoBar = () => {
 
   return (
     <WrapperStyled ref={wrapperRef}>
+      <WalletConnectUi />
+
       <InfoUserStyled onClick={handleClickMenu}>
         {address ? (
           <>
@@ -376,7 +380,7 @@ export const UserInfoBar = () => {
             fontWeight={400}
             textAlign="center"
             style={{ width: '100%' }}
-            color={themeMuiBase.palette.white}
+            color={themeMuiBase.palette.grey}
           >
             Create accont
           </WalletTypography>
