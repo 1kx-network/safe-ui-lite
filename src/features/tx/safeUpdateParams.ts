@@ -7,8 +7,8 @@ import type { SafeContractEthers } from '@safe-global/protocol-kit';
 import {
   getReadOnlyFallbackHandlerContract,
   getReadOnlyGnosisSafeContract,
-} from '@/services/contracts/safeContracts';
-import { LATEST_SAFE_VERSION } from '@/config/constants';
+} from '@/features/contracts/safeContracts';
+import { LATEST_SAFE_VERSION } from '@/constants/wallet-connect';
 import { assertValidSafeVersion } from '@/hooks/coreSDK/safeCoreSDK';
 import { hasSafeFeature } from '@/utils/safe-versions';
 

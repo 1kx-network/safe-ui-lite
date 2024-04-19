@@ -48,7 +48,7 @@ class SocialWalletService implements ISocialWalletService {
     const { shareDescriptions } = this.mpcCoreKit.getKeyDetails();
     const hashedShare = Object.values(shareDescriptions).find(value =>
       (value as string[])[0]?.includes('hashedShare')
-    ) as string;
+    ) as string[];
 
     if (!hashedShare || hashedShare.length > 1) {
       return false;

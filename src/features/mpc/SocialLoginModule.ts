@@ -51,7 +51,6 @@ function MpcModule(chain: ChainInfo): WalletInit {
         const { _getMPCCoreKitInstance } = await import('@/hooks/wallets/mpc/useMPC');
         const { getSocialWalletService } = await import('@/hooks/wallets/mpc/useSocialWallet');
         const { COREKIT_STATUS } = await import('@web3auth/mpc-core-kit');
-        const { open } = await import('./PasswordRecoveryModal');
 
         const getMPCProvider = () => _getMPCCoreKitInstance()?.provider;
 
@@ -89,11 +88,7 @@ function MpcModule(chain: ChainInfo): WalletInit {
 
                     const status = await socialWalletService.loginAndCreate();
 
-                    if (status === COREKIT_STATUS.REQUIRED_SHARE) {
-                      open(() => {
-                        getConnectedAccounts(getMPCProvider()).then(resolve).catch(reject);
-                      });
-                    } else {
+                    if (status !== COREKIT_STATUS.REQUIRED_SHARE) {
                       getConnectedAccounts(getMPCProvider()).then(resolve).catch(reject);
                     }
                   }

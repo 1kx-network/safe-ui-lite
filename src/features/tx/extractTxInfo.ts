@@ -1,4 +1,4 @@
-import type { OperationType, type SafeTransactionData } from '@safe-global/safe-core-sdk-types';
+import type { OperationType, SafeTransactionData } from '@safe-global/safe-core-sdk-types';
 import type { TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk';
 import { Operation } from '@safe-global/safe-gateway-typescript-sdk';
 

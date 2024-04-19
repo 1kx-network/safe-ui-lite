@@ -1,12 +1,12 @@
 import { type Web3AuthMPCCoreKit } from '@web3auth/mpc-core-kit';
 
-import ExternalStore from '@/services/ExternalStore';
-import type { ISocialWalletService } from '@/services/mpc/interfaces';
+import ExternalStore from '@/features/ExternalStore';
+import type { ISocialWalletService } from '@/features/mpc/interfaces';
 
 const { getStore, setStore, useStore } = new ExternalStore<ISocialWalletService>();
 
 export const initSocialWallet = async (mpcCoreKit: Web3AuthMPCCoreKit) => {
-  const SocialWalletService = (await import('@/services/mpc/SocialWalletService')).default;
+  const SocialWalletService = (await import('@/features/mpc/SocialWalletService')).default;
   const socialWalletService = new SocialWalletService(mpcCoreKit);
   setStore(socialWalletService);
 

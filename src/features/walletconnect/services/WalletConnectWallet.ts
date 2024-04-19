@@ -50,6 +50,7 @@ class WalletConnectWallet {
     });
 
     const web3wallet = await Web3Wallet.init({
+      // @ts-expect-error - missing types
       core,
       metadata: SAFE_WALLET_METADATA,
     });
