@@ -50,6 +50,7 @@ class WalletConnectWallet {
     });
 
     const web3wallet = await Web3Wallet.init({
+      // @ts-expect-error - missing types
       core,
       metadata: SAFE_WALLET_METADATA,
     });
@@ -245,7 +246,6 @@ class WalletConnectWallet {
    * Subscribe to session add
    */
   public onSessionAdd = (handler: (e: SessionTypes.Struct) => void) => {
-    console.log(`[WalletConnect] onSessionAdd`);
     // @ts-expect-error - custom event payload
     this.web3Wallet?.on(SESSION_ADD_EVENT, handler);
 

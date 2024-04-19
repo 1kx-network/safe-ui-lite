@@ -9,21 +9,26 @@ import type {
   TransactionResult,
 } from '@safe-global/safe-core-sdk-types';
 import type { MultiSendCallOnlyEthersContract } from '@safe-global/protocol-kit';
-import type { ContractTransactionResponse, Overrides, TransactionResponse } from 'ethers';
+import type {
+  ContractTransactionResponse,
+  Overrides,
+  TransactionResponse,
+  BigNumberish,
+  BytesLike,
+} from 'ethers';
 import type { RequestId } from '@safe-global/safe-apps-sdk';
 import { type OnboardAPI } from '@web3-onboard/core';
 
 import { didRevert } from '@/utils/ethers-utils';
-import { type SpendingLimitTxParams } from '@/components/tx-flow/flows/TokenTransfer/ReviewSpendingLimitTx';
-import { getSpendingLimitContract } from '@/services/contracts/spendingLimitContracts';
+import { getSpendingLimitContract } from '@/features/contracts/spendingLimitContracts';
 import proposeTx from '../proposeTransaction';
 import { txDispatch, TxEvent } from '../txEvents';
-import { waitForRelayedTx, waitForTx } from '@/services/tx/txMonitor';
-import { getReadOnlyCurrentGnosisSafeContract } from '@/services/contracts/safeContracts';
+import { waitForRelayedTx, waitForTx } from '@/features/tx/txMonitor';
+import { getReadOnlyCurrentGnosisSafeContract } from '@/features/contracts/safeContracts';
 import { createWeb3, getUserNonce, getWeb3ReadOnly } from '@/hooks/wallets/web3';
-import { asError } from '@/services/exceptions/utils';
-import chains from '@/config/chains';
-import { LATEST_SAFE_VERSION } from '@/config/constants';
+import { asError } from '@/features/exceptions/utils';
+import { LATEST_SAFE_VERSION } from '@/constants/wallet-connect';
+import chains from '@/utils/chainsConfig';
 
 import {
   getAndValidateSafeSDK,
@@ -33,6 +38,17 @@ import {
   tryOffChainTxSigning,
 } from './sdk';
 import { createExistingTx } from './create';
+
+export type SpendingLimitTxParams = {
+  safeAddress: string;
+  token: string;
+  to: string;
+  amount: BigNumberish;
+  paymentToken: string;
+  payment: BigNumberish;
+  delegate: string;
+  signature: BytesLike;
+};
 
 /**
  * Propose a transaction

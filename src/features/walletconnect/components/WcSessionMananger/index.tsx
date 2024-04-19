@@ -11,6 +11,7 @@ import { WcConnectionForm } from '../WcConnectionForm';
 import WcErrorMessage from '../WcErrorMessage';
 import WcProposalForm from '../WcProposalForm';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import useWalletConnectSessions from '../../hooks/useWalletConnectSessions';
 
 type WcSessionManagerProps = {
   sessions: SessionTypes.Struct[];
@@ -30,6 +31,7 @@ const WcSessionManager = ({ sessions, uri }: WcSessionManagerProps) => {
   const { chainId } = useWeb3ModalAccount();
   const { safeAddress } = useActiveSafeAddress();
   const [proposal, setProposal] = useState<Web3WalletTypes.SessionProposal>();
+  const { updateSessions } = useWalletConnectSessions();
 
   // On session approve
   const onApprove = useCallback(
@@ -42,7 +44,7 @@ const WcSessionManager = ({ sessions, uri }: WcSessionManagerProps) => {
 
       try {
         await walletConnect.approveSession(sessionProposal, chainId.toString(), safeAddress);
-
+        updateSessions();
         // Auto approve future sessions for non-malicious dApps
         if (
           sessionProposal.verifyContext.verified.validation !== 'INVALID' &&
@@ -67,7 +69,17 @@ const WcSessionManager = ({ sessions, uri }: WcSessionManagerProps) => {
       setIsLoading(undefined);
       setProposal(undefined);
     },
-    [proposal, walletConnect, chainId, safeAddress, setIsLoading, setOpen, setAutoApprove, setError]
+    [
+      proposal,
+      updateSessions,
+      walletConnect,
+      chainId,
+      safeAddress,
+      setIsLoading,
+      setOpen,
+      setAutoApprove,
+      setError,
+    ]
   );
 
   // Reset error

@@ -38,7 +38,6 @@ import useNetworkStore from '@/stores/networks-store';
 import { networks as defaultNetworks } from '@/context/networks';
 import WalletConnectUi from '@/features/walletconnect/components';
 
-
 import {
   WrapperStyled,
   InfoUserStyled,

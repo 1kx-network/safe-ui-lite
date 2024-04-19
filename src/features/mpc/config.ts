@@ -1,4 +1,4 @@
-import { IS_PRODUCTION } from '@/config/constants';
+import { IS_PRODUCTION } from '@/constants/wallet-connect';
 
 enum SocialWalletOptionsKeys {
   web3AuthClientId = 'web3AuthClientId',
