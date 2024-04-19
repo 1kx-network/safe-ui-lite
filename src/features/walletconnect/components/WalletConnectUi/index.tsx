@@ -14,7 +14,7 @@ import SafeThemeProvider from '@/components/theme/SafeThemeProvider';
 const WalletConnectWidget = () => {
   const { walletConnect, error, open, setOpen } = useContext(WalletConnectContext);
   const [uri, clearUri] = useWcUri();
-  const sessions = useWalletConnectSessions();
+  const { sessions } = useWalletConnectSessions();
   const { safeSdk } = useSafeStore();
 
   const onOpen = useCallback(() => {

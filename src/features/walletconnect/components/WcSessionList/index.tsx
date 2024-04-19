@@ -16,6 +16,7 @@ import { getPeerName } from '@/features/walletconnect/services/utils';
 import { WalletConnectContext } from '@/features/walletconnect/WalletConnectContext';
 import { asError } from '@/features/exceptions/utils';
 import useSafeStore from '@/stores/safe-store';
+import useWalletConnectSessions from '../../hooks/useWalletConnectSessions';
 
 import css from './styles.module.css';
 import WcNoSessions from './WcNoSessions';
@@ -26,6 +27,7 @@ type WcSesstionListProps = {
 
 const WcSessionListItem = ({ session }: { session: SessionTypes.Struct }) => {
   const { walletConnect, setError, isLoading, setIsLoading } = useContext(WalletConnectContext);
+  const { updateSessions } = useWalletConnectSessions();
 
   const MAX_NAME_LENGTH = 23;
   const { safeSdk } = useSafeStore();
@@ -42,6 +44,7 @@ const WcSessionListItem = ({ session }: { session: SessionTypes.Struct }) => {
 
     try {
       await walletConnect.disconnectSession(session);
+      updateSessions();
     } catch (error) {
       setIsLoading(undefined);
       setError(asError(error));

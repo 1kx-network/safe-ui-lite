@@ -1,11 +1,15 @@
-import { useContext, useEffect, useCallback, useState } from 'react';
+import { useContext, useEffect, useCallback } from 'react';
 import type { SessionTypes } from '@walletconnect/types';
 
 import { WalletConnectContext } from '@/features/walletconnect/WalletConnectContext';
+import useSessionsStore from '@/stores/sessions-store';
 
-function useWalletConnectSessions(): SessionTypes.Struct[] {
+function useWalletConnectSessions(): {
+  sessions: SessionTypes.Struct[];
+  updateSessions: () => void;
+} {
   const { walletConnect } = useContext(WalletConnectContext);
-  const [sessions, setSessions] = useState<SessionTypes.Struct[]>([]);
+  const { sessions, setSessions } = useSessionsStore();
 
   const updateSessions = useCallback(() => {
     if (!walletConnect) return;
@@ -27,7 +31,7 @@ function useWalletConnectSessions(): SessionTypes.Struct[] {
     return walletConnect.onSessionDelete(updateSessions);
   }, [walletConnect, updateSessions]);
 
-  return sessions;
+  return { sessions, updateSessions };
 }
 
 export default useWalletConnectSessions;
