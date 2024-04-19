@@ -52,7 +52,6 @@ export const isWalletUnlocked = async (walletName: string): Promise<boolean | un
   if (METAMASK_LIKE.includes(walletName)) {
     if (typeof window === 'undefined' || !window.ethereum?._metamask) return false;
     try {
-      // @ts-expect-error Typings bug
       return await window.ethereum?._metamask.isUnlocked();
     } catch {
       return false;

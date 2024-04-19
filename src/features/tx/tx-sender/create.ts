@@ -12,7 +12,7 @@ import type {
   SafeTransactionDataPartial,
 } from '@safe-global/safe-core-sdk-types';
 
-import { getReadOnlyGnosisSafeContract } from '@/services/contracts/safeContracts';
+import { getReadOnlyGnosisSafeContract } from '@/features/contracts/safeContracts';
 import extractTxInfo from '../extractTxInfo';
 
 import { getAndValidateSafeSDK } from './sdk';

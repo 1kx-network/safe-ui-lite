@@ -10,7 +10,7 @@ import type {
 } from '@safe-global/safe-core-sdk-types';
 
 import { isLegacyVersion } from '@/hooks/coreSDK/safeCoreSDK';
-import { Errors, logError } from '@/services/exceptions';
+import { Errors, logError } from '@/features/exceptions';
 
 const fetchRecommendedParams = async (
   chainId: string,

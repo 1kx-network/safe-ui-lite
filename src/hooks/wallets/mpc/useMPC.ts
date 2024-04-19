@@ -25,7 +25,7 @@ export const initMPC = async (chain: ChainInfo, onboard: OnboardAPI) => {
   };
 
   const currentInstance = getStore();
-  let previousChainChangedListeners = [];
+  let previousChainChangedListeners: any[] = [];
   if (currentInstance?.provider) {
     // We are already connected. We copy onboards event listener for the chainChanged event to propagate a potentially new chainId
     const oldProvider = currentInstance.provider;
