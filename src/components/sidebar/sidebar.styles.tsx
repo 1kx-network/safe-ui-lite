@@ -102,6 +102,10 @@ export const styleBtnTransaction = {
   padding: '0.719rem 0.75rem',
 };
 
+export const styledBtn = {
+  width: '40%',
+};
+
 export const boxStyleInfoUser = {
   display: 'flex',
   flexDirection: 'column',
@@ -175,6 +179,8 @@ export const IconRemoveAccountStyled = styled(IconTrash)`
   align-items: center;
   cursor: pointer;
   z-index: 999;
+  width: 18px;
+  height: 19px;
 `;
 
 export const CopyIconStyled = styled(CopyIcon)`
@@ -185,3 +191,38 @@ export const CopyIconStyled = styled(CopyIcon)`
   margin-left: 8px;
   maring: 4px;
 `;
+
+export const BoxAccountActionStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing(1)};
+  padding: ${theme.spacing(2.5)};
+  border-radius: 8px;
+  transition: 0.25s ease all;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${theme.palette.hover};
+  }
+`
+);
+
+export const ShareAccountsListStyled = styled('div')(
+  ({ theme }) => `
+  display:flex;
+  flex-direction: column;
+  gap: ${theme.spacing(1)};
+  overflow-y: scroll;
+  max-height: 400px;
+  margin: ${theme.spacing(3)} 0;
+  // min-height: 200px;
+`
+);
+export const ShareAccountItemStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  gap: ${theme.spacing(2)};
+  padding: ${theme.spacing(2)} 0;
+`
+);

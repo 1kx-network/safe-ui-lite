@@ -81,3 +81,30 @@ export const AccountPreviewItemstyled = styled('div')<{ noBorder?: boolean }>(
   }
 `
 );
+
+export const WarningCreateAccounStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  gap: ${theme.spacing(2)};
+  margin: ${theme.spacing(4)} 0 0;
+  padding: ${theme.spacing(5)};
+  border-radius: 24px;
+  background: #FFE793BD;
+
+`
+);
+
+export const styledBtnSwitchNetwork = {
+  height: '2.5rem',
+  fontSize: '14px',
+  fontWeight: '400',
+  width: '300px',
+  gap: themeMuiBase.spacing(1),
+  marginTop: themeMuiBase.spacing(2),
+};
+
+export const styledCustomNetworkBtn = {
+  width: '180px',
+  fontSize: '14px',
+  height: '34px',
+};

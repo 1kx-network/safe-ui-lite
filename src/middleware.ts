@@ -29,21 +29,17 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   }
 
   const urlObject = new URL(url);
-  // Get queries from urlObject.searchParams
-  const { chainId, amount, destinationAddress } = Object.fromEntries(
+  const { chainId, destinationAddress, safeTxHash } = Object.fromEntries(
     urlObject.searchParams.entries()
   );
 
-  // Check conditions allowed for page sign-transaction or not
   const isSign =
     chainId &&
     chainId.length > 0 &&
-    amount &&
-    amount.length > 0 &&
     destinationAddress &&
-    destinationAddress.length > 0;
-  // safeTxHash &&
-  // safeTxHash.length > 0;
+    destinationAddress.length > 0 &&
+    safeTxHash &&
+    safeTxHash.length > 0;
 
   const notUser = !hasAddressUser || hasAddressUser.trim() === '';
   const isUser =

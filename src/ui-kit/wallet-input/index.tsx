@@ -21,7 +21,7 @@ interface IWalletInputProps {
   value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
-  errorValue?: string;
+  errorValue?: string | null;
   disabled?: boolean;
   label?: string;
   endAdornment?: React.ReactNode;

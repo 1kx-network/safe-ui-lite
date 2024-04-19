@@ -6,6 +6,11 @@ import MaticIcon from '@/assets/svg/matic.svg';
 import ETHIcon from '@/assets/svg/eth-icon.svg';
 import USDTIcon from '@/assets/svg/USDT.svg';
 import USDCIcon from '@/assets/svg/USDC.svg';
+// import ArbitrumIcon from '@/assets/svg/arbitrum.svg';
+import OptimismIcon from '@/assets/svg/optimism.svg';
+import CeloIcon from '@/assets/svg/celo.svg';
+import AvalancheIcon from '@/assets/svg/avalanche.svg';
+import AuroraIcon from '@/assets/svg/aurora.svg';
 import DefaultIcon from '@/assets/svg/default-network.svg';
 
 const iconMapping: {
@@ -20,7 +25,13 @@ const iconMapping: {
   '56': BNBIcon,
   '97': BNBIcon,
   '137': MaticIcon,
+  '80001': MaticIcon,
   '250': ETHIcon,
+  '42161': DefaultIcon, // ArbitrumIcon,
+  '10': OptimismIcon,
+  '42220': CeloIcon,
+  '43114': AvalancheIcon,
+  '1313161554': AuroraIcon,
   USDT: USDTIcon,
   USDC: USDCIcon,
   ETH: ETHIcon,

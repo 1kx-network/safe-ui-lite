@@ -36,7 +36,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
   useEffect(() => {
     createSdkInstance();
-  }, [safeAddress, walletProvider]);
+  }, [safeAddress, walletProvider, chainId]);
 
   const deploySafe = async (owners: string[], threshold: number) => {
     try {
@@ -49,22 +49,31 @@ export function useSafeSdk(safeAddress: string | null = null) {
         owners,
         threshold,
       };
-      const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true }).catch(
-        res => {
-          return res;
-        }
-      );
-
+      const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true });
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
       const addressAccount = await safeSdk.getAddress();
 
       const localList = localStorage.getItem('createdSafes')
         ? localStorage.getItem('createdSafes')
         : null;
+
       const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
 
-      localListParsed[chainId ?? 1].push(addressAccount);
-      localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
+      const updateLocalList =
+        chainId && localListParsed[String(chainId)] === undefined
+          ? {
+              ...localListParsed,
+              [chainId]: [],
+            }
+          : localListParsed;
+
+      if (chainId && updateLocalList && updateLocalList[chainId]) {
+        updateLocalList[chainId].push(addressAccount);
+      } else {
+        updateLocalList[chainId ?? 1] = [addressAccount];
+      }
+
+      localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
       localStorage.setItem('safeAddress', addressAccount);
 
       return safeSdk;
@@ -77,7 +86,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const createSafe = async (safeAddress: string) => {
     try {
       const ethAdapter = await createEthAdapter?.createEthAdapter?.();
-
       if (!ethAdapter) return null;
 
       const safeSdk = await Safe.create({
@@ -97,6 +105,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const getInfoByAccount = async (safeSdk: null | Safe) => {
     try {
       if (!safeSdk) return;
+
       const balanceAccount = await safeSdk.getBalance();
       const ownersAccount = await safeSdk.getOwners();
       const contractVersion = await safeSdk.getContractVersion();
@@ -105,66 +114,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
       return { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold };
     } catch (e) {
-      customToasty(`Error get info by account`, 'error');
       return null;
-    }
-  };
-
-  const removeAddress = async (ownerAddress: string) => {
-    try {
-      if (!safeSdk) return;
-
-      // const safeTransactionRemoveOwner = await safeSdk.createRemoveOwnerTx({
-      //   ownerAddress: ownerAddress,
-      //   threshold: 1,
-      // });
-
-      // const signTrx = await safeSdk.signTransaction(safeTransactionRemoveOwner);
-      // const res = await safeSdk.executeTransaction(safeTransactionRemoveOwner);
-      // await res.transactionResponse?.wait();
-      customToasty(`Success remove address ${ownerAddress}`, 'success');
-    } catch (e) {
-      console.log(e);
-      customToasty(`Error remove address ${ownerAddress}`, 'error');
-      return null;
-    }
-  };
-
-  const addAddress = async (ownerAddresses: string[]) => {
-    try {
-      if (!safeSdk) return;
-
-      const promises = ownerAddresses.map(async address => {
-        try {
-          const safeTrxAddAddress = await safeSdk.createAddOwnerTx({ ownerAddress: address });
-          const txResponse = await safeSdk.executeTransaction(safeTrxAddAddress);
-
-          await txResponse.transactionResponse?.wait();
-
-          return address;
-        } catch (e) {
-          throw new Error(`Failed to add owner at address: ${address}`);
-        }
-      });
-
-      await Promise.all(promises);
-
-      customToasty(`Success add addresses`, 'success');
-    } catch (e) {
-      customToasty(`Error add address`, 'error');
-    }
-  };
-
-  const changeThresholdTx = async (count: number) => {
-    try {
-      if (!safeSdk) return;
-
-      await safeSdk.createChangeThresholdTx(count).then(() => {
-        customToasty(`Success change thresholder count on ${count}`, 'success');
-        return true;
-      });
-    } catch (e) {
-      customToasty(`Error change thresholder count on ${count}`, 'error');
     }
   };
 
@@ -207,9 +157,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
     deploySafe,
     createSafe,
     getInfoByAccount,
-    removeAddress,
-    changeThresholdTx,
-    addAddress,
     createTrancationERC20,
     getTokenERC20Balance,
   };

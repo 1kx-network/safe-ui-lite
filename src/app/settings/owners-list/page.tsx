@@ -1,11 +1,13 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { CSVLink } from 'react-csv';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { SingleValue } from 'react-select';
-import * as utils from 'ethers';
+import { useRouter } from 'next/navigation';
 
+import IconUser from '@/assets/svg/user.svg';
+import IconLoading from '@/assets/svg/loader.svg';
 import {
   WalletButton,
   WalletInput,
@@ -19,11 +21,12 @@ import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { useNetwork } from '@/hooks/useNetwork';
 import InfoIcon from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
-import IconDelete from '@/assets/svg/delete.svg';
 import { networks } from '@/context/networks';
-import { CustomTabs } from '@/components';
+import { CustomModal, CustomTabs } from '@/components';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import useSafeStore from '@/stores/safe-store';
+import { TYPE_SIGN_TRX } from '@/constants/type-sign';
+import routes from '@/app/routes';
 
 import {
   BoxStyled,
@@ -34,25 +37,18 @@ import {
   BodyAccountsStyled,
   styledCSV,
   BodyListAccountsStyled,
+  AddOwnerStyled,
+  GridBtnAddOwnerStyled,
+  styledNonce,
 } from './owners-list.styles';
 import { ListAccount } from './components/list-account/list-account';
 import { settingsMenu } from './fixutres';
 
-interface Owner {
-  id: number;
-  address: string;
-}
-
-const selectDef = {
-  value: 1,
-  label: 1,
-  id: 1,
-};
-
 export default function SettingsOwner() {
   const network = useNetwork();
+  const router = useRouter();
   const { chainId } = useWeb3ModalAccount();
-  const { removeAddress, addAddress, changeThresholdTx, getInfoByAccount } = useSafeSdk();
+  const { getInfoByAccount } = useSafeSdk();
   const { safeSdk } = useSafeStore();
   const {
     needConfirmOwner,
@@ -64,160 +60,193 @@ export default function SettingsOwner() {
     setIsLoading,
     setSafeAccountOwners,
     setNeedConfirmOwner,
-    setBalanceAccount,
     setContractNonce,
     setContractVersion,
   } = useActiveSafeAddress();
 
+  // eslint-disable-next-line
   const [csvData, setCsvData] = useState<Array<Array<string>>>([]);
-  const [countNeedCorfimLocal, setNeedConfirmLocal] = useState([selectDef]);
-  const [defCountConfirm, setDefCountConfirm] = useState([
-    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-  ]);
-  const [newOwners, setNewOwners] = useState<Owner[] | null>([]);
   const [newCountNeedConfirm, setNewCountNeedConfirm] = useState(needConfirmOwner);
-  const [linkOnScan, setLinkOnScan] = useState<string>('');
 
-  const countOwners = newOwners
-    ? newOwners.length + safeAccountOwners.length
-    : safeAccountOwners.length;
+  // eslint-disable-next-line
+  const [optionsCount, setOptionsCount] = useState<any>(null);
+  const [defOptionsCount, setDefOptionsCount] = useState(1);
+
+  const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [nonce, setNonce] = useState(contractNonce);
+
+  const safeAddress: string | null =
+    typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
+  const networkName =
+    (network?.name || '').toString().charAt(0).toUpperCase() +
+    (network?.name || '').toString().slice(1);
 
   useEffect(() => {
-    const newCountNeedCormed = Array.from({ length: countOwners }, (_, index) => ({
+    const newCountNeedCormed = Array.from({ length: safeAccountOwners.length }, (_, index) => ({
       id: index + 1,
       label: index + 1,
       value: index + 1,
     }));
-
-    setNeedConfirmLocal(newCountNeedCormed);
-  }, [countOwners, isLoading]);
-
-  useEffect(() => {
-    setDefCountConfirm([
-      { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-    ]);
-  }, [needConfirmOwner]);
+    setOptionsCount(newCountNeedCormed);
+  }, [safeAccountOwners]);
 
   useEffect(() => {
-    if (network && chainId) {
-      const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
-      if (linkOnScan) {
-        const updateLink = linkOnScan;
-        setLinkOnScan(updateLink);
+    if (!safeSdk) return;
+
+    const pendingBalance = async () => {
+      if (chainId) {
+        const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
+        if (linkOnScan) {
+          const updateLink = linkOnScan;
+          setLinkOnScan(updateLink);
+        }
       }
-    }
-  }, [network, chainId, safeAccountOwners]);
-
-  const handleGetCSV = () => {
-    if (network && chainId) {
-      const networkName = network.name.toString();
-
-      setCsvData([['Address', 'Network'], ...safeAccountOwners.map(owner => [owner, networkName])]);
-    }
-  };
-
-  const handleAddOwner = () => {
-    if (!newOwners || newOwners.length === 0) {
-      setNewOwners([{ id: 1, address: '' }]);
-      return;
-    }
-
-    const newOwnerId = newOwners.length + 1;
-    setNewOwners(prev => [
-      ...(prev ?? []),
-      {
-        address: '',
-        id: newOwnerId,
-      },
-    ]);
-  };
-
-  const handleChangeOwner = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const value = e.target.value;
-    if (!newOwners) return;
-
-    const updatedOwners = newOwners.map(owner => {
-      if (owner.id === id) {
-        return { ...owner, address: value };
-      }
-      return owner;
-    });
-
-    setNewOwners(updatedOwners);
-  };
-
-  const handleRemodeAddress = (id: number) => {
-    setNewOwners(prevOwners => prevOwners && prevOwners.filter(owner => owner.id !== id));
-  };
-
-  const handleChooseAccounConfirm = (
-    elem: SingleValue<{
-      value: number;
-      label: number;
-      id: number;
-    }>
-  ) => {
-    elem && setNewCountNeedConfirm(elem.label);
-  };
-
-  const handleRemoveOwnerAddress = async (address: string) => {
-    setIsLoading(true);
-    const owners = safeAccountOwners.filter(owner => owner !== address);
-
-    if (owners.length < needConfirmOwner) {
-      // await changeThresholdTx(owners.length);
-      setNeedConfirmOwner(owners.length);
-
-      await removeAddress(address);
-    } else {
-      await removeAddress(address);
-    }
-
-    setSafeAccountOwners(owners);
-
-    setIsLoading(false);
-  };
-
-  const handleChangeSettings = async () => {
-    setIsLoading(true);
-
-    if (newOwners != null) {
-      const updateDataOwners = newOwners
-        .filter(elem => elem.address !== '')
-        .map(elem => elem.address);
-
-      const newAddressList = [...safeAccountOwners, ...updateDataOwners];
-
-      setSafeAccountOwners(newAddressList);
-
-      const dataAddress = newAddressList.filter(address => !safeAccountOwners.includes(address));
-      const correctNeedConfirm =
-        newCountNeedConfirm > [...safeAccountOwners, ...updateDataOwners].length
-          ? [...safeAccountOwners, ...updateDataOwners].length
-          : newCountNeedConfirm;
-
-      setNewOwners([]);
-
-      setNeedConfirmOwner(correctNeedConfirm);
-      await addAddress(dataAddress);
-      await changeThresholdTx(correctNeedConfirm);
 
       const dataAcc = await getInfoByAccount(safeSdk);
       if (!dataAcc) return;
 
-      const { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold } =
-        dataAcc;
-      const parceBalance = utils.formatEther(String(balanceAccount));
+      const { ownersAccount, contractVersion, contractNonce, accountThreshold } = dataAcc;
 
-      setBalanceAccount(parceBalance);
       setSafeAccountOwners(ownersAccount);
       setContractNonce(contractNonce);
       setContractVersion(contractVersion);
       setNeedConfirmOwner(accountThreshold);
 
-      setNewCountNeedConfirm(correctNeedConfirm);
+      setDefOptionsCount(accountThreshold);
       setIsLoading(false);
+    };
+
+    pendingBalance();
+  }, [network, chainId, safeSdk, safeAddress]);
+
+  const handleGetCSV = () => {
+    const csvContent = safeAccountOwners.map(address => `${address},"",${chainId}`).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'owners-list.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleRemoveOwnerAddress = async (address: string) => {
+    setIsLoading(true);
+    if (!safeAddress || !safeSdk) return;
+
+    const safeTxHash = await safeSdk.createRemoveOwnerTx({
+      ownerAddress: address,
+      threshold: needConfirmOwner,
+    });
+
+    const queryParams = {
+      typeSignTrx: String(TYPE_SIGN_TRX.REMOVE_OWNER),
+      chainId: String(chainId),
+      address: encodeURIComponent(safeAddress),
+      amount: '0',
+      destinationAddress: address,
+      tokenType: '',
+      networkName: networkName,
+      safeTxHash: JSON.stringify(safeTxHash),
+      newThreshold: String(needConfirmOwner),
+      nonce: String(nonce),
+    };
+
+    const queryString = new URLSearchParams(queryParams).toString();
+    router.push(`${routes.signTransaction}?${queryString}`);
+    setIsLoading(false);
+  };
+
+  const handleChangeSettings = async () => {
+    setIsLoading(true);
+    if (!safeAddress || !safeSdk) return;
+    const safeTxHash = await safeSdk.createChangeThresholdTx(newCountNeedConfirm);
+
+    const queryParams = {
+      typeSignTrx: String(TYPE_SIGN_TRX.CHANGE_THRESHOLD),
+      chainId: String(chainId),
+      address: encodeURIComponent(safeAddress),
+      amount: '0',
+      destinationAddress: safeAddress,
+      tokenType: '',
+      networkName: networkName,
+      safeTxHash: JSON.stringify(safeTxHash),
+      newThreshold: String(newCountNeedConfirm),
+      nonce: String(nonce),
+    };
+
+    const queryString = new URLSearchParams(queryParams).toString();
+    setIsLoading(false);
+
+    router.push(`${routes.signTransaction}?${queryString}`);
+  };
+
+  const [isOpenAddOwner, setIsOpenAddOwner] = useState(false);
+  const [valueNewOwner, setValueNewOwner] = useState('');
+  const [valueNewOwnerError, setValueNewOwnerError] = useState<string | null | undefined>(null);
+
+  const handleChangeNewOwner = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setValueNewOwner(value);
+
+    if (value.length === 0) {
+      setValueNewOwnerError(null);
+      return;
     }
+
+    const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(value);
+
+    if (isValidAddress) {
+      if (!safeAccountOwners) return;
+
+      const isUniqueAddress = !safeAccountOwners.includes(value);
+
+      if (isUniqueAddress) {
+        setValueNewOwnerError(null);
+      } else {
+        setValueNewOwnerError('Address already exists in account');
+      }
+    } else {
+      setValueNewOwnerError('Invalid address format');
+    }
+  };
+
+  const handleAddOwner = async () => {
+    if (!safeAddress || !safeSdk) return;
+    const safeTxHash = await safeSdk.createAddOwnerTx({ ownerAddress: valueNewOwner });
+    const queryParams = {
+      typeSignTrx: String(TYPE_SIGN_TRX.ADD_OWNER),
+      chainId: String(chainId),
+      address: encodeURIComponent(safeAddress),
+      amount: '0',
+      destinationAddress: valueNewOwner,
+      tokenType: '',
+      networkName: networkName,
+      safeTxHash: JSON.stringify(safeTxHash),
+      nonce: String(contractNonce),
+    };
+
+    const queryString = new URLSearchParams(queryParams).toString();
+    router.push(`${routes.signTransaction}?${queryString}`);
+  };
+
+  const handleChangeNonce = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newValue = value.replace(/\D/g, '');
+    setNonce(newValue);
+  };
+
+  const handleChooseAccounConfirm = (
+    elem: SingleValue<{
+      value: number | string;
+      label: number | string;
+      id: number | string;
+    }>
+  ) => {
+    elem && setNewCountNeedConfirm(+elem.label);
   };
 
   return (
@@ -280,32 +309,19 @@ export default function SettingsOwner() {
               </Box>
               <BodyListAccountsStyled>
                 <ListAccount
+                  safeAccountOwners={safeAccountOwners}
                   linkOnScan={linkOnScan}
                   handleRemoveOwnerAddress={handleRemoveOwnerAddress}
                 />
-                <Box display={'flex'} flexDirection={'column'} gap={3}>
-                  {newOwners &&
-                    newOwners.map(owner => (
-                      <Box display={'flex'} key={owner.id} alignItems={'center'} gap={2}>
-                        <WalletInput
-                          value={owner.address}
-                          startAdornment
-                          onChange={e => handleChangeOwner(e, owner.id)}
-                        />
-                        <Box
-                          sx={{ display: 'flex', cursor: 'pointer' }}
-                          onClick={() => handleRemodeAddress(owner.id)}
-                        >
-                          <IconDelete />
-                        </Box>
-                      </Box>
-                    ))}
-                </Box>
               </BodyListAccountsStyled>
               <GridBtnStyled>
-                <WalletButton variant="text" styles={styledBtn} onClick={handleAddOwner}>
-                  <IconPlus width="20px" height="21px" color={themeMuiBase.palette.success} /> Add
-                  new owner
+                <WalletButton
+                  variant="text"
+                  styles={styledBtn}
+                  onClick={() => setIsOpenAddOwner(true)}
+                >
+                  <IconPlus width="20px" height="21px" color={themeMuiBase.palette.success} />
+                  Add new owner
                 </WalletButton>
                 <CSVLink data={csvData} style={styledCSV} onClick={handleGetCSV} href="/">
                   <WalletButton variant="text" styles={styledBtn}>
@@ -326,16 +342,23 @@ export default function SettingsOwner() {
 
             <Box mt={3} display="flex" alignItems="center">
               <Box mr={3} width={'84px'}>
-                <WalletSelect
-                  isDisabled={isLoading}
-                  options={countNeedCorfimLocal}
-                  controlShouldRenderValue
-                  defaultValue={defCountConfirm}
-                  onChange={handleChooseAccounConfirm}
-                />
+                {optionsCount ? (
+                  <WalletSelect
+                    controlShouldRenderValue
+                    placeholder={String(needConfirmOwner)}
+                    isDisabled={isLoading}
+                    options={optionsCount}
+                    defaultValue={[
+                      { id: defOptionsCount, label: defOptionsCount, value: defOptionsCount },
+                    ]}
+                    onChange={handleChooseAccounConfirm}
+                  />
+                ) : (
+                  <IconLoading />
+                )}
               </Box>
               <WalletTypography fontSize={13} fontWeight={600}>
-                out of {countOwners} owner(s)
+                out of {safeAccountOwners.length} owner(s)
               </WalletTypography>
             </Box>
 
@@ -345,6 +368,79 @@ export default function SettingsOwner() {
           </ConfirmationsStyled>
         </WalletPaper>
       </WrapperStyled>
+
+      <CustomModal
+        isOpen={isOpenAddOwner}
+        closeModal={() => setIsOpenAddOwner(false)}
+        styles={{ width: '560px' }}
+      >
+        <AddOwnerStyled>
+          <WalletTypography fontSize={21} fontWeight={600}>
+            New transaction
+          </WalletTypography>
+          <Box display={'flex'} flexDirection={'column'} gap={4} width={'100%'}>
+            <Box
+              display={'flex'}
+              alignItems={'center'}
+              justifyContent={'space-between'}
+              width={'100%'}
+            >
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <IconUser />
+                <WalletTypography fontSize={18} fontWeight={500}>
+                  Add signer
+                </WalletTypography>
+              </Box>
+
+              <Box display={'flex'} alignItems={'center'} gap={2}>
+                <WalletTypography style={{ textWrap: 'nowrap' }}>Nonce #:</WalletTypography>
+                <WalletInput
+                  style={styledNonce}
+                  value={nonce ?? '1'}
+                  onChange={handleChangeNonce}
+                />
+              </Box>
+            </Box>
+            <WalletInput
+              label="New owner address"
+              placeholder="Address"
+              value={valueNewOwner}
+              onChange={handleChangeNewOwner}
+              error={!!valueNewOwnerError}
+              errorValue={valueNewOwnerError}
+            />
+
+            <Box display={'flex'} flexDirection={'column'} gap={1} mt={6}>
+              <WalletTypography fontSize={14} fontWeight={600}>
+                Required confirmations
+              </WalletTypography>
+              <WalletTypography fontSize={14} fontWeight={400}>
+                Any transaction requires the confirmation of:
+              </WalletTypography>
+              <WalletTypography fontSize={14} fontWeight={600}>
+                {needConfirmOwner} Thresholde
+              </WalletTypography>
+            </Box>
+          </Box>
+          <GridBtnAddOwnerStyled>
+            <WalletButton
+              styles={{ ...styledBtn, width: '50%' }}
+              onClick={() => setIsOpenAddOwner(false)}
+              variant="text"
+            >
+              Cancel
+            </WalletButton>
+            <WalletButton
+              styles={{ ...styledBtn, width: '50%' }}
+              onClick={handleAddOwner}
+              variant="contained"
+              disabled={!!valueNewOwnerError || !valueNewOwner}
+            >
+              Next
+            </WalletButton>
+          </GridBtnAddOwnerStyled>
+        </AddOwnerStyled>
+      </CustomModal>
     </WalletLayout>
   );
 }

@@ -1,11 +1,11 @@
 'use client';
 
-import * as React from 'react';
+import { ReactNode } from 'react';
 import { ThemeProvider as Provider } from '@emotion/react';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 
-const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+export const ThemeProvider = ({ children }: { children: ReactNode | ReactNode[] }) => {
   return <Provider theme={themeMuiBase}>{children}</Provider>;
 };
 

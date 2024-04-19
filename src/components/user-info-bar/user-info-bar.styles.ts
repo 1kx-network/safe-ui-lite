@@ -5,10 +5,13 @@ import CopyIcon from '@/assets/svg/copy.svg';
 
 export const WrapperStyled = styled('div')(
   ({ theme }) => `
+    display: flex;
+    gap: ${theme.spacing(3)};
     position: relative;
     padding-right: ${theme.spacing(6)};
     cursor: pointer;
     margin-bottom: ${theme.spacing(1)};
+    display: flex;
 `
 );
 
@@ -29,7 +32,7 @@ export const InfoUserStyled = styled('div')(
 `
 );
 
-export const BodyOpenStyled = styled('div')<{ isOpen: boolean }>(
+export const BodyOpenStyled = styled('div')<{ isOpen?: boolean }>(
   ({ theme, isOpen }) => `
       overflow: hidden;
       position: absolute;
@@ -40,7 +43,21 @@ export const BodyOpenStyled = styled('div')<{ isOpen: boolean }>(
       background-color: ${theme.palette.textDark};
       flex-direction: column;
       padding: ${theme.spacing(3)};
+      top: 37px;
   `
+);
+
+export const WCButton = styled('div')(
+  () => `
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 36px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background-color: ${themeMuiBase.palette.white};
+`
 );
 
 export const ItemInfoStyled = styled('div')<{ noBorder?: boolean }>(
@@ -52,6 +69,36 @@ export const ItemInfoStyled = styled('div')<{ noBorder?: boolean }>(
     border-bottom: 0.5px solid ${noBorder ? 'transparent' : 'rgba(228, 228, 228, 0.25)'};
 `
 );
+
+export const ItemInfoNetworkStyled = styled('div')<{ noBorder?: boolean }>(
+  ({ theme, noBorder }) => `
+    display: flex;
+    align-items: center;
+    padding: ${theme.spacing(2)} ${theme.spacing(4)};
+    gap:${theme.spacing(1.5)};
+    border-bottom: 0.5px solid ${noBorder ? 'transparent' : 'rgba(228, 228, 228, 0.25)'};
+    cursor: pointer;
+    transition: 0.3s ease all;
+
+    &:hover {
+      background-color: ${theme.palette.greyToo};
+    }
+`
+);
+
+export const styledNetworks = {
+  overflow: 'hidden',
+  width: '150px',
+  right: '21px',
+  padding: `${themeMuiBase.spacing(2)} 0`,
+};
+
+export const styledBtnAddNetwork = {
+  height: '34px',
+  fontSize: '12px',
+  color: 'white',
+  marginTop: '0.2rem',
+};
 
 export const GridButtonStyled = styled('div')(
   ({ theme }) => `

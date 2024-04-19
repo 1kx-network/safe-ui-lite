@@ -184,7 +184,7 @@ const SafeAccountOwners = () => {
 
                       {owners.length !== 1 && (
                         <RemoveAddressStyled onClick={() => handleRemodeAddress(owner.id)}>
-                          <IconDelete />
+                          <IconDelete width="18px" height="19px" />
                         </RemoveAddressStyled>
                       )}
                     </BoxAddressStyled>

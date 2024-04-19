@@ -14,17 +14,12 @@ export const BodyStyled = styled('div')(
 `
 );
 
-export const NonceBoxStyled = styled('div')(
-  ({ theme }) => `
-    display: flex;
-    align-items: center;
-    width: 5.25rem;
-    overflow: hidden;
-    border: 1px solid ${theme.palette.black};
-    border-radius: ${theme.spacing(7)};
-    padding: ${theme.spacing(3.5)};
-`
-);
+export const NonceBoxStyled = {
+  display: 'flex',
+  alignItems: 'center',
+  width: '5.25rem',
+  overflow: 'hidden',
+};
 
 export const GridBtnStyled = styled('div')(
   ({ theme }) => `
@@ -119,6 +114,7 @@ export const TrxHeaderStyled = styled('div')(
 export const AlignCenterStyled = styled('div')`
   display: flex;
   align-items: center;
+  gap: ${themeMuiBase.spacing(2)};
 `;
 
 export const styledPaper: React.CSSProperties = {

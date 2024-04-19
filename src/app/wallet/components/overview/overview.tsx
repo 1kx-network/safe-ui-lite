@@ -10,13 +10,16 @@ import routes from '@/app/routes';
 import useSafeStore from '@/stores/safe-store';
 import { WalletButton, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
 import { styledHeader, styledPaper } from '../../wallet.styles';
-import { IOptions, options } from '../../fixtures';
+import { options } from '../../fixtures';
 import { CustomModal } from '@/components/modal';
-import { networks } from '@/context/networks';
+// import { networks } from '@/context/networks';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { customToasty } from '@/components';
 import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
+import { formatterIcon } from '@/utils/icon-formatter';
+import useNetworkStore from '@/stores/networks-store';
+import { IOptionNetwork } from '@/constants/networks';
 
 import {
   TotalyBoxStyled,
@@ -36,17 +39,28 @@ export const Overview = () => {
   const { address, chainId } = useWeb3ModalAccount();
   const { safeAddress, balanceAccount, setBalanceAccount, isLoading, setIsLoading } =
     useActiveSafeAddress();
+  const { networks } = useNetworkStore();
 
-  const [value, setValue] = useState<SingleValue<IOptions> | null>(options[0]);
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [balanceAccountLocal, setBalanceAccountLocal] = useState(balanceAccount);
+  const [isLoadingChain, setIsLoadingChain] = useState(false);
+
+  const networkName =
+    (networks && networks.find((elem: IOptionNetwork) => elem.chainId === chainId)?.currency) ?? '';
+
+  const [value, setValue] = useState<string | null | undefined>('');
+
+  useEffect(() => {
+    setValue(networkName);
+  }, [networkName]);
 
   useEffect(() => {
     setBalanceAccountLocal(balanceAccount);
   }, [balanceAccount]);
 
-  const handleChangeSelect = async (elem: SingleValue<IOptions>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleChangeSelect = async (elem: SingleValue<any>) => {
     if (!elem || !chainId) return;
     const { label } = elem;
 
@@ -71,7 +85,7 @@ export const Overview = () => {
     }
 
     setIsLoading(false);
-    setValue(elem);
+    setValue(elem.value);
   };
 
   const handleReceive = () => setIsOpenModal(true);
@@ -85,13 +99,20 @@ export const Overview = () => {
   };
 
   useEffect(() => {
-    if (chainId) {
-      const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
+    setIsLoadingChain(true);
+    if (chainId && networks) {
+      const network = networks.find(elem => elem.chainId === chainId);
+      const linkOnScan = network && network.explorerUrl;
+
+      network && setValue(network.currency);
+
       if (linkOnScan) {
         const updateLink = `${linkOnScan}/address/${safeAddress}`;
         setLinkOnScan(updateLink);
       }
     }
+
+    setTimeout(() => setIsLoadingChain(false), 500);
   }, [chainId]);
 
   return (
@@ -102,15 +123,30 @@ export const Overview = () => {
 
         <TotalyBoxStyled>
           <WalletTypography style={styledHeader}>
-            {balanceAccountLocal} {value?.label}
+            {balanceAccountLocal} {value}
           </WalletTypography>
           <Box width={'223px'}>
             <WalletSelect
-              options={options}
-              defaultValue={options[0]}
+              isLoading={isLoadingChain && isLoading}
+              options={[
+                {
+                  id: 1,
+                  value: networkName,
+                  label: networkName,
+                  icon: () => chainId && formatterIcon(chainId),
+                },
+                ...options,
+              ]}
+              defaultValue={{
+                id: 0,
+                value: networkName,
+                label: networkName,
+                icon: () => chainId && formatterIcon(chainId),
+              }}
               onChange={handleChangeSelect}
             />
           </Box>
+          {/* )} */}
         </TotalyBoxStyled>
         <WalletTypography fontSize={17} fontWeight={600}>
           {balanceAccountLocal} tokens

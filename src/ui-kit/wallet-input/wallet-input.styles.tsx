@@ -95,6 +95,7 @@ export const InputStyled = styled(
   
     &:disabled {
       cursor: not-allowed;
+      opacity: 0.5;
   
       & > input {
         cursor: not-allowed;

@@ -29,9 +29,7 @@ export const AccountInfo = ({ account, networkName, chainId }: IAccountInfo) => 
             <Box display={'flex'} gap={1.5}>
               <IconDefualtAddress width={'16px'} height={'16px'} />
 
-              <WalletTypography fontSize={14}>
-                {networkName?.substring(0, 3)}:{formattedLabel(account)}
-              </WalletTypography>
+              <WalletTypography fontSize={14}>{formattedLabel(account, 15, 15)}</WalletTypography>
             </Box>
           )}
         </AccountPreviewItemstyled>

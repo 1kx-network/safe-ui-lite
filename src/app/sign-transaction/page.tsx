@@ -2,9 +2,14 @@
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import {
+  useSwitchNetwork,
+  useWeb3ModalAccount,
+  useWeb3ModalProvider,
+} from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
 import Link from 'next/link';
+import * as ethers from 'ethers';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
@@ -19,6 +24,9 @@ import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/foramtters';
 import { networks } from '@/context/networks';
+import { ITypeSignTrx } from '@/constants/type-sign';
+import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
+import { INetworkDB } from '@/db';
 
 import {
   BoxOwnerLinkStyled,
@@ -29,6 +37,7 @@ import {
   WrapperStyled,
   styledBtn,
 } from './sing-transaction.styles';
+import { SignTransactionInfo } from './sing-trx-info';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -37,38 +46,96 @@ const SignTransactionComponent = () => {
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk } = useSafeStore();
   const { threshold, status, setStatus } = useSignStore();
+  const { address, chainId } = useWeb3ModalAccount();
+  const { switchNetwork } = useSwitchNetwork();
+  const { walletProvider } = useWeb3ModalProvider();
+
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
-  const { address } = useWeb3ModalAccount();
-
   const safeAddress = typeof window !== 'undefined' ? searchParams.get('address') : null;
-
   const chainIdUrl = searchParams.get('chainId');
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
   const tokenType = searchParams.get('tokenType');
   const networkName = searchParams.get('networkName');
+  const thresholdUrl = searchParams.get('thresholdUrl');
+  const newThreshold = searchParams.get('newThreshold');
+  const nonceUrl = searchParams.get('nonce');
+  const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
+  const signatures = searchParams.getAll('signatures')[0];
+  const signers = searchParams.getAll('signers')[0];
 
-  const multySign = useMultySign({
-    safeAddress: safeAddress ?? '',
-    safeTxHash: safeTxHash ?? '',
-    destinationAddress,
-    amount,
+  const typeSignTrx: keyof ITypeSignTrx | null = searchParams.get('typeSignTrx') as
+    | keyof ITypeSignTrx
+    | null;
+
+  const safeTxHashParam = searchParams.get('safeTxHash');
+  const safeTxHashJSON = safeTxHashParam ? JSON.parse(JSON.stringify(safeTxHashParam)) : null;
+
+  const trxUrlInfo = {
+    safeAddress,
     chainIdUrl,
+    amount,
+    address: destinationAddress,
+    safeTxHash: safeTxHashJSON,
     tokenType,
-  });
+    networkName,
+    typeSignTrx,
+    linkOnScan,
+    safeTransaction,
+    threshold: thresholdUrl,
+    newThresholdUrl: newThreshold,
+    nonce: nonceUrl,
+  };
+
+  const addNetworkForUserSign = async () => {
+    if (!userNetworkTrxUrl) return;
+    const userNetwork = JSON.parse(userNetworkTrxUrl) as INetworkDB;
+    const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
+
+    const decimalChainId = ethers.toBeHex(userNetwork.chainId);
+
+    if (!existingNetwork) {
+      await addCustomNetworkDB(userNetwork);
+
+      if (safeAddress) {
+        await setDataDB(safeAddress, {});
+      }
+
+      networks.push(userNetwork);
+
+      if (!walletProvider) return;
+      await walletProvider.request({
+        method: 'wallet_addEthereumChain',
+        params: {
+          chainId: decimalChainId,
+          chainName: userNetwork.name + 'custom_',
+          nativeCurrency: {
+            name: userNetwork.name,
+            symbol: userNetwork.symbol,
+            decimals: userNetwork.decimals,
+          },
+          rpcUrls: [userNetwork.rpcUrl],
+          blockExplorerUrls: [userNetwork.explorerUrl],
+        },
+      });
+    }
+
+    if (userNetwork.chainId !== chainId) {
+      await switchNetwork(userNetwork.chainId);
+    }
+  };
 
   useEffect(() => {
+    if (userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
+
     if (chainIdUrl) {
       const linkOnScan = networks.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
       if (linkOnScan) {
         setLinkOnScan(linkOnScan);
       }
     }
-
-    const signatures = searchParams.getAll('signatures')[0];
-    const signers = searchParams.getAll('signers')[0];
 
     if (signatures && signers) {
       if (signedCount !== signatures.split(',').length) {
@@ -80,6 +147,12 @@ const SignTransactionComponent = () => {
     }
   }, [router, searchParams]);
 
+  const multySign = useMultySign({
+    ...trxUrlInfo,
+    safeAddress: safeAddress ?? '',
+    safeTxHash: safeTxHash ?? '',
+  });
+
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
     if (status === 'success') return;
@@ -88,8 +161,8 @@ const SignTransactionComponent = () => {
 
   const handleSignTransaction = useCallback(async () => {
     if (!multySign) return;
-    if (!safeSdk || !safeTransaction || !safeTxHash) return;
 
+    if (!safeSdk || !safeTransaction || !safeTxHash) return;
     if (status === 'signed') {
       customToasty('This wallet has already signed', 'error');
       return;
@@ -161,48 +234,7 @@ const SignTransactionComponent = () => {
             </Box>
           </TransactionInfoStyled>
 
-          <TransactionInfoStyled>
-            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Transaction Info
-            </WalletTypography>
-            <Box display={'flex'} alignItems={'center'} gap={1}>
-              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-                Amount: {amount} {tokenType}
-              </WalletTypography>
-              {tokenType && formatterIcon(tokenType)}
-            </Box>
-
-            <Box display={'flex'} alignItems={'center'} gap={1}>
-              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-                Destination:{' '}
-              </WalletTypography>
-              <IconDefaultAddress width="21px" height="21px" />
-              <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-                {destinationAddress}
-              </WalletTypography>
-              <Link href={`${linkOnScan}address/${destinationAddress}`} target="_blanck">
-                <OpenInNewIcon width="19px" height="18px" />
-              </Link>
-              <CopyIcon
-                width="18px"
-                height="19px"
-                cursor="pointer"
-                onClick={() => handleCopy(destinationAddress)}
-              />
-            </Box>
-
-            {safeTransaction?.data.data && (
-              <Box display={'flex'} alignItems={'center'} gap={1}>
-                <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-                  Calldata:{' '}
-                </WalletTypography>
-                <IconDefaultAddress width="21px" height="21px" />
-                <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-                  {formattedLabel(safeTransaction?.data.data ?? '0x')}
-                </WalletTypography>
-              </Box>
-            )}
-          </TransactionInfoStyled>
+          <SignTransactionInfo {...trxUrlInfo} address={destinationAddress} />
 
           <GridButtonStyled>
             {address ? (
@@ -237,7 +269,10 @@ const SignTransactionComponent = () => {
                 fontSize={17}
                 fontWeight={400}
               >
-                {formattedLabel(`${pathName}?${searchParams.toString()}`, 17, 40)}
+                <WalletTypography fontSize={17} fontWeight={600}>
+                  ADD_OWNER
+                </WalletTypography>
+                {formattedLabel(`?${searchParams.toString()}`, 27, 40)}
               </WalletTypography>
             </OwnerLinkStyled>
 

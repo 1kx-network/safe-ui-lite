@@ -1,3 +1,5 @@
+import { usePathname } from 'next/navigation';
+
 import { ItemMenuStyled, WrapperStyled } from './tabs.styles';
 
 export interface ITab {
@@ -7,10 +9,12 @@ export interface ITab {
 }
 
 export const CustomTabs = ({ tabs }: { tabs: ITab[] }) => {
+  const pathName = usePathname();
+
   return (
     <WrapperStyled>
       {tabs.map(item => (
-        <ItemMenuStyled href={item.url} key={item.id} $isActive={true}>
+        <ItemMenuStyled href={item.url} key={item.id} $isActive={item.url === pathName}>
           {item.title}
         </ItemMenuStyled>
       ))}
