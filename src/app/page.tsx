@@ -28,7 +28,8 @@ export default function Home() {
     if (address) {
       router.push(routes.newTransaction);
     } else {
-      await open();
+      console.log(`open wallet conn modal`);
+      // await open();
     }
   };
 
@@ -41,7 +42,9 @@ export default function Home() {
         router.push(routes.safeAccountCreate);
       }
     } else {
+      console.log(`address: ${address} chainId: ${chainId} data: ${data}`);
       if (!address) {
+        console.log(`open wallet conn modal`);
         open();
       }
     }

@@ -3,11 +3,9 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 import { useEffect } from 'react';
 
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import { WALLETCONNECT_V2_PROJECT_ID } from '@/constants/wallet-connect';
 
 import { networks } from './networks';
-
-// Get projectId at https://cloud.walletconnect.com
-export const projectId = 'dde89f3d2432564a5cad9cadb88f93d0';
 
 const metadata = {
   name: 'My Website',
@@ -19,7 +17,7 @@ const metadata = {
 createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: networks,
-  projectId,
+  projectId: WALLETCONNECT_V2_PROJECT_ID,
   themeMode: 'light',
   allowUnsupportedChain: true,
 });
