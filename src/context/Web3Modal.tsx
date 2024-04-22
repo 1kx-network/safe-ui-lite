@@ -14,7 +14,7 @@ const metadata = {
   icons: ['https://avatars.mywebsite.com/'],
 };
 
-createWeb3Modal({
+const modal = createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: networks,
   projectId: WALLETCONNECT_V2_PROJECT_ID,
@@ -22,6 +22,7 @@ createWeb3Modal({
   allowUnsupportedChain: true,
 });
 
+console.log(`modal:`, modal);
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
   const { setSafeAddress } = useActiveSafeAddress();
   const safeAddress: string | null =
