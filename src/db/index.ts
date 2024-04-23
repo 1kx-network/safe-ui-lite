@@ -47,7 +47,7 @@ export class MySubClassedDexie extends Dexie {
   public addressBook!: Table<IAddressBook>;
 
   public constructor() {
-    super('1kx');
+    super('safe-ui-lite');
     this.version(1).stores({
       transactions: '++id, hash, safeAccount',
       safes: 'address, owners',
