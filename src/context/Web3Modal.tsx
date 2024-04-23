@@ -10,7 +10,7 @@ import { networks } from './networks';
 const metadata = {
   name: '1kx',
   description: '1kx wallet',
-  url: 'https://safe-ui-lite-git-hotfix-22-04-1kx-network.vercel.app/',
+  url: 'https://safe-ui-lite.vercel.app/',
   icons: ['https://avatars.mywebsite.com/'],
 };
 
@@ -18,7 +18,7 @@ console.log(`WALLETCONNECT_V2_PROJECT_ID:`, WALLETCONNECT_V2_PROJECT_ID);
 const modal = createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: networks,
-  projectId: WALLETCONNECT_V2_PROJECT_ID,
+  projectId: 'dde89f3d2432564a5cad9cadb88f93d0',
   themeMode: 'light',
   allowUnsupportedChain: true,
 });
