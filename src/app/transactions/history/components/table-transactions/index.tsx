@@ -10,9 +10,18 @@ import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { getTransactionsDB } from '@/db/get-info';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 
-import { HeaderListStyled, WrapperStyled, styledPaper } from './table-transactions.styles';
+import {
+  HeaderListStyled,
+  WrapperStyled,
+  styledPaper,
+  styledPaperSmallType,
+} from './table-transactions.styles';
 
-export const TableTransaction = () => {
+interface ITableTransaction {
+  smallType?: boolean;
+}
+
+export const TableTransaction = ({ smallType }: ITableTransaction) => {
   const { chainId } = useWeb3ModalAccount();
   const { transactions, transactionsFilter, setTransactions, setTransactionsFilter } =
     useTransactionsStore();
@@ -40,22 +49,39 @@ export const TableTransaction = () => {
     <WrapperStyled>
       {transactions ? (
         <>
-          <HeaderListStyled>
-            <WalletTypography component="h3" fontSize={18} fontWeight={600}>
+          <HeaderListStyled smallType={smallType}>
+            <WalletTypography component="h3" fontSize={smallType ? 14 : 18} fontWeight={600}>
               Date
             </WalletTypography>
-            <WalletTypography component="h3" fontSize={18} fontWeight={600} textAlign="center">
+            <WalletTypography
+              component="h3"
+              fontSize={smallType ? 14 : 18}
+              fontWeight={600}
+              textAlign="center"
+            >
               Amount
             </WalletTypography>
-            <WalletTypography component="h3" fontSize={18} fontWeight={600} textAlign="center">
-              Trasholders
-            </WalletTypography>
+            {!smallType && (
+              <WalletTypography
+                component="h3"
+                fontSize={smallType ? 14 : 18}
+                fontWeight={600}
+                textAlign="center"
+              >
+                Trasholders
+              </WalletTypography>
+            )}
           </HeaderListStyled>
-          <WalletPaper style={styledPaper}>
+          <WalletPaper style={smallType ? styledPaperSmallType : styledPaper}>
             {transactions &&
               transactionsFilter &&
               transactionsFilter.map(elem => (
-                <ItemTransaction {...elem} key={elem.id} linkOnScan={linkOnScan} />
+                <ItemTransaction
+                  {...elem}
+                  key={elem.id}
+                  linkOnScan={linkOnScan}
+                  smallType={smallType}
+                />
               ))}
             {transactionsFilter?.length === 0 && (
               <WalletTypography fontWeight={500} textAlign="center">
