@@ -8,9 +8,9 @@ import { WALLETCONNECT_V2_PROJECT_ID } from '@/constants/wallet-connect';
 import { networks } from './networks';
 
 const metadata = {
-  name: 'My Website',
-  description: 'My Website description',
-  url: 'https://mywebsite.com',
+  name: '1kx',
+  description: '1kx wallet',
+  url: 'https://safe-ui-lite-git-hotfix-22-04-1kx-network.vercel.app/',
   icons: ['https://avatars.mywebsite.com/'],
 };
 

@@ -28,7 +28,6 @@ export default function Home() {
     if (address) {
       router.push(routes.newTransaction);
     } else {
-      console.log(`handle create transaction`);
       await open();
     }
   };
