@@ -1,8 +1,8 @@
 'use client';
 import { Box } from '@mui/system';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as utils from 'ethers';
 import Link from 'next/link';
 import { MultiValue } from 'react-select';
@@ -71,14 +71,27 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const { data } = useOwnerList(address);
   const { safeSdk, saveSdk } = useSafeStore();
   const network = useNetwork();
-  const searchParams = useSearchParams();
   const { switchNetwork } = useSwitchNetwork();
 
-  const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
+  const searchParams = useMemo(() => {
+    if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
+    return { get: () => null };
+  }, [pathname]);
 
+  const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
   const shareAccounts = isShareAcc ? searchParams.get('accounts') : null;
   const networkParam = searchParams.get('network');
-  const shareNetwork = isShareAcc && networkParam ? JSON.parse(networkParam) : null;
+  const shareNetwork = useMemo(() => {
+    try {
+      if (isShareAcc && networkParam) {
+        return JSON.parse(networkParam);
+      } else {
+        return null;
+      }
+    } catch (err) {
+      return null;
+    }
+  }, [networkParam, isShareAcc]);
 
   const {
     safeAddress,

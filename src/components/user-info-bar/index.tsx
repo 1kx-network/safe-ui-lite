@@ -7,8 +7,8 @@ import {
   useWeb3ModalAccount,
 } from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
-import { useEffect, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import * as utils from 'ethers';
 import { v4 as uuid } from 'uuid';
@@ -73,7 +73,11 @@ export const UserInfoBar = () => {
   const network = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const { setClearActiveSafeStore } = useActiveSafeAddress();
-  const searchParams = useSearchParams();
+  const searchParams = useMemo(() => {
+    if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
+    return { get: () => null };
+  }, [router]);
+
   const { networks, setNetwork, setNetworksArray } = useNetworkStore();
 
   const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;

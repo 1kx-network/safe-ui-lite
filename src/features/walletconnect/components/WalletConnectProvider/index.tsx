@@ -6,7 +6,7 @@ import { ChainInfo, getChainsConfig } from '@safe-global/safe-gateway-typescript
 
 import useSafeWalletProvider from '@/features/safe-wallet-provider/useSafeWalletProvider';
 import { asError } from '@/features/exceptions/utils';
-import { WC_APP_DEV, IS_PRODUCTION } from '@/constants/wallet-connect';
+import { WC_APP_DEV, IS_PRODUCTION, WC_APP_PROD } from '@/constants/wallet-connect';
 import { getPeerName, stripEip155Prefix } from '@/features/walletconnect/services/utils';
 import { wcPopupStore } from '@/features/walletconnect/components';
 import WalletConnectWallet from '@/features/walletconnect/services/WalletConnectWallet';
@@ -25,7 +25,7 @@ export enum WCLoadingState {
   DISCONNECT = 'Disconnect',
 }
 
-const WalletConnectSafeApp = WC_APP_DEV; // IS_PRODUCTION ? WC_APP_PROD : WC_APP_DEV;
+const WalletConnectSafeApp = IS_PRODUCTION ? WC_APP_PROD : WC_APP_DEV;
 
 const walletConnectSingleton = new WalletConnectWallet();
 

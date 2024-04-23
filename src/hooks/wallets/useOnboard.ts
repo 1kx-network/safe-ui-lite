@@ -10,7 +10,6 @@ import { logError, Errors } from '@/features/exceptions';
 import { formatAmount } from '@/utils/formatNumber';
 import { localItem } from '@/features/local-storage/local';
 import { isWalletConnect, isWalletUnlocked } from '@/utils/wallets';
-import { ONBOARD_MPC_MODULE_LABEL } from '@/features/mpc/SocialLoginModule';
 
 export type ConnectedWallet = {
   label: string;
@@ -127,12 +126,7 @@ export const switchWallet = async (onboard: OnboardAPI) => {
   const newWallets = await connectWallet(onboard);
   const newWalletLabel = newWallets ? getConnectedWallet(newWallets)?.label : undefined;
 
-  // If the wallet actually changed we disconnect the old connected wallet.
-  if (!newWalletLabel || oldWalletLabel !== ONBOARD_MPC_MODULE_LABEL) {
-    return;
-  }
-
-  if (newWalletLabel !== oldWalletLabel) {
+  if (oldWalletLabel && newWalletLabel !== oldWalletLabel) {
     await onboard.disconnectWallet({ label: oldWalletLabel });
   }
 };
