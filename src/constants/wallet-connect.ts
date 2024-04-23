@@ -1,9 +1,8 @@
-const { REACT_APP_WALLETCONNECT_PROJECT_ID, NODE_ENV } = process.env;
+const { NODE_ENV } = process.env;
 
 export const IS_PRODUCTION = NODE_ENV === 'production';
 
-export const WALLETCONNECT_V2_PROJECT_ID =
-  REACT_APP_WALLETCONNECT_PROJECT_ID ?? '52dd11535fb5239f7a487315253f3065';
+export const WALLETCONNECT_V2_PROJECT_ID = '25770dd68872f7f407a6aa1c5b7aefbc';
 
 export const SAFE_WALLET_METADATA = {
   name: 'Safe Wallet',
