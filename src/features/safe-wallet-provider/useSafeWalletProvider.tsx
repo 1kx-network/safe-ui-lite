@@ -54,8 +54,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
 
   useEffect(() => {
     const unsubscribe = txSubscribe(TxEvent.PROCESSING, async ({ txId, txHash }) => {
-      console.log(`txId`, txId);
-      console.log(`txHash`, txHash);
       if (!txId) return;
       pendingTxs.current[txId] = txHash;
     });

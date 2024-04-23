@@ -12,7 +12,6 @@ import { WalletButton, WalletPaper, WalletSelect, WalletTypography } from '@/ui-
 import { styledHeader, styledPaper } from '../../wallet.styles';
 import { options } from '../../fixtures';
 import { CustomModal } from '@/components/modal';
-// import { networks } from '@/context/networks';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { customToasty } from '@/components';

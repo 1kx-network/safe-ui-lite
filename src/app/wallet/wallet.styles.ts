@@ -22,7 +22,7 @@ export const BoxGridStyled = styled('div')(
   display: flex;
   width: 100%;
   gap: ${theme.spacing(3.5)};
-  justify-content: center;
+
   margin-bottom: ${theme.spacing(6)};
 
   @media (max-width: 1180px) {

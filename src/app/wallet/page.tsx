@@ -6,7 +6,6 @@ import { WalletLayout } from '@/ui-kit';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import { Overview } from './components/overview/overview';
-// import { TokenList } from './components/tokens-list/tokens-list';
 import { Transactions } from './components/transactions/transactions';
 import { BoxGridStyled, WrapperStyled } from './wallet.styles';
 
@@ -27,8 +26,6 @@ export default function WalletPage() {
             <Transactions />
           </Box>
         </BoxGridStyled>
-
-        {/* <TokenList /> */}
       </WrapperStyled>
     </WalletLayout>
   );

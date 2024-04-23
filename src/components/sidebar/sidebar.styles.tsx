@@ -99,7 +99,7 @@ export const styleBtnTransaction = {
   justifyContent: 'center',
   border: '2px solid #020303',
   borderRadius: '28px',
-  padding: '0.719rem 0.75rem',
+  padding: '0.5rem 0.75rem',
 };
 
 export const styledBtn = {
@@ -216,7 +216,6 @@ export const ShareAccountsListStyled = styled('div')(
   overflow-y: scroll;
   max-height: 400px;
   margin: ${theme.spacing(3)} 0;
-  // min-height: 200px;
 `
 );
 export const ShareAccountItemStyled = styled('div')(

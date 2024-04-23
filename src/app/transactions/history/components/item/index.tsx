@@ -9,36 +9,47 @@ import { formattedLabel } from '@/utils/foramtters';
 
 import { ItemInfoStyled, ItemWrapperStyled } from './item.styles';
 
-export const ItemTransaction = (data: ITransaction & { linkOnScan: string }) => {
-  const { date, tokenType, amount, linkOnScan, destinationAddress, theshold } = data;
+export const ItemTransaction = (
+  data: ITransaction & { linkOnScan: string; smallType?: boolean }
+) => {
+  const { date, tokenType, amount, linkOnScan, destinationAddress, theshold, smallType } = data;
 
   return (
-    <ItemWrapperStyled>
+    <ItemWrapperStyled smallType={smallType}>
       <ItemInfoStyled isFirst>
-        <WalletTypography fontWeight={500}>{date}</WalletTypography>
+        <WalletTypography fontWeight={300} fontSize={14}>
+          {date}
+        </WalletTypography>
       </ItemInfoStyled>
 
-      <ItemInfoStyled>
-        <Box display={'flex'} alignItems={'center'} gap={1}>
-          <WalletTypography fontWeight={500}>
-            {amount} {tokenType}
-          </WalletTypography>
-          {tokenType && formatterIcon(tokenType)}
-        </Box>
-        send to{' '}
+      <ItemInfoStyled smallType={smallType}>
         <Link href={`${linkOnScan}address/${destinationAddress}`} target="_blanck">
           <Box display={'flex'} alignItems={'center'} gap={1}>
-            <IconDefaultAddress width="20px" height="20px" />
-            <WalletTypography fontSize={14} fontWeight={300}>
+            <IconDefaultAddress
+              width={smallType ? '16px' : '20px'}
+              height={smallType ? '16px' : '20px'}
+            />
+            <WalletTypography fontWeight={300} fontSize={smallType ? 14 : 14}>
               {formattedLabel(destinationAddress)}
             </WalletTypography>
           </Box>
         </Link>
+        <WalletTypography fontSize={smallType ? 14 : 16}>send </WalletTypography>
+        <Box display={'flex'} alignItems={'center'} gap={1}>
+          <WalletTypography fontWeight={500} fontSize={14}>
+            {amount} {tokenType}
+          </WalletTypography>
+          {tokenType && smallType
+            ? formatterIcon(tokenType, '16px', '16px')
+            : formatterIcon(tokenType)}
+        </Box>
       </ItemInfoStyled>
 
-      <ItemInfoStyled>
-        <WalletTypography fontWeight={500}>{theshold}</WalletTypography>
-      </ItemInfoStyled>
+      {!smallType && (
+        <ItemInfoStyled>
+          <WalletTypography fontWeight={500}>{theshold}</WalletTypography>
+        </ItemInfoStyled>
+      )}
     </ItemWrapperStyled>
   );
 };

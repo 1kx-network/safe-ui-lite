@@ -6,14 +6,15 @@ type Store = {
   safeSdk: null | Safe;
   safeTransaction: null | SafeTransaction;
   saveSdk: (payload: Safe | null) => void;
-  setSafeTransaction: (payload: SafeTransaction) => void;
+  setSafeTransaction: (payload: SafeTransaction | null) => void;
 };
 
 const useSafeStore = create<Store>()(set => ({
   safeSdk: null,
   safeTransaction: null,
   saveSdk: (payload: Safe | null) => set(() => ({ safeSdk: payload })),
-  setSafeTransaction: (payload: SafeTransaction) => set(() => ({ safeTransaction: payload })),
+  setSafeTransaction: (payload: SafeTransaction | null) =>
+    set(() => ({ safeTransaction: payload })),
 }));
 
 export default useSafeStore;

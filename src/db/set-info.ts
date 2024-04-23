@@ -56,12 +56,10 @@ export async function setMultipleDataDB(data: Record<string, Partial<ISafe>>): P
 
     if (updatedSafes.length > 0) {
       await db.safes.bulkPut(updatedSafes);
-      console.log('Updated safes:', updatedSafes);
     }
 
     if (newSafes.length > 0) {
       await db.safes.bulkAdd(newSafes);
-      console.log('Added new safes:', newSafes);
     }
   } catch (error) {
     console.error('Error updating or adding safes:', error);
@@ -88,7 +86,6 @@ export async function addCustomNetworkDB(network: INetworkDB): Promise<void> {
 export const removeAddressFromDB = async (address: string) => {
   try {
     await db.addressBook.where('address').equals(address).delete();
-    console.log('Record removed from the addressBook:', address);
   } catch (error) {
     console.error('Error removing record from the addressBook:', error);
   }
@@ -97,7 +94,6 @@ export const removeAddressFromDB = async (address: string) => {
 export const addAddressToDB = async (payload: IAddressBook) => {
   try {
     await db.addressBook.put(payload);
-    console.log('Record added to the addressBook:', payload);
   } catch (error) {
     console.error('Error adding record to the addressBook:', error);
   }
@@ -110,7 +106,6 @@ export const addAddressesArrayToDB = async (payload: IAddressBook[]) => {
         await db.addressBook.put(entry);
       }
     });
-    console.log('Records added to the addressBook:', payload);
   } catch (error) {
     console.error('Error adding records to the addressBook:', error);
   }

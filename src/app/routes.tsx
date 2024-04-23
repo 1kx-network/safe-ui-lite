@@ -21,6 +21,7 @@ const routes = {
   transactionsHistory: '/transactions/history',
   newTransaction: '/new-transaction',
   signTransaction: '/sign-transaction',
+  newSignTransaction: '/sign-transaction/link-trx',
 };
 
 export default routes;
