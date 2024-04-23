@@ -14,6 +14,7 @@ const metadata = {
   icons: ['https://avatars.mywebsite.com/'],
 };
 
+console.log(`WALLETCONNECT_V2_PROJECT_ID:`, WALLETCONNECT_V2_PROJECT_ID);
 const modal = createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: networks,
