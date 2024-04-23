@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from 'react';
+'use client';
+import { useEffect, useCallback } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
@@ -11,7 +12,7 @@ import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
-interface IUseMultySign {
+export interface IUseMultySign {
   safeAddress: string;
   safeTxHash: string;
   destinationAddress?: string | null;
@@ -33,7 +34,7 @@ export interface IMultySignResult {
   executeMulty: () => Promise<void | unknown>;
 }
 
-interface ICheckAndSwitchNetwork {
+export interface ICheckAndSwitchNetwork {
   chainIdUrl: string | null;
   chainId: number | undefined;
   switchNetwork: (chainId: number) => void;
@@ -50,9 +51,10 @@ export function useMultySign({
   address,
   newThresholdUrl,
   nonce,
-}: IUseMultySign): IMultySignResult | undefined {
+}: IUseMultySign): any {
+  // IMultySignResult | undefined {
   const conditionMulty = !safeAddress || !safeTxHash;
-  !address || !chainIdUrl;
+  // !address || !chainIdUrl;
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
 
   const { chainId } = useWeb3ModalAccount();

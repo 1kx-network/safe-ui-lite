@@ -7,7 +7,6 @@ import { SingleValue } from 'react-select';
 import { useRouter } from 'next/navigation';
 
 import IconUser from '@/assets/svg/user.svg';
-import IconLoading from '@/assets/svg/loader.svg';
 import {
   WalletButton,
   WalletInput,
@@ -70,7 +69,6 @@ export default function SettingsOwner() {
 
   // eslint-disable-next-line
   const [optionsCount, setOptionsCount] = useState<any>(null);
-  const [defOptionsCount, setDefOptionsCount] = useState(1);
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [nonce, setNonce] = useState(contractNonce);
@@ -112,7 +110,7 @@ export default function SettingsOwner() {
       setContractVersion(contractVersion);
       setNeedConfirmOwner(accountThreshold);
 
-      setDefOptionsCount(accountThreshold);
+      // setDefOptionsCount(accountThreshold);
       setIsLoading(false);
     };
 
@@ -137,9 +135,15 @@ export default function SettingsOwner() {
     setIsLoading(true);
     if (!safeAddress || !safeSdk) return;
 
+    let threshold = needConfirmOwner;
+
+    if (safeAccountOwners.length - 1 < needConfirmOwner) {
+      threshold = needConfirmOwner - 1;
+    }
+
     const safeTxHash = await safeSdk.createRemoveOwnerTx({
       ownerAddress: address,
-      threshold: needConfirmOwner,
+      threshold,
     });
 
     const queryParams = {
@@ -151,7 +155,7 @@ export default function SettingsOwner() {
       tokenType: '',
       networkName: networkName,
       safeTxHash: JSON.stringify(safeTxHash),
-      newThreshold: String(needConfirmOwner),
+      newThreshold: String(threshold),
       nonce: String(nonce),
     };
 
@@ -342,20 +346,24 @@ export default function SettingsOwner() {
 
             <Box mt={3} display="flex" alignItems="center">
               <Box mr={3} width={'84px'}>
-                {optionsCount ? (
-                  <WalletSelect
-                    controlShouldRenderValue
-                    placeholder={String(needConfirmOwner)}
-                    isDisabled={isLoading}
-                    options={optionsCount}
-                    defaultValue={[
-                      { id: defOptionsCount, label: defOptionsCount, value: defOptionsCount },
-                    ]}
-                    onChange={handleChooseAccounConfirm}
-                  />
-                ) : (
-                  <IconLoading />
-                )}
+                {/* <WalletSelect
+                  isLoading={Boolean(!needConfirmOwner)}
+                  controlShouldRenderValue
+                  options={optionsCount}
+                  defaultValue={[
+                    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
+                  ]}
+                  onChange={handleChooseAccounConfirm}
+                /> */}
+                <WalletSelect
+                  isLoading={Boolean(!needConfirmOwner)}
+                  controlShouldRenderValue
+                  options={optionsCount}
+                  defaultValue={[
+                    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
+                  ]}
+                  onChange={handleChooseAccounConfirm}
+                />
               </Box>
               <WalletTypography fontSize={13} fontWeight={600}>
                 out of {safeAccountOwners.length} owner(s)

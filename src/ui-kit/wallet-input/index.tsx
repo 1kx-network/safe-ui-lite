@@ -31,6 +31,7 @@ interface IWalletInputProps {
   style?: React.CSSProperties;
   startAdornment?: boolean;
   isSearch?: boolean;
+  contentEditable?: boolean;
 }
 
 export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>((props, _ref) => {
@@ -74,6 +75,7 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
             ...style,
             ...errorStyle,
           }}
+          contentEditable="plaintext-only"
           id={label}
           ref={_ref}
         />
