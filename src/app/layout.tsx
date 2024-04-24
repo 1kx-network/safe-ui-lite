@@ -10,8 +10,9 @@ import QueryClientProvider from '@/context/query-provider';
 const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
-  title: '1kx',
-  description: '1kx wallet',
+  title: 'Safe Lite',
+  description: 'Safe UI Lite',
+  icons: ['https://uxwing.com/wp-content/themes/uxwing/download/hand-gestures/good-icon.png'],
 };
 
 export default function RootLayout({

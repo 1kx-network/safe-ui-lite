@@ -268,7 +268,12 @@ export const SendTokens = ({}: SendTokensProps) => {
                       errorValue={errors.amount?.message}
                     />
                     <BtnMaxInputStyled>
-                      <WalletButton styles={styledBtxMax} variant="text" onClick={handleClickMax}>
+                      <WalletButton
+                        styles={styledBtxMax}
+                        variant="text"
+                        type="button"
+                        onClick={handleClickMax}
+                      >
                         MAX
                       </WalletButton>
                     </BtnMaxInputStyled>

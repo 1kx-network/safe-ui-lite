@@ -1,9 +1,7 @@
 import memoize from 'lodash/memoize';
 
 import type { EthersError } from '@/utils/ethers-utils';
-import { type ConnectedWallet } from '@/hooks/wallets/useOnboard';
 import { getWeb3ReadOnly, isSmartContract } from '@/hooks/wallets/web3';
-import { ONBOARD_MPC_MODULE_LABEL } from '@/features/mpc/SocialLoginModule';
 
 const WALLETCONNECT = 'WalletConnect';
 
@@ -19,15 +17,15 @@ export const isWalletRejection = (err: EthersError | Error): boolean => {
   return isEthersRejection(err as EthersError) || isWCRejection(err);
 };
 
-export const isLedger = (_wallet: ConnectedWallet): boolean => {
+export const isLedger = (_wallet: unknown): boolean => {
   return false;
 };
 
-export const isWalletConnect = (wallet: ConnectedWallet): boolean => {
+export const isWalletConnect = (wallet: { label: string }): boolean => {
   return wallet.label.toLowerCase().startsWith(WALLETCONNECT.toLowerCase());
 };
 
-export const isHardwareWallet = (_wallet: ConnectedWallet): boolean => {
+export const isHardwareWallet = (_wallet: unknown): boolean => {
   return false;
 };
 
@@ -56,10 +54,5 @@ export const isWalletUnlocked = async (walletName: string): Promise<boolean | un
     } catch {
       return false;
     }
-  }
-
-  // Don't reconnect to MPC wallet because it's not initialized right away
-  if (walletName === ONBOARD_MPC_MODULE_LABEL) {
-    return false;
   }
 };

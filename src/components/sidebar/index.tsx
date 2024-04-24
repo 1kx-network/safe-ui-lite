@@ -1,8 +1,8 @@
 'use client';
 import { Box } from '@mui/system';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as utils from 'ethers';
 import Link from 'next/link';
 import { MultiValue } from 'react-select';
@@ -71,14 +71,27 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const { data } = useOwnerList(address);
   const { safeSdk, saveSdk } = useSafeStore();
   const network = useNetwork();
-  const searchParams = useSearchParams();
   const { switchNetwork } = useSwitchNetwork();
 
-  const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
+  const searchParams = useMemo(() => {
+    if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
+    return { get: () => null };
+  }, [pathname]);
 
+  const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
   const shareAccounts = isShareAcc ? searchParams.get('accounts') : null;
   const networkParam = searchParams.get('network');
-  const shareNetwork = isShareAcc && networkParam ? JSON.parse(networkParam) : null;
+  const shareNetwork = useMemo(() => {
+    try {
+      if (isShareAcc && networkParam) {
+        return JSON.parse(networkParam);
+      } else {
+        return null;
+      }
+    } catch (err) {
+      return null;
+    }
+  }, [networkParam, isShareAcc]);
 
   const {
     safeAddress,
@@ -139,19 +152,17 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       if (listAccount !== undefined) {
         setDataList(listAccount);
 
-        const defaultAccount = listAccount[0]; // 1
+        const defaultAccount = listAccount[0];
 
         if (listAccount.some((elem: string) => elem === safeAddress)) {
           setSafeAddress(safeAddress);
-        }
-
-        if (defaultAccount) {
+        } else if (defaultAccount) {
           localStorage.setItem('safeAddress', defaultAccount);
           setSafeAddress(defaultAccount);
         }
       }
 
-      console.log('Need create new account with new network');
+      console.error('Need create new account with new network');
     }
   }, [data, chainId, address]);
 
@@ -243,7 +254,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   const condMenuList = address ? menuList : [menuList[0]];
 
-  // share account
   const handleChangeSelect = (elems: MultiValue<IOptionShareAcc>) => {
     setChooseOptionsShareAcc(elems as IOptionShareAcc[]);
   };
@@ -325,6 +335,9 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         <MenuStyled suppressHydrationWarning>
           <ItemMenuStyled style={styleBtnTransaction} href={address ? routes.newTransaction : ''}>
             <WalletTypography>New transaction</WalletTypography>
+          </ItemMenuStyled>
+          <ItemMenuStyled style={styleBtnTransaction} href={routes.newSignTransaction}>
+            <WalletTypography>Sign Transaction</WalletTypography>
           </ItemMenuStyled>
 
           {condMenuList.map(item => (

@@ -28,14 +28,23 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const { walletProvider } = useWeb3ModalProvider();
   const { chainId } = useWeb3ModalAccount();
 
-  const createSdkInstance = async () => {
-    if (safeAddress && walletProvider) {
+  const createSdkInstance = async (address: string | null) => {
+    if (!walletProvider) {
+      console.log('Wallet provider is not available.');
+      return;
+    }
+
+    if (safeAddress) {
       await createSafe(safeAddress);
+    }
+
+    if (address) {
+      await createSafe(address);
     }
   };
 
   useEffect(() => {
-    createSdkInstance();
+    createSdkInstance(null);
   }, [safeAddress, walletProvider, chainId]);
 
   const deploySafe = async (owners: string[], threshold: number) => {
@@ -127,7 +136,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const transferData = createERC20TokenTransferTransaction(tokenAddress, toAddress, amount);
       return transferData;
     } catch (e) {
-      console.log('Error create token transfer transaction ERC20', e);
+      console.error('Error create token transfer transaction ERC20', e);
     }
   };
 
@@ -148,7 +157,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
       return balance;
     } catch (error) {
       customToasty(`Error get balance ERC20 token`, 'error');
-      console.log(error);
+      console.error(error);
       return null;
     }
   };
@@ -159,5 +168,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
     getInfoByAccount,
     createTrancationERC20,
     getTokenERC20Balance,
+    createSdkInstance,
   };
 }

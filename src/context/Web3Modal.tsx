@@ -8,10 +8,13 @@ import { WALLETCONNECT_V2_PROJECT_ID } from '@/constants/wallet-connect';
 import { networks } from './networks';
 
 const metadata = {
-  name: '1kx',
-  description: '1kx wallet',
-  url: 'https://safe-ui-lite-git-hotfix-22-04-1kx-network.vercel.app/',
-  icons: ['https://avatars.mywebsite.com/'],
+  name: 'Safe Lite',
+  description: 'Safe UI Lite',
+  url: 'https://safe-ui-lite.vercel.app/',
+  icons: [
+    'https://app.safe.global/favicons/mstile-150x150.png',
+    'https://app.safe.global/favicons/logo_120x120.png',
+  ],
 };
 
 console.log(`WALLETCONNECT_V2_PROJECT_ID:`, WALLETCONNECT_V2_PROJECT_ID);
@@ -32,6 +35,8 @@ export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setSafeAddress(safeAddress);
   }, [safeAddress]);
+
+  console.log('Web3ModalProvider children', children);
 
   return children;
 }

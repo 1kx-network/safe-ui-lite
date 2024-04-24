@@ -34,6 +34,7 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   );
 
   const isSign =
+    pathname === routes.signTransaction &&
     chainId &&
     chainId.length > 0 &&
     destinationAddress &&
@@ -45,7 +46,6 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   const isUser =
     hasAddressUser && hasAddressUser.trim() !== '' && pathname !== routes.signTransaction;
 
-  // --- //
   const isSettings = pathname === routes.settings;
   const isTransactions = pathname === routes.transactions;
 
@@ -70,9 +70,11 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   }
 
   if (isSign) {
-    if (pathname === routes.signTransaction) {
-      return NextResponse.next();
-    }
+    return NextResponse.next();
+  }
+
+  if (url.includes(routes.newSignTransaction)) {
+    return NextResponse.next();
   }
 
   return NextResponse.rewrite(new URL(routes.home, url));

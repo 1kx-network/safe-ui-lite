@@ -41,7 +41,6 @@ export const initMPC = async (chain: ChainInfo, onboard: OnboardAPI) => {
     baseUrl: `${window.location.origin}/`,
     uxMode: 'popup',
     enableLogging: !IS_PRODUCTION,
-    //@ts-ignore
     chainConfig,
     manualSync: true,
     hashedFactorNonce: 'safe-global-sfa-nonce',
