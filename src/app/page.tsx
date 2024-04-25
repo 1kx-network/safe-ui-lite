@@ -2,7 +2,7 @@
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -51,28 +51,48 @@ export default function Home() {
     }
   }, [data, chainId]);
 
+  const [showIframe, setShowIframe] = useState(false);
+
+  const handleOpenIframe = () => {
+    setShowIframe(true);
+  };
+
   return (
-    <WalletLayout>
-      <WrapperStyled>
-        <GridStepsStyled>
-          <ItemStepPaperStyled>
-            <WalletPaper>
-              <IconPlusStyled />
-              <Box display={'flex'} flexDirection={'column'} gap={4}>
-                <WalletTypography fontSize={22} fontWeight={600}>
-                  Create transaction
-                </WalletTypography>
-                <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                  Simply send funds, add a new signer or swap tokens through a safe app.
-                </WalletTypography>
-              </Box>
-              <WalletButton variant="outlined" styles={styledBtn} onClick={handleCreateTransaction}>
-                Create Transaction
-              </WalletButton>
-            </WalletPaper>
-          </ItemStepPaperStyled>
-        </GridStepsStyled>
-      </WrapperStyled>
-    </WalletLayout>
+    <>
+      <WalletLayout>
+        <WrapperStyled>
+          <GridStepsStyled>
+            <ItemStepPaperStyled>
+              <WalletPaper>
+                <IconPlusStyled />
+                <Box display={'flex'} flexDirection={'column'} gap={4}>
+                  <WalletTypography fontSize={22} fontWeight={600}>
+                    Create transaction
+                  </WalletTypography>
+                  <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+                    Simply send funds, add a new signer or swap tokens through a safe app.
+                  </WalletTypography>
+                </Box>
+                <WalletButton
+                  variant="outlined"
+                  styles={styledBtn}
+                  onClick={handleCreateTransaction}
+                >
+                  Create Transaction
+                </WalletButton>
+
+                <WalletButton variant="outlined" styles={styledBtn} onClick={handleOpenIframe}>
+                  Open Iframe
+                </WalletButton>
+              </WalletPaper>
+            </ItemStepPaperStyled>
+          </GridStepsStyled>
+        </WrapperStyled>
+      </WalletLayout>
+
+      {showIframe && (
+        <iframe src="@/app/tx-builder/src" width="800" height="600" title="Second Project" />
+      )}
+    </>
   );
 }

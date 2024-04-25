@@ -1,0 +1,35 @@
+import React from 'react';
+
+// import MuiAlert from '@material-ui/lab/Alert';
+// import MuiAlertTitle from '@material-ui/lab/AlertTitle';
+// import styled from 'styled-components';
+import { styled } from '@mui/system';
+
+import { useTransactionLibrary } from '../store';
+
+const ErrorAlert = () => {
+  const { errorMessage, setErrorMessage } = useTransactionLibrary();
+
+  if (!errorMessage) {
+    return null;
+  }
+
+  return (
+    <ErrorAlertContainer>
+      {/* <MuiAlert severity="error" onClose={() => setErrorMessage('')}> */}
+      {/* <MuiAlertTitle>{errorMessage}</MuiAlertTitle> */}
+      {/* </MuiAlert> */}
+      {errorMessage}
+    </ErrorAlertContainer>
+  );
+};
+
+const ErrorAlertContainer = styled('div')`
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  background-color: transparent;
+  height: 70px;
+`;
+
+export default ErrorAlert;
