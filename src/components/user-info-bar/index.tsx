@@ -421,7 +421,7 @@ export const UserInfoBar = () => {
                   networks.map(elem => (
                     <ItemInfoNetworkStyled
                       onClick={() => handleChangeNetwork(elem.chainId)}
-                      key={elem.chainId}
+                      key={elem.chainId + elem.rpc}
                     >
                       {formatterIcon(elem.chainId, '16px', '16px')}
                       <WalletTypography

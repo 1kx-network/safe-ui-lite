@@ -29,7 +29,8 @@ const useNetworkStore = create<Store>(set => ({
       if (!payload) return state;
 
       const uniqueNetworks = payload.filter(
-        network => !state.networks?.some(existingNetwork => existingNetwork.rpc === network.rpc)
+        network =>
+          !state.networks?.some(existingNetwork => existingNetwork.chainId === network.chainId)
       );
 
       return { networks: [...(state.networks || []), ...uniqueNetworks] };
