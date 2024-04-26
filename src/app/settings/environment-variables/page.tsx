@@ -85,7 +85,7 @@ export default function NetworsSettins() {
     setIsLoadingChain(true);
 
     const updateNetworkDB: INetworkDB = {
-      chainId,
+      chainId: Number(chainId),
       name: data.name,
       currency: data.name,
       explorerUrl: explorerUrl,
@@ -95,7 +95,7 @@ export default function NetworsSettins() {
     };
 
     updateNetwork({
-      chainId,
+      chainId: Number(chainId),
       label: data.name,
       value: data.name,
       rpc: data.rpc,
@@ -110,6 +110,7 @@ export default function NetworsSettins() {
     reset();
     customToasty('Network was changed', 'success');
   };
+  console.log(`networks`, networks);
 
   return (
     <WalletLayout>

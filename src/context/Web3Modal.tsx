@@ -17,8 +17,7 @@ const metadata = {
   ],
 };
 
-console.log(`WALLETCONNECT_V2_PROJECT_ID:`, WALLETCONNECT_V2_PROJECT_ID);
-const modal = createWeb3Modal({
+createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: networks,
   projectId: WALLETCONNECT_V2_PROJECT_ID,
@@ -26,7 +25,6 @@ const modal = createWeb3Modal({
   allowUnsupportedChain: true,
 });
 
-console.log(`modal:`, modal);
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
   const { setSafeAddress } = useActiveSafeAddress();
   const safeAddress: string | null =
@@ -35,8 +33,6 @@ export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setSafeAddress(safeAddress);
   }, [safeAddress]);
-
-  console.log('Web3ModalProvider children', children);
 
   return children;
 }
