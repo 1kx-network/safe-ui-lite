@@ -215,6 +215,7 @@ const NewSignTransactionComponent = () => {
   }, [queryParams, dataQuery.signatures, dataQuery.signers]);
 
   useEffect(() => {
+    console.log(`address in trx`, address);
     if (safeSdk) {
       (async () => {
         const threshold = await safeSdk.getThreshold();
@@ -269,6 +270,8 @@ const NewSignTransactionComponent = () => {
   };
 
   useEffect(() => {
+    console.log(`address in simple effect`, address);
+
     if (dataQuery.safeAddress) {
       createSdkInstance(dataQuery.safeAddress);
     }
