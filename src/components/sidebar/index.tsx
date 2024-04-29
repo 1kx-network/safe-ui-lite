@@ -1,7 +1,10 @@
 'use client';
 import { Box } from '@mui/system';
 import { usePathname } from 'next/navigation';
-import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import {
+  useSwitchNetwork,
+  useWeb3ModalAccount,
+} from '@web3modal/ethers/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as utils from 'ethers';
 import Link from 'next/link';
@@ -166,8 +169,17 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     }
   }, [data, chainId, address]);
 
+  // const { getRpc } = useEthersAdapter();
+
   useEffect(() => {
     (async () => {
+      // await getRpc();
+      // if (walletProvider) {
+      //   // providers.Web3Provider(walletProvider);
+      //   const network = await provider.getNetwork();
+      //   return network.rpcUrl;
+      // }
+
       if (shareNetwork) {
         await addCustomNetworkDB(shareNetwork as INetworkDB);
 

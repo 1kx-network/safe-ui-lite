@@ -36,7 +36,6 @@ export async function getNetworksDB(): Promise<INetworkDB[]> {
 export const getAddressBook = async (): Promise<IAddressBook[]> => {
   try {
     const addressBooks = await db.addressBook.toArray();
-    console.log('All address books retrieved from the addressBook:', addressBooks);
     return addressBooks;
   } catch (error) {
     console.error('Error retrieving address books from the addressBook:', error);

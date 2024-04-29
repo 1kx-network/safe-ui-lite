@@ -111,7 +111,7 @@ export default function CreatePageAccount() {
       setIsLoading(true);
       const safeSdkLocal = await createSafe(valueAcc);
       if (!safeSdkLocal) {
-        console.log('Error width address');
+        console.error('Error width address');
       }
       const isOwner = await safeSdkLocal?.isOwner(valueAcc);
 

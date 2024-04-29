@@ -30,7 +30,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
   const createSdkInstance = async (address: string | null) => {
     if (!walletProvider) {
-      console.log('Wallet provider is not available.');
+      console.error('Wallet provider is not available.');
       return;
     }
 

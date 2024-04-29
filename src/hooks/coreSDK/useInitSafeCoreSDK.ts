@@ -33,7 +33,7 @@ export const useInitSafeCoreSDK = () => {
       .then(setSafeSDK)
       .catch(_e => {
         const e = asError(_e);
-        console.log(`Failed to initialize Safe SDK: ${e.message}`);
+        console.error(`Failed to initialize Safe SDK: ${e.message}`);
       });
   }, [address, address, chainId, contractVersion, safe, web3ReadOnly]);
 };

@@ -110,7 +110,6 @@ export default function NetworsSettins() {
     reset();
     customToasty('Network was changed', 'success');
   };
-  console.log(`networks`, networks);
 
   return (
     <WalletLayout>
