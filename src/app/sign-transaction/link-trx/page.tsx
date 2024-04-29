@@ -217,6 +217,12 @@ const NewSignTransactionComponent = () => {
   useEffect(() => {
     if (safeSdk) {
       (async () => {
+        if (!safeFromDb && dataQuery.safeAddress !== '') {
+          await setDataDB(dataQuery.safeAddress, {
+            address: dataQuery.safeAddress,
+            transactions: [],
+          });
+        }
         const threshold = await safeSdk.getThreshold();
         const ownersList = await safeSdk.getOwners();
 
@@ -226,7 +232,7 @@ const NewSignTransactionComponent = () => {
     } else {
       createSdkInstance(dataQuery.safeAddress);
     }
-  }, [safeSdk, address]);
+  }, [safeSdk, address, dataQuery.safeAddress]);
 
   const onSubmit: SubmitHandler<any> = () => {};
 

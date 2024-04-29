@@ -1,9 +1,10 @@
 'use client';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
+import { v4 as uuid } from 'uuid';
 
 import { db } from '@/db';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
@@ -12,6 +13,7 @@ import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
+import { setDataDB } from '@/db/set-info';
 
 export interface IUseMultySign {
   mode: 'runtime' | 'url';
@@ -56,7 +58,7 @@ export function useMultySign({
   newThreshold,
   nonce,
 }: IUseMultySign): IMultySignResult {
-  const conditionMulty = !safeAddress || !safeTxHash;
+  const conditionMulty = useMemo(() => !safeAddress || !safeTxHash, [safeAddress, safeTxHash]);
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
@@ -66,10 +68,10 @@ export function useMultySign({
   const { switchNetwork } = useSwitchNetwork();
   const { open } = useWeb3Modal();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const { threshold, setThreshold, status, setStatus } = useSignStore();
 
-  // const conditionForCreateTrx = address && !safeTransaction && safeSdk && safeAddress;
   const safeFromDb = useLiveQuery(
     () => db.safes.where('address').equals(safeAddress).first(),
     [safeTxHash]
@@ -140,14 +142,13 @@ export function useMultySign({
     const pendingCreateTrxData = async () => {
       if (!safeSdk || !conditionForCreateTrx) return;
       if (typeSignTrx === SEND_TOKEN) {
-        if (!chainId || !safeSdk || !tokenType || !transaction) return null;
-        const data = transaction.calldata;
+        if (!chainId || !safeSdk || !tokenType || transaction) return null;
         const objTrx = await returnTransactionObj(
           address,
           amount,
           tokenType,
           chainId,
-          data,
+          searchParams.get('calldata') || '0x',
           createTrancationERC20
         );
 
@@ -159,7 +160,28 @@ export function useMultySign({
           },
         });
 
-        setSafeTransaction(safeTransaction);
+        const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+        const thesholders = await safeSdk.getThreshold();
+        const currentDate = new Date();
+        const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
+        const transactionDB = {
+          id: uuid(),
+          date: dateTrx,
+          tokenType,
+          theshold: thesholders,
+          hash: safeTxHash,
+          amount: safeTransaction.data.value,
+          calldata: safeTransaction.data.data,
+          destinationAddress: safeTransaction.data.to,
+          nonce,
+          signatures: [],
+        };
+        await setDataDB(safeAddress, {
+          address: safeAddress,
+          transactions: [transactionDB],
+        });
+
+        await setSafeTransaction(safeTransaction);
         return;
       }
 
@@ -169,7 +191,17 @@ export function useMultySign({
     };
 
     pendingCreateTrxData();
-  }, [safeSdk, conditionMulty, chainId]);
+  }, [
+    safeSdk,
+    conditionMulty,
+    chainId,
+    safeAddress,
+    safeTxHash,
+    amount,
+    address,
+    typeSignTrx,
+    transaction,
+  ]);
 
   useEffect(() => {
     if (userWalletAddress) {
