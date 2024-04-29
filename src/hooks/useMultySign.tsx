@@ -56,7 +56,7 @@ export function useMultySign({
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
-  const { createSdkInstance } = useSafeSdk();
+  const { createSdkInstance, createTrancationERC20 } = useSafeSdk();
   const { chainId } = useWeb3ModalAccount();
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
   const { switchNetwork } = useSwitchNetwork();
@@ -65,7 +65,6 @@ export function useMultySign({
   const searchParams = useSearchParams();
 
   const { threshold, setThreshold, status, setStatus } = useSignStore();
-  const { createTrancationERC20 } = useSafeSdk();
 
   // const conditionForCreateTrx = address && !safeTransaction && safeSdk && safeAddress;
   const safeFromDb = useLiveQuery(
@@ -170,7 +169,6 @@ export function useMultySign({
   }, [safeSdk, conditionMulty, chainId]);
 
   useEffect(() => {
-    console.log(`userWalletAddress`, userWalletAddress);
     if (userWalletAddress) {
       createSdkInstance(safeAddress);
     }
@@ -244,10 +242,13 @@ export function useMultySign({
     try {
       const signedTransaction = await safeSdk.signTransaction(safeTransaction);
       setSafeTransaction(signedTransaction);
-      console.log('signedTransaction', signedTransaction);
 
       const { signatures, signers } = getSignaturesMulty();
-      const signature = signedTransaction.signatures.entries().next().value[0].data;
+      let signature = '';
+      signedTransaction.signatures.forEach(value => {
+        if (value.signer !== userWalletAddress) return;
+        signature = value.data;
+      });
       const signer = userWalletAddress;
       signatures.push(encodeURIComponent(signature));
       signers.push(encodeURIComponent(signer));
@@ -278,7 +279,6 @@ export function useMultySign({
           dynamicPart: () => '',
         })
       );
-      console.log(`safeTransaction to execute`, safeTransaction);
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
       await txResponse.transactionResponse?.wait();
 

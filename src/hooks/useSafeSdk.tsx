@@ -34,6 +34,8 @@ export function useSafeSdk(safeAddress: string | null = null) {
       return;
     }
 
+    console.log(`1|safeAddress`, safeAddress);
+    console.log(`1|address`, address);
     if (safeAddress) {
       await createSafe(safeAddress);
     }
