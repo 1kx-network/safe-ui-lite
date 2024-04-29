@@ -74,7 +74,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       //   !onChainSigning &&
       //   settings.offChainSigning;
 
-      console.log(`SIGN MESSAGE ${_message} from ${appInfo.name}`);
       const { title, options } = NotificationMessages.SIGNATURE_REQUEST(appInfo);
       showNotification(title, options);
 
@@ -126,7 +125,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async send(params: { txs: any[]; params: { safeTxGas: number } }, appInfo) {
-        console.log(`transactions from wallet connect`, params);
         const id = uuid();
 
         const transactions = params.txs.map(({ to, value, data }) => {
@@ -250,7 +248,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async showTxStatus(_safeTxHash) {
-        console.log(`SHOW tx status`, _safeTxHash);
         // router.push({
         //   pathname: AppRoutes.transactions.tx,
         //   query: {

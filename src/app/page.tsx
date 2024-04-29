@@ -42,9 +42,7 @@ export default function Home() {
         router.push(routes.safeAccountCreate);
       }
     } else {
-      console.log(`address: ${address} chainId: ${chainId} data: ${data}`);
       if (!address) {
-        console.log(`open wallet conn modal`);
         console.log(`walletProvider`, walletProvider);
         open();
       }
