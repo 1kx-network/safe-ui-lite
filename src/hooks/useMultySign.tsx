@@ -52,11 +52,11 @@ export function useMultySign({
   newThresholdUrl,
   nonce,
 }: IUseMultySign): any {
-  // IMultySignResult | undefined {
   const conditionMulty = !safeAddress || !safeTxHash;
-  // !address || !chainIdUrl;
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
+  const { address: userWalletAddress } = useWeb3ModalAccount();
 
+  const { createSdkInstance, createTrancationERC20 } = useSafeSdk();
   const { chainId } = useWeb3ModalAccount();
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
   const { switchNetwork } = useSwitchNetwork();
@@ -65,12 +65,8 @@ export function useMultySign({
   const searchParams = useSearchParams();
 
   const { threshold, setThreshold, status, setStatus } = useSignStore();
-  const { createTrancationERC20 } = useSafeSdk();
-
-  useSafeSdk(safeAddress);
 
   // const conditionForCreateTrx = address && !safeTransaction && safeSdk && safeAddress;
-
   const safeFromDb = useLiveQuery(
     () => db.safes.where('address').equals(safeAddress).first(),
     [safeTxHash]
@@ -172,6 +168,12 @@ export function useMultySign({
     pendingCreateTrxData();
   }, [safeSdk, conditionMulty, chainId]);
 
+  useEffect(() => {
+    if (userWalletAddress) {
+      createSdkInstance(safeAddress);
+    }
+  }, [userWalletAddress]);
+
   const getSignaturesFromDbMulty = useCallback(() => {
     return (
       transaction?.signatures.reduce(
@@ -235,15 +237,19 @@ export function useMultySign({
 
   const signTransactionMulty = useCallback(async () => {
     if (conditionMulty) return;
-    if (!safeSdk || !safeTransaction) return;
+    if (!safeSdk || !safeTransaction || !userWalletAddress) return;
 
     try {
       const signedTransaction = await safeSdk.signTransaction(safeTransaction);
       setSafeTransaction(signedTransaction);
 
       const { signatures, signers } = getSignaturesMulty();
-      const signature = signedTransaction.signatures.entries().next().value[1].data;
-      const signer = signedTransaction.signatures.entries().next().value[1].signer;
+      let signature = '';
+      signedTransaction.signatures.forEach(value => {
+        if (value.signer !== userWalletAddress) return;
+        signature = value.data;
+      });
+      const signer = userWalletAddress;
       signatures.push(encodeURIComponent(signature));
       signers.push(encodeURIComponent(signer));
       saveSignaturesMulty(signatures, signers);
@@ -254,7 +260,7 @@ export function useMultySign({
         console.error((error as { message: string }).message as string);
       }
     }
-  }, [safeSdk, safeTransaction, safeTxHash, status, chainId]);
+  }, [safeSdk, safeTransaction, safeTxHash, status, chainId, userWalletAddress]);
 
   const executeMulty = async () => {
     try {
@@ -284,7 +290,7 @@ export function useMultySign({
         return error;
       }
       customToasty('Something error with execute', 'error');
-
+      console.log(`error`, error);
       return error;
     }
   };

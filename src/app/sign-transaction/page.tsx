@@ -36,6 +36,7 @@ import {
   TransactionInfoStyled,
   WrapperStyled,
   styledBtn,
+  styledSecondaryBtn,
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sing-trx-info';
 
@@ -238,14 +239,26 @@ const SignTransactionComponent = () => {
 
           <GridButtonStyled>
             {address ? (
-              <WalletButton
-                disabled={status === 'loading'}
-                variant={status === 'success' ? 'outlined' : 'contained'}
-                styles={styledBtn}
-                onClick={handleTransaction}
-              >
-                {buttonText}
-              </WalletButton>
+              <>
+                {buttonText === 'Execute' && (
+                  <WalletButton
+                    disabled={status === 'loading'}
+                    variant={status === 'success' ? 'outlined' : 'contained'}
+                    styles={styledSecondaryBtn}
+                    onClick={handleSignTransaction}
+                  >
+                    Sign Transaction
+                  </WalletButton>
+                )}
+                <WalletButton
+                  disabled={status === 'loading'}
+                  variant={status === 'success' ? 'outlined' : 'contained'}
+                  styles={styledBtn}
+                  onClick={handleTransaction}
+                >
+                  {buttonText}
+                </WalletButton>
+              </>
             ) : (
               <WalletButton variant="outlined" styles={styledBtn}>
                 Connect Wallet
