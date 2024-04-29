@@ -20,7 +20,7 @@ interface ISendTokenInfo {
   safeTransaction: null | SafeTransaction;
   address: string | null;
   typeSignTrx: keyof ITypeSignTrx | null;
-  newThresholdUrl: string | null;
+  newThreshold: string | null;
 }
 
 export const SignTransactionInfo = ({
@@ -28,7 +28,7 @@ export const SignTransactionInfo = ({
   safeTransaction,
   address,
   typeSignTrx,
-  newThresholdUrl,
+  newThreshold,
   amount,
   tokenType,
 }: ISendTokenInfo) => {
@@ -86,7 +86,7 @@ export const SignTransactionInfo = ({
             Change threshold on
           </WalletTypography>
           <WalletTypography fontWeight={600} color={themeMuiBase.palette.white}>
-            {newThresholdUrl}
+            {newThreshold}
           </WalletTypography>
         </Box>
       )}

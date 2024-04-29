@@ -11,6 +11,7 @@ export interface IQueryParams {
   thresholdUrl: string | null;
   newThreshold: string | null;
   nonceUrl: string | null;
+  calldata: string | null;
   userNetworkTrxUrl: string | null;
   signatures: string | null;
   signers: string | null;

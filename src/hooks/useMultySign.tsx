@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useCallback } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 
@@ -12,7 +12,9 @@ import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
+
 export interface IUseMultySign {
+  mode: 'runtime' | 'url';
   safeAddress: string;
   safeTxHash: string;
   destinationAddress?: string | null;
@@ -21,11 +23,12 @@ export interface IUseMultySign {
   chainIdUrl: string | null;
   tokenType: string | null;
   typeSignTrx: keyof ITypeSignTrx | null;
-  newThresholdUrl: string | null;
+  newThreshold: string | null;
   nonce: string | null;
 }
 
 export interface IMultySignResult {
+  safeTransaction: SafeTransaction | null;
   thresholdMulty: number;
   getSignaturesFromDbMulty: () => { signatures: string[]; signers: string[] };
   getSignaturesMulty: () => { signatures: string[]; signers: string[] };
@@ -42,6 +45,7 @@ export interface ICheckAndSwitchNetwork {
 }
 
 export function useMultySign({
+  mode,
   safeAddress,
   safeTxHash,
   amount,
@@ -49,9 +53,9 @@ export function useMultySign({
   tokenType,
   typeSignTrx,
   address,
-  newThresholdUrl,
+  newThreshold,
   nonce,
-}: IUseMultySign): any {
+}: IUseMultySign): IMultySignResult {
   const conditionMulty = !safeAddress || !safeTxHash;
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
   const { address: userWalletAddress } = useWeb3ModalAccount();
@@ -62,7 +66,6 @@ export function useMultySign({
   const { switchNetwork } = useSwitchNetwork();
   const { open } = useWeb3Modal();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const { threshold, setThreshold, status, setStatus } = useSignStore();
 
@@ -112,12 +115,12 @@ export function useMultySign({
       case REMOVE_OWNER:
         resTrx = await safeSdk.createRemoveOwnerTx({
           ownerAddress: address,
-          threshold: newThresholdUrl ? +newThresholdUrl : 1,
+          threshold: newThreshold ? +newThreshold : 1,
         });
         break;
 
       case CHANGE_THRESHOLD:
-        resTrx = await safeSdk.createChangeThresholdTx(newThresholdUrl ? +newThresholdUrl : 1);
+        resTrx = await safeSdk.createChangeThresholdTx(newThreshold ? +newThreshold : 1);
         break;
 
       default:
@@ -215,24 +218,29 @@ export function useMultySign({
       const originalUrl = new URL(window.location.href);
       const encodedSignatures = signatures.map(sig => encodeURIComponent(sig));
       const encodedSigners = signers.map(sig => encodeURIComponent(sig));
-      originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
-      originalUrl.searchParams.set('signers', encodedSigners.join(','));
+
+      if (mode === 'url') {
+        originalUrl.searchParams.set('signatures', encodedSignatures.join(','));
+        originalUrl.searchParams.set('signers', encodedSigners.join(','));
+      }
 
       if (transaction) {
-        const { signers: signersFromDb } = getSignaturesFromDbMulty();
         if (transaction.signatures.length !== signers.length) {
-          db.transactions.where({ hash: transaction.hash }).modify(trx => {
-            signers.map((s, idx) => {
-              if (!signersFromDb.includes(s)) {
+          db.safes.where({ address: safeAddress }).modify(safe => {
+            safe.transactions = safe.transactions.map(trx => {
+              if (trx.hash !== transaction.hash) return trx;
+              trx.signatures = [];
+              signers.map((s, idx) => {
                 trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
-              }
+              });
+              return trx;
             });
           });
         }
       }
       router.push(originalUrl.toString());
     },
-    [router, transaction, chainId]
+    [router, transaction, chainId, conditionMulty]
   );
 
   const signTransactionMulty = useCallback(async () => {
@@ -252,6 +260,7 @@ export function useMultySign({
       const signer = userWalletAddress;
       signatures.push(encodeURIComponent(signature));
       signers.push(encodeURIComponent(signer));
+
       saveSignaturesMulty(signatures, signers);
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
@@ -262,19 +271,18 @@ export function useMultySign({
     }
   }, [safeSdk, safeTransaction, safeTxHash, status, chainId, userWalletAddress]);
 
-  const executeMulty = async () => {
+  const executeMulty = useCallback(async () => {
     try {
       if (conditionMulty) return;
 
       setStatus('loading');
-      const signatures = searchParams.getAll('signatures')[0];
-      const signers = searchParams.getAll('signers')[0];
+      const { signatures, signers } = getSignaturesMulty();
       if (!safeSdk || !safeTransaction || !signatures || !signers) return;
-      signatures.split(',').map((sig: string, idx: number) =>
+      signatures.map((sig: string, idx: number) =>
         safeTransaction.addSignature({
           data: sig,
           isContractSignature: false,
-          signer: signers.split(',')[idx],
+          signer: signers[idx],
           staticPart: () => sig,
           dynamicPart: () => '',
         })
@@ -293,7 +301,7 @@ export function useMultySign({
       console.log(`error`, error);
       return error;
     }
-  };
+  }, [mode, conditionMulty, safeSdk, safeTransaction, chainId, status, safeTxHash]);
 
   useEffect(() => {
     if (transaction) {
@@ -303,6 +311,7 @@ export function useMultySign({
   }, [transaction, chainId]);
 
   return {
+    safeTransaction,
     thresholdMulty: threshold,
     getSignaturesFromDbMulty,
     getSignaturesMulty,

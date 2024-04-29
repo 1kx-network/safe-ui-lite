@@ -85,8 +85,8 @@ const SignTransactionComponent = () => {
     typeSignTrx,
     linkOnScan,
     safeTransaction,
-    threshold: thresholdUrl,
-    newThresholdUrl: newThreshold,
+    thresholdUrl,
+    newThreshold,
     nonce: nonceUrl,
   };
 
@@ -152,6 +152,7 @@ const SignTransactionComponent = () => {
     ...trxUrlInfo,
     safeAddress: safeAddress ?? '',
     safeTxHash: safeTxHash ?? '',
+    mode: 'url',
   });
 
   const handleTransaction = async () => {

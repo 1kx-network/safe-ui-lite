@@ -1,10 +1,7 @@
 'use client';
 import { Box } from '@mui/system';
 import { usePathname } from 'next/navigation';
-import {
-  useSwitchNetwork,
-  useWeb3ModalAccount,
-} from '@web3modal/ethers/react';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import * as utils from 'ethers';
 import Link from 'next/link';
