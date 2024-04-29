@@ -61,3 +61,9 @@ export const styledBtn = {
   maxWidth: '100%',
   height: '60px',
 };
+
+export const styledSecondaryBtn = {
+  maxWidth: '100%',
+  height: '60px',
+  backgroundColor: '#122',
+};
