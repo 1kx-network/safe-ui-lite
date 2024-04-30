@@ -9,9 +9,7 @@ import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
 } from '@web3modal/ethers/react';
-import { useRouter } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import Link from 'next/link';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -22,9 +20,8 @@ import useSignStore from '@/stores/sign-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import { INetworkDB, db } from '@/db';
-import { ICheckAndSwitchNetwork } from '@/hooks/useMultySign';
+import { useMultySign } from '@/hooks/useMultySign';
 import { customToasty } from '@/components';
-import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
 import { networks } from '@/context/networks';
 import { IQueryParams } from '@/constants/interfaces';
@@ -43,6 +40,7 @@ import {
   styledBorderBox,
   SignersBoxStyled,
   SingInfoStyled,
+  styledSecondaryBtn,
 } from './link-trx.styles';
 
 interface IForm {
@@ -51,28 +49,30 @@ interface IForm {
   destinationAddress: string | null;
   amount: string | null;
   tokenType: string | null;
-  signers: string | null;
+  signers: string[] | null;
   chainIdUrl: string | null;
   networkName: string | null;
   newThreshold: string | null;
 }
 
 interface IDataQuery {
-  safeTxHash: string | null;
-  safeAddress: string | null;
+  safeTxHash: string;
+  safeAddress: string;
   address: string | null;
   newThreshold: string | null;
   tokenType: string | null;
   amount: string | null;
   nonce: string | null;
-  signatures: string | null;
-  signers: string | null;
+  calldata: string | null;
+  signatures: string[] | null;
+  signers: string[] | null;
   userNetworkTrxUrl: string | null;
 }
 
 const defaultDataQuery: IDataQuery = {
-  safeTxHash: null,
-  safeAddress: null,
+  safeTxHash: '',
+  safeAddress: '',
+  calldata: '',
   address: null,
   newThreshold: null,
   tokenType: null,
@@ -99,6 +99,7 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
       thresholdUrl: searchParams.get('thresholdUrl'),
       newThreshold: searchParams.get('newThreshold'),
       nonceUrl: searchParams.get('nonce'),
+      calldata: searchParams.get('calldata'),
       userNetworkTrxUrl: searchParams.get('userNetworkTrx'), // JSON.parse
       signatures: searchParams.get('signatures'),
       signers: searchParams.get('signers'),
@@ -112,16 +113,15 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
 
 const NewSignTransactionComponent = () => {
   const [valueLink, setValueLink] = useState('');
-  const [chainIdUrl, setChainIdUrl] = useState<string | number | null>(0);
+  const [chainIdUrl, setChainIdUrl] = useState<string | null>('0');
   const [typeTrx, setTypeTrx] = useState<keyof ITypeSignTrx | null>(null);
   const [signedCount, setSignedCount] = useState(0);
   const [queryParams, setuQeryParams] = useState<IQueryParams | null>(null);
 
-  const { createTrancationERC20, createSdkInstance } = useSafeSdk();
+  const { createSdkInstance } = useSafeSdk();
   const { address, chainId } = useWeb3ModalAccount();
-  const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
+  const { safeSdk, setSafeTransaction } = useSafeStore();
   const { switchNetwork } = useSwitchNetwork();
-  const router = useRouter();
   const { walletProvider } = useWeb3ModalProvider();
 
   const { threshold, setThreshold, status, setStatus } = useSignStore();
@@ -130,10 +130,8 @@ const NewSignTransactionComponent = () => {
     mode: 'onSubmit',
   });
 
-  const [conditionMulty, setConditionMulty] = useState(false);
   const [dataQuery, setDataQuery] = useState<IDataQuery>(defaultDataQuery);
   const [ownerList, setOwnerList] = useState<string[] | null>();
-  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
 
   const handleChangeLink = async (value: string) => {
     if (value) {
@@ -154,6 +152,7 @@ const NewSignTransactionComponent = () => {
             thresholdUrl: searchParams.get('thresholdUrl'),
             newThreshold: searchParams.get('newThreshold'),
             nonceUrl: searchParams.get('nonce'),
+            calldata: searchParams.get('calldata'),
             userNetworkTrxUrl: searchParams.get('userNetworkTrx'), // JSON.parse
             signatures: searchParams.get('signatures'),
             signers: searchParams.get('signers'),
@@ -164,26 +163,28 @@ const NewSignTransactionComponent = () => {
         setuQeryParams(queryParams);
         createSdkInstance(queryParams.safeAddress);
 
+        const signatures = queryParams.signatures ? queryParams.signatures.split(',') : [];
+        const signers = queryParams.signers ? queryParams.signers.split(',') : [];
         setDataQuery({
-          safeTxHash: queryParams.safeTxHash,
-          safeAddress: queryParams.safeAddress,
+          safeTxHash: queryParams.safeTxHash ?? '',
+          safeAddress: queryParams.safeAddress ?? '',
           address: queryParams.destinationAddress,
           newThreshold: queryParams.newThreshold,
           tokenType: queryParams.tokenType,
           amount: queryParams.amount,
           nonce: queryParams.nonceUrl,
-          signatures: queryParams.signatures,
-          signers: queryParams.signers,
+          calldata: queryParams.calldata,
+          signatures,
+          signers,
           userNetworkTrxUrl: queryParams.userNetworkTrxUrl,
         });
 
-        setChainIdUrl(Number(queryParams.chainIdUrl));
+        setChainIdUrl(queryParams.chainIdUrl);
         setTypeTrx(queryParams.typeSignTrx);
-        setConditionMulty(!queryParams.safeAddress || !queryParams.safeTxHash);
 
         if (queryParams.userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
 
-        reset(queryParams);
+        reset({ ...queryParams, signers: queryParams.signers?.split(',') ?? [] });
         setValueLink(JSON.stringify(queryParams));
       } catch (error) {
         console.error(error);
@@ -217,6 +218,12 @@ const NewSignTransactionComponent = () => {
   useEffect(() => {
     if (safeSdk) {
       (async () => {
+        if (!safeFromDb && dataQuery.safeAddress !== '') {
+          await setDataDB(dataQuery.safeAddress, {
+            address: dataQuery.safeAddress,
+            transactions: [],
+          });
+        }
         const threshold = await safeSdk.getThreshold();
         const ownersList = await safeSdk.getOwners();
 
@@ -226,7 +233,7 @@ const NewSignTransactionComponent = () => {
     } else {
       createSdkInstance(dataQuery.safeAddress);
     }
-  }, [safeSdk, address]);
+  }, [safeSdk, address, dataQuery.safeAddress]);
 
   const onSubmit: SubmitHandler<any> = () => {};
 
@@ -276,11 +283,11 @@ const NewSignTransactionComponent = () => {
 
   useEffect(() => {
     if (dataQuery.signatures && dataQuery.signers) {
-      if (signedCount !== dataQuery.signatures.split(',').length) {
-        setSignedCount(dataQuery.signatures.split(',').length);
+      if (signedCount !== dataQuery.signatures.length) {
+        setSignedCount(dataQuery.signatures.length);
       }
 
-      if (status !== 'signed' && dataQuery.signers.split(',').some(signer => signer === address)) {
+      if (status !== 'signed' && dataQuery.signers.some(signer => signer === address)) {
         setStatus('signed');
       } else {
         setStatus('');
@@ -298,259 +305,40 @@ const NewSignTransactionComponent = () => {
   );
   const transaction = safeFromDb?.transactions.find(tx => tx.hash === dataQuery.safeTxHash);
 
-  const switchNetworkMulty = async (props: ICheckAndSwitchNetwork) => {
-    if (conditionMulty) return;
-    const { chainIdUrl, chainId, switchNetwork, open } = props;
-    const shouldSwitchNetwork = chainIdUrl && +chainIdUrl !== chainId;
-    const isNewNetwork = !chainId && chainIdUrl;
-
-    if (shouldSwitchNetwork) {
-      switchNetwork(+chainIdUrl);
-    } else if (isNewNetwork) {
-      open();
-      switchNetwork(+chainIdUrl);
-    }
-    getOwners();
-  };
-
-  const getOwners = async () => {
-    if (conditionMulty) return;
-    if (!safeSdk) return;
-
-    const threshold = await safeSdk.getThreshold();
-    setThreshold(threshold);
-    setStatus('');
-  };
-
-  const trxResponseByType = async () => {
-    if (!safeSdk || !dataQuery.address) return null;
-
-    let resTrx: SafeTransaction | null = null;
-
-    switch (typeTrx) {
-      case ADD_OWNER:
-        resTrx = await safeSdk.createAddOwnerTx({
-          ownerAddress: dataQuery.address,
-        });
-        break;
-
-      case REMOVE_OWNER:
-        resTrx = await safeSdk.createRemoveOwnerTx({
-          ownerAddress: dataQuery.address,
-          threshold: dataQuery.newThreshold ? +dataQuery.newThreshold : 1,
-        });
-        break;
-
-      case CHANGE_THRESHOLD:
-        resTrx = await safeSdk.createChangeThresholdTx(
-          dataQuery.newThreshold ? +dataQuery.newThreshold : 1
-        );
-        break;
-
-      default:
-        break;
-    }
-
-    return resTrx;
-  };
-
   useEffect(() => {
-    switchNetworkMulty({ chainIdUrl: String(chainIdUrl), chainId, switchNetwork, open });
-
-    if (conditionMulty) return;
-
-    const conditionForCreateTrx =
-      dataQuery.amount && dataQuery.address && !safeTransaction && safeSdk && dataQuery.safeAddress;
-    const pendingCreateTrxData = async () => {
-      if (!safeSdk || !conditionForCreateTrx) return;
-      if (typeTrx === SEND_TOKEN) {
-        if (
-          !chainId ||
-          !safeSdk ||
-          !dataQuery.tokenType ||
-          !transaction ||
-          !dataQuery.address ||
-          !dataQuery.amount
-        )
-          return null;
-        const data = transaction.calldata;
-        const objTrx = await returnTransactionObj(
-          dataQuery.address,
-          dataQuery.amount,
-          dataQuery.tokenType,
-          chainId,
-          data,
-          createTrancationERC20
-        );
-
-        if (!objTrx) return;
-        const safeTransaction = await safeSdk.createTransaction({
-          transactions: [objTrx],
-          options: {
-            nonce: dataQuery.nonce ? +dataQuery.nonce : 0,
-          },
-        });
-
-        setSafeTransaction(safeTransaction);
-        return;
-      }
-
-      const resTransaction = await trxResponseByType();
-      if (!resTransaction) return;
-      setSafeTransaction(resTransaction);
-    };
-
-    pendingCreateTrxData();
-  }, [safeSdk, conditionMulty, chainId]);
-
-  const getSignaturesFromDbMulty = useCallback(() => {
-    return (
-      transaction?.signatures.reduce(
-        (acc: { signatures: string[]; signers: string[] }, sig) => {
-          acc.signatures.push(sig.data);
-          acc.signers.push(sig.signer);
-          return acc;
-        },
-        { signatures: [], signers: [] }
-      ) ?? { signatures: [], signers: [] }
-    );
-  }, [transaction, chainId, address]);
-
-  const getSignaturesMulty = useCallback(() => {
-    const signatures = dataQuery.signatures ? dataQuery.signatures.split(',') : [];
-    const signers = dataQuery.signers ? dataQuery.signers.split(',') : [];
-
-    if (transaction) {
-      const { signatures: signaturesFromDb, signers: signersFromDb } = getSignaturesFromDbMulty();
-      signersFromDb.map((s, idx) => {
-        if (!signers.includes(s)) {
-          signers.push(s);
-          signatures.push(signaturesFromDb[idx]);
-        }
-      });
-    }
-
-    return { signatures, signers };
-  }, [transaction, chainId, address, dataQuery.signatures, dataQuery.signers]);
-
-  const saveSignaturesMulty = useCallback(
-    (signatures: string[], signers: string[]) => {
-      if (conditionMulty) return;
-
-      if (signatures.length === 0 || signatures[0] === '') {
-        return;
-      }
-
-      const uniqueSignatures = Array.from(new Set(signatures));
-      const uniqueSigners = Array.from(new Set(signers));
-
-      const encodedSignatures = uniqueSignatures.map(sig => encodeURIComponent(sig)).join(',');
-      const encodedSigners = uniqueSigners.map(sig => encodeURIComponent(sig)).join(',');
-
+    if (transaction && transaction.signatures.length !== dataQuery.signatures?.length) {
+      const { signatures, signers } = multySign.getSignaturesFromDbMulty();
       setDataQuery(prev => ({
         ...prev,
-        signatures: encodedSignatures,
-        signers: encodedSigners,
+        signatures,
+        signers,
       }));
-
-      if (transaction) {
-        const { signers: signersFromDb } = getSignaturesFromDbMulty();
-        if (transaction.signatures.length !== signers.length) {
-          db.transactions.where({ hash: transaction.hash }).modify(trx => {
-            signers.map((s, idx) => {
-              if (!signersFromDb.includes(s)) {
-                trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
-              }
-            });
-          });
-        }
-      }
-    },
-    [router, transaction, chainId, dataQuery, address]
-  );
-
-  const signTransactionMulty = useCallback(async () => {
-    if (status === 'signed') {
-      customToasty('This wallet has already signed', 'error');
-      return;
     }
+  }, [transaction, dataQuery.signatures]);
 
-    if (conditionMulty) return;
-    if (!safeSdk || !safeTransaction) return;
+  const multySign = useMultySign({
+    ...dataQuery,
+    safeAddress: dataQuery.safeAddress ?? '',
+    safeTxHash: dataQuery.safeTxHash ?? '',
+    chainIdUrl,
+    typeSignTrx: typeTrx ?? TYPE_SIGN_TRX.SEND_TOKEN,
+    mode: 'runtime',
+  });
 
-    try {
-      const signedTransaction = await safeSdk.signTransaction(safeTransaction);
-      setSafeTransaction(signedTransaction);
-
-      const { signatures, signers } = getSignaturesMulty();
-      const signaturess = Array.from(signedTransaction.signatures.values());
-
-      const dataSignatures = signaturess.map(elem => elem.data);
-      const dataSigners = signaturess.map(elem => elem.signer);
-
-      saveSignaturesMulty([...signatures, ...dataSignatures], [...signers, ...dataSigners]);
-      customToasty('This wallet signed successfully', 'success');
-    } catch (error: any) {
-      if (error.code === 'ACTION_REJECTED') {
-        customToasty('Something went wrong with sign!', 'error');
-        return;
-      }
-
-      const message = (error as { message: string }).message;
-      if (message) {
-        customToasty(message, 'error');
-      }
-      console.error(message);
-    }
-  }, [safeSdk, safeTransaction, chainId, address, status, dataQuery]);
-
-  const executeMulty = async () => {
-    try {
-      if (conditionMulty) return;
-
-      setStatus('loading');
-
-      if (!safeSdk || !safeTransaction || !dataQuery.signatures || !dataQuery.signers) return;
-      dataQuery.signatures.split(',').map((sig: string, idx: number) =>
-        safeTransaction.addSignature({
-          data: sig,
-          isContractSignature: false,
-          signer: dataQuery.signers ? dataQuery.signers.split(',')[idx] : '',
-          staticPart: () => sig,
-          dynamicPart: () => '',
-        })
-      );
-      const txResponse = await safeSdk.executeTransaction(safeTransaction);
-      await txResponse.transactionResponse?.wait();
-
-      setStatus('success');
-      customToasty('Execute success', 'success');
-    } catch (error) {
-      if ((error as { message: string }).message.includes('-32603')) {
-        customToasty('Transaction has already been executed', 'error');
-        return error;
-      }
-      customToasty('Something error with execute', 'error');
-      setStatus('');
-
-      return error;
-    }
-  };
-
-  //
   const handleTransaction = useCallback(async () => {
-    if (!safeSdk || !safeTransaction) return;
     if (status === 'success') return;
 
     if (ownerList && ownerList.find(elem => elem === String(address))) {
-      signedCount === threshold ? await executeMulty() : await signTransactionMulty();
+      signedCount === threshold
+        ? await multySign.executeMulty()
+        : await multySign.signTransactionMulty();
     } else {
       customToasty(
         'Transactions can only be signed by Safe owners. Please change your account',
         'error'
       );
     }
-  }, [address, ownerList, safeSdk, safeTransaction]);
+  }, [address, ownerList, status, signedCount, threshold]);
 
   let buttonText = 'Sign Transaction';
 
@@ -742,9 +530,9 @@ const NewSignTransactionComponent = () => {
                     <ItemInfoLabelStyled>Signers</ItemInfoLabelStyled>
                     <SignersBoxStyled>
                       {dataQuery.signers ? (
-                        dataQuery.signers
-                          .split(',')
-                          .map(elem => <ItemInfoStyled key={elem}>{elem}</ItemInfoStyled>)
+                        dataQuery.signers.map(elem => (
+                          <ItemInfoStyled key={elem}>{elem}</ItemInfoStyled>
+                        ))
                       ) : (
                         <ItemInfoStyled>0x</ItemInfoStyled>
                       )}
@@ -762,19 +550,31 @@ const NewSignTransactionComponent = () => {
                 <Link href={routes.home} style={{ width: '100%' }}>
                   <WalletButton variant="outlined">Back</WalletButton>
                 </Link>
-                <WalletButton
-                  loading={status === 'loading'}
-                  variant="contained"
-                  onClick={handleTransaction}
-                >
-                  {buttonText}
-                </WalletButton>
+                <>
+                  {buttonText === 'Execute' && (
+                    <WalletButton
+                      disabled={status === 'loading'}
+                      variant={status === 'success' ? 'outlined' : 'contained'}
+                      styles={styledSecondaryBtn}
+                      onClick={multySign.signTransactionMulty}
+                    >
+                      {status === 'signed' ? 'Signed' : 'Sign Transaction'}
+                    </WalletButton>
+                  )}
+                  <WalletButton
+                    loading={status === 'loading'}
+                    variant="contained"
+                    onClick={handleTransaction}
+                  >
+                    {buttonText}
+                  </WalletButton>
+                </>
               </Box>
             </>
           )}
         </WalletPaper>
 
-        {dataQuery.signatures?.length && (
+        {dataQuery.signatures && dataQuery.signatures?.length > 0 ? (
           <WalletPaper style={{ marginTop: themeMuiBase.spacing(3) }}>
             <Box display={'flex'} flexDirection={'column'} gap={5}>
               <Box>
@@ -807,7 +607,7 @@ const NewSignTransactionComponent = () => {
               </Box>
             </Box>
           </WalletPaper>
-        )}
+        ) : null}
       </WrapperStyled>
     </WalletLayout>
   );

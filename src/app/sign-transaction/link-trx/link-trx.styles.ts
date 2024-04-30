@@ -100,3 +100,10 @@ export const SingInfoStyled = styled('div')(
   width: 90%;
 `
 );
+
+export const styledSecondaryBtn = {
+  margin: '0 16px 0 16px',
+  maxWidth: '176px',
+  height: '42px',
+  backgroundColor: '#122',
+};

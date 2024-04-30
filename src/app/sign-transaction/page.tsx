@@ -85,8 +85,8 @@ const SignTransactionComponent = () => {
     typeSignTrx,
     linkOnScan,
     safeTransaction,
-    threshold: thresholdUrl,
-    newThresholdUrl: newThreshold,
+    thresholdUrl,
+    newThreshold,
     nonce: nonceUrl,
   };
 
@@ -152,6 +152,7 @@ const SignTransactionComponent = () => {
     ...trxUrlInfo,
     safeAddress: safeAddress ?? '',
     safeTxHash: safeTxHash ?? '',
+    mode: 'url',
   });
 
   const handleTransaction = async () => {
@@ -187,7 +188,7 @@ const SignTransactionComponent = () => {
   let buttonText = 'Sign Transaction';
   if (status === 'success') {
     buttonText = 'Successfully deployed';
-  } else if (signedCount === threshold) {
+  } else if (signedCount >= threshold) {
     buttonText = 'Execute';
   } else if (status === 'loading') {
     buttonText = 'Loading...';
@@ -247,7 +248,7 @@ const SignTransactionComponent = () => {
                     styles={styledSecondaryBtn}
                     onClick={handleSignTransaction}
                   >
-                    Sign Transaction
+                    {status === 'signed' ? 'Signed' : 'Sign Transaction'}
                   </WalletButton>
                 )}
                 <WalletButton
