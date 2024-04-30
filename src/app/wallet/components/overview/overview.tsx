@@ -62,13 +62,19 @@ export const Overview = () => {
   const handleChangeSelect = async (elem: SingleValue<any>) => {
     if (!elem || !chainId) return;
     const { label } = elem;
+    console.log(1);
 
     if (label === NATIVE_TOKENS.ETH) {
+      console.log(2);
       setIsLoading(true);
       const dataAcc = await getInfoByAccount(safeSdk);
+      console.log(33);
       if (!dataAcc) return;
 
+      console.log(3);
       const { balanceAccount } = dataAcc;
+      console.log('_balanceAccount_', balanceAccount);
+
       const parceBalance = utils.formatEther(String(balanceAccount));
 
       setBalanceAccount(parceBalance);

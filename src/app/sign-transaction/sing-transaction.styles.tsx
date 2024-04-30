@@ -22,7 +22,7 @@ export const WrapperStyled = styled('div')`
 export const GridButtonStyled = styled('div')(
   ({ theme }) => `
    display: flex;
-   flex-direction: column;
+   align-items: center;
    width: 100%;
    gap: ${theme.spacing(3)};
    margin-bottom: ${theme.spacing(6)};
@@ -32,8 +32,9 @@ export const GridButtonStyled = styled('div')(
 export const OwnersInfoStyled = styled('div')(
   ({ theme }) => `
     display: flex;
-    gap: ${theme.spacing(4)};
+    gap: ${theme.spacing(2.5)};
     flex-direction: column;
+    margin-top: ${theme.spacing(4)};
     `
 );
 
@@ -50,7 +51,7 @@ export const OwnerLinkStyled = styled('div')(
   ({ theme }) => `
       display: flex;
       align-items: center;
-      padding: ${theme.spacing(4.75)} ${theme.spacing(4.5)};
+      padding: ${theme.spacing(3)} ${theme.spacing(2.5)};
       border-radius: 44px;
       border: 1px solid ${theme.palette.black};
       width: 100%;
@@ -59,11 +60,26 @@ export const OwnerLinkStyled = styled('div')(
 
 export const styledBtn = {
   maxWidth: '100%',
-  height: '60px',
+  height: '44px',
 };
 
 export const styledSecondaryBtn = {
-  maxWidth: '100%',
-  height: '60px',
+  ...styledBtn,
   backgroundColor: '#122',
+};
+
+export const styledBtnBack: React.CSSProperties = {
+  ...styledBtn,
+  display: 'flex',
+  alignItems: 'center',
+  maxWidth: 'fit-content',
+  position: 'absolute',
+  top: '-75px',
+  left: 0,
+  paddingLeft: '5px',
+  paddingRight: '20px',
+};
+
+export const styledPaper: React.CSSProperties = {
+  position: 'relative',
 };

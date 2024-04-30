@@ -64,7 +64,7 @@ export function useMultySign({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { threshold, setThreshold, status, setStatus } = useSignStore();
+  const { threshold, setThreshold, status, setStatus, setOwners } = useSignStore();
 
   // const conditionForCreateTrx = address && !safeTransaction && safeSdk && safeAddress;
   const safeFromDb = useLiveQuery(
@@ -93,7 +93,9 @@ export function useMultySign({
     if (!safeSdk) return;
 
     const threshold = await safeSdk.getThreshold();
+    const owners = await safeSdk.getOwners();
     setThreshold(threshold);
+    setOwners(owners);
     setStatus('');
   };
 

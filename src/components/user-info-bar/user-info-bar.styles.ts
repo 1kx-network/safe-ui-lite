@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { styled } from '@mui/system';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -143,3 +144,8 @@ export const styledBtnDisconnect = {
   border: 'none',
   color: themeMuiBase.palette.error,
 };
+
+export const ImgWalletStyled = styled(Image)`
+  border-radius: 50%;
+  object-fit: cover;
+`;

@@ -1,6 +1,11 @@
 'use client';
 
-import { useDisconnect, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import {
+  useDisconnect,
+  useWalletInfo,
+  useWeb3Modal,
+  useWeb3ModalAccount,
+} from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -37,6 +42,7 @@ import {
   IconCopyStyled,
   styledBtn,
   styledBtnDisconnect,
+  ImgWalletStyled,
 } from './user-info-bar.styles';
 
 // interface IAddNetwork {
@@ -57,6 +63,8 @@ export const UserInfoBar = () => {
   const { safeSdk } = useSafeStore();
   const { getInfoByAccount } = useSafeSdk();
   const network = useNetwork();
+  const { walletInfo } = useWalletInfo();
+
   // const { switchNetwork } = useSwitchNetwork();
   const { setClearActiveSafeStore } = useActiveSafeAddress();
   const searchParams = useMemo(() => {
@@ -349,7 +357,6 @@ export const UserInfoBar = () => {
         {address ? (
           <>
             <Box display={'flex'} alignItems={'center'} gap={1.5} zIndex={0}>
-              {/* <IconDefaultAddress width="16px" height="16px" /> */}
               {formatterIcon(chainId ?? 0, '16px', '16px')}
               <WalletTypography
                 fontSize={12}
@@ -439,11 +446,27 @@ export const UserInfoBar = () => {
       <BodyOpenStyled isOpen={isOpenMenu}>
         <ItemInfoStyled noBorder>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
-            {/* {address && formattedLabel(address, 6, 9)} */}
             {address && formattedLabel(address, 15, 15)}
           </WalletTypography>
           <IconCopyStyled onClick={handleCopyAddress} />
         </ItemInfoStyled>
+
+        <ItemInfoStyled>
+          <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
+            Wallet
+          </WalletTypography>
+          <Box display={'flex'} alignItems={'center'} gap={1}>
+            {walletInfo && walletInfo.icon ? (
+              <ImgWalletStyled src={walletInfo?.icon} alt="avatar" width={16} height={16} />
+            ) : (
+              formatterIcon(0, '16px', '16px')
+            )}
+            <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
+              {walletInfo?.name ?? 'Uknown'}
+            </WalletTypography>
+          </Box>
+        </ItemInfoStyled>
+
         <ItemInfoStyled>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
             Network
@@ -457,8 +480,12 @@ export const UserInfoBar = () => {
         </ItemInfoStyled>
         {/* networks */}
         <ItemInfoStyled>
-          <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
-            RPC
+          <WalletTypography
+            fontSize={12}
+            color={themeMuiBase.palette.grey}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Safe RPC
           </WalletTypography>
           <Link href={networkRpc ?? '/'} target="_black">
             <Box

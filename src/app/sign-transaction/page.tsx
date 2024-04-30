@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   useSwitchNetwork,
+  useWeb3Modal,
   useWeb3ModalAccount,
   useWeb3ModalProvider,
 } from '@web3modal/ethers/react';
@@ -14,9 +15,6 @@ import * as ethers from 'ethers';
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
-import CopyIcon from '@/assets/svg/copy.svg';
-import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
 import { useMultySign } from '@/hooks/useMultySign';
@@ -27,6 +25,11 @@ import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
+import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
+import CopyIcon from '@/assets/svg/copy.svg';
+import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
+import IconArrowLeft from '@/assets/svg/left-arrow.svg';
+import routes from '../routes';
 
 import {
   BoxOwnerLinkStyled,
@@ -36,6 +39,8 @@ import {
   TransactionInfoStyled,
   WrapperStyled,
   styledBtn,
+  styledBtnBack,
+  styledPaper,
   styledSecondaryBtn,
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sing-trx-info';
@@ -46,10 +51,11 @@ const SignTransactionComponent = () => {
   const searchParams = useSearchParams();
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk } = useSafeStore();
-  const { threshold, status, setStatus } = useSignStore();
+  const { threshold, status, setStatus, owners } = useSignStore();
   const { address, chainId } = useWeb3ModalAccount();
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
+  const { open } = useWeb3Modal();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
@@ -184,6 +190,10 @@ const SignTransactionComponent = () => {
     customToasty('Was copy', 'success');
   };
 
+  const handleConnectWallet = async () => {
+    await open();
+  };
+
   let buttonText = 'Sign Transaction';
   if (status === 'success') {
     buttonText = 'Successfully deployed';
@@ -198,7 +208,13 @@ const SignTransactionComponent = () => {
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
-        <WalletPaper>
+        <WalletPaper style={styledPaper}>
+          <Link href={routes.home}>
+            <WalletButton styles={styledBtnBack} variant="contained">
+              <IconArrowLeft />
+              Back
+            </WalletButton>
+          </Link>
           <WalletTypography fontSize={22} fontWeight={600}>
             Sign Transaction
           </WalletTypography>
@@ -242,7 +258,8 @@ const SignTransactionComponent = () => {
               <>
                 {buttonText === 'Execute' && (
                   <WalletButton
-                    disabled={status === 'loading'}
+                    loading={status === 'loading'}
+                    // disabled={status === 'loading'}
                     variant={status === 'success' ? 'outlined' : 'contained'}
                     styles={styledSecondaryBtn}
                     onClick={handleSignTransaction}
@@ -251,7 +268,8 @@ const SignTransactionComponent = () => {
                   </WalletButton>
                 )}
                 <WalletButton
-                  disabled={status === 'loading'}
+                  loading={status === 'loading'}
+                  // disabled={status === 'loading'}
                   variant={status === 'success' ? 'outlined' : 'contained'}
                   styles={styledBtn}
                   onClick={handleTransaction}
@@ -260,7 +278,7 @@ const SignTransactionComponent = () => {
                 </WalletButton>
               </>
             ) : (
-              <WalletButton variant="outlined" styles={styledBtn}>
+              <WalletButton variant="outlined" styles={styledBtn} onClick={handleConnectWallet}>
                 Connect Wallet
               </WalletButton>
             )}
@@ -279,12 +297,9 @@ const SignTransactionComponent = () => {
                   overflow: 'hidden',
                   maxWidth: '450px',
                 }}
-                fontSize={17}
                 fontWeight={400}
               >
-                <WalletTypography fontSize={17} fontWeight={600}>
-                  ADD_OWNER
-                </WalletTypography>
+                <WalletTypography fontWeight={600}>{typeSignTrx}</WalletTypography>
                 {formattedLabel(`?${searchParams.toString()}`, 27, 40)}
               </WalletTypography>
             </OwnerLinkStyled>
@@ -301,15 +316,9 @@ const SignTransactionComponent = () => {
           </BoxOwnerLinkStyled>
 
           <OwnersInfoStyled>
-            <WalletTypography fontSize={22} fontWeight={600}>
-              Signers
-            </WalletTypography>
-
-            <WalletTypography fontSize={17}>
-              <WalletTypography fontWeight={600}>{signedCount} </WalletTypography>
-              out of <WalletTypography fontWeight={600}>{threshold}</WalletTypography> Threshold
-              {threshold > 1 ? '' : 'ers'}
-            </WalletTypography>
+            <WalletTypography fontWeight={500}>Owners: {owners?.length ?? 0}</WalletTypography>
+            <WalletTypography fontWeight={500}>Need threshold: {threshold}</WalletTypography>
+            <WalletTypography fontWeight={500}>Signed: {signedCount}</WalletTypography>
           </OwnersInfoStyled>
         </WalletPaper>
       </WrapperStyled>
