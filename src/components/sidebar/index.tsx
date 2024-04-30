@@ -3,9 +3,9 @@ import { Box } from '@mui/system';
 import { usePathname } from 'next/navigation';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import * as utils from 'ethers';
 import Link from 'next/link';
 import { MultiValue } from 'react-select';
+import * as utils from 'ethers';
 
 import { WalletButton, WalletSelect, WalletTypography } from '@/ui-kit';
 import routes from '@/app/routes';
@@ -101,10 +101,11 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     setClearActiveSafeStore,
     isLoading,
     setIsLoading,
+    accountList,
+    setAccountList,
   } = useActiveSafeAddress();
   const { createSafe, getInfoByAccount } = useSafeSdk();
 
-  const [dataList, setDataList] = useState<string[] | []>([]);
   const [isOpenAccount, setIsOpenAccount] = useState(false);
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [isOpenShareModal, setIsOpenShareModal] = useState(false);
@@ -117,24 +118,27 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     (network?.name || '').toString().slice(1);
 
   useEffect(() => {
-    if (!!dataList.length) {
-      const upDataList = dataList.map(elem => ({
-        id: Number(dataList.length + 1),
+    if (!!accountList.length) {
+      const upAccountList = accountList.map(elem => ({
+        id: Number(accountList.length + 1),
         value: elem,
         label: elem,
         icon: () => formatterIcon(0),
       }));
 
-      setOptionsShareAcc(upDataList);
+      setOptionsShareAcc(upAccountList);
     }
-  }, [dataList]);
+  }, [accountList]);
 
   useEffect(() => {
     if (!safeAddress) return;
 
     setIsLoading(true);
+
     setSafeAddress(safeAddress);
     createSafe(safeAddress);
+
+    setIsLoading(false);
   }, [safeAddress, address, chainId]);
 
   useEffect(() => {
@@ -150,7 +154,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             : localListParsed[chainId];
 
       if (listAccount !== undefined) {
-        setDataList(listAccount);
+        setAccountList(listAccount);
 
         const defaultAccount = listAccount[0];
 
@@ -162,21 +166,12 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         }
       }
 
-      console.error('Need create new account with new network');
+      console.error('<-- Need create new account with new network -->');
     }
-  }, [data, chainId, address]);
-
-  // const { getRpc } = useEthersAdapter();
+  }, [data, chainId, address, safeSdk]);
 
   useEffect(() => {
     (async () => {
-      // await getRpc();
-      // if (walletProvider) {
-      //   // providers.Web3Provider(walletProvider);
-      //   const network = await provider.getNetwork();
-      //   return network.rpcUrl;
-      // }
-
       if (shareNetwork) {
         await addCustomNetworkDB(shareNetwork as INetworkDB);
 
@@ -230,7 +225,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       const parceBalance = utils.formatEther(String(balanceAccount));
 
       setBalanceAccount(parceBalance);
-      setIsLoading(false);
     };
 
     pendingBalance();
@@ -385,11 +379,11 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             <WalletTypography fontSize={14} fontWeight={500}>
               My Accounts{' '}
               <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                ({dataList.length})
+                ({accountList.length})
               </WalletTypography>
             </WalletTypography>
             <Box mt={2.5}>
-              {dataList.map((item, index) => (
+              {accountList.map((item, index) => (
                 <ItemAccountStyled key={index} onClick={() => handleClickAccount(item)}>
                   <Box display={'flex'} alignItems={'center'}>
                     <IconDefaultAddressStyled width={'24px'} height={'24px'} />

@@ -1,16 +1,19 @@
 import { create } from 'zustand';
 
-import { IOptionNetwork } from '@/constants/networks';
+import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
+import { getNetworksDB } from '@/db/get-info';
+import { formatterIcon } from '@/utils/icon-formatter';
 
 type Store = {
   networks: null | IOptionNetwork[];
   setNetwork: (payload: null | IOptionNetwork) => void;
   setNetworksArray: (payload: null | IOptionNetwork[]) => void;
   updateNetwork: (payload: IOptionNetwork) => void;
+  loadNetworks: () => void;
 };
 
 const useNetworkStore = create<Store>(set => ({
-  networks: [],
+  networks: null,
 
   setNetwork: (payload: null | IOptionNetwork) => {
     if (!payload) return;
@@ -49,6 +52,33 @@ const useNetworkStore = create<Store>(set => ({
       return { networks: updatedNetworks };
     });
   },
+
+  loadNetworks: () => {
+    (async () => {
+      const networksDB = await getNetworksDB();
+
+      const updateNetwork = networksDB.map(elem => ({
+        ...elem,
+        label: elem.name,
+        value: elem.name,
+        rpc: elem.rpcUrl,
+        icon: () => formatterIcon(elem.chainId ?? 0),
+      }));
+
+      const updatedArray = optionsNetwork.map(
+        option => updateNetwork.find(network => network.chainId === option.chainId) || option
+      );
+
+      const networkArray = [
+        ...updatedArray,
+        ...updateNetwork.filter(network => !updatedArray.some(n => n.chainId === network.chainId)),
+      ];
+
+      set({ networks: networkArray });
+    })();
+  },
 }));
+
+useNetworkStore.getState().loadNetworks();
 
 export default useNetworkStore;

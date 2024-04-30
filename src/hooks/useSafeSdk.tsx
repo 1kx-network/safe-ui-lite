@@ -13,6 +13,7 @@ import { customToasty } from '@/components';
 import { safeNetworksObj } from '@/constants/networks';
 import usdABI from '@/app/contracts/abi/usd.json';
 import { CONTRACTS_TOKEN } from '@/constants/tokens-contract';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import { useEthersAdapter } from './useEthersAdapter';
 
@@ -27,6 +28,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const { saveSdk, safeSdk } = useSafeStore();
   const { walletProvider } = useWeb3ModalProvider();
   const { chainId } = useWeb3ModalAccount();
+  const { setClearActiveSafeStore } = useActiveSafeAddress();
 
   const createSdkInstance = async (address: string | null) => {
     if (!walletProvider) {
@@ -87,8 +89,12 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
       return safeSdk;
     } catch (e) {
-      console.error(e);
-      return null;
+      const error = e instanceof Error ? e.message : String(e);
+      customToasty('Error with deploy new safe account', 'error', { duration: 4000 });
+      console.error(`<-- ${error} -->`);
+
+      setClearActiveSafeStore();
+      throw new Error(error);
     }
   };
 
@@ -105,9 +111,12 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
       saveSdk(safeSdk);
       return safeSdk;
-    } catch (e) {
-      console.error(e);
-      return null;
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e);
+      const errorMessage = `${error}. Please check your RPC in wallet or change network`;
+
+      setClearActiveSafeStore();
+      console.error(` - 1 - <-- ${errorMessage} -->`);
     }
   };
 
@@ -122,8 +131,11 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const accountThreshold = await safeSdk.getThreshold();
 
       return { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold };
-    } catch (e) {
-      return null;
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+
+      customToasty(errorMessage, 'error', { duration: 4000 });
+      console.error(`<-- ${errorMessage} -->`);
     }
   };
 
@@ -135,8 +147,9 @@ export function useSafeSdk(safeAddress: string | null = null) {
     try {
       const transferData = createERC20TokenTransferTransaction(tokenAddress, toAddress, amount);
       return transferData;
-    } catch (e) {
-      console.error('Error create token transfer transaction ERC20', e);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      console.error(`<-- ${errorMessage} -->`);
     }
   };
 
@@ -155,10 +168,11 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const balance = await usdtContract.balanceOf(addressAccount);
 
       return balance;
-    } catch (error) {
-      customToasty(`Error get balance ERC20 token`, 'error');
-      console.error(error);
-      return null;
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+
+      customToasty('Error get balance ERC20 token', 'error');
+      console.error(`<-- ${errorMessage} -->`);
     }
   };
 

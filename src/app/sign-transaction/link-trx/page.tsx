@@ -580,7 +580,7 @@ const NewSignTransactionComponent = () => {
               <Box>
                 <WalletTypography fontWeight={500}>Url params with information</WalletTypography>
                 <Box display={'flex'} alignItems={'center'} gap={3} mt={3}>
-                  <SingInfoStyled>{formattedLabel(`?${newUrlLink}`, 27, 40)}</SingInfoStyled>
+                  <SingInfoStyled>{formattedLabel(`${newUrlLink}`, 25, 35)}</SingInfoStyled>
 
                   <Link href={newUrlLink ?? '/'} target="_blanck">
                     <OpenInNewIcon width="19px" height="18px" />
@@ -596,7 +596,7 @@ const NewSignTransactionComponent = () => {
               <Box>
                 <WalletTypography fontWeight={500}>Query params with information</WalletTypography>
                 <Box display={'flex'} alignItems={'center'} gap={3} mt={3}>
-                  <SingInfoStyled>{formattedLabel(`?${newQueryLink}`, 27, 40)}</SingInfoStyled>
+                  <SingInfoStyled>{formattedLabel(`${newQueryLink}`, 25, 35)}</SingInfoStyled>
                   <CopyIcon
                     width="18px"
                     height="19px"

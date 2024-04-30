@@ -70,7 +70,7 @@ export function useMultySign({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { threshold, setThreshold, status, setStatus } = useSignStore();
+  const { threshold, setThreshold, status, setStatus, setOwners } = useSignStore();
 
   const safeFromDb = useLiveQuery(
     () => db.safes.where('address').equals(safeAddress).first(),
@@ -98,7 +98,9 @@ export function useMultySign({
     if (!safeSdk) return;
 
     const threshold = await safeSdk.getThreshold();
+    const owners = await safeSdk.getOwners();
     setThreshold(threshold);
+    setOwners(owners);
     setStatus('');
   };
 

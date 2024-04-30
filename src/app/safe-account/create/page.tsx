@@ -53,12 +53,12 @@ export default function CreatePageAccount() {
   const [valueAcc, setValueAcc] = useState('');
   const [chooseNetwork, setChooseNetwork] = useState<IOptionNetwork>(optionsNetwork[0]);
   const [errorNewNetwork, setErrorNewNetwork] = useState<string | null>(null);
+  const [isAddNewNetwork, setIsAddNewNetwork] = useState(false);
 
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
   const network = useNetwork();
 
-  const networkName = network?.name.toString();
   const chainId = Number(network?.chainId);
 
   useEffect(() => {
@@ -68,15 +68,19 @@ export default function CreatePageAccount() {
         label: elem.name,
         value: elem.name,
         rpc: elem.rpcUrl,
-        icon: () => formatterIcon(0),
+        icon: () => formatterIcon(elem.chainId),
         ...elem,
       }));
 
       setOptions(prevOptions => {
-        const uniqueNetworks = updateNetwork.filter(
-          network => !prevOptions.some(option => option.rpc === network.rpcUrl)
-        );
-        return [...prevOptions, ...uniqueNetworks];
+        const updatedOptions = prevOptions.map(prevOption => {
+          const foundNetwork = updateNetwork.find(
+            network => network.chainId === prevOption.chainId
+          );
+          return foundNetwork ? foundNetwork : prevOption;
+        });
+
+        return updatedOptions;
       });
     })();
   }, []);
@@ -117,8 +121,6 @@ export default function CreatePageAccount() {
   };
 
   const condNetwork = chooseNetwork && chainId !== chooseNetwork.chainId;
-
-  const [isAddNewNetwork, setIsAddNewNetwork] = useState(false);
 
   const {
     handleSubmit,
@@ -169,6 +171,8 @@ export default function CreatePageAccount() {
     setIsAddNewNetwork(false);
     reset();
   };
+
+  console.log(options);
 
   return (
     <WalletLayout hideSidebar>
@@ -382,7 +386,7 @@ export default function CreatePageAccount() {
           </Box>
 
           {/* --- */}
-          <AccountInfo account={address} networkName={networkName} chainId={chainId} />
+          <AccountInfo account={address} chooseNetwork={chooseNetwork} />
         </GridContainer>
       </WrapperStyled>
       {/*  */}
