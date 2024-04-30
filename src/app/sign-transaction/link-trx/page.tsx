@@ -40,6 +40,7 @@ import {
   styledBorderBox,
   SignersBoxStyled,
   SingInfoStyled,
+  styledSecondaryBtn,
 } from './link-trx.styles';
 
 interface IForm {
@@ -549,13 +550,25 @@ const NewSignTransactionComponent = () => {
                 <Link href={routes.home} style={{ width: '100%' }}>
                   <WalletButton variant="outlined">Back</WalletButton>
                 </Link>
-                <WalletButton
-                  loading={status === 'loading'}
-                  variant="contained"
-                  onClick={handleTransaction}
-                >
-                  {buttonText}
-                </WalletButton>
+                <>
+                  {buttonText === 'Execute' && (
+                    <WalletButton
+                      disabled={status === 'loading'}
+                      variant={status === 'success' ? 'outlined' : 'contained'}
+                      styles={styledSecondaryBtn}
+                      onClick={multySign.signTransactionMulty}
+                    >
+                      {status === 'signed' ? 'Signed' : 'Sign Transaction'}
+                    </WalletButton>
+                  )}
+                  <WalletButton
+                    loading={status === 'loading'}
+                    variant="contained"
+                    onClick={handleTransaction}
+                  >
+                    {buttonText}
+                  </WalletButton>
+                </>
               </Box>
             </>
           )}
