@@ -91,13 +91,14 @@ export const SignersBoxStyled = styled('div')(
 
 export const SingInfoStyled = styled('div')(
   ({ theme }) => `
-  disaply: flex;
+  display: flex;
   align-items: center;
   padding: ${theme.spacing(3)};
   border-radius: 24px;
   background: ${theme.palette.white};
   border: 1px solid ${theme.palette.borderColor};
   width: 90%;
+  overflow: hidden;
 `
 );
 

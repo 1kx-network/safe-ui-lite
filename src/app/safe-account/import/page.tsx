@@ -62,7 +62,6 @@ export default function CreatePageAccount() {
   const { setIsLoading, safeAddress } = useActiveSafeAddress();
   const { createSafe } = useSafeSdk();
 
-  const networkName = network?.name.toString();
   const chainId = Number(network?.chainId);
 
   useEffect(() => {
@@ -442,7 +441,7 @@ export default function CreatePageAccount() {
           </Box>
 
           {/* --- */}
-          <AccountInfo account={address} networkName={networkName} chainId={chainId} />
+          <AccountInfo account={address} chooseNetwork={chooseNetwork} />
         </GridContainer>
       </WrapperStyled>
       {/*  */}
