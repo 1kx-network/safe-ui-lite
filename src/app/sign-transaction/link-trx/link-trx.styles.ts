@@ -18,8 +18,8 @@ export const TransactionInfoStyled = styled('div')(
 
 export const WrapperStyled = styled('div')`
   width: 100%;
+  margin: 2rem auto;
   max-width: 650px;
-  margin: auto;
 `;
 
 export const BoxLinkStyled = styled('div')(

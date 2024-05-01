@@ -101,7 +101,6 @@ export function useMultySign({
     const owners = await safeSdk.getOwners();
     setThreshold(threshold);
     setOwners(owners);
-    setStatus('');
   };
 
   const trxResponseByType = async () => {
@@ -140,11 +139,13 @@ export function useMultySign({
     if (conditionMulty) return;
 
     getOwners();
+
     const conditionForCreateTrx = amount && address && !safeTransaction && safeSdk && safeAddress;
     const pendingCreateTrxData = async () => {
-      if (!safeSdk || !conditionForCreateTrx) return;
+      if (!safeSdk || !conditionForCreateTrx) return -1;
+
       if (typeSignTrx === SEND_TOKEN) {
-        if (!chainId || !safeSdk || !tokenType || transaction) return null;
+        if (!chainId || !safeSdk || !tokenType) return -1;
         const objTrx = await returnTransactionObj(
           address,
           amount,
@@ -161,6 +162,7 @@ export function useMultySign({
             nonce: nonce ? +nonce : 0,
           },
         });
+        await setSafeTransaction(safeTransaction);
 
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const thesholders = await safeSdk.getThreshold();
@@ -183,8 +185,7 @@ export function useMultySign({
           transactions: [transactionDB],
         });
 
-        await setSafeTransaction(safeTransaction);
-        return;
+        return 0;
       }
 
       const resTransaction = await trxResponseByType();
@@ -204,6 +205,18 @@ export function useMultySign({
     typeSignTrx,
     transaction,
   ]);
+
+  useEffect(() => {
+    return () => {
+      setSafeTransaction(null);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (transaction && transaction.signatures.length > 0) {
+      checkSignedStatus();
+    }
+  }, [transaction]);
 
   useEffect(() => {
     if (userWalletAddress) {
@@ -277,6 +290,12 @@ export function useMultySign({
     [router, transaction, chainId, conditionMulty]
   );
 
+  const checkSignedStatus = useCallback(() => {
+    const { signers } = getSignaturesMulty();
+    const signed = signers.some(signer => signer === userWalletAddress);
+    setStatus(signed ? 'signed' : '');
+  }, [userWalletAddress, chainId, getSignaturesMulty]);
+
   const signTransactionMulty = useCallback(async () => {
     if (conditionMulty) return;
     if (!safeSdk || !safeTransaction || !userWalletAddress) return;
@@ -300,7 +319,8 @@ export function useMultySign({
     } catch (error) {
       if ((error as { message: string }).message) {
         customToasty('Something went wrong with sign!', 'error');
-        console.error((error as { message: string }).message as string);
+        console.error(`<--${(error as { message: string }).message as string}-->`);
+        checkSignedStatus();
       }
     }
   }, [safeSdk, safeTransaction, safeTxHash, status, chainId, userWalletAddress]);
@@ -332,7 +352,8 @@ export function useMultySign({
         return error;
       }
       customToasty('Something error with execute', 'error');
-      console.log(`error`, error);
+      checkSignedStatus();
+      console.error(`<-- ${error} -->`);
       return error;
     }
   }, [mode, conditionMulty, safeSdk, safeTransaction, chainId, status, safeTxHash]);

@@ -286,12 +286,6 @@ const NewSignTransactionComponent = () => {
       if (signedCount !== dataQuery.signatures.length) {
         setSignedCount(dataQuery.signatures.length);
       }
-
-      if (status !== 'signed' && dataQuery.signers.some(signer => signer === address)) {
-        setStatus('signed');
-      } else {
-        setStatus('');
-      }
     }
   }, [dataQuery.signatures, dataQuery.signers, address]);
 
@@ -329,7 +323,11 @@ const NewSignTransactionComponent = () => {
     if (status === 'success') return;
 
     if (ownerList && ownerList.find(elem => elem === String(address))) {
-      signedCount === threshold
+      if (status === 'signed') {
+        customToasty('This wallet has already signed', 'error');
+        return;
+      }
+      signedCount >= threshold
         ? await multySign.executeMulty()
         : await multySign.signTransactionMulty();
     } else {
@@ -344,7 +342,7 @@ const NewSignTransactionComponent = () => {
 
   if (status === 'success') {
     buttonText = 'Successfully deployed';
-  } else if (signedCount === threshold) {
+  } else if (signedCount >= threshold) {
     buttonText = 'Execute';
   } else if (status === 'loading') {
     buttonText = 'Loading...';
@@ -370,6 +368,7 @@ const NewSignTransactionComponent = () => {
     reset(defaultDataQuery);
   };
 
+  console.log(`status`, status);
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
