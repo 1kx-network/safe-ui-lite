@@ -1,7 +1,7 @@
 'use client';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
-import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useEffect } from 'react';
 
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
@@ -22,7 +22,6 @@ export default function Home() {
   const { address, chainId } = useWeb3ModalAccount();
   const { data } = useOwnerList(address);
   const { open } = useWeb3Modal();
-  const { walletProvider } = useWeb3ModalProvider();
   const router = useRouter();
 
   const handleCreateTransaction = async () => {
@@ -43,7 +42,6 @@ export default function Home() {
       }
     } else {
       if (!address) {
-        console.log(`walletProvider`, walletProvider);
         open();
       }
     }

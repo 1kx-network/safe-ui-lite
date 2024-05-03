@@ -21,7 +21,6 @@ import {
   WrapperStyled,
   styleWalletPaper,
 } from '../safe-account.styles';
-import QrCodeIcon from '@/assets/svg/qr_code.svg';
 import IconDelete from '@/assets/svg/delete.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import WalletAlert from '@/ui-kit/wallet-allert';
@@ -34,7 +33,6 @@ import useNetworkStore from '@/stores/networks-store';
 
 import {
   BoxAddressStyled,
-  BoxNameStyled,
   GridOwnerAddressStyled,
   OwnerStylesBtn,
   OwnersListStyled,
@@ -49,13 +47,10 @@ const SafeAccountOwners = () => {
   const [needConfirmOwner, setNeedConfirmOwner] = React.useState<number>(1);
   const [account, setAccount] = React.useState('');
 
-  const { address, chainId } = useWeb3ModalAccount();
-  const { networks } = useNetworkStore();
+  const { address } = useWeb3ModalAccount();
+  const { chooseNetwork } = useNetworkStore();
   const router = useRouter();
   const storeOwners = useActiveOwnerStore();
-
-  const chooseNetwork =
-    networks && chainId ? networks.find(elem => elem.chainId === chainId) : undefined;
 
   const handleBack = () => {
     router.push(routes.safeAccountCreate);
@@ -165,14 +160,6 @@ const SafeAccountOwners = () => {
               <OwnersListStyled>
                 {owners.map(owner => (
                   <GridOwnerAddressStyled key={owner.id}>
-                    <BoxNameStyled>
-                      <WalletInput
-                        placeholder={'Owner name'}
-                        value={owner.name}
-                        onChange={e => handleChangeOwner(e, owner.id, 'name')}
-                        label="Owner name"
-                      />
-                    </BoxNameStyled>
                     <BoxAddressStyled>
                       <WalletInput
                         placeholder={'Owner address'}
@@ -180,7 +167,6 @@ const SafeAccountOwners = () => {
                         onChange={e => handleChangeOwner(e, owner.id, 'address')}
                         label="Owner address"
                         startAdornment
-                        endAdornment={<QrCodeIcon />}
                       />
 
                       {owners.length !== 1 && (

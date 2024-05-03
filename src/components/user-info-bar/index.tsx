@@ -2,6 +2,7 @@
 
 import {
   useDisconnect,
+  useSwitchNetwork,
   useWalletInfo,
   useWeb3Modal,
   useWeb3ModalAccount,
@@ -23,8 +24,7 @@ import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { formatterIcon } from '@/utils/icon-formatter';
-import { useNetwork } from '@/hooks/useNetwork';
-import { optionsNetwork } from '@/constants/networks';
+import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
 import { getNetworksDB } from '@/db/get-info';
 import { TYPE_IMPORT } from '@/constants/types';
 import { INetworkDB } from '@/db';
@@ -43,6 +43,8 @@ import {
   styledBtn,
   styledBtnDisconnect,
   ImgWalletStyled,
+  styledNetworks,
+  ItemInfoNetworkStyled,
 } from './user-info-bar.styles';
 
 // interface IAddNetwork {
@@ -62,34 +64,27 @@ export const UserInfoBar = () => {
   const wrapperRef = useRef(null);
   const { safeSdk } = useSafeStore();
   const { getInfoByAccount } = useSafeSdk();
-  const network = useNetwork();
   const { walletInfo } = useWalletInfo();
 
-  // const { switchNetwork } = useSwitchNetwork();
+  const { switchNetwork } = useSwitchNetwork();
   const { setClearActiveSafeStore } = useActiveSafeAddress();
   const searchParams = useMemo(() => {
     if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
     return { get: () => null };
   }, [router]);
 
-  const { networks, setNetworksArray } = useNetworkStore();
+  const { networks, chooseNetwork, setNetworksArray, setChooseNetwork } = useNetworkStore();
 
   const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
-
   const [balance, setBalance] = useState('0');
-  // const [options, setOptions] = useState<IOptionNetwork[]>(networks);
-  // const [isOpenNetworkMenu, setIsOpenNetworkMenu] = useState(false);
-  // const [isOpenModal, setIsOpenModal] = useState(false);
-  // const [isOpenNetworkModal, setIsOpenNetworkModal] = useState(false);
-  // const [errorNewNetwork, setErrorNewNetwork] = useState<string | null>(null);
 
+  // const [options, setOptions] = useState<IOptionNetwork[]>([]);
+  const [isOpenNetworkMenu, setIsOpenNetworkMenu] = useState(false);
+  // const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isOpenNetworkModal, setIsOpenNetworkModal] = useState(false);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
   const [networksDBState, setNetworksDB] = useState<INetworkDB[]>([]);
-
-  const networkName =
-    (network?.name || '').toString().charAt(0).toUpperCase() +
-    (network?.name || '').toString().slice(1);
 
   // const {
   //   handleSubmit,
@@ -102,6 +97,17 @@ export const UserInfoBar = () => {
   // });
 
   useEffect(() => {
+    if (chainId) {
+      if (!chooseNetwork) {
+        const chooseNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
+
+        if (!chooseNetworkDef) return;
+        setChooseNetwork(chooseNetworkDef);
+      }
+    }
+  }, [chainId]);
+
+  useEffect(() => {
     if (isShareAcc) {
       (async () => {
         const fetchedNetworks = await getNetworksDB();
@@ -109,30 +115,6 @@ export const UserInfoBar = () => {
       })();
     }
   }, [isShareAcc, defaultNetworks]);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const networksDB = await getNetworksDB();
-  //     const updateNetwork: IOptionNetwork[] = networksDB.map(elem => ({
-  //       id: elem.id,
-  //       name: elem.name,
-  //       currency: elem.currency,
-  //       explorerUrl: elem.explorerUrl,
-  //       rpcUrl: elem.rpcUrl,
-  //       symbol: elem.symbol,
-  //       decimals: elem.decimals,
-  //       chainId: elem.chainId,
-  //       label: elem.name,
-  //       value: elem.name,
-  //       rpc: elem.rpcUrl,
-  //       icon: () => formatterIcon(elem.chainId ?? 0),
-  //     }));
-
-  //     const networksArrayDB =[...optionsNetwork, ...updateNetwork].filter(elem => elem.chainId)
-
-  //     setNetworksArray([...optionsNetwork, ...updateNetwork]);
-  //   })();
-  // }, [networks, networksDB]);
 
   useEffect(() => {
     (async () => {
@@ -174,7 +156,7 @@ export const UserInfoBar = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !(wrapperRef.current as Node).contains(event.target as Node)) {
         setIsOpenMenu(false);
-        // setIsOpenNetworkMenu(false);
+        setIsOpenNetworkMenu(false);
       }
     };
 
@@ -195,14 +177,16 @@ export const UserInfoBar = () => {
   const handleClickMenu = () => {
     if (address) {
       setIsOpenMenu(!isOpenMenu);
-      // setIsOpenNetworkMenu(false);
+      setIsOpenNetworkMenu(false);
+    } else {
+      open();
     }
   };
 
-  // const handleClickNetworkMenu = () => {
-  //   setIsOpenNetworkMenu(!isOpenMenu);
-  //   setIsOpenMenu(false);
-  // };
+  const handleClickNetworkMenu = () => {
+    setIsOpenNetworkMenu(!isOpenMenu);
+    setIsOpenMenu(false);
+  };
 
   useEffect(() => {
     if (address) {
@@ -234,81 +218,20 @@ export const UserInfoBar = () => {
     router.push(routes.home);
   };
 
+  const handleChangeNetwork = async (elem: IOptionNetwork) => {
+    setChooseNetwork(elem);
+    await switchNetwork(elem.chainId).finally(() => {
+      setIsOpenNetworkMenu(false);
+      setIsOpenNetworkModal(false);
+    });
+  };
+
   // const handleAddNetwork = async () => {
   //   reset();
   //   setIsOpenMenu(false);
   //   setIsOpenNetworkMenu(false);
 
   //   setIsOpenNetworkModal(true);
-  // };
-
-  // const { walletProvider } = useWeb3ModalProvider();
-
-  // const handleChangeNetwork = async (chainId: number) => {
-  //   await switchNetwork(chainId).finally(() => {
-  //     setIsOpenNetworkMenu(false);
-  //     setIsOpenNetworkModal(false);
-  //   });
-  // };
-
-  // const network = networks.find(elem => elem.chainId === chainId);
-  // if (!network) return;
-  // try {
-  //   // Пытаемся переключиться на указанный RPC
-  //   await walletProvider
-  //     .request({
-  //       method: 'wallet_switchToNetwork',
-  //       params: [
-  //         {
-  //           chainId: network.rpcUrl,
-  //           chainName: 'Custom Network',
-  //           rpcUrl: network.rpcUrl,
-  //           chainId: `0x${(await walletProvider.request({ method: 'net_version' })).toString(16)}`,
-  //         },
-  //       ],
-  //     })
-  //     .catch(err => console.log(err));
-  //   console.log('Switched to RPC:', network.rpcUrl);
-  // } catch (error) {
-  //   // Если сеть не найдена, добавляем её
-  //   if (error.code === 4902) {
-  //     console.error('Network not added, adding now...');
-
-  // try {
-  //   await walletProvider.request({
-  //     method: 'wallet_addEthereumChain',
-  //     params: {
-  //       chainId: network.rpcUrl,
-  //       chainName: 'Custom Network',
-  //       nativeCurrency: {
-  //         name: 'Custom',
-  //         symbol: 'CST',
-  //         decimals: 18,
-  //       },
-  //       rpcUrls: [network.rpcUrl],
-  //       blockExplorerUrls: ['https://explorer.example.com'], // Замените на ваш URL блокчейн-эксплорера
-  //     },
-  //   });
-  //   console.log('Added and switched to RPC:', network.rpcUrl);
-  // } catch (addError) {
-  //   console.error('Failed to add network:', addError);
-  // }
-  //   } else {
-  //     console.error('Failed to switch network:', error);
-  //   }
-  // }
-
-  //   console.log('_rpcUrl_', network?.rpcUrl);
-
-  //   try {
-  //     await walletProvider.request({
-  //       method: 'wallet_switchEthereumChain',
-  //       params: [{ chainId: network?.rpcUrl }],
-  //     });
-  //     console.log('Switched to RPC:', network?.rpcUrl);
-  //   } catch (error) {
-  //     console.error('Failed to switch network:', error);
-  //   }
   // };
 
   // const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
@@ -346,8 +269,7 @@ export const UserInfoBar = () => {
   //   customToasty('Network was add', 'success');
   // };
 
-  const networkRpc =
-    networks && chainId ? networks.find(elem => elem.chainId === chainId)?.rpc : '';
+  console.log(chooseNetwork);
 
   return (
     <WrapperStyled ref={wrapperRef}>
@@ -380,11 +302,11 @@ export const UserInfoBar = () => {
             style={{ width: '100%' }}
             color={themeMuiBase.palette.grey}
           >
-            Create accont
+            Create account
           </WalletTypography>
         )}
       </InfoUserStyled>
-      {/* 
+
       {chainId && (
         <InfoUserStyled sx={{ width: '150px' }} onClick={handleClickNetworkMenu}>
           <Box
@@ -393,15 +315,20 @@ export const UserInfoBar = () => {
             width={'100%'}
             style={{ pointerEvents: 'none' }}
           >
-            <Box display={'flex'} alignItems={'center'} gap={2}>
+            <Box display={'flex'} alignItems={'center'} gap={2} overflow={'hidden'}>
               {chainId && formatterIcon(chainId, '16px', '16px')}
               <WalletTypography
                 fontSize={14}
                 fontWeight={400}
                 color={themeMuiBase.palette.grey}
-                style={{ pointerEvents: 'none' }}
+                style={{
+                  pointerEvents: 'none',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}
               >
-                {networkName}
+                {chooseNetwork?.value}
               </WalletTypography>
             </Box>
             <IconArrowStyled isOpen={isOpenNetworkMenu}>
@@ -415,7 +342,7 @@ export const UserInfoBar = () => {
                 {networks &&
                   networks.map(elem => (
                     <ItemInfoNetworkStyled
-                      onClick={() => handleChangeNetwork(elem.chainId)}
+                      onClick={() => handleChangeNetwork(elem)}
                       key={elem.chainId + elem.rpc}
                     >
                       {formatterIcon(elem.chainId, '16px', '16px')}
@@ -434,14 +361,14 @@ export const UserInfoBar = () => {
                   ))}
               </Box>
 
-              <WalletButton variant="text" styles={styledBtnAddNetwork} onClick={handleAddNetwork}>
+              {/* <WalletButton variant="text" styles={styledBtnAddNetwork} onClick={handleAddNetwork}>
                 <IconPlus width="18px" height="18px" color={themeMuiBase.palette.success} />
                 Add network
-              </WalletButton>
+              </WalletButton> */}
             </BodyOpenStyled>
           )}
         </InfoUserStyled>
-      )} */}
+      )}
 
       <BodyOpenStyled isOpen={isOpenMenu}>
         <ItemInfoStyled noBorder>
@@ -471,14 +398,22 @@ export const UserInfoBar = () => {
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
             Network
           </WalletTypography>
-          <Box display={'flex'} alignItems={'center'} gap={1}>
+          <Box display={'flex'} alignItems={'center'} gap={1} overflow={'hidden'}>
             {chainId && formatterIcon(chainId, '16px', '16px')}
-            <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
-              {networkName}
+            <WalletTypography
+              fontSize={12}
+              color={themeMuiBase.palette.white}
+              style={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {chooseNetwork?.value}
             </WalletTypography>
           </Box>
         </ItemInfoStyled>
-        {/* networks */}
+
         <ItemInfoStyled>
           <WalletTypography
             fontSize={12}
@@ -487,7 +422,7 @@ export const UserInfoBar = () => {
           >
             Safe RPC
           </WalletTypography>
-          <Link href={networkRpc ?? '/'} target="_black">
+          <Link href={chooseNetwork?.rpc ?? '/'} target="_black">
             <Box
               display={'flex'}
               alignItems={'left'}
@@ -499,7 +434,7 @@ export const UserInfoBar = () => {
                 color={themeMuiBase.palette.white}
                 style={{ width: '100%' }}
               >
-                {networkRpc ?? ''}
+                {chooseNetwork?.rpc ?? ''}
               </WalletTypography>
             </Box>
           </Link>

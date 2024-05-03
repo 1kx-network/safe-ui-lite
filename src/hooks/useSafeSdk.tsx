@@ -60,48 +60,59 @@ export function useSafeSdk(safeAddress: string | null = null) {
         owners,
         threshold,
       };
+
       const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true });
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
       const addressAccount = await safeSdk.getAddress();
 
-      const localList = localStorage.getItem('createdSafes')
-        ? localStorage.getItem('createdSafes')
-        : null;
-
-      const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
-
-      const updateLocalList =
-        chainId && localListParsed[String(chainId)] === undefined
-          ? {
-              ...localListParsed,
-              [chainId]: [],
-            }
-          : localListParsed;
-
-      if (chainId && updateLocalList && updateLocalList[chainId]) {
-        updateLocalList[chainId].push(addressAccount);
-      } else {
-        updateLocalList[chainId ?? 1] = [addressAccount];
+      if (!chainId) {
+        throw new Error('<-- Chain Id is undefinded -->');
       }
 
-      localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
+      if (safeNetworksObj[String(chainId)] === undefined) {
+        const localList = localStorage.getItem('createdSafes')
+          ? localStorage.getItem('createdSafes')
+          : null;
+
+        const parseListNetwork = localList ? JSON.parse(localList) : {};
+
+        if (parseListNetwork[chainId]) {
+          parseListNetwork[chainId].push(addressAccount);
+        } else {
+          parseListNetwork[chainId ?? 1] = [addressAccount];
+        }
+
+        if (parseListNetwork) {
+          localStorage.setItem('createdSafes', JSON.stringify(parseListNetwork));
+        }
+      }
+
       localStorage.setItem('safeAddress', addressAccount);
 
       return safeSdk;
     } catch (e) {
       const error = e instanceof Error ? e.message : String(e);
-      customToasty('Error with deploy new safe account', 'error', { duration: 4000 });
-      console.error(`<-- ${error} -->`);
+      if (error.includes('Create2')) {
+        customToasty(
+          `A similar account has already been created. Error with deploy new safe account.`,
+          'error',
+          { duration: 4000 }
+        );
+      } else {
+        customToasty('Error with deploy new safe account', 'error', { duration: 4000 });
+        console.error(`<-- ${error} -->`);
+        setClearActiveSafeStore();
+      }
 
-      setClearActiveSafeStore();
       throw new Error(error);
     }
   };
 
-  const createSafe = async (safeAddress: string) => {
+  const createSafe = async (safeAddress: string | null) => {
     try {
       const ethAdapter = await createEthAdapter?.createEthAdapter?.();
-      if (!ethAdapter) return null;
+
+      if (!ethAdapter || !safeAddress) return null;
 
       const safeSdk = await Safe.create({
         ethAdapter,
@@ -113,17 +124,17 @@ export function useSafeSdk(safeAddress: string | null = null) {
       return safeSdk;
     } catch (e: unknown) {
       const error = e instanceof Error ? e.message : String(e);
-      const errorMessage = `${error}. Please check your RPC in wallet or change network`;
+      // const errorMessage = `${error}. ${isCreateAcc ? 'Please check your RPC in wallet or change network': }`;
 
       setClearActiveSafeStore();
-      console.error(` - 1 - <-- ${errorMessage} -->`);
+      console.error(`<-- ${error} -->`);
     }
   };
 
   const getInfoByAccount = async (safeSdk: null | Safe) => {
-    try {
-      if (!safeSdk) return;
+    if (!safeSdk) return;
 
+    try {
       const balanceAccount = await safeSdk.getBalance();
       const ownersAccount = await safeSdk.getOwners();
       const contractVersion = await safeSdk.getContractVersion();
@@ -134,7 +145,6 @@ export function useSafeSdk(safeAddress: string | null = null) {
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : String(e);
 
-      customToasty(errorMessage, 'error', { duration: 4000 });
       console.error(`<-- ${errorMessage} -->`);
     }
   };

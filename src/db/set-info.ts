@@ -68,7 +68,7 @@ export async function setMultipleDataDB(data: Record<string, Partial<ISafe>>): P
 
 export async function addCustomNetworkDB(network: INetworkDB): Promise<void> {
   try {
-    const networkWithId: INetworkDB = { ...network, id: String(network.chainId) };
+    const networkWithId: INetworkDB = { ...network, id: String(network.rpcUrl) };
 
     const existingNetwork = await db.networks.get(networkWithId.id || '');
 

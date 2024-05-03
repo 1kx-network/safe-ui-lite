@@ -17,7 +17,6 @@ import useActiveOwnerStore from '@/stores/active-owners-store';
 import { customToasty } from '@/components';
 import IconInfo from '@/assets/svg/infoIcon.svg';
 import useNetworkStore from '@/stores/networks-store';
-import { IOptionNetwork } from '@/constants/networks';
 
 import {
   CopyIconStyled,
@@ -36,10 +35,9 @@ export default function CreatePageAccount() {
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [chooseNetwork, setChooseNetwork] = useState<IOptionNetwork | null>(null);
   const [isErrorDeploy, setIsErrorDeploy] = useState(false);
 
-  const { networks } = useNetworkStore();
+  const { networks, chooseNetwork } = useNetworkStore();
 
   const chainId = Number(network?.chainId);
 
@@ -49,13 +47,8 @@ export default function CreatePageAccount() {
       return;
     }
 
-    if (chainId) {
-      const findNetwork = networks.find(elem => elem.chainId === chainId);
-      if (!findNetwork) return;
-      const { explorerUrl } = findNetwork;
-
-      setChooseNetwork(findNetwork);
-      setLinkOnScan(explorerUrl ?? '');
+    if (chooseNetwork) {
+      setLinkOnScan(chooseNetwork.explorerUrl ?? '');
     }
   }, [chainId]);
 
@@ -67,8 +60,12 @@ export default function CreatePageAccount() {
   const handleCreate = async () => {
     try {
       setIsLoading(true);
-      await deploySafe(owners, needConfirmOwner);
-      customToasty('Account successfully created', 'success');
+      await deploySafe(owners, needConfirmOwner)
+        .then(() => {
+          router.push(routes.home);
+          customToasty('Account successfully created', 'success');
+        })
+        .catch(e => console.log('_e_', e));
     } catch (e) {
       setIsErrorDeploy(true);
     } finally {

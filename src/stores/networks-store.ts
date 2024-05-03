@@ -6,14 +6,18 @@ import { formatterIcon } from '@/utils/icon-formatter';
 
 type Store = {
   networks: null | IOptionNetwork[];
+  chooseNetwork: null | IOptionNetwork;
+
   setNetwork: (payload: null | IOptionNetwork) => void;
   setNetworksArray: (payload: null | IOptionNetwork[]) => void;
   updateNetwork: (payload: IOptionNetwork) => void;
+  setChooseNetwork: (payload: null | IOptionNetwork) => void;
   loadNetworks: () => void;
 };
 
 const useNetworkStore = create<Store>(set => ({
   networks: null,
+  chooseNetwork: null,
 
   setNetwork: (payload: null | IOptionNetwork) => {
     if (!payload) return;
@@ -53,6 +57,9 @@ const useNetworkStore = create<Store>(set => ({
     });
   },
 
+  setChooseNetwork: (payload: null | IOptionNetwork) =>
+    set(state => ({ ...state, chooseNetwork: payload })),
+
   loadNetworks: () => {
     (async () => {
       const networksDB = await getNetworksDB();
@@ -65,14 +72,7 @@ const useNetworkStore = create<Store>(set => ({
         icon: () => formatterIcon(elem.chainId ?? 0),
       }));
 
-      const updatedArray = optionsNetwork.map(
-        option => updateNetwork.find(network => network.chainId === option.chainId) || option
-      );
-
-      const networkArray = [
-        ...updatedArray,
-        ...updateNetwork.filter(network => !updatedArray.some(n => n.chainId === network.chainId)),
-      ];
+      const networkArray = [...optionsNetwork, ...updateNetwork];
 
       set({ networks: networkArray });
     })();

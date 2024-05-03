@@ -22,7 +22,7 @@ import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { setDataDB } from '@/db/set-info';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
-import { networks } from '@/context/networks';
+import useNetworkStore from '@/stores/networks-store';
 
 import { options } from './fixutres';
 import {
@@ -58,6 +58,8 @@ interface IInputsForm {
 interface SendTokensProps {}
 
 export const SendTokens = ({}: SendTokensProps) => {
+  const { chooseNetwork } = useNetworkStore();
+
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
@@ -131,7 +133,7 @@ export const SendTokens = ({}: SendTokensProps) => {
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
     if (!safeSdk || !chainId || !address) return;
 
-    const networkUserInfo = networks.find(elem => elem.chainId === chainId);
+    // const networkUserInfo = networks.find(elem => elem.chainId === chainId);
     const transactionObj = await returnTransactionObj(
       data.address,
       data.amount,
@@ -159,11 +161,16 @@ export const SendTokens = ({}: SendTokensProps) => {
         amount: data.amount,
         destinationAddress: data.address,
         tokenType,
-        networkName: networkUserInfo?.name ?? '',
+        networkName: chooseNetwork?.value ?? '',
         safeTxHash,
         nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
-        userNetworkTrx: JSON.stringify(networkUserInfo),
+        userNetworkTrx: JSON.stringify({
+          ...chooseNetwork,
+          name: chooseNetwork?.value,
+          rpcUrl: chooseNetwork,
+          symbol: 18,
+        }),
       };
 
       const transactionDB = {

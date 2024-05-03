@@ -299,8 +299,10 @@ export function useMultySign({
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       if ((error as { message: string }).message) {
-        customToasty('Something went wrong with sign!', 'error');
-        console.error((error as { message: string }).message as string);
+        const messafe = (error as { message: string }).message;
+
+        customToasty(`Something went wrong with sign! ${messafe}`, 'error');
+        console.error(`<-- ${messafe} -->`);
       }
     }
   }, [safeSdk, safeTransaction, safeTxHash, status, chainId, userWalletAddress]);
@@ -327,10 +329,13 @@ export function useMultySign({
       setStatus('success');
       customToasty('Execute success', 'success');
     } catch (error) {
-      if ((error as { message: string }).message.includes('-32603')) {
-        customToasty('Transaction has already been executed', 'error');
+      const message = (error as { message: string }).message;
+
+      if (message.includes('-32603')) {
+        customToasty('Something wrong with execute! Please check your sign params', 'error');
         return error;
       }
+
       customToasty('Something error with execute', 'error');
       console.log(`error`, error);
       return error;

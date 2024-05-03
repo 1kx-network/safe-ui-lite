@@ -49,6 +49,7 @@ import {
   BoxAccountActionStyled,
   ShareAccountsListStyled,
   ShareAccountItemStyled,
+  styledNetwork,
 } from './sidebar.styles';
 import { dataUserMock, menuList } from './fixtures';
 
@@ -81,6 +82,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
   const shareAccounts = isShareAcc ? searchParams.get('accounts') : null;
   const networkParam = searchParams.get('network');
+
   const shareNetwork = useMemo(() => {
     try {
       if (isShareAcc && networkParam) {
@@ -134,7 +136,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     if (!safeAddress) return;
 
     setIsLoading(true);
-
     setSafeAddress(safeAddress);
     createSafe(safeAddress);
 
@@ -166,7 +167,24 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         }
       }
 
-      console.error('<-- Need create new account with new network -->');
+      const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
+      if (linkOnScan) {
+        setLinkOnScan(linkOnScan);
+      }
+
+      const pendingBalance = async () => {
+        setIsLoading(true);
+        const dataAcc = await getInfoByAccount(safeSdk);
+        if (!dataAcc) return;
+
+        const { balanceAccount } = dataAcc;
+        const parceBalance = utils.formatEther(String(balanceAccount));
+
+        setBalanceAccount(parceBalance);
+      };
+
+      pendingBalance();
+      setTimeout(() => setIsLoading(false), 200);
     }
   }, [data, chainId, address, safeSdk]);
 
@@ -209,26 +227,26 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     }
   }, [address, chainId, safeAddress, networks]);
 
-  useEffect(() => {
-    if (!safeSdk || !chainId) return;
+  // useEffect(() => {
+  //   if (!safeSdk || !chainId) return;
 
-    const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
-    if (linkOnScan) {
-      setLinkOnScan(linkOnScan);
-    }
+  //   const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
+  //   if (linkOnScan) {
+  //     setLinkOnScan(linkOnScan);
+  //   }
 
-    const pendingBalance = async () => {
-      const dataAcc = await getInfoByAccount(safeSdk);
-      if (!dataAcc) return;
+  //   const pendingBalance = async () => {
+  //     const dataAcc = await getInfoByAccount(safeSdk);
+  //     if (!dataAcc) return;
 
-      const { balanceAccount } = dataAcc;
-      const parceBalance = utils.formatEther(String(balanceAccount));
+  //     const { balanceAccount } = dataAcc;
+  //     const parceBalance = utils.formatEther(String(balanceAccount));
 
-      setBalanceAccount(parceBalance);
-    };
+  //     setBalanceAccount(parceBalance);
+  //   };
 
-    pendingBalance();
-  }, [safeSdk, chainId]);
+  //   pendingBalance();
+  // }, [safeSdk, chainId]);
 
   const handleClickAccount = (address: string) => {
     localStorage.setItem('safeAddress', address);
@@ -322,7 +340,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             ) : (
               <Box height={'25px'} display={'flex'} alignItems={'center'} gap={2}>
                 <WalletTypography fontSize={14} fontWeight={500}>
-                  {balanceAccount} {networkName}
+                  {safeAddress ? balanceAccount : 0}
+                </WalletTypography>
+                <WalletTypography fontSize={14} fontWeight={500} style={styledNetwork}>
+                  {networkName}
                 </WalletTypography>
                 {chainId && formatterIcon(chainId, '19px', '19px')}
               </Box>

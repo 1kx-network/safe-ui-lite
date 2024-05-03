@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { WALLETCONNECT_V2_PROJECT_ID } from '@/constants/wallet-connect';
+import useNetworkStore from '@/stores/networks-store';
 
 import { networks } from './networks';
 
@@ -27,11 +28,15 @@ createWeb3Modal({
 
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
   const { setSafeAddress } = useActiveSafeAddress();
+  const { loadNetworks } = useNetworkStore();
+
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
 
   useEffect(() => {
     setSafeAddress(safeAddress);
+    console.log('_web3 state_');
+    loadNetworks();
   }, [safeAddress]);
 
   return children;
