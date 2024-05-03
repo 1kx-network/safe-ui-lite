@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
-import { v4 as uuid } from 'uuid';
 import { SingleValue } from 'react-select';
 
 import { WalletButton, WalletInput, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
@@ -20,7 +19,6 @@ import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { IOptions } from '../../../wallet/fixtures';
 import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
-import { setDataDB } from '@/db/set-info';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { networks } from '@/context/networks';
 
@@ -61,7 +59,6 @@ export const SendTokens = ({}: SendTokensProps) => {
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
-  // const network = useNetwork();
   const searchParams = useSearchParams();
   const recipientAddress = searchParams.get('recipientAddress');
 
@@ -148,9 +145,6 @@ export const SendTokens = ({}: SendTokensProps) => {
     });
 
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-    const thesholders = await safeSdk.getThreshold();
-    const currentDate = new Date();
-    const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
 
     if (chainId && safeAddress) {
       const queryParams = {
@@ -165,24 +159,6 @@ export const SendTokens = ({}: SendTokensProps) => {
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
         userNetworkTrx: JSON.stringify(networkUserInfo),
       };
-
-      const transactionDB = {
-        id: uuid(),
-        date: dateTrx,
-        tokenType,
-        theshold: thesholders,
-        hash: safeTxHash,
-        amount: data.amount,
-        calldata: data.calldata,
-        destinationAddress: data.address,
-        nonce,
-        signatures: [],
-      };
-
-      await setDataDB(safeAddress, {
-        address: safeAddress,
-        transactions: [transactionDB],
-      });
 
       const queryString = new URLSearchParams(queryParams).toString();
       router.push(`${routes.signTransaction}?${queryString}`);

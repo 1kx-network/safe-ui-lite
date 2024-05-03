@@ -51,7 +51,7 @@ const SignTransactionComponent = () => {
   const searchParams = useSearchParams();
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk } = useSafeStore();
-  const { threshold, status, setStatus, owners } = useSignStore();
+  const { threshold, status, owners } = useSignStore();
   const { address, chainId } = useWeb3ModalAccount();
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
@@ -147,9 +147,6 @@ const SignTransactionComponent = () => {
     if (signatures && signers) {
       if (signedCount !== signatures.split(',').length) {
         setSignedCount(signatures.split(',').length);
-      }
-      if (status !== 'signed' && signers.split(',').some(signer => signer === address)) {
-        setStatus('signed');
       }
     }
   }, [router, searchParams]);

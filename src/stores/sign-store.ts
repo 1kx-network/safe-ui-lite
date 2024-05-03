@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type IStatus = 'loading' | 'success' | 'signed' | 'error' | '' | 'Successfully deployed';
+type IStatus = 'loading' | 'success' | 'signed' | 'error' | '';
 
 type Store = {
   threshold: number;
