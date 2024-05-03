@@ -319,24 +319,27 @@ const NewSignTransactionComponent = () => {
     mode: 'runtime',
   });
 
-  const handleTransaction = useCallback(async () => {
-    if (status === 'success') return;
+  const handleTransaction = useCallback(
+    async (allowExec = true) => {
+      if (status === 'success') return;
 
-    if (ownerList && ownerList.find(elem => elem === String(address))) {
-      if (status === 'signed') {
-        customToasty('This wallet has already signed', 'error');
-        return;
+      if (ownerList && ownerList.find(elem => elem === String(address))) {
+        if (status === 'signed' && !allowExec) {
+          customToasty('This wallet has already signed', 'error');
+          return;
+        }
+        signedCount >= threshold && allowExec
+          ? await multySign.executeMulty()
+          : await multySign.signTransactionMulty();
+      } else {
+        customToasty(
+          'Transactions can only be signed by Safe owners. Please change your account',
+          'error'
+        );
       }
-      signedCount >= threshold
-        ? await multySign.executeMulty()
-        : await multySign.signTransactionMulty();
-    } else {
-      customToasty(
-        'Transactions can only be signed by Safe owners. Please change your account',
-        'error'
-      );
-    }
-  }, [address, ownerList, status, signedCount, threshold]);
+    },
+    [address, ownerList, status, signedCount, threshold]
+  );
 
   let buttonText = 'Sign Transaction';
 
@@ -368,7 +371,6 @@ const NewSignTransactionComponent = () => {
     reset(defaultDataQuery);
   };
 
-  console.log(`status`, status);
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -555,7 +557,7 @@ const NewSignTransactionComponent = () => {
                       disabled={status === 'loading'}
                       variant={status === 'success' ? 'outlined' : 'contained'}
                       styles={styledSecondaryBtn}
-                      onClick={multySign.signTransactionMulty}
+                      onClick={() => handleTransaction(false)}
                     >
                       {status === 'signed' ? 'Signed' : 'Sign Transaction'}
                     </WalletButton>
@@ -563,7 +565,7 @@ const NewSignTransactionComponent = () => {
                   <WalletButton
                     loading={status === 'loading'}
                     variant="contained"
-                    onClick={handleTransaction}
+                    onClick={() => handleTransaction(true)}
                   >
                     {buttonText}
                   </WalletButton>

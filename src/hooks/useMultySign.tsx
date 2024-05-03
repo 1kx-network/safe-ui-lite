@@ -46,6 +46,8 @@ export interface ICheckAndSwitchNetwork {
   open: () => void;
 }
 
+let debounceCreation = false;
+
 export function useMultySign({
   mode,
   safeAddress,
@@ -141,11 +143,16 @@ export function useMultySign({
     getOwners();
 
     const conditionForCreateTrx = amount && address && !safeTransaction && safeSdk && safeAddress;
+
     const pendingCreateTrxData = async () => {
       if (!safeSdk || !conditionForCreateTrx) return -1;
 
       if (typeSignTrx === SEND_TOKEN) {
         if (!chainId || !safeSdk || !tokenType) return -1;
+        if (debounceCreation) return -1;
+        debounceCreation = true;
+        console.log(`wazzup`);
+        setTimeout(() => (debounceCreation = false), 500);
         const objTrx = await returnTransactionObj(
           address,
           amount,
@@ -184,6 +191,9 @@ export function useMultySign({
           address: safeAddress,
           transactions: [transactionDB],
         });
+        if (status === 'loading') {
+          setStatus('');
+        }
 
         return 0;
       }
@@ -203,7 +213,7 @@ export function useMultySign({
     amount,
     address,
     typeSignTrx,
-    transaction,
+    status,
   ]);
 
   useEffect(() => {
@@ -213,10 +223,11 @@ export function useMultySign({
   }, []);
 
   useEffect(() => {
+    console.log(`userWalletAddress: ${userWalletAddress}`);
     if (transaction && transaction.signatures.length > 0) {
       checkSignedStatus();
     }
-  }, [transaction]);
+  }, [transaction, userWalletAddress]);
 
   useEffect(() => {
     if (userWalletAddress) {
@@ -293,7 +304,14 @@ export function useMultySign({
   const checkSignedStatus = useCallback(() => {
     const { signers } = getSignaturesMulty();
     const signed = signers.some(signer => signer === userWalletAddress);
-    setStatus(signed ? 'signed' : '');
+    console.log(`signed: ${signed}`);
+    if (signed) {
+      setStatus('signed');
+    } else {
+      if (status === 'signed') {
+        setStatus('');
+      }
+    }
   }, [userWalletAddress, chainId, getSignaturesMulty]);
 
   const signTransactionMulty = useCallback(async () => {

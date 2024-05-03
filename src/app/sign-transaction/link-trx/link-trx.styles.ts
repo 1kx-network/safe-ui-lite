@@ -17,8 +17,9 @@ export const TransactionInfoStyled = styled('div')(
 );
 
 export const WrapperStyled = styled('div')`
+  padding: 2rem 0;
   width: 100%;
-  margin: 2rem auto;
+  margin: auto;
   max-width: 650px;
 `;
 

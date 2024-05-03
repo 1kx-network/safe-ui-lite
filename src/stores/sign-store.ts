@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type IStatus = 'loading' | 'success' | 'signed' | 'error' | '' | 'Successfully deployed';
+type IStatus = 'loading' | 'success' | 'signed' | 'error' | '';
 
 type Store = {
   threshold: number;
@@ -14,7 +14,7 @@ type Store = {
 const useSignStore = create<Store>()(set => ({
   threshold: 0,
   owners: null,
-  status: '',
+  status: 'loading',
 
   setStatus: (payload: IStatus) => set(state => ({ ...state, status: payload })),
   setThreshold: (payload: number) => set(state => ({ ...state, threshold: payload })),
