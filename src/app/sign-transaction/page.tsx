@@ -168,10 +168,6 @@ const SignTransactionComponent = () => {
     if (!multySign) return;
 
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
-    if (status === 'signed') {
-      customToasty('This wallet has already signed', 'error');
-      return;
-    }
 
     await multySign.signTransactionMulty();
   }, [safeSdk, safeTransaction, safeTxHash, status]);
