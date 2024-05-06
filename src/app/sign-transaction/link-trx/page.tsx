@@ -324,10 +324,6 @@ const NewSignTransactionComponent = () => {
       if (status === 'success') return;
 
       if (ownerList && ownerList.find(elem => elem === String(address))) {
-        if (status === 'signed' && !allowExec) {
-          customToasty('This wallet has already signed', 'error');
-          return;
-        }
         signedCount >= threshold && allowExec
           ? await multySign.executeMulty()
           : await multySign.signTransactionMulty();

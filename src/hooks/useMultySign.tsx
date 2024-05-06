@@ -151,7 +151,6 @@ export function useMultySign({
         if (!chainId || !safeSdk || !tokenType) return -1;
         if (debounceCreation) return -1;
         debounceCreation = true;
-        console.log(`wazzup`);
         setTimeout(() => (debounceCreation = false), 500);
         const objTrx = await returnTransactionObj(
           address,
@@ -223,7 +222,6 @@ export function useMultySign({
   }, []);
 
   useEffect(() => {
-    console.log(`userWalletAddress: ${userWalletAddress}`);
     if (transaction && transaction.signatures.length > 0) {
       checkSignedStatus();
     }
@@ -269,7 +267,6 @@ export function useMultySign({
   const saveSignaturesMulty = useCallback(
     (signatures: string[], signers: string[]) => {
       if (conditionMulty) return;
-
       if (signatures.length === 0 || signatures[0] === '') {
         return;
       }
@@ -304,7 +301,6 @@ export function useMultySign({
   const checkSignedStatus = useCallback(() => {
     const { signers } = getSignaturesMulty();
     const signed = signers.some(signer => signer === userWalletAddress);
-    console.log(`signed: ${signed}`);
     if (signed) {
       setStatus('signed');
     } else {
@@ -336,10 +332,10 @@ export function useMultySign({
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       if ((error as { message: string }).message) {
-        customToasty('Something went wrong with sign!', 'error');
+        customToasty((error as { message: string }).message, 'error');
         console.error(`<--${(error as { message: string }).message as string}-->`);
-        checkSignedStatus();
       }
+      checkSignedStatus();
     }
   }, [safeSdk, safeTransaction, safeTxHash, status, chainId, userWalletAddress]);
 
@@ -365,12 +361,12 @@ export function useMultySign({
       setStatus('success');
       customToasty('Execute success', 'success');
     } catch (error) {
+      checkSignedStatus();
       if ((error as { message: string }).message.includes('-32603')) {
         customToasty('Transaction has already been executed', 'error');
         return error;
       }
-      customToasty('Something error with execute', 'error');
-      checkSignedStatus();
+      customToasty((error as { message: string }).message, 'error');
       console.error(`<-- ${error} -->`);
       return error;
     }
