@@ -136,20 +136,26 @@ export function useMultySign({
   };
 
   useEffect(() => {
+    return () => {
+      setSafeTransaction(null);
+    };
+  }, []);
+
+  useEffect(() => {
     switchNetworkMulty({ chainIdUrl, chainId, switchNetwork, open });
 
     if (conditionMulty) return;
-
     getOwners();
 
     const conditionForCreateTrx = amount && address && !safeTransaction && safeSdk && safeAddress;
 
     const pendingCreateTrxData = async () => {
-      if (!safeSdk || !conditionForCreateTrx) return -1;
+      if (!safeSdk || !conditionForCreateTrx) return;
 
       if (typeSignTrx === SEND_TOKEN) {
-        if (!chainId || !safeSdk || !tokenType) return -1;
-        if (debounceCreation) return -1;
+        if (!chainId || !safeSdk || !tokenType) return;
+        if (debounceCreation) return;
+
         debounceCreation = true;
         setTimeout(() => (debounceCreation = false), 500);
         const objTrx = await returnTransactionObj(
@@ -186,15 +192,15 @@ export function useMultySign({
           nonce,
           signatures: [],
         };
+
         await setDataDB(safeAddress, {
           address: safeAddress,
           transactions: [transactionDB],
         });
+
         if (status === 'loading') {
           setStatus('');
         }
-
-        return 0;
       }
 
       const resTransaction = await trxResponseByType();
@@ -214,12 +220,6 @@ export function useMultySign({
     typeSignTrx,
     status,
   ]);
-
-  useEffect(() => {
-    return () => {
-      setSafeTransaction(null);
-    };
-  }, []);
 
   useEffect(() => {
     if (transaction && transaction.signatures.length > 0) {
@@ -332,8 +332,13 @@ export function useMultySign({
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       const message = (error as { message: string }).message;
+      const shortMessage = (error as { shortMessage?: string }).shortMessage ?? 'Error';
+
       if (message) {
-        customToasty(message, 'error');
+        if (message.includes('4001')) {
+          customToasty(shortMessage, 'error');
+        }
+
         console.error(`<--${message}-->`);
       }
       checkSignedStatus();
@@ -364,11 +369,14 @@ export function useMultySign({
     } catch (error) {
       checkSignedStatus();
       const message = (error as { message: string }).message;
+      const shortMessage = (error as { shortMessage?: string }).shortMessage ?? 'Error';
+
       if (message.includes('-32603')) {
         customToasty('Transaction has already been executed', 'error');
         return error;
       }
-      customToasty(message, 'error');
+
+      customToasty(shortMessage, 'error');
       console.error(`<-- ${error} -->`);
       return error;
     }

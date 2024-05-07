@@ -269,8 +269,6 @@ export const UserInfoBar = () => {
   //   customToasty('Network was add', 'success');
   // };
 
-  console.log(chooseNetwork);
-
   return (
     <WrapperStyled ref={wrapperRef}>
       <WalletConnectUi />

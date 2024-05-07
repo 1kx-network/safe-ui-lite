@@ -122,7 +122,8 @@ export const boxStyleInfoUserAddress = {
 };
 
 export const styledNetwork = {
-  width: '80%',
+  display: 'inline',
+  width: 'auto',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   maxWidth: '110px',
