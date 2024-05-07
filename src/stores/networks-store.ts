@@ -73,7 +73,6 @@ const useNetworkStore = create<Store>(set => ({
       }));
 
       const networkArray = [...optionsNetwork, ...updateNetwork];
-
       set({ networks: networkArray });
     })();
   },

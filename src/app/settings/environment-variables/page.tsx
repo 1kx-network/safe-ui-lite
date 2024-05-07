@@ -184,7 +184,7 @@ export default function NetworksSettins({
             </GridInfoValueStyled>
 
             {isComponent ? (
-              <Box display={'flex'} alingItems={'center'} gap={3}>
+              <Box display={'flex'} alignItems={'center'} gap={3}>
                 <WalletButton variant="contained" styles={styledBtn} onClick={handleClose}>
                   Cancel
                 </WalletButton>

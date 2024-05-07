@@ -7,12 +7,18 @@ import useNetworkStore from '@/stores/networks-store';
 export function useNetwork() {
   const { walletProvider } = useWeb3ModalProvider();
   const { chainId } = useWeb3ModalAccount();
-  const { networks } = useNetworkStore();
+  const { networks, setChooseNetwork } = useNetworkStore();
 
   const [network, setNetwork] = useState<Network | null>(null);
 
   useEffect(() => {
-    if (walletProvider) getNetworkInfo();
+    if (walletProvider) {
+      getNetworkInfo();
+
+      const chooseNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
+      if (!chooseNetworkDef) return;
+      setChooseNetwork(chooseNetworkDef);
+    }
   }, [walletProvider, chainId, networks]);
 
   const getNetworkInfo = async () => {

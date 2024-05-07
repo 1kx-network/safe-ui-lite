@@ -35,7 +35,6 @@ export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setSafeAddress(safeAddress);
-    console.log('_web3 state_');
     loadNetworks();
   }, [safeAddress]);
 
