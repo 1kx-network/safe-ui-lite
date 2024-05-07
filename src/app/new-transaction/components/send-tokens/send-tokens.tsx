@@ -4,7 +4,7 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SingleValue } from 'react-select';
 
 import { WalletButton, WalletInput, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
@@ -20,9 +20,9 @@ import { IOptions } from '../../../wallet/fixtures';
 import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
-import { networks } from '@/context/networks';
+import useNetworkStore from '@/stores/networks-store';
+import { formatterIcon } from '@/utils/icon-formatter';
 
-import { options } from './fixutres';
 import {
   AmountSelectStyled,
   ConfirmedWaitStyled,
@@ -43,6 +43,7 @@ import {
   BtnMaxInputStyled,
   BodyStyled,
 } from './send-tokens.styles';
+import { options } from './fixutres';
 
 const isConfirmed = false;
 const isExecute = false;
@@ -56,6 +57,8 @@ interface IInputsForm {
 interface SendTokensProps {}
 
 export const SendTokens = ({}: SendTokensProps) => {
+  const { chooseNetwork } = useNetworkStore();
+
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
@@ -128,7 +131,7 @@ export const SendTokens = ({}: SendTokensProps) => {
   const onSubmit: SubmitHandler<IInputsForm> = async (data: IInputsForm) => {
     if (!safeSdk || !chainId || !address) return;
 
-    const networkUserInfo = networks.find(elem => elem.chainId === chainId);
+    // const networkUserInfo = networks.find(elem => elem.chainId === chainId);
     const transactionObj = await returnTransactionObj(
       data.address,
       data.amount,
@@ -153,11 +156,16 @@ export const SendTokens = ({}: SendTokensProps) => {
         amount: data.amount,
         destinationAddress: data.address,
         tokenType,
-        networkName: networkUserInfo?.name ?? '',
+        networkName: chooseNetwork?.value ?? '',
         safeTxHash,
         nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
-        userNetworkTrx: JSON.stringify(networkUserInfo),
+        userNetworkTrx: JSON.stringify({
+          ...chooseNetwork,
+          name: chooseNetwork?.value,
+          rpcUrl: chooseNetwork?.rpc,
+          symbol: 18,
+        }),
       };
 
       const queryString = new URLSearchParams(queryParams).toString();
@@ -184,6 +192,39 @@ export const SendTokens = ({}: SendTokensProps) => {
     const newValue = value.replace(/\D/g, '');
     setNonce(newValue);
   };
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => setIsLoading(false), 300);
+  }, [chainId]);
+
+  const selectOp = useCallback(
+    () => (
+      <WalletSelect
+        isLoading={isLoading}
+        options={[
+          {
+            id: 0,
+            value: chooseNetwork?.label ?? '',
+            label: chooseNetwork?.label ?? '',
+            icon: () => formatterIcon(chooseNetwork?.chainId ?? 0, '18px', '18px'),
+          },
+          ...options,
+        ]}
+        defaultValue={{
+          id: 0,
+          value: chooseNetwork?.value ?? '',
+          label: chooseNetwork?.label ?? '',
+          icon: () => formatterIcon(chooseNetwork?.chainId ?? 0, '18px', '18px'),
+        }}
+        isSearchable={false}
+        onChange={handleChangeToken}
+      />
+    ),
+    [chooseNetwork, isLoading]
+  );
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -256,14 +297,7 @@ export const SendTokens = ({}: SendTokensProps) => {
                   </Box>
                 )}
               />
-              <AmountSelectStyled>
-                <WalletSelect
-                  options={options}
-                  defaultValue={options[0]}
-                  isSearchable={false}
-                  onChange={handleChangeToken}
-                />
-              </AmountSelectStyled>
+              <AmountSelectStyled>{selectOp()}</AmountSelectStyled>
             </GridBtnStyled>
             <WalletTypography fontWeight={400} color={themeMuiBase.palette.tetriaryGrey}>
               Calldata

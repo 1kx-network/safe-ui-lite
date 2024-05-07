@@ -35,7 +35,15 @@ interface IChangeNetwork {
   rpc: string;
 }
 
-export default function NetworsSettins() {
+export default function NetworksSettins({
+  isComponent,
+  handleSave,
+  handleClose,
+}: {
+  isComponent?: boolean;
+  handleSave?: () => void;
+  handleClose?: () => void;
+}) {
   const { networks, setNetworksArray, updateNetwork } = useNetworkStore();
 
   const [network, setNetworkLocal] = useState<IOptionNetwork>();
@@ -109,7 +117,106 @@ export default function NetworsSettins() {
     setTimeout(() => setIsLoadingChain(false), 500);
     reset();
     customToasty('Network was changed', 'success');
+    handleSave && handleSave();
   };
+
+  const ChangeNetworkVariables = () => (
+    <WalletPaper style={{ minWidth: '50%', width: isComponent ? '100%' : '50%' }}>
+      <BodyStyled>
+        {/*  */}
+        <BoxChangedStyled>
+          <WalletTypography component="h2" fontWeight={600}>
+            Environment variables
+          </WalletTypography>
+
+          <WalletTypography fontSize={14} fontWeight={500}>
+            You can override some of our default APIs here in case you need to. Proceed at your own
+            risk.
+          </WalletTypography>
+
+          <Box width={'50%'}>
+            <WalletSelect
+              isLoading={isLoadingChain}
+              options={networks ?? []}
+              onChange={handleChooseNetwork}
+              ref={selectInputRef}
+            />
+          </Box>
+
+          {/*  */}
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <GridInfoValueStyled>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <Box width={'100%'}>
+                    <WalletInput
+                      {...field}
+                      label="Name"
+                      error={!!errors.name}
+                      errorValue={errors.name?.message}
+                      disabled={!network}
+                    />
+                  </Box>
+                )}
+              />
+              <Controller
+                control={control}
+                name="rpc"
+                render={({ field }) => (
+                  <WalletInput
+                    {...field}
+                    label="Rpc"
+                    error={!!errors.rpc}
+                    errorValue={errors.rpc?.message}
+                    disabled={!network}
+                  />
+                )}
+              />
+
+              <WalletInput
+                label="Chain Id"
+                placeholder="Chain Id"
+                value={network?.chainId}
+                disabled
+              />
+            </GridInfoValueStyled>
+
+            {isComponent ? (
+              <Box display={'flex'} alignItems={'center'} gap={3}>
+                <WalletButton variant="contained" styles={styledBtn} onClick={handleClose}>
+                  Cancel
+                </WalletButton>
+                <WalletButton
+                  variant="contained"
+                  styles={styledBtn}
+                  type="submit"
+                  disabled={!network}
+                >
+                  Save
+                </WalletButton>
+              </Box>
+            ) : (
+              <WalletButton
+                variant="contained"
+                styles={styledBtn}
+                type="submit"
+                disabled={!network}
+              >
+                Save
+              </WalletButton>
+            )}
+          </form>
+        </BoxChangedStyled>
+        {/*  */}
+      </BodyStyled>
+    </WalletPaper>
+  );
+
+  if (isComponent) {
+    return <ChangeNetworkVariables />;
+  }
 
   return (
     <WalletLayout>
@@ -121,80 +228,7 @@ export default function NetworsSettins() {
         </Box>
 
         <CustomTabs tabs={settingsMenu} />
-        <WalletPaper style={{ minWidth: '50%', width: '50%' }}>
-          <BodyStyled>
-            {/*  */}
-            <BoxChangedStyled>
-              <WalletTypography component="h2" fontWeight={600}>
-                Environment variables
-              </WalletTypography>
-
-              <WalletTypography fontSize={14} fontWeight={500}>
-                You can override some of our default APIs here in case you need to. Proceed at your
-                own risk.
-              </WalletTypography>
-
-              <Box width={'50%'}>
-                <WalletSelect
-                  isLoading={isLoadingChain}
-                  options={networks ?? []}
-                  onChange={handleChooseNetwork}
-                  ref={selectInputRef}
-                />
-              </Box>
-
-              {/*  */}
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <GridInfoValueStyled>
-                  <Controller
-                    control={control}
-                    name="name"
-                    render={({ field }) => (
-                      <Box width={'100%'}>
-                        <WalletInput
-                          {...field}
-                          label="Name"
-                          error={!!errors.name}
-                          errorValue={errors.name?.message}
-                          disabled={!network}
-                        />
-                      </Box>
-                    )}
-                  />
-                  <Controller
-                    control={control}
-                    name="rpc"
-                    render={({ field }) => (
-                      <WalletInput
-                        {...field}
-                        label="Rpc"
-                        error={!!errors.rpc}
-                        errorValue={errors.rpc?.message}
-                        disabled={!network}
-                      />
-                    )}
-                  />
-
-                  <WalletInput
-                    label="Chain Id"
-                    placeholder="Chain Id"
-                    value={network?.chainId}
-                    disabled
-                  />
-                </GridInfoValueStyled>
-                <WalletButton
-                  variant="contained"
-                  styles={styledBtn}
-                  type="submit"
-                  disabled={!network}
-                >
-                  Save
-                </WalletButton>
-              </form>
-            </BoxChangedStyled>
-            {/*  */}
-          </BodyStyled>
-        </WalletPaper>
+        <ChangeNetworkVariables />
       </WrapperStyled>
     </WalletLayout>
   );

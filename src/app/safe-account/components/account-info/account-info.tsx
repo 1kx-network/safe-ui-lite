@@ -12,7 +12,7 @@ import { AccountPreviewItemstyled, styleWalletPaper } from './account-info-style
 
 interface IAccountInfo {
   account?: string;
-  chooseNetwork?: IOptionNetwork;
+  chooseNetwork?: IOptionNetwork | null;
 }
 
 export const AccountInfo = ({ account, chooseNetwork }: IAccountInfo) => {

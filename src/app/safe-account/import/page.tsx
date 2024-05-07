@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { Box } from '@mui/system';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
@@ -27,17 +27,18 @@ import {
   styledBtnSwitchNetwork,
   styledCustomNetworkBtn,
 } from '../safe-account.styles';
-import { IOptionNetwork, optionsNetwork, safeNetworksObj } from '@/constants/networks';
+import { IOptionNetwork, safeNetworksObj } from '@/constants/networks';
 import { AccountInfo } from '../components/account-info/account-info';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconInfo from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import { AddNetworkSchema } from '@/utils/validations.utils';
 import { addCustomNetworkDB } from '@/db/set-info';
-import { getNetworksDB } from '@/db/get-info';
 import { customToasty } from '@/components';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
+import useNetworkStore from '@/stores/networks-store';
+import NetworksSettins from '@/app/settings/environment-variables/page';
 
 interface IAddNetwork {
   name: string;
@@ -49,49 +50,69 @@ interface IAddNetwork {
 }
 
 export default function CreatePageAccount() {
-  const [options, setOptions] = useState<IOptionNetwork[]>(optionsNetwork);
-  const [chooseOpt, setChooseOpt] = useState(optionsNetwork[0]);
+  const [options, setOptions] = useState<IOptionNetwork[]>([]);
   const [valueAcc, setValueAcc] = useState('');
-  const [chooseNetwork, setChooseNetwork] = useState<IOptionNetwork>(optionsNetwork[0]);
   const [errorNewNetwork, setErrorNewNetwork] = useState<string | null>(null);
+  const [isChangeVariables, setIsChangeVariables] = useState(false);
+  const [isLoadingSelect, setIsLoadingSelect] = useState(false);
+  const [isAddNewNetwork, setIsAddNewNetwork] = useState(false);
 
+  const { networks, setNetwork, chooseNetwork, setChooseNetwork } = useNetworkStore();
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
   const network = useNetwork();
-
   const { setIsLoading, safeAddress } = useActiveSafeAddress();
   const { createSafe } = useSafeSdk();
+  const { switchNetwork } = useSwitchNetwork();
 
   const chainId = Number(network?.chainId);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const networksDB = await getNetworksDB();
+  //     const updateNetwork = networksDB.map(elem => ({
+  //       label: elem.name,
+  //       value: elem.name,
+  //       rpc: elem.rpcUrl,
+  //       icon: () => formatterIcon(0),
+  //       ...elem,
+  //     }));
+
+  //     setOptions(prevOptions => {
+  //       const uniqueNetworks = updateNetwork.filter(
+  //         network => !prevOptions.some(option => option.rpc === network.rpcUrl)
+  //       );
+  //       return [...prevOptions, ...uniqueNetworks];
+  //     });
+  //   })();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (chainId) {
+  //     const updatedOption = options.find(option => option.chainId === +chainId);
+  //     if (updatedOption) {
+  //       setChooseOpt(updatedOption);
+  //     }
+  //   }
+  // }, [chainId]);
+
+  const handleUpdateOptions = async (isFirstTime?: boolean) => {
+    setIsLoadingSelect(true);
+    setOptions(prevOptions => {
+      const activeNetworks = isFirstTime ? networks ?? [] : prevOptions;
+      setChooseNetwork(activeNetworks[0]);
+
+      return activeNetworks;
+    });
+
+    setTimeout(() => setIsLoadingSelect(false), 300);
+  };
+
   useEffect(() => {
     (async () => {
-      const networksDB = await getNetworksDB();
-      const updateNetwork = networksDB.map(elem => ({
-        label: elem.name,
-        value: elem.name,
-        rpc: elem.rpcUrl,
-        icon: () => formatterIcon(0),
-        ...elem,
-      }));
-
-      setOptions(prevOptions => {
-        const uniqueNetworks = updateNetwork.filter(
-          network => !prevOptions.some(option => option.rpc === network.rpcUrl)
-        );
-        return [...prevOptions, ...uniqueNetworks];
-      });
+      await handleUpdateOptions(true);
     })();
   }, []);
-
-  useEffect(() => {
-    if (chainId) {
-      const updatedOption = options.find(option => option.chainId === +chainId);
-      if (updatedOption) {
-        setChooseOpt(updatedOption);
-      }
-    }
-  }, [chainId]);
 
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -109,10 +130,12 @@ export default function CreatePageAccount() {
 
       setIsLoading(true);
       const safeSdkLocal = await createSafe(valueAcc);
+
       if (!safeSdkLocal) {
-        console.error('Error width address');
+        console.error('<-- Error width address -->');
       }
-      const isOwner = await safeSdkLocal?.isOwner(valueAcc);
+
+      const isOwner = await safeSdkLocal?.isOwner(String(address));
 
       if (isOwner) {
         const localList = localStorage.getItem('createdSafes')
@@ -153,14 +176,8 @@ export default function CreatePageAccount() {
     }
   };
 
-  const handleChooseNetwork = async (chooseNetwork: IOptionNetwork) => {
-    setChooseNetwork(chooseNetwork);
-  };
-
-  const { switchNetwork } = useSwitchNetwork();
-
   const handleSwitchNetwork = async () => {
-    if (!chooseNetwork.chainId) return;
+    if (!chooseNetwork) return;
     await switchNetwork(chooseNetwork.chainId);
   };
 
@@ -170,8 +187,6 @@ export default function CreatePageAccount() {
   };
 
   const condNetwork = chooseNetwork && chainId !== chooseNetwork.chainId;
-
-  const [isAddNewNetwork, setIsAddNewNetwork] = useState(false);
 
   const {
     handleSubmit,
@@ -184,8 +199,8 @@ export default function CreatePageAccount() {
   });
 
   const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
-    const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
-    if (options.find(({ rpc }) => rpc === rpc)) {
+    const { name, rpc, explorerUrl, chainId } = data;
+    if (options.find(elem => elem.rpc === rpc)) {
       setErrorNewNetwork('This RPC was added');
       customToasty('Error with adding a new network', 'error');
       return;
@@ -205,14 +220,15 @@ export default function CreatePageAccount() {
       currency: name,
       explorerUrl,
       rpcUrl: rpc,
-      symbol: symbol,
-      decimals: +decimals,
+      symbol: name,
+      decimals: 18,
     };
 
     setOptions(prevOptions => {
-      return [...prevOptions, { ...newNetwork, icon: () => formatterIcon(0) }];
+      return [...prevOptions, { ...newNetwork, icon: () => formatterIcon(newNetwork.chainId) }];
     });
 
+    setNetwork(objNetworkDB);
     await addCustomNetworkDB(objNetworkDB);
     setIsAddNewNetwork(false);
     customToasty('Network was add', 'success');
@@ -222,6 +238,25 @@ export default function CreatePageAccount() {
     setIsAddNewNetwork(false);
     reset();
   };
+
+  const handleChangeNetwork = async () => {
+    setIsChangeVariables(false);
+    await handleUpdateOptions();
+  };
+
+  const walletSelect = useMemo(
+    () => (
+      <WalletSelect
+        isLoading={isLoadingSelect}
+        options={options}
+        defaultValue={options[0]}
+        onChange={(newValue: IOptionNetwork | null | undefined) =>
+          newValue && setChooseNetwork(newValue)
+        }
+      />
+    ),
+    [isLoadingSelect, options]
+  );
 
   return (
     <WalletLayout hideSidebar>
@@ -234,11 +269,6 @@ export default function CreatePageAccount() {
           <Box display={'flex'} flexDirection={'column'} gap={4}>
             <WalletPaper style={styleWalletPaper} minWidth="653px">
               <Box display="flex" alignItems="center">
-                {/* <StepStyled>
-                  <WalletTypography fontSize={18} fontWeight={600} color="#fff">
-                    1
-                  </WalletTypography>
-                </StepStyled> */}
                 <WalletTypography component="h2" fontSize={18} fontWeight={600}>
                   Select network and enter of address import account
                 </WalletTypography>
@@ -255,23 +285,31 @@ export default function CreatePageAccount() {
                 />
 
                 <Box minWidth={'177px'} display={'flex'} alignItems={'end'}>
-                  <WalletSelect
-                    options={options}
-                    defaultValue={chooseOpt}
-                    onChange={(newValue: IOptionNetwork | null | undefined) =>
-                      newValue && handleChooseNetwork(newValue)
-                    }
-                  />
+                  {walletSelect}
                 </Box>
               </Box>
-              <Box display={'flex'} flexDirection={'row-reverse'}>
+              <Box display={'flex'} flexDirection={'column'} mt={2}>
                 <WalletButton
-                  onClick={() => setIsAddNewNetwork(true)}
+                  onClick={() => {
+                    setIsAddNewNetwork(true);
+                    setIsChangeVariables(false);
+                  }}
                   variant="text"
                   styles={styledCustomNetworkBtn}
                 >
                   <IconPlus color={themeMuiBase.palette.success} width="21px" height="21px" /> Add
                   custom network
+                </WalletButton>
+                <WalletButton
+                  onClick={() => {
+                    setIsAddNewNetwork(false);
+                    setIsChangeVariables(true);
+                  }}
+                  variant="text"
+                  styles={styledCustomNetworkBtn}
+                >
+                  <IconPlus color={themeMuiBase.palette.success} width="21px" height="21px" />{' '}
+                  Change network variables
                 </WalletButton>
               </Box>
 
@@ -356,6 +394,8 @@ export default function CreatePageAccount() {
                           </Box>
                         )}
                       />
+                    </Box>
+                    <Box display={'flex'} flexDirection={'column'} gap={1} width="50%">
                       <Controller
                         control={control}
                         name="rpc"
@@ -366,37 +406,6 @@ export default function CreatePageAccount() {
                               label="RPC URL"
                               error={!!errors.rpc}
                               errorValue={errors.rpc?.message}
-                            />
-                          </Box>
-                        )}
-                      />
-                    </Box>
-                    <Box display={'flex'} flexDirection={'column'} gap={1} width="50%">
-                      <Controller
-                        control={control}
-                        name="symbol"
-                        render={({ field }) => (
-                          <Box width={'100%'}>
-                            <WalletInput
-                              {...field}
-                              label="Symbol"
-                              error={!!errors.symbol}
-                              errorValue={errors.symbol?.message}
-                            />
-                          </Box>
-                        )}
-                      />
-
-                      <Controller
-                        control={control}
-                        name="decimals"
-                        render={({ field }) => (
-                          <Box width={'100%'}>
-                            <WalletInput
-                              {...field}
-                              label="Decimals"
-                              error={!!errors.decimals}
-                              errorValue={errors.decimals?.message}
                             />
                           </Box>
                         )}
@@ -437,6 +446,14 @@ export default function CreatePageAccount() {
                   </WalletTypography>
                 </Box>
               </WalletPaper>
+            )}
+
+            {isChangeVariables && (
+              <NetworksSettins
+                isComponent
+                handleSave={handleChangeNetwork}
+                handleClose={() => setIsChangeVariables(false)}
+              />
             )}
           </Box>
 

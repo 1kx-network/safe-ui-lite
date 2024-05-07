@@ -21,7 +21,7 @@ import { useMultySign } from '@/hooks/useMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/foramtters';
-import { networks } from '@/context/networks';
+// import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
@@ -30,6 +30,7 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import IconArrowLeft from '@/assets/svg/left-arrow.svg';
 import routes from '../routes';
+import useNetworkStore from '@/stores/networks-store';
 
 import {
   BoxOwnerLinkStyled,
@@ -56,6 +57,7 @@ const SignTransactionComponent = () => {
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
   const { open } = useWeb3Modal();
+  const { networks, setChooseNetwork } = useNetworkStore();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
@@ -99,18 +101,26 @@ const SignTransactionComponent = () => {
   const addNetworkForUserSign = async () => {
     if (!userNetworkTrxUrl) return;
     const userNetwork = JSON.parse(userNetworkTrxUrl) as INetworkDB;
-    const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
+    console.log('_userNetwork_', userNetwork);
 
+    const existingNetwork =
+      networks && networks.find(network => network.rpc === userNetwork.rpcUrl);
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
     if (!existingNetwork) {
+      setChooseNetwork({
+        ...userNetwork,
+        label: userNetwork.name,
+        value: userNetwork.name,
+        rpc: userNetwork.rpcUrl,
+      });
       await addCustomNetworkDB(userNetwork);
 
       if (safeAddress) {
         await setDataDB(safeAddress, {});
       }
 
-      networks.push(userNetwork);
+      // networks.push(userNetwork);
 
       if (!walletProvider) return;
       await walletProvider.request({
@@ -138,7 +148,7 @@ const SignTransactionComponent = () => {
     if (userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
 
     if (chainIdUrl) {
-      const linkOnScan = networks.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
+      const linkOnScan = networks?.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
       if (linkOnScan) {
         setLinkOnScan(linkOnScan);
       }
@@ -184,8 +194,8 @@ const SignTransactionComponent = () => {
     customToasty('Was copy', 'success');
   };
 
-  const handleConnectWallet = async () => {
-    await open();
+  const handleConnectWallet = () => {
+    open();
   };
 
   let buttonText = 'Sign Transaction';

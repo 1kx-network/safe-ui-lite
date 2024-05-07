@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box } from '@mui/system';
 
 import BNBIcon from '@/assets/svg/BNB.svg';
 import GnosisIcon from '@/assets/svg/gnosis.svg';
@@ -42,11 +43,10 @@ export const formatterIcon = (
   width: string = '21px',
   height: string = '21px'
 ): React.ReactNode => {
-  const IconComponent = iconMapping[value];
-  if (IconComponent) {
-    return <IconComponent width={width} height={height} />;
-  } else {
-    const IconComponent = iconMapping[0];
-    return <IconComponent width={width} height={height} />;
-  }
+  const IconComponent = iconMapping[value] ? iconMapping[value] : iconMapping[0];
+  return (
+    <Box width={width} minWidth={width} height={height}>
+      <IconComponent />
+    </Box>
+  );
 };

@@ -8,7 +8,11 @@ import {
 import { networks } from '@/context/networks';
 import { formatterIcon } from '@/utils/icon-formatter';
 
-export const safeNetworksObj = {
+interface ISafeNetworksObj {
+  [key: string]: never[];
+}
+
+export const safeNetworksObj: ISafeNetworksObj = {
   '1': [],
   '10': [],
   '56': [],

@@ -121,6 +121,14 @@ export const boxStyleInfoUserAddress = {
   paddingRight: 3,
 };
 
+export const styledNetwork = {
+  width: '80%',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  maxWidth: '110px',
+  textOverflow: 'ellipsis',
+};
+
 export const IconOpenAccountsStyled = styled('div')(
   ({ theme }) => `
   padding: ${theme.spacing(4.1)} 0 ${theme.spacing(4.1)} ${theme.spacing(1)};

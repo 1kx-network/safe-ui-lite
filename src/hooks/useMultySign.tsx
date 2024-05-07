@@ -331,9 +331,10 @@ export function useMultySign({
       saveSignaturesMulty(signatures, signers);
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
-      if ((error as { message: string }).message) {
-        customToasty((error as { message: string }).message, 'error');
-        console.error(`<--${(error as { message: string }).message as string}-->`);
+      const message = (error as { message: string }).message;
+      if (message) {
+        customToasty(message, 'error');
+        console.error(`<--${message}-->`);
       }
       checkSignedStatus();
     }
@@ -362,11 +363,12 @@ export function useMultySign({
       customToasty('Execute success', 'success');
     } catch (error) {
       checkSignedStatus();
-      if ((error as { message: string }).message.includes('-32603')) {
+      const message = (error as { message: string }).message;
+      if (message.includes('-32603')) {
         customToasty('Transaction has already been executed', 'error');
         return error;
       }
-      customToasty((error as { message: string }).message, 'error');
+      customToasty(message, 'error');
       console.error(`<-- ${error} -->`);
       return error;
     }
