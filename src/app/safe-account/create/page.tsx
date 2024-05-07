@@ -36,7 +36,7 @@ import IconPlus from '@/assets/svg/plus.svg';
 import { AddNetworkSchema } from '@/utils/validations.utils';
 import { addCustomNetworkDB } from '@/db/set-info';
 import { customToasty } from '@/components';
-import NetworksSettins from '@/app/settings/environment-variables/page';
+import { NetworksSettings } from '@/app/settings/environment-variables/settings';
 import useNetworkStore from '@/stores/networks-store';
 
 interface IAddNetwork {
@@ -357,7 +357,7 @@ export default function CreatePageAccount() {
             )}
 
             {isChangeVariables && (
-              <NetworksSettins
+              <NetworksSettings
                 isComponent
                 handleSave={handleChangeNetwork}
                 handleClose={() => setIsChangeVariables(false)}
