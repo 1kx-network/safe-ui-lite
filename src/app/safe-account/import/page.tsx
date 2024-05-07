@@ -38,14 +38,12 @@ import { customToasty } from '@/components';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useNetworkStore from '@/stores/networks-store';
-import NetworksSettins from '@/app/settings/environment-variables/page';
+import { NetworksSettings } from '@/app/settings/environment-variables/settings';
 
 interface IAddNetwork {
   name: string;
   chainId: string;
   rpc: string;
-  symbol: string;
-  decimals: string;
   explorerUrl: string;
 }
 
@@ -449,7 +447,7 @@ export default function CreatePageAccount() {
             )}
 
             {isChangeVariables && (
-              <NetworksSettins
+              <NetworksSettings
                 isComponent
                 handleSave={handleChangeNetwork}
                 handleClose={() => setIsChangeVariables(false)}
