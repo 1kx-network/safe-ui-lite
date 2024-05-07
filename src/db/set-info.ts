@@ -12,9 +12,13 @@ export async function setDataDB(safeAddress: string, data: Partial<ISafe>): Prom
     if (data.transactions && data.transactions.length > 0) {
       existingSafe.transactions.unshift(...data.transactions);
     }
+    if (data.messages && data.messages.length > 0) {
+      existingSafe.messages.unshift(...data.messages);
+    }
     await db.safes.put(existingSafe);
   } else {
     const newSafe: ISafe = {
+      messages: data.messages || [],
       address: safeAddress,
       owners: data.owners || [],
       transactions: data.transactions || [],
@@ -46,6 +50,7 @@ export async function setMultipleDataDB(data: Record<string, Partial<ISafe>>): P
         updatedSafes.push(existingSafe);
       } else {
         const newSafe: ISafe = {
+          messages: partialData.messages || [],
           address: address,
           owners: partialData.owners || [],
           transactions: partialData.transactions || [],
