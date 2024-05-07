@@ -14,7 +14,7 @@ type Store = {
 const useSignStore = create<Store>()(set => ({
   threshold: 0,
   owners: null,
-  status: 'loading',
+  status: '',
 
   setStatus: (payload: IStatus) => set(state => ({ ...state, status: payload })),
   setThreshold: (payload: number) => set(state => ({ ...state, threshold: payload })),
