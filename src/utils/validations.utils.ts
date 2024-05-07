@@ -14,6 +14,9 @@ export const NewTransactionSchema = yup.object().shape({
     .string()
     .matches(/^\d*\.?\d*$/, 'Amount must be a valid number')
     .required('This field is required'),
+  /* .test('maxDigits', 'Field must have no more than 2 digits after decimal point', amount =>
+      Number.isInteger(amount * 10 ** 2)
+    ), */
   calldata: yup
     .string()
     .test(

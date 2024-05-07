@@ -52,7 +52,7 @@ const SignTransactionComponent = () => {
   const searchParams = useSearchParams();
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk } = useSafeStore();
-  const { threshold, status, setStatus, owners } = useSignStore();
+  const { threshold, status, owners } = useSignStore();
   const { address, chainId } = useWeb3ModalAccount();
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
@@ -148,7 +148,7 @@ const SignTransactionComponent = () => {
     if (userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
 
     if (chainIdUrl) {
-      const linkOnScan = networks.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
+      const linkOnScan = networks?.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
       if (linkOnScan) {
         setLinkOnScan(linkOnScan);
       }
@@ -157,9 +157,6 @@ const SignTransactionComponent = () => {
     if (signatures && signers) {
       if (signedCount !== signatures.split(',').length) {
         setSignedCount(signatures.split(',').length);
-      }
-      if (status !== 'signed' && signers.split(',').some(signer => signer === address)) {
-        setStatus('signed');
       }
     }
   }, [router, searchParams]);
@@ -181,10 +178,6 @@ const SignTransactionComponent = () => {
     if (!multySign) return;
 
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
-    if (status === 'signed') {
-      customToasty('This wallet has already signed', 'error');
-      return;
-    }
 
     await multySign.signTransactionMulty();
   }, [safeSdk, safeTransaction, safeTxHash, status]);

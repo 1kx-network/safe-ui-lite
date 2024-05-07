@@ -286,12 +286,6 @@ const NewSignTransactionComponent = () => {
       if (signedCount !== dataQuery.signatures.length) {
         setSignedCount(dataQuery.signatures.length);
       }
-
-      if (status !== 'signed' && dataQuery.signers.some(signer => signer === address)) {
-        setStatus('signed');
-      } else {
-        setStatus('');
-      }
     }
   }, [dataQuery.signatures, dataQuery.signers, address]);
 
@@ -325,26 +319,29 @@ const NewSignTransactionComponent = () => {
     mode: 'runtime',
   });
 
-  const handleTransaction = useCallback(async () => {
-    if (status === 'success') return;
+  const handleTransaction = useCallback(
+    async (allowExec = true) => {
+      if (status === 'success') return;
 
-    if (ownerList && ownerList.find(elem => elem === String(address))) {
-      signedCount === threshold
-        ? await multySign.executeMulty()
-        : await multySign.signTransactionMulty();
-    } else {
-      customToasty(
-        'Transactions can only be signed by Safe owners. Please change your account',
-        'error'
-      );
-    }
-  }, [address, ownerList, status, signedCount, threshold]);
+      if (ownerList && ownerList.find(elem => elem === String(address))) {
+        signedCount >= threshold && allowExec
+          ? await multySign.executeMulty()
+          : await multySign.signTransactionMulty();
+      } else {
+        customToasty(
+          'Transactions can only be signed by Safe owners. Please change your account',
+          'error'
+        );
+      }
+    },
+    [address, ownerList, status, signedCount, threshold]
+  );
 
   let buttonText = 'Sign Transaction';
 
   if (status === 'success') {
     buttonText = 'Successfully deployed';
-  } else if (signedCount === threshold) {
+  } else if (signedCount >= threshold) {
     buttonText = 'Execute';
   } else if (status === 'loading') {
     buttonText = 'Loading...';
@@ -556,7 +553,7 @@ const NewSignTransactionComponent = () => {
                       disabled={status === 'loading'}
                       variant={status === 'success' ? 'outlined' : 'contained'}
                       styles={styledSecondaryBtn}
-                      onClick={multySign.signTransactionMulty}
+                      onClick={() => handleTransaction(false)}
                     >
                       {status === 'signed' ? 'Signed' : 'Sign Transaction'}
                     </WalletButton>
@@ -564,7 +561,7 @@ const NewSignTransactionComponent = () => {
                   <WalletButton
                     loading={status === 'loading'}
                     variant="contained"
-                    onClick={handleTransaction}
+                    onClick={() => handleTransaction(true)}
                   >
                     {buttonText}
                   </WalletButton>

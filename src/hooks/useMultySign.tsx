@@ -46,6 +46,8 @@ export interface ICheckAndSwitchNetwork {
   open: () => void;
 }
 
+let debounceCreation = false;
+
 export function useMultySign({
   mode,
   safeAddress,
@@ -101,7 +103,6 @@ export function useMultySign({
     const owners = await safeSdk.getOwners();
     setThreshold(threshold);
     setOwners(owners);
-    setStatus('');
   };
 
   const trxResponseByType = async () => {
@@ -140,11 +141,17 @@ export function useMultySign({
     if (conditionMulty) return;
 
     getOwners();
+
     const conditionForCreateTrx = amount && address && !safeTransaction && safeSdk && safeAddress;
+
     const pendingCreateTrxData = async () => {
-      if (!safeSdk || !conditionForCreateTrx) return;
+      if (!safeSdk || !conditionForCreateTrx) return -1;
+
       if (typeSignTrx === SEND_TOKEN) {
-        if (!chainId || !safeSdk || !tokenType || transaction) return null;
+        if (!chainId || !safeSdk || !tokenType) return -1;
+        if (debounceCreation) return -1;
+        debounceCreation = true;
+        setTimeout(() => (debounceCreation = false), 500);
         const objTrx = await returnTransactionObj(
           address,
           amount,
@@ -161,6 +168,7 @@ export function useMultySign({
             nonce: nonce ? +nonce : 0,
           },
         });
+        await setSafeTransaction(safeTransaction);
 
         const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
         const thesholders = await safeSdk.getThreshold();
@@ -182,9 +190,11 @@ export function useMultySign({
           address: safeAddress,
           transactions: [transactionDB],
         });
+        if (status === 'loading') {
+          setStatus('');
+        }
 
-        await setSafeTransaction(safeTransaction);
-        return;
+        return 0;
       }
 
       const resTransaction = await trxResponseByType();
@@ -202,8 +212,20 @@ export function useMultySign({
     amount,
     address,
     typeSignTrx,
-    transaction,
+    status,
   ]);
+
+  useEffect(() => {
+    return () => {
+      setSafeTransaction(null);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (transaction && transaction.signatures.length > 0) {
+      checkSignedStatus();
+    }
+  }, [transaction, userWalletAddress]);
 
   useEffect(() => {
     if (userWalletAddress) {
@@ -245,7 +267,6 @@ export function useMultySign({
   const saveSignaturesMulty = useCallback(
     (signatures: string[], signers: string[]) => {
       if (conditionMulty) return;
-
       if (signatures.length === 0 || signatures[0] === '') {
         return;
       }
@@ -277,6 +298,18 @@ export function useMultySign({
     [router, transaction, chainId, conditionMulty]
   );
 
+  const checkSignedStatus = useCallback(() => {
+    const { signers } = getSignaturesMulty();
+    const signed = signers.some(signer => signer === userWalletAddress);
+    if (signed) {
+      setStatus('signed');
+    } else {
+      if (status === 'signed') {
+        setStatus('');
+      }
+    }
+  }, [userWalletAddress, chainId, getSignaturesMulty]);
+
   const signTransactionMulty = useCallback(async () => {
     if (conditionMulty) return;
     if (!safeSdk || !safeTransaction || !userWalletAddress) return;
@@ -298,12 +331,12 @@ export function useMultySign({
       saveSignaturesMulty(signatures, signers);
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
-      if ((error as { message: string }).message) {
-        const messafe = (error as { message: string }).message;
-
-        customToasty(`Something went wrong with sign! ${messafe}`, 'error');
-        console.error(`<-- ${messafe} -->`);
+      const message = (error as { message: string }).message;
+      if (message) {
+        customToasty(message, 'error');
+        console.error(`<--${message}-->`);
       }
+      checkSignedStatus();
     }
   }, [safeSdk, safeTransaction, safeTxHash, status, chainId, userWalletAddress]);
 
@@ -329,15 +362,14 @@ export function useMultySign({
       setStatus('success');
       customToasty('Execute success', 'success');
     } catch (error) {
+      checkSignedStatus();
       const message = (error as { message: string }).message;
-
       if (message.includes('-32603')) {
-        customToasty('Something wrong with execute! Please check your sign params', 'error');
+        customToasty('Transaction has already been executed', 'error');
         return error;
       }
-
-      customToasty('Something error with execute', 'error');
-      console.log(`error`, error);
+      customToasty(message, 'error');
+      console.error(`<-- ${error} -->`);
       return error;
     }
   }, [mode, conditionMulty, safeSdk, safeTransaction, chainId, status, safeTxHash]);
