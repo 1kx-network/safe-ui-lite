@@ -65,7 +65,7 @@ export default function CreatePageAccount() {
           router.push(routes.home);
           customToasty('Account successfully created', 'success');
         })
-        .catch(e => console.log('_e_', e));
+        .catch(e => console.error(`<--${e}-->`));
     } catch (e) {
       setIsErrorDeploy(true);
     } finally {
