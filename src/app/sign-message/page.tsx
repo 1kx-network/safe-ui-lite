@@ -58,7 +58,7 @@ const SignMessageComponent = () => {
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
   const { open } = useWeb3Modal();
-  const { networks, setChooseNetwork } = useNetworkStore();
+  const { networks, setChosenNetwork } = useNetworkStore();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
@@ -102,14 +102,13 @@ const SignMessageComponent = () => {
   const addNetworkForUserSign = async () => {
     if (!userNetworkTrxUrl) return;
     const userNetwork = JSON.parse(userNetworkTrxUrl) as INetworkDB;
-    console.log('_userNetwork_', userNetwork);
 
     const existingNetwork =
       networks && networks.find(network => network.rpc === userNetwork.rpcUrl);
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
     if (!existingNetwork) {
-      setChooseNetwork({
+      setChosenNetwork({
         ...userNetwork,
         label: userNetwork.name,
         value: userNetwork.name,

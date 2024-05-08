@@ -48,7 +48,7 @@ const SafeAccountOwners = () => {
   const [account, setAccount] = React.useState('');
 
   const { address } = useWeb3ModalAccount();
-  const { chooseNetwork } = useNetworkStore();
+  const { chosenNetwork } = useNetworkStore();
   const router = useRouter();
   const storeOwners = useActiveOwnerStore();
 
@@ -230,7 +230,7 @@ const SafeAccountOwners = () => {
             </GridButtonStyled>
           </WalletPaper>
           <PreviewSectionStyled>
-            <AccountInfo account={account} chooseNetwork={chooseNetwork} />
+            <AccountInfo account={account} chosenNetwork={chosenNetwork} />
             <Box mt={3}>
               <WalletPaper style={{ ...styleWalletPaper, gap: themeMuiBase.spacing(3) }}>
                 <Box mb={3}>
