@@ -7,7 +7,7 @@ import useNetworkStore from '@/stores/networks-store';
 export function useNetwork() {
   const { walletProvider } = useWeb3ModalProvider();
   const { chainId } = useWeb3ModalAccount();
-  const { networks, setChooseNetwork } = useNetworkStore();
+  const { networks, setChooseNetwork, chooseNetwork } = useNetworkStore();
 
   const [network, setNetwork] = useState<Network | null>(null);
 
@@ -15,9 +15,11 @@ export function useNetwork() {
     if (walletProvider) {
       getNetworkInfo();
 
-      const chooseNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
-      if (!chooseNetworkDef) return;
-      setChooseNetwork(chooseNetworkDef);
+      if (!chooseNetwork) {
+        const chooseNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
+        if (!chooseNetworkDef) return;
+        setChooseNetwork(chooseNetworkDef);
+      }
     }
   }, [walletProvider, chainId, networks]);
 
