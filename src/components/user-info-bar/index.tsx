@@ -219,11 +219,12 @@ export const UserInfoBar = () => {
   };
 
   const handleChangeNetwork = async (elem: IOptionNetwork) => {
-    setChooseNetwork(elem);
-    await switchNetwork(elem.chainId).finally(() => {
-      setIsOpenNetworkMenu(false);
-      setIsOpenNetworkModal(false);
-    });
+    await switchNetwork(elem.chainId)
+      .then(() => setChooseNetwork(elem))
+      .finally(() => {
+        setIsOpenNetworkMenu(false);
+        setIsOpenNetworkModal(false);
+      });
   };
 
   // const handleAddNetwork = async () => {

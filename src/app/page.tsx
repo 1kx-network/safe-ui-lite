@@ -40,12 +40,14 @@ export default function Home() {
       if (fetchedList === undefined || fetchedList.concat(localListParsed[chainId]).length === 0) {
         router.push(routes.safeAccountCreate);
       }
-    } else {
-      if (!address) {
-        open();
-      }
     }
   }, [data, chainId]);
+
+  useEffect(() => {
+    if (!address) {
+      open();
+    }
+  }, [chainId, address]);
 
   return (
     <WalletLayout>
