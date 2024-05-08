@@ -137,9 +137,17 @@ export function useMultySign({
 
   useEffect(() => {
     return () => {
+      setStatus('');
       setSafeTransaction(null);
     };
   }, []);
+
+  useEffect(() => {
+    if (transaction) {
+      const { signatures, signers } = getSignaturesMulty();
+      saveSignaturesMulty(signatures, signers);
+    }
+  }, [transaction, chainId]);
 
   useEffect(() => {
     switchNetworkMulty({ chainIdUrl, chainId, switchNetwork, open });
@@ -152,60 +160,62 @@ export function useMultySign({
     const pendingCreateTrxData = async () => {
       if (!safeSdk || !conditionForCreateTrx) return;
 
-      if (typeSignTrx === SEND_TOKEN) {
-        if (!chainId || !safeSdk || !tokenType) return;
-        if (debounceCreation) return;
+      if (!chainId || !safeSdk) return;
+      if (debounceCreation) return;
 
-        debounceCreation = true;
-        setTimeout(() => (debounceCreation = false), 500);
+      debounceCreation = true;
+      setTimeout(() => (debounceCreation = false), 500);
+      let safeTransaction: SafeTransaction | null = null;
+
+      if (typeSignTrx === SEND_TOKEN) {
         const objTrx = await returnTransactionObj(
           address,
           amount,
-          tokenType,
+          tokenType ?? 'ETH',
           chainId,
           searchParams.get('calldata') || '0x',
           createTrancationERC20
         );
 
         if (!objTrx) return;
-        const safeTransaction = await safeSdk.createTransaction({
+        safeTransaction = await safeSdk.createTransaction({
           transactions: [objTrx],
           options: {
             nonce: nonce ? +nonce : 0,
           },
         });
-        await setSafeTransaction(safeTransaction);
-
-        const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-        const thesholders = await safeSdk.getThreshold();
-        const currentDate = new Date();
-        const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
-        const transactionDB = {
-          id: uuid(),
-          date: dateTrx,
-          tokenType,
-          theshold: thesholders,
-          hash: safeTxHash,
-          amount: safeTransaction.data.value,
-          calldata: safeTransaction.data.data,
-          destinationAddress: safeTransaction.data.to,
-          nonce,
-          signatures: [],
-        };
-
-        await setDataDB(safeAddress, {
-          address: safeAddress,
-          transactions: [transactionDB],
-        });
-
-        if (status === 'loading') {
-          setStatus('');
-        }
+        setSafeTransaction(safeTransaction);
+      } else {
+        safeTransaction = await trxResponseByType();
+        setSafeTransaction(safeTransaction);
       }
+      if (!safeTransaction) return;
 
-      const resTransaction = await trxResponseByType();
-      if (!resTransaction) return;
-      setSafeTransaction(resTransaction);
+      const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+      const thesholders = await safeSdk.getThreshold();
+      const currentDate = new Date();
+      const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
+      const transactionDB = {
+        id: uuid(),
+        date: dateTrx,
+        tokenType: tokenType ?? 'ETH',
+        theshold: thesholders,
+        hash: safeTxHash,
+        amount: safeTransaction.data.value,
+        calldata: safeTransaction.data.data,
+        destinationAddress: safeTransaction.data.to,
+        nonce,
+        signatures: [],
+      };
+
+      await setDataDB(safeAddress, {
+        address: safeAddress,
+        transactions: [transactionDB],
+      });
+
+      if (status === 'loading') {
+        setStatus('');
+      }
     };
 
     pendingCreateTrxData();
@@ -381,13 +391,6 @@ export function useMultySign({
       return error;
     }
   }, [mode, conditionMulty, safeSdk, safeTransaction, chainId, status, safeTxHash]);
-
-  useEffect(() => {
-    if (transaction) {
-      const { signatures, signers } = getSignaturesMulty();
-      saveSignaturesMulty(signatures, signers);
-    }
-  }, [transaction, chainId]);
 
   return {
     safeTransaction,

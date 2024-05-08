@@ -113,7 +113,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
         });
 
         const queryString = new URLSearchParams(queryParams).toString();
-        router.push(`${routes.signTransaction}?${queryString}`);
+        router.push(`${routes.signMessage}?${queryString}`);
       }
       return new Promise((_resolve, _reject) => {
         // const onClose = () => {
