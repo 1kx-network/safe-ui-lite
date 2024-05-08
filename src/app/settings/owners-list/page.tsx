@@ -141,10 +141,11 @@ export default function SettingsOwner() {
       threshold = needConfirmOwner - 1;
     }
 
-    const safeTxHash = await safeSdk.createRemoveOwnerTx({
+    const safeTx = await safeSdk.createRemoveOwnerTx({
       ownerAddress: address,
       threshold,
     });
+    const safeTxHash = await safeSdk.getTransactionHash(safeTx);
 
     const queryParams = {
       typeSignTrx: String(TYPE_SIGN_TRX.REMOVE_OWNER),
@@ -154,7 +155,7 @@ export default function SettingsOwner() {
       destinationAddress: address,
       tokenType: '',
       networkName: networkName,
-      safeTxHash: JSON.stringify(safeTxHash),
+      safeTxHash: safeTxHash,
       newThreshold: String(threshold),
       nonce: String(nonce),
     };
@@ -167,7 +168,8 @@ export default function SettingsOwner() {
   const handleChangeSettings = async () => {
     setIsLoading(true);
     if (!safeAddress || !safeSdk) return;
-    const safeTxHash = await safeSdk.createChangeThresholdTx(newCountNeedConfirm);
+    const safeTx = await safeSdk.createChangeThresholdTx(newCountNeedConfirm);
+    const safeTxHash = await safeSdk.getTransactionHash(safeTx);
 
     const queryParams = {
       typeSignTrx: String(TYPE_SIGN_TRX.CHANGE_THRESHOLD),
@@ -177,7 +179,7 @@ export default function SettingsOwner() {
       destinationAddress: safeAddress,
       tokenType: '',
       networkName: networkName,
-      safeTxHash: JSON.stringify(safeTxHash),
+      safeTxHash: safeTxHash,
       newThreshold: String(newCountNeedConfirm),
       nonce: String(nonce),
     };
@@ -220,7 +222,9 @@ export default function SettingsOwner() {
 
   const handleAddOwner = async () => {
     if (!safeAddress || !safeSdk) return;
-    const safeTxHash = await safeSdk.createAddOwnerTx({ ownerAddress: valueNewOwner });
+    const safeTx = await safeSdk.createAddOwnerTx({ ownerAddress: valueNewOwner });
+    const safeTxHash = await safeSdk.getTransactionHash(safeTx);
+
     const queryParams = {
       typeSignTrx: String(TYPE_SIGN_TRX.ADD_OWNER),
       chainId: String(chainId),
@@ -229,7 +233,7 @@ export default function SettingsOwner() {
       destinationAddress: valueNewOwner,
       tokenType: '',
       networkName: networkName,
-      safeTxHash: JSON.stringify(safeTxHash),
+      safeTxHash: safeTxHash,
       nonce: String(contractNonce),
     };
 

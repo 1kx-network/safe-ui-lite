@@ -13,6 +13,7 @@ import { customToasty } from '@/components';
 import { safeNetworksObj } from '@/constants/networks';
 import usdABI from '@/app/contracts/abi/usd.json';
 import { CONTRACTS_TOKEN } from '@/constants/tokens-contract';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import { useEthersAdapter } from './useEthersAdapter';
 
@@ -27,10 +28,11 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const { saveSdk, safeSdk } = useSafeStore();
   const { walletProvider } = useWeb3ModalProvider();
   const { chainId } = useWeb3ModalAccount();
+  const { setClearActiveSafeStore } = useActiveSafeAddress();
 
   const createSdkInstance = async (address: string | null) => {
     if (!walletProvider) {
-      console.log('Wallet provider is not available.');
+      console.error('Wallet provider is not available.');
       return;
     }
 
@@ -58,44 +60,59 @@ export function useSafeSdk(safeAddress: string | null = null) {
         owners,
         threshold,
       };
+
       const safeFactory = await SafeFactory.create({ ethAdapter, isL1SafeSingleton: true });
       const safeSdk = await safeFactory.deploySafe({ safeAccountConfig });
       const addressAccount = await safeSdk.getAddress();
 
-      const localList = localStorage.getItem('createdSafes')
-        ? localStorage.getItem('createdSafes')
-        : null;
-
-      const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
-
-      const updateLocalList =
-        chainId && localListParsed[String(chainId)] === undefined
-          ? {
-              ...localListParsed,
-              [chainId]: [],
-            }
-          : localListParsed;
-
-      if (chainId && updateLocalList && updateLocalList[chainId]) {
-        updateLocalList[chainId].push(addressAccount);
-      } else {
-        updateLocalList[chainId ?? 1] = [addressAccount];
+      if (!chainId) {
+        throw new Error('<-- Chain Id is undefinded -->');
       }
 
-      localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
+      if (safeNetworksObj[String(chainId)] === undefined) {
+        const localList = localStorage.getItem('createdSafes')
+          ? localStorage.getItem('createdSafes')
+          : null;
+
+        const parseListNetwork = localList ? JSON.parse(localList) : {};
+
+        if (parseListNetwork[chainId]) {
+          parseListNetwork[chainId].push(addressAccount);
+        } else {
+          parseListNetwork[chainId ?? 1] = [addressAccount];
+        }
+
+        if (parseListNetwork) {
+          localStorage.setItem('createdSafes', JSON.stringify(parseListNetwork));
+        }
+      }
+
       localStorage.setItem('safeAddress', addressAccount);
 
       return safeSdk;
     } catch (e) {
-      console.error(e);
-      return null;
+      const error = e instanceof Error ? e.message : String(e);
+      if (error.includes('Create2')) {
+        customToasty(
+          `A similar account has already been created. Error with deploy new safe account.`,
+          'error',
+          { duration: 4000 }
+        );
+      } else {
+        customToasty('Error with deploy new safe account', 'error', { duration: 4000 });
+        console.error(`<-- ${error} -->`);
+        setClearActiveSafeStore();
+      }
+
+      throw new Error(error);
     }
   };
 
-  const createSafe = async (safeAddress: string) => {
+  const createSafe = async (safeAddress: string | null) => {
     try {
       const ethAdapter = await createEthAdapter?.createEthAdapter?.();
-      if (!ethAdapter) return null;
+
+      if (!ethAdapter || !safeAddress) return null;
 
       const safeSdk = await Safe.create({
         ethAdapter,
@@ -105,16 +122,19 @@ export function useSafeSdk(safeAddress: string | null = null) {
 
       saveSdk(safeSdk);
       return safeSdk;
-    } catch (e) {
-      console.error(e);
-      return null;
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e);
+      // const errorMessage = `${error}. ${isCreateAcc ? 'Please check your RPC in wallet or change network': }`;
+
+      setClearActiveSafeStore();
+      console.error(`<-- ${error} -->`);
     }
   };
 
   const getInfoByAccount = async (safeSdk: null | Safe) => {
-    try {
-      if (!safeSdk) return;
+    if (!safeSdk) return;
 
+    try {
       const balanceAccount = await safeSdk.getBalance();
       const ownersAccount = await safeSdk.getOwners();
       const contractVersion = await safeSdk.getContractVersion();
@@ -122,8 +142,10 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const accountThreshold = await safeSdk.getThreshold();
 
       return { balanceAccount, ownersAccount, contractVersion, contractNonce, accountThreshold };
-    } catch (e) {
-      return null;
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+
+      console.error(`<-- ${errorMessage} -->`);
     }
   };
 
@@ -135,8 +157,9 @@ export function useSafeSdk(safeAddress: string | null = null) {
     try {
       const transferData = createERC20TokenTransferTransaction(tokenAddress, toAddress, amount);
       return transferData;
-    } catch (e) {
-      console.error('Error create token transfer transaction ERC20', e);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      console.error(`<-- ${errorMessage} -->`);
     }
   };
 
@@ -155,10 +178,11 @@ export function useSafeSdk(safeAddress: string | null = null) {
       const balance = await usdtContract.balanceOf(addressAccount);
 
       return balance;
-    } catch (error) {
-      customToasty(`Error get balance ERC20 token`, 'error');
-      console.error(error);
-      return null;
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+
+      customToasty('Error get balance ERC20 token', 'error');
+      console.error(`<-- ${errorMessage} -->`);
     }
   };
 

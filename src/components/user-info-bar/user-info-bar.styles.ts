@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { styled } from '@mui/system';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -38,12 +39,13 @@ export const BodyOpenStyled = styled('div')<{ isOpen?: boolean }>(
       position: absolute;
       z-index: 999;
       display: ${isOpen ? 'flex' : 'none'};
-      width: 173px;
+      width: 273px;
       border-radius: ${theme.spacing(4.5)};
       background-color: ${theme.palette.textDark};
       flex-direction: column;
       padding: ${theme.spacing(3)};
-      top: 37px;
+      top: 40px;
+      right: 22px;
   `
 );
 
@@ -63,6 +65,7 @@ export const WCButton = styled('div')(
 export const ItemInfoStyled = styled('div')<{ noBorder?: boolean }>(
   ({ noBorder }) => `
     display: flex;
+    gap: 0.5rem;
     align-items: center;
     padding: 6px 0;
     justify-content: space-between;
@@ -141,3 +144,8 @@ export const styledBtnDisconnect = {
   border: 'none',
   color: themeMuiBase.palette.error,
 };
+
+export const ImgWalletStyled = styled(Image)`
+  border-radius: 50%;
+  object-fit: cover;
+`;

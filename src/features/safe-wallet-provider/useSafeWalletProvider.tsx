@@ -63,21 +63,58 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
   return useMemo<WalletSDK | undefined>(() => {
     if (!chainId || !safeAddress) return;
 
-    const signMessage = (
-      _message: string | EIP712TypedData,
+    const signMessage = async (
+      message: string | EIP712TypedData,
       appInfo: AppInfo,
       _method: Methods.signMessage | Methods.signTypedMessage
     ): Promise<{ signature: string }> => {
-      // const id = Math.random().toString(36).slice(2);
-      // const shouldSignOffChain =
-      //   isOffchainEIP1271Supported(safe, currentChain) &&
-      //   !onChainSigning &&
-      //   settings.offChainSigning;
+      console.log(`called sign message`, message, appInfo, _method);
 
-      console.log(`SIGN MESSAGE ${_message} from ${appInfo.name}`);
       const { title, options } = NotificationMessages.SIGNATURE_REQUEST(appInfo);
       showNotification(title, options);
 
+      const id = uuid();
+
+      if (!safe) {
+        return new Promise((_resolve, reject) => {
+          reject('No Safe SDK');
+        });
+      }
+      const safeSdk = safe;
+
+      const safeMsgHash = await safeSdk.getSafeMessageHash(message.toString());
+      const thesholders = await safeSdk.getThreshold();
+      const currentDate = new Date();
+      const dateMsg = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
+      const networkUserInfo = configs.find((elem: ChainInfo) => elem.chainId === chainId);
+
+      if (chainId && safeAddress) {
+        const queryParams = {
+          chainId: String(chainId),
+          address: encodeURIComponent(safeAddress),
+          networkName: networkUserInfo?.chainName ?? 'Ethereum',
+          safeMsgHash,
+          userNetworkTrx: JSON.stringify(networkUserInfo),
+        };
+
+        const messageDB = {
+          id,
+          date: dateMsg,
+          data: message.toString(),
+          tokenType: NATIVE_TOKENS.ETH,
+          theshold: thesholders,
+          hash: safeMsgHash,
+          signatures: [],
+        };
+
+        await setDataDB(safeAddress, {
+          address: safeAddress,
+          messages: [messageDB],
+        });
+
+        const queryString = new URLSearchParams(queryParams).toString();
+        router.push(`${routes.signMessage}?${queryString}`);
+      }
       return new Promise((_resolve, _reject) => {
         // const onClose = () => {
         //   reject({
@@ -126,7 +163,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async send(params: { txs: any[]; params: { safeTxGas: number } }, appInfo) {
-        console.log(`transactions from wallet connect`, params);
         const id = uuid();
 
         const transactions = params.txs.map(({ to, value, data }) => {
@@ -250,7 +286,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       },
 
       async showTxStatus(_safeTxHash) {
-        console.log(`SHOW tx status`, _safeTxHash);
         // router.push({
         //   pathname: AppRoutes.transactions.tx,
         //   query: {

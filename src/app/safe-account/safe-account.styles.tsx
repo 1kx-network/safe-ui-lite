@@ -104,7 +104,8 @@ export const styledBtnSwitchNetwork = {
 };
 
 export const styledCustomNetworkBtn = {
-  width: '180px',
+  width: '240px',
   fontSize: '14px',
   height: '34px',
+  justifyContent: 'start',
 };

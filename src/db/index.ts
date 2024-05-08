@@ -1,4 +1,5 @@
 import Dexie, { Table } from 'dexie';
+import { EIP712TypedData } from '@safe-global/safe-core-sdk-types';
 
 import { IAddressBook } from '@/stores/address-book-store';
 
@@ -21,6 +22,15 @@ export interface ISignature {
   data: string;
 }
 
+export interface IMessage {
+  id: string;
+  date: string;
+  data: string | EIP712TypedData;
+  theshold: number;
+  hash: string;
+  signatures: ISignature[];
+}
+
 export interface ITransaction {
   id: string;
   date: string;
@@ -37,6 +47,7 @@ export interface ISafe {
   id?: number;
   address: string;
   owners: string[];
+  messages: IMessage[];
   transactions: ITransaction[];
 }
 

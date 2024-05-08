@@ -41,7 +41,7 @@ import {
   SignersBoxStyled,
   SingInfoStyled,
   styledSecondaryBtn,
-} from './link-trx.styles';
+} from './link-msg.styles';
 
 interface IForm {
   safeAddress: string | null;

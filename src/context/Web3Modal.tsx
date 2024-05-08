@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { WALLETCONNECT_V2_PROJECT_ID } from '@/constants/wallet-connect';
+import useNetworkStore from '@/stores/networks-store';
 
 import { networks } from './networks';
 
@@ -17,8 +18,7 @@ const metadata = {
   ],
 };
 
-console.log(`WALLETCONNECT_V2_PROJECT_ID:`, WALLETCONNECT_V2_PROJECT_ID);
-const modal = createWeb3Modal({
+createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: networks,
   projectId: WALLETCONNECT_V2_PROJECT_ID,
@@ -26,17 +26,17 @@ const modal = createWeb3Modal({
   allowUnsupportedChain: true,
 });
 
-console.log(`modal:`, modal);
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
   const { setSafeAddress } = useActiveSafeAddress();
+  const { loadNetworks } = useNetworkStore();
+
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
 
   useEffect(() => {
     setSafeAddress(safeAddress);
+    loadNetworks();
   }, [safeAddress]);
-
-  console.log('Web3ModalProvider children', children);
 
   return children;
 }

@@ -49,6 +49,10 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   const isSettings = pathname === routes.settings;
   const isTransactions = pathname === routes.transactions;
 
+  if (isSign) {
+    return NextResponse.next();
+  }
+
   if (isUser) {
     if (isSettings) {
       return NextResponse.redirect(new URL(routes.settingsOwnersList, url));
@@ -67,10 +71,6 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
     } else {
       return NextResponse.rewrite(new URL(routes.home, url));
     }
-  }
-
-  if (isSign) {
-    return NextResponse.next();
   }
 
   if (url.includes(routes.newSignTransaction)) {

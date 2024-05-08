@@ -3,6 +3,7 @@
 import {
   useDisconnect,
   useSwitchNetwork,
+  useWalletInfo,
   useWeb3Modal,
   useWeb3ModalAccount,
 } from '@web3modal/ethers/react';
@@ -11,27 +12,20 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import * as utils from 'ethers';
-import { v4 as uuid } from 'uuid';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import Link from 'next/link';
 
 import { formattedLabel } from '@/utils/foramtters';
-import { WalletButton, WalletInput, WalletTypography } from '@/ui-kit';
+import { WalletButton, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';
-import IconPlus from '@/assets/svg/plus.svg';
-import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
-import { CustomModal, customToasty } from '..';
+import { customToasty } from '..';
 import routes from '@/app/routes';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { formatterIcon } from '@/utils/icon-formatter';
-import { useNetwork } from '@/hooks/useNetwork';
-import { optionsNetwork } from '@/constants/networks';
+import { IOptionNetwork, optionsNetwork } from '@/constants/networks';
 import { getNetworksDB } from '@/db/get-info';
-import { AddNetworkSchema } from '@/utils/validations.utils';
-import { addCustomNetworkDB } from '@/db/set-info';
 import { TYPE_IMPORT } from '@/constants/types';
 import { INetworkDB } from '@/db';
 import useNetworkStore from '@/stores/networks-store';
@@ -48,19 +42,19 @@ import {
   IconCopyStyled,
   styledBtn,
   styledBtnDisconnect,
-  ItemInfoNetworkStyled,
+  ImgWalletStyled,
   styledNetworks,
-  styledBtnAddNetwork,
+  ItemInfoNetworkStyled,
 } from './user-info-bar.styles';
 
-interface IAddNetwork {
-  name: string;
-  chainId: string;
-  rpc: string;
-  symbol: string;
-  decimals: string;
-  explorerUrl: string;
-}
+// interface IAddNetwork {
+//   name: string;
+//   chainId: string;
+//   rpc: string;
+//   symbol: string;
+//   decimals: string;
+//   explorerUrl: string;
+// }
 
 export const UserInfoBar = () => {
   const { address, chainId } = useWeb3ModalAccount();
@@ -70,7 +64,8 @@ export const UserInfoBar = () => {
   const wrapperRef = useRef(null);
   const { safeSdk } = useSafeStore();
   const { getInfoByAccount } = useSafeSdk();
-  const network = useNetwork();
+  const { walletInfo } = useWalletInfo();
+
   const { switchNetwork } = useSwitchNetwork();
   const { setClearActiveSafeStore } = useActiveSafeAddress();
   const searchParams = useMemo(() => {
@@ -78,33 +73,39 @@ export const UserInfoBar = () => {
     return { get: () => null };
   }, [router]);
 
-  const { networks, setNetwork, setNetworksArray } = useNetworkStore();
+  const { networks, chooseNetwork, setNetworksArray, setChooseNetwork } = useNetworkStore();
 
   const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
-
   const [balance, setBalance] = useState('0');
-  // const [options, setOptions] = useState<IOptionNetwork[]>(networks);
-  const [isOpenMenu, setIsOpenMenu] = useState(false);
+
+  // const [options, setOptions] = useState<IOptionNetwork[]>([]);
   const [isOpenNetworkMenu, setIsOpenNetworkMenu] = useState(false);
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  // const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenNetworkModal, setIsOpenNetworkModal] = useState(false);
+  const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
-  const [errorNewNetwork, setErrorNewNetwork] = useState<string | null>(null);
   const [networksDBState, setNetworksDB] = useState<INetworkDB[]>([]);
 
-  const networkName =
-    (network?.name || '').toString().charAt(0).toUpperCase() +
-    (network?.name || '').toString().slice(1);
+  // const {
+  //   handleSubmit,
+  //   formState: { errors },
+  //   control,
+  //   reset,
+  // } = useForm<IAddNetwork>({
+  //   mode: 'onSubmit',
+  //   resolver: yupResolver(AddNetworkSchema),
+  // });
 
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-    reset,
-  } = useForm<IAddNetwork>({
-    mode: 'onSubmit',
-    resolver: yupResolver(AddNetworkSchema),
-  });
+  useEffect(() => {
+    if (chainId) {
+      if (!chooseNetwork) {
+        const chooseNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
+
+        if (!chooseNetworkDef) return;
+        setChooseNetwork(chooseNetworkDef);
+      }
+    }
+  }, [chainId]);
 
   useEffect(() => {
     if (isShareAcc) {
@@ -114,30 +115,6 @@ export const UserInfoBar = () => {
       })();
     }
   }, [isShareAcc, defaultNetworks]);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const networksDB = await getNetworksDB();
-  //     const updateNetwork: IOptionNetwork[] = networksDB.map(elem => ({
-  //       id: elem.id,
-  //       name: elem.name,
-  //       currency: elem.currency,
-  //       explorerUrl: elem.explorerUrl,
-  //       rpcUrl: elem.rpcUrl,
-  //       symbol: elem.symbol,
-  //       decimals: elem.decimals,
-  //       chainId: elem.chainId,
-  //       label: elem.name,
-  //       value: elem.name,
-  //       rpc: elem.rpcUrl,
-  //       icon: () => formatterIcon(elem.chainId ?? 0),
-  //     }));
-
-  //     const networksArrayDB =[...optionsNetwork, ...updateNetwork].filter(elem => elem.chainId)
-
-  //     setNetworksArray([...optionsNetwork, ...updateNetwork]);
-  //   })();
-  // }, [networks, networksDB]);
 
   useEffect(() => {
     (async () => {
@@ -159,7 +136,6 @@ export const UserInfoBar = () => {
         ...updatedArray,
         ...updateNetwork.filter(network => !updatedArray.some(n => n.chainId === network.chainId)),
       ];
-      console.log(networkArray);
 
       setNetworksArray(networkArray);
     })();
@@ -203,7 +179,7 @@ export const UserInfoBar = () => {
       setIsOpenMenu(!isOpenMenu);
       setIsOpenNetworkMenu(false);
     } else {
-      setIsOpenModal(true);
+      open();
     }
   };
 
@@ -215,7 +191,7 @@ export const UserInfoBar = () => {
   useEffect(() => {
     if (address) {
       Cookies.set('addressUser', address);
-      setIsOpenModal(false);
+      // setIsOpenModal(false);
       setIsCreateNewAccount(false);
     } else {
       Cookies.remove('addressUser');
@@ -224,14 +200,14 @@ export const UserInfoBar = () => {
     if (isCreateNewAccount && address) router.push(routes.safeAccountCreate);
   }, [address, isCreateNewAccount]);
 
-  const handleConnect = async () => {
-    setIsCreateNewAccount(true);
-    open();
-  };
+  // const handleConnect = async () => {
+  //   setIsCreateNewAccount(true);
+  //   open();
+  // };
 
-  const handleConnectExisting = async () => {
-    open();
-  };
+  // const handleConnectExisting = async () => {
+  //   open();
+  // };
 
   const handleDisconnect = async () => {
     await disconnect();
@@ -242,117 +218,57 @@ export const UserInfoBar = () => {
     router.push(routes.home);
   };
 
-  const handleAddNetwork = async () => {
-    reset();
-    setIsOpenMenu(false);
-    setIsOpenNetworkMenu(false);
-
-    setIsOpenNetworkModal(true);
+  const handleChangeNetwork = async (elem: IOptionNetwork) => {
+    await switchNetwork(elem.chainId)
+      .then(() => setChooseNetwork(elem))
+      .finally(() => {
+        setIsOpenNetworkMenu(false);
+        setIsOpenNetworkModal(false);
+      });
   };
 
-  // const { walletProvider } = useWeb3ModalProvider();
+  // const handleAddNetwork = async () => {
+  //   reset();
+  //   setIsOpenMenu(false);
+  //   setIsOpenNetworkMenu(false);
 
-  const handleChangeNetwork = async (chainId: number) => {
-    await switchNetwork(chainId).finally(() => {
-      setIsOpenNetworkMenu(false);
-      setIsOpenNetworkModal(false);
-    });
-  };
-
-  // const network = networks.find(elem => elem.chainId === chainId);
-  // if (!network) return;
-  // try {
-  //   // Пытаемся переключиться на указанный RPC
-  //   await walletProvider
-  //     .request({
-  //       method: 'wallet_switchToNetwork',
-  //       params: [
-  //         {
-  //           chainId: network.rpcUrl,
-  //           chainName: 'Custom Network',
-  //           rpcUrl: network.rpcUrl,
-  //           chainId: `0x${(await walletProvider.request({ method: 'net_version' })).toString(16)}`,
-  //         },
-  //       ],
-  //     })
-  //     .catch(err => console.log(err));
-  //   console.log('Switched to RPC:', network.rpcUrl);
-  // } catch (error) {
-  //   // Если сеть не найдена, добавляем её
-  //   if (error.code === 4902) {
-  //     console.log('Network not added, adding now...');
-
-  // try {
-  //   await walletProvider.request({
-  //     method: 'wallet_addEthereumChain',
-  //     params: {
-  //       chainId: network.rpcUrl,
-  //       chainName: 'Custom Network',
-  //       nativeCurrency: {
-  //         name: 'Custom',
-  //         symbol: 'CST',
-  //         decimals: 18,
-  //       },
-  //       rpcUrls: [network.rpcUrl],
-  //       blockExplorerUrls: ['https://explorer.example.com'], // Замените на ваш URL блокчейн-эксплорера
-  //     },
-  //   });
-  //   console.log('Added and switched to RPC:', network.rpcUrl);
-  // } catch (addError) {
-  //   console.error('Failed to add network:', addError);
-  // }
-  //   } else {
-  //     console.error('Failed to switch network:', error);
-  //   }
-  // }
-
-  //   console.log('_rpcUrl_', network?.rpcUrl);
-
-  //   try {
-  //     await walletProvider.request({
-  //       method: 'wallet_switchEthereumChain',
-  //       params: [{ chainId: network?.rpcUrl }],
-  //     });
-  //     console.log('Switched to RPC:', network?.rpcUrl);
-  //   } catch (error) {
-  //     console.error('Failed to switch network:', error);
-  //   }
+  //   setIsOpenNetworkModal(true);
   // };
 
-  const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
-    const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
+  // const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
+  //   const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
 
-    if (networks && networks.some(option => option.rpc === rpc)) {
-      setErrorNewNetwork('This RPC was added');
-      customToasty('Error with adding a new network', 'error');
-      return;
-    }
+  //   if (networks && networks.some(option => option.rpc === rpc)) {
+  //     setErrorNewNetwork('This RPC was added');
+  //     customToasty('Error with adding a new network', 'error');
+  //     return;
+  //   }
 
-    const newNetwork = {
-      label: name,
-      value: name,
-      rpc: rpc,
-      chainId: +chainId,
-    };
+  //   const newNetwork = {
+  //     label: name,
+  //     value: name,
+  //     rpc: rpc,
+  //     chainId: +chainId,
+  //   };
 
-    const objNetworkDB = {
-      ...newNetwork,
-      id: uuid(),
-      name,
-      currency: name,
-      explorerUrl,
-      rpcUrl: rpc,
-      symbol: symbol,
-      decimals: +decimals,
-    };
+  //   const objNetworkDB = {
+  //     ...newNetwork,
+  //     id: uuid(),
+  //     name,
+  //     currency: name,
+  //     explorerUrl,
+  //     rpcUrl: rpc,
+  //     symbol: symbol,
+  //     decimals: +decimals,
+  //   };
 
-    setErrorNewNetwork(null);
-    setNetwork(newNetwork);
+  //   setErrorNewNetwork(null);
+  //   setNetwork(newNetwork);
 
-    await addCustomNetworkDB(objNetworkDB);
-    setIsOpenNetworkModal(false);
-    customToasty('Network was add', 'success');
-  };
+  //   await addCustomNetworkDB(objNetworkDB);
+  //   setIsOpenNetworkModal(false);
+  //   customToasty('Network was add', 'success');
+  // };
 
   return (
     <WrapperStyled ref={wrapperRef}>
@@ -362,7 +278,7 @@ export const UserInfoBar = () => {
         {address ? (
           <>
             <Box display={'flex'} alignItems={'center'} gap={1.5} zIndex={0}>
-              <IconDefaultAddress width="16px" height="16px" />
+              {formatterIcon(chainId ?? 0, '16px', '16px')}
               <WalletTypography
                 fontSize={12}
                 fontWeight={400}
@@ -385,7 +301,7 @@ export const UserInfoBar = () => {
             style={{ width: '100%' }}
             color={themeMuiBase.palette.grey}
           >
-            Create accont
+            Create account
           </WalletTypography>
         )}
       </InfoUserStyled>
@@ -398,15 +314,20 @@ export const UserInfoBar = () => {
             width={'100%'}
             style={{ pointerEvents: 'none' }}
           >
-            <Box display={'flex'} alignItems={'center'} gap={2}>
+            <Box display={'flex'} alignItems={'center'} gap={2} overflow={'hidden'}>
               {chainId && formatterIcon(chainId, '16px', '16px')}
               <WalletTypography
                 fontSize={14}
                 fontWeight={400}
                 color={themeMuiBase.palette.grey}
-                style={{ pointerEvents: 'none' }}
+                style={{
+                  pointerEvents: 'none',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}
               >
-                {networkName}
+                {chooseNetwork?.value}
               </WalletTypography>
             </Box>
             <IconArrowStyled isOpen={isOpenNetworkMenu}>
@@ -420,8 +341,8 @@ export const UserInfoBar = () => {
                 {networks &&
                   networks.map(elem => (
                     <ItemInfoNetworkStyled
-                      onClick={() => handleChangeNetwork(elem.chainId)}
-                      key={elem.chainId}
+                      onClick={() => handleChangeNetwork(elem)}
+                      key={elem.chainId + elem.rpc}
                     >
                       {formatterIcon(elem.chainId, '16px', '16px')}
                       <WalletTypography
@@ -439,10 +360,10 @@ export const UserInfoBar = () => {
                   ))}
               </Box>
 
-              <WalletButton variant="text" styles={styledBtnAddNetwork} onClick={handleAddNetwork}>
+              {/* <WalletButton variant="text" styles={styledBtnAddNetwork} onClick={handleAddNetwork}>
                 <IconPlus width="18px" height="18px" color={themeMuiBase.palette.success} />
                 Add network
-              </WalletButton>
+              </WalletButton> */}
             </BodyOpenStyled>
           )}
         </InfoUserStyled>
@@ -451,29 +372,73 @@ export const UserInfoBar = () => {
       <BodyOpenStyled isOpen={isOpenMenu}>
         <ItemInfoStyled noBorder>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
-            {address && formattedLabel(address, 6, 9)}
+            {address && formattedLabel(address, 15, 15)}
           </WalletTypography>
           <IconCopyStyled onClick={handleCopyAddress} />
         </ItemInfoStyled>
+
         <ItemInfoStyled>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
             Wallet
           </WalletTypography>
-          <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
-            MetaMask
-          </WalletTypography>
+          <Box display={'flex'} alignItems={'center'} gap={1}>
+            {walletInfo && walletInfo.icon ? (
+              <ImgWalletStyled src={walletInfo?.icon} alt="avatar" width={16} height={16} />
+            ) : (
+              formatterIcon(0, '16px', '16px')
+            )}
+            <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
+              {walletInfo?.name ?? 'Uknown'}
+            </WalletTypography>
+          </Box>
         </ItemInfoStyled>
+
         <ItemInfoStyled>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
             Network
           </WalletTypography>
-          <Box display={'flex'} alignItems={'center'} gap={1}>
+          <Box display={'flex'} alignItems={'center'} gap={1} overflow={'hidden'}>
             {chainId && formatterIcon(chainId, '16px', '16px')}
-            <WalletTypography fontSize={12} color={themeMuiBase.palette.white}>
-              {networkName}
+            <WalletTypography
+              fontSize={12}
+              color={themeMuiBase.palette.white}
+              style={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {chooseNetwork?.value}
             </WalletTypography>
           </Box>
         </ItemInfoStyled>
+
+        <ItemInfoStyled>
+          <WalletTypography
+            fontSize={12}
+            color={themeMuiBase.palette.grey}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Safe RPC
+          </WalletTypography>
+          <Link href={chooseNetwork?.rpc ?? '/'} target="_black">
+            <Box
+              display={'flex'}
+              alignItems={'left'}
+              width={'100%'}
+              sx={{ overflowWrap: 'break-word' }}
+            >
+              <WalletTypography
+                fontSize={12}
+                color={themeMuiBase.palette.white}
+                style={{ width: '100%' }}
+              >
+                {chooseNetwork?.rpc ?? ''}
+              </WalletTypography>
+            </Box>
+          </Link>
+        </ItemInfoStyled>
+
         <ItemInfoStyled>
           <WalletTypography fontSize={12} color={themeMuiBase.palette.grey}>
             Balance
@@ -493,7 +458,7 @@ export const UserInfoBar = () => {
         </GridButtonStyled>
       </BodyOpenStyled>
 
-      <CustomModal
+      {/* <CustomModal
         title=""
         isOpen={isOpenModal}
         closeModal={() => setIsOpenModal(false)}
@@ -528,9 +493,9 @@ export const UserInfoBar = () => {
             Create Account
           </WalletButton>
         </Box>
-      </CustomModal>
+      </CustomModal> */}
 
-      <CustomModal
+      {/* <CustomModal
         title=""
         isOpen={isOpenNetworkModal}
         closeModal={() => setIsOpenNetworkModal(false)}
@@ -649,7 +614,7 @@ export const UserInfoBar = () => {
         <WalletTypography fontWeight={400} fontSize={14} color={themeMuiBase.palette.error}>
           {errorNewNetwork}
         </WalletTypography>
-      </CustomModal>
+      </CustomModal> */}
     </WrapperStyled>
   );
 };

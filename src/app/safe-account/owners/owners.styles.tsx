@@ -58,7 +58,7 @@ export const GridOwnerAddressStyled = styled('div')(
 
 export const BoxAddressStyled = styled('div')(
   ({ theme }) => `
-  width: 65%;
+  width: 100%;
   display: flex;
   align-items: end;
   gap: ${theme.spacing(2)};

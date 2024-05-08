@@ -21,6 +21,7 @@ const routes = {
   transactionsHistory: '/transactions/history',
   newTransaction: '/new-transaction',
   signTransaction: '/sign-transaction',
+  signMessage: '/sign-message',
   newSignTransaction: '/sign-transaction/link-trx',
 };
 

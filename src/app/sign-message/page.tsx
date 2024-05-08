@@ -17,18 +17,21 @@ import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
-import { useMultySign } from '@/hooks/useMultySign';
+// import { useMessageMultySign } from '@/hooks/useMessageMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/foramtters';
+// import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
+import IconArrowLeft from '@/assets/svg/left-arrow.svg';
 import routes from '../routes';
 import useNetworkStore from '@/stores/networks-store';
+import { useMultySign } from '@/hooks/useMultySign';
 
 import {
   BoxOwnerLinkStyled,
@@ -38,12 +41,13 @@ import {
   TransactionInfoStyled,
   WrapperStyled,
   styledBtn,
+  styledBtnBack,
   styledPaper,
   styledSecondaryBtn,
-} from './sing-transaction.styles';
-import { SignTransactionInfo } from './sing-trx-info';
+} from './sing-message.styles';
+import { SignTransactionInfo } from './sing-msg-info';
 
-const SignTransactionComponent = () => {
+const SignMessageComponent = () => {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -98,6 +102,7 @@ const SignTransactionComponent = () => {
   const addNetworkForUserSign = async () => {
     if (!userNetworkTrxUrl) return;
     const userNetwork = JSON.parse(userNetworkTrxUrl) as INetworkDB;
+    console.log('_userNetwork_', userNetwork);
 
     const existingNetwork =
       networks && networks.find(network => network.rpc === userNetwork.rpcUrl);
@@ -166,11 +171,7 @@ const SignTransactionComponent = () => {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
-    if (status === 'success') {
-      router.push(routes.home);
-      return;
-    }
-
+    if (status === 'success') return;
     signedCount === threshold ? handleExecute() : handleSignTransaction();
   };
 
@@ -210,11 +211,17 @@ const SignTransactionComponent = () => {
   }
 
   return (
-    <WalletLayout>
+    <WalletLayout hideSidebar>
       <WrapperStyled>
         <WalletPaper style={styledPaper}>
+          <Link href={routes.home}>
+            <WalletButton styles={styledBtnBack} variant="contained">
+              <IconArrowLeft />
+              Back
+            </WalletButton>
+          </Link>
           <WalletTypography fontSize={22} fontWeight={600}>
-            Sign Transaction
+            Sign Message
           </WalletTypography>
           <TransactionInfoStyled>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
@@ -327,7 +334,7 @@ const SignTransactionComponent = () => {
 export default function SignTransaction() {
   return (
     <Suspense>
-      <SignTransactionComponent />
+      <SignMessageComponent />
     </Suspense>
   );
 }

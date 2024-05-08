@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 
 import { WalletTypography } from '@/ui-kit';
-import { TransactionInfoStyled } from '../sing-transaction.styles';
+import { TransactionInfoStyled } from '../sing-message.styles';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';

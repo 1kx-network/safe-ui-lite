@@ -4,6 +4,7 @@ import { CSSObject } from '@emotion/react';
 
 import IconCheck from '@/assets/svg/check.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { WalletTypography } from '../wallet-typography';
 
 const { Option, SingleValue } = components;
 
@@ -14,13 +15,21 @@ const stylesOption = {
   width: '100%',
 };
 
+const styledLabel = {
+  fontSize: '14px',
+  fontWeight: 400,
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const CustomOption = (props: OptionProps<any>) => {
   const IconOption = props.data.icon;
   return (
     <Option {...props}>
       <Box sx={stylesOption}>
-        <Box display={'flex'} alignItems={'center'} gap={'8px'}>
+        <Box display={'flex'} alignItems={'center'} gap={'8px'} overflow={'hidden'}>
           {IconOption && (
             <Box
               minWidth={'19px'}
@@ -32,9 +41,13 @@ export const CustomOption = (props: OptionProps<any>) => {
               <IconOption />
             </Box>
           )}
-          {props.data.label}
+          <WalletTypography style={styledLabel}>{props.data.label}</WalletTypography>
         </Box>
-        {props.isSelected && <IconCheck width={'17px'} height={'18px'} />}
+        {props.isSelected && (
+          <Box minWidth={'17px'} width={'17px'} height={'18px'}>
+            <IconCheck />
+          </Box>
+        )}
       </Box>
     </Option>
   );
@@ -57,7 +70,7 @@ export const CustomSingleValue = (props: SingleValueProps<any>) => {
             <IconOption />
           </Box>
         )}
-        {props.data.label}
+        <WalletTypography style={styledLabel}>{props.data.label}</WalletTypography>
       </Box>
     </SingleValue>
   );
@@ -94,7 +107,7 @@ export const stylesSelect = {
     ...base,
     borderRadius: '1.75rem',
     height: '44px',
-    padding: `0 ${themeMuiBase.spacing(2)}`,
+    padding: `0 ${themeMuiBase.spacing(2)} 0 0`,
     borderWidth: '1px',
     flexWrap: 'nowrap',
     borderColor: themeMuiBase.palette.tetriaryLightGrey,

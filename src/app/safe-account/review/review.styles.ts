@@ -51,3 +51,14 @@ export const LinkOpenInNewIconStyled = styled(Link)(
    cursor: pointer;
 `
 );
+
+export const WarningStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  gap: ${theme.spacing(2)};
+  margin: ${theme.spacing(4)} 0 0;
+  padding: ${theme.spacing(5)};
+  border-radius: 24px;
+  background: #FFE793BD;
+`
+);

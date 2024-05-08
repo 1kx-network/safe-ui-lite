@@ -36,7 +36,7 @@ export function WalletButton({
       onMouseLeave={onMouseLeave}
       variant={variant}
       disabled={disabled || loading === true}
-      loading={loading}
+      loading={loading ? 'true' : undefined}
     >
       {loading ? <IconLoader /> : children}
     </ButtonStyled>

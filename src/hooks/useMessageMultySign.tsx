@@ -1,9 +1,8 @@
 'use client';
 import { useEffect, useCallback, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import { v4 as uuid } from 'uuid';
 
 import { db } from '@/db';
@@ -11,26 +10,20 @@ import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
-import { returnTransactionObj } from '@/utils/new-trx-functionals';
-import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { setDataDB } from '@/db/set-info';
+import { NATIVE_TOKENS } from '@/constants/tokens';
 
 export interface IUseMultySign {
   mode: 'runtime' | 'url';
   safeAddress: string;
-  safeTxHash: string;
-  destinationAddress?: string | null;
+  safeMsg: string;
   address: string | null;
-  amount: string | null;
   chainIdUrl: string | null;
   tokenType: string | null;
-  typeSignTrx: keyof ITypeSignTrx | null;
-  newThreshold: string | null;
   nonce: string | null;
 }
 
 export interface IMultySignResult {
-  safeTransaction: SafeTransaction | null;
   thresholdMulty: number;
   getSignaturesFromDbMulty: () => { signatures: string[]; signers: string[] };
   getSignaturesMulty: () => { signatures: string[]; signers: string[] };
@@ -48,37 +41,31 @@ export interface ICheckAndSwitchNetwork {
 
 let debounceCreation = false;
 
-export function useMultySign({
+export function useMessageMultySign({
   mode,
   safeAddress,
-  safeTxHash,
-  amount,
+  safeMsg,
   chainIdUrl,
   tokenType,
-  typeSignTrx,
   address,
-  newThreshold,
-  nonce,
 }: IUseMultySign): IMultySignResult {
-  const conditionMulty = useMemo(() => !safeAddress || !safeTxHash, [safeAddress, safeTxHash]);
-  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
+  const conditionMulty = useMemo(() => !safeAddress || !safeMsg, [safeAddress]);
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
-  const { createSdkInstance, createTrancationERC20 } = useSafeSdk();
+  const { createSdkInstance } = useSafeSdk();
   const { chainId } = useWeb3ModalAccount();
-  const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
+  const { safeMessage, safeSdk, setSafeMessage } = useSafeStore();
   const { switchNetwork } = useSwitchNetwork();
   const { open } = useWeb3Modal();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const { threshold, setThreshold, status, setStatus, setOwners } = useSignStore();
 
   const safeFromDb = useLiveQuery(
     () => db.safes.where('address').equals(safeAddress).first(),
-    [safeTxHash]
+    [safeMsg]
   );
-  const transaction = safeFromDb?.transactions.find(tx => tx.hash === safeTxHash);
+  const message = safeFromDb?.messages.find(msg => msg.data === safeMsg);
 
   const switchNetworkMulty = async (props: ICheckAndSwitchNetwork) => {
     if (conditionMulty) return;
@@ -105,137 +92,63 @@ export function useMultySign({
     setOwners(owners);
   };
 
-  const trxResponseByType = async () => {
-    if (!safeSdk || !address) return null;
-
-    let resTrx: SafeTransaction | null = null;
-
-    switch (typeSignTrx) {
-      case ADD_OWNER:
-        resTrx = await safeSdk.createAddOwnerTx({
-          ownerAddress: address,
-        });
-        break;
-
-      case REMOVE_OWNER:
-        resTrx = await safeSdk.createRemoveOwnerTx({
-          ownerAddress: address,
-          threshold: newThreshold ? +newThreshold : 1,
-        });
-        break;
-
-      case CHANGE_THRESHOLD:
-        resTrx = await safeSdk.createChangeThresholdTx(newThreshold ? +newThreshold : 1);
-        break;
-
-      default:
-        break;
-    }
-
-    return resTrx;
-  };
-
-  useEffect(() => {
-    return () => {
-      setStatus('');
-      setSafeTransaction(null);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (transaction) {
-      const { signatures, signers } = getSignaturesMulty();
-      saveSignaturesMulty(signatures, signers);
-    }
-  }, [transaction, chainId]);
-
   useEffect(() => {
     switchNetworkMulty({ chainIdUrl, chainId, switchNetwork, open });
 
     if (conditionMulty) return;
+
     getOwners();
 
-    const conditionForCreateTrx = amount && address && !safeTransaction && safeSdk && safeAddress;
+    const conditionForCreateTrx = address && !safeMessage && safeSdk && safeAddress;
 
     const pendingCreateTrxData = async () => {
-      if (!safeSdk || !conditionForCreateTrx) return;
+      if (!safeSdk || !conditionForCreateTrx) return -1;
 
-      if (!chainId || !safeSdk) return;
-      if (debounceCreation) return;
-
+      if (!chainId || !safeSdk || !tokenType) return -1;
+      if (debounceCreation) return -1;
       debounceCreation = true;
       setTimeout(() => (debounceCreation = false), 500);
-      let safeTransaction: SafeTransaction | null = null;
 
-      if (typeSignTrx === SEND_TOKEN) {
-        const objTrx = await returnTransactionObj(
-          address,
-          amount,
-          tokenType ?? 'ETH',
-          chainId,
-          searchParams.get('calldata') || '0x',
-          createTrancationERC20
-        );
+      const safeMessage = await safeSdk.createMessage(safeMsg);
+      await setSafeMessage(safeMessage);
 
-        if (!objTrx) return;
-        safeTransaction = await safeSdk.createTransaction({
-          transactions: [objTrx],
-          options: {
-            nonce: nonce ? +nonce : 0,
-          },
-        });
-        setSafeTransaction(safeTransaction);
-      } else {
-        safeTransaction = await trxResponseByType();
-        setSafeTransaction(safeTransaction);
-      }
-      if (!safeTransaction) return;
-
-      const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+      const safeMsgHash = await safeSdk.getSafeMessageHash(safeMsg);
       const thesholders = await safeSdk.getThreshold();
       const currentDate = new Date();
-      const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
-      const transactionDB = {
+      const dateMsg = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
+      const messageDB = {
         id: uuid(),
-        date: dateTrx,
-        tokenType: tokenType ?? 'ETH',
+        date: dateMsg,
+        data: safeMsg,
+        tokenType: NATIVE_TOKENS.ETH,
         theshold: thesholders,
-        hash: safeTxHash,
-        amount: safeTransaction.data.value,
-        calldata: safeTransaction.data.data,
-        destinationAddress: safeTransaction.data.to,
-        nonce,
+        hash: safeMsgHash,
         signatures: [],
       };
 
       await setDataDB(safeAddress, {
         address: safeAddress,
-        transactions: [transactionDB],
+        messages: [messageDB],
       });
-
       if (status === 'loading') {
         setStatus('');
       }
     };
 
     pendingCreateTrxData();
-  }, [
-    safeSdk,
-    conditionMulty,
-    chainId,
-    safeAddress,
-    safeTxHash,
-    amount,
-    address,
-    typeSignTrx,
-    status,
-  ]);
+  }, [safeSdk, conditionMulty, chainId, safeAddress, safeMsg, address, status]);
 
   useEffect(() => {
-    if (transaction && transaction.signatures.length > 0) {
+    return () => {
+      setSafeMessage(null);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (message && message.signatures.length > 0) {
       checkSignedStatus();
     }
-  }, [transaction, userWalletAddress]);
+  }, [message, userWalletAddress]);
 
   useEffect(() => {
     if (userWalletAddress) {
@@ -245,7 +158,7 @@ export function useMultySign({
 
   const getSignaturesFromDbMulty = useCallback(() => {
     return (
-      transaction?.signatures.reduce(
+      message?.signatures.reduce(
         (acc: { signatures: string[]; signers: string[] }, sig) => {
           acc.signatures.push(sig.data);
           acc.signers.push(sig.signer);
@@ -254,14 +167,14 @@ export function useMultySign({
         { signatures: [], signers: [] }
       ) ?? { signatures: [], signers: [] }
     );
-  }, [transaction, chainId]);
+  }, [message, chainId]);
 
   const getSignaturesMulty = useCallback(() => {
     const originalUrl = new URL(window.location.href);
     const signatures = originalUrl.searchParams.getAll('signatures')[0]?.split(',') ?? [];
     const signers = originalUrl.searchParams.getAll('signers')[0]?.split(',') ?? [];
 
-    if (transaction) {
+    if (message) {
       const { signatures: signaturesFromDb, signers: signersFromDb } = getSignaturesFromDbMulty();
       signersFromDb.map((s, idx) => {
         if (!signers.includes(s)) {
@@ -272,7 +185,7 @@ export function useMultySign({
     }
 
     return { signatures, signers };
-  }, [transaction, chainId]);
+  }, [message, chainId]);
 
   const saveSignaturesMulty = useCallback(
     (signatures: string[], signers: string[]) => {
@@ -289,11 +202,11 @@ export function useMultySign({
         originalUrl.searchParams.set('signers', encodedSigners.join(','));
       }
 
-      if (transaction) {
-        if (transaction.signatures.length !== signers.length) {
+      if (message) {
+        if (message.signatures.length !== signers.length) {
           db.safes.where({ address: safeAddress }).modify(safe => {
             safe.transactions = safe.transactions.map(trx => {
-              if (trx.hash !== transaction.hash) return trx;
+              if (trx.hash !== message.hash) return trx;
               trx.signatures = [];
               signers.map((s, idx) => {
                 trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
@@ -305,7 +218,7 @@ export function useMultySign({
       }
       router.push(originalUrl.toString());
     },
-    [router, transaction, chainId, conditionMulty]
+    [router, message, chainId, conditionMulty]
   );
 
   const checkSignedStatus = useCallback(() => {
@@ -322,11 +235,11 @@ export function useMultySign({
 
   const signTransactionMulty = useCallback(async () => {
     if (conditionMulty) return;
-    if (!safeSdk || !safeTransaction || !userWalletAddress) return;
+    if (!safeSdk || !safeMessage || !userWalletAddress) return;
 
     try {
-      const signedTransaction = await safeSdk.signTransaction(safeTransaction);
-      setSafeTransaction(signedTransaction);
+      const signedTransaction = await safeSdk.signMessage(safeMessage);
+      setSafeMessage(signedTransaction);
 
       const { signatures, signers } = getSignaturesMulty();
       let signature = '';
@@ -342,25 +255,20 @@ export function useMultySign({
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       const message = (error as { message: string }).message;
-      const shortMessage = (error as { shortMessage?: string }).shortMessage ?? 'Error';
-
       if (message) {
-        if (message.includes('4001')) {
-          customToasty(shortMessage, 'error');
-        }
-
+        customToasty(message, 'error');
         console.error(`<--${message}-->`);
       }
       checkSignedStatus();
     }
-  }, [safeSdk, safeTransaction, safeTxHash, status, chainId, userWalletAddress]);
+  }, [safeSdk, safeMessage, safeMsg, status, chainId, userWalletAddress]);
 
   const executeMulty = useCallback(async () => {
     try {
       if (conditionMulty) return;
 
       setStatus('loading');
-      const { signatures, signers } = getSignaturesMulty();
+      /* const { signatures, signers } = getSignaturesMulty();
       if (!safeSdk || !safeTransaction || !signatures || !signers) return;
       signatures.map((sig: string, idx: number) =>
         safeTransaction.addSignature({
@@ -372,28 +280,31 @@ export function useMultySign({
         })
       );
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
-      await txResponse.transactionResponse?.wait();
+      await txResponse.transactionResponse?.wait(); */
 
       setStatus('success');
       customToasty('Execute success', 'success');
     } catch (error) {
       checkSignedStatus();
       const message = (error as { message: string }).message;
-      const shortMessage = (error as { shortMessage?: string }).shortMessage ?? 'Error';
-
       if (message.includes('-32603')) {
         customToasty('Transaction has already been executed', 'error');
         return error;
       }
-
-      customToasty(shortMessage, 'error');
+      customToasty(message, 'error');
       console.error(`<-- ${error} -->`);
       return error;
     }
-  }, [mode, conditionMulty, safeSdk, safeTransaction, chainId, status, safeTxHash]);
+  }, [mode, conditionMulty, safeSdk, safeMessage, chainId, status, safeMsg]);
+
+  useEffect(() => {
+    if (message) {
+      const { signatures, signers } = getSignaturesMulty();
+      saveSignaturesMulty(signatures, signers);
+    }
+  }, [message, chainId]);
 
   return {
-    safeTransaction,
     thresholdMulty: threshold,
     getSignaturesFromDbMulty,
     getSignaturesMulty,

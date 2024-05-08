@@ -11,11 +11,12 @@ import Accordion from '../components/accordion';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconDefualtAddress from '@/assets/svg/defult-icon-address.svg';
 import { formattedLabel } from '@/utils/foramtters';
-import { networks } from '@/context/networks';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import routes from '@/app/routes';
 import useActiveOwnerStore from '@/stores/active-owners-store';
 import { customToasty } from '@/components';
+import IconInfo from '@/assets/svg/infoIcon.svg';
+import useNetworkStore from '@/stores/networks-store';
 
 import {
   CopyIconStyled,
@@ -23,6 +24,7 @@ import {
   LinkOpenInNewIconStyled,
   OpenInNewIconStyled,
   OwnerListStyled,
+  WarningStyled,
 } from './review.styles';
 
 export default function CreatePageAccount() {
@@ -32,22 +34,21 @@ export default function CreatePageAccount() {
   const router = useRouter();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isErrorDeploy, setIsErrorDeploy] = useState(false);
 
-  const networkName = network?.name.toString();
+  const { networks, chooseNetwork } = useNetworkStore();
+
   const chainId = Number(network?.chainId);
 
   useEffect(() => {
-    if (!owners.length) {
+    if (!owners.length || !networks) {
       router.push(routes.safeAccountOwners);
       return;
     }
 
-    if (chainId) {
-      const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
-      if (linkOnScan) {
-        setLinkOnScan(linkOnScan);
-      }
+    if (chooseNetwork) {
+      setLinkOnScan(chooseNetwork.explorerUrl ?? '');
     }
   }, [chainId]);
 
@@ -57,20 +58,23 @@ export default function CreatePageAccount() {
   };
 
   const handleCreate = async () => {
-    setIsLoading(true);
-
-    await deploySafe(owners, needConfirmOwner)
-      .then(res => {
-        if (!!res) {
+    try {
+      setIsLoading(true);
+      await deploySafe(owners, needConfirmOwner)
+        .then(() => {
+          router.push(routes.home);
           customToasty('Account successfully created', 'success');
-          router.push(routes.walletPage);
-        }
-      })
-      .catch(() => customToasty('Something error with create account', 'error'))
-      .finally(() => setIsLoading(false));
+        })
+        .catch(e => console.error(`<--${e}-->`));
+    } catch (e) {
+      setIsErrorDeploy(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleClickBack = () => {
+    setIsErrorDeploy(false);
     setOwners([]);
     setNeedConfirmOwner(1);
     router.push(routes.safeAccountOwners);
@@ -114,7 +118,7 @@ export default function CreatePageAccount() {
                 <Box display={'flex'} alignItems={'center'} gap={themeMuiBase.spacing(2)}>
                   {chainId ? formatterIcon(chainId) : ``}
                   <WalletTypography fontSize={14} fontWeight={600} textTransform="capitalize">
-                    {networkName}
+                    {chooseNetwork && (chooseNetwork.name || chooseNetwork.label)}
                   </WalletTypography>
                 </Box>
               </ItemInfoStyled>
@@ -123,7 +127,15 @@ export default function CreatePageAccount() {
                   Name
                 </WalletTypography>
                 <WalletTypography component="p" fontSize={14} fontWeight={500}>
-                  {networkName}
+                  {chooseNetwork && (chooseNetwork.name || chooseNetwork.label)}
+                </WalletTypography>
+              </ItemInfoStyled>
+              <ItemInfoStyled>
+                <WalletTypography component="p" fontSize={14} fontWeight={500}>
+                  Safe Account RPC
+                </WalletTypography>
+                <WalletTypography component="p" fontSize={14} fontWeight={500}>
+                  {chooseNetwork && (chooseNetwork.rpc || chooseNetwork.rpc)}
                 </WalletTypography>
               </ItemInfoStyled>
               <ItemInfoStyled>
@@ -157,6 +169,38 @@ export default function CreatePageAccount() {
                   {needConfirmOwner} out of {owners.length} owner(s)
                 </WalletTypography>
               </ItemInfoStyled>
+
+              {isErrorDeploy && (
+                <WarningStyled>
+                  <Box
+                    display={'flex'}
+                    sx={{ height: '100%', width: '32px', color: themeMuiBase.palette.error }}
+                  >
+                    <IconInfo />
+                  </Box>
+                  <Box display={'flex'} flexDirection={'column'} gap={2}>
+                    <WalletTypography fontWeight={500}>
+                      Error with deploy a new safe account
+                    </WalletTypography>
+                    <WalletTypography fontSize={14} fontWeight={400}>
+                      Please ensure that the data on your wallet matches the above data used for
+                      creating the account.
+                    </WalletTypography>
+                    <WalletTypography fontSize={14} fontWeight={400}>
+                      Ensure that the{' '}
+                      <WalletTypography fontSize={14} fontWeight={500}>
+                        ChainId
+                      </WalletTypography>{' '}
+                      and{' '}
+                      <WalletTypography fontSize={14} fontWeight={500}>
+                        RPC address
+                      </WalletTypography>{' '}
+                      settings in your wallet are correctly configured. You may need to make
+                      adjustments accordingly.
+                    </WalletTypography>
+                  </Box>
+                </WarningStyled>
+              )}
             </Box>
 
             <Box display={'flex'} justifyContent={'space-between'} gap={3}>
