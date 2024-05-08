@@ -12,10 +12,10 @@ import { AccountPreviewItemstyled, styleWalletPaper } from './account-info-style
 
 interface IAccountInfo {
   account?: string;
-  chooseNetwork?: IOptionNetwork | null;
+  chosenNetwork?: IOptionNetwork | null;
 }
 
-export const AccountInfo = ({ account, chooseNetwork }: IAccountInfo) => {
+export const AccountInfo = ({ account, chosenNetwork }: IAccountInfo) => {
   return (
     <>
       <WalletPaper style={styleWalletPaper}>
@@ -41,9 +41,9 @@ export const AccountInfo = ({ account, chooseNetwork }: IAccountInfo) => {
               Network
             </WalletTypography>
             <Box display={'flex'} alignItems={'center'} gap={themeMuiBase.spacing(2)}>
-              {chooseNetwork ? formatterIcon(chooseNetwork.chainId, '15px', '15px') : ''}
+              {chosenNetwork ? formatterIcon(chosenNetwork.chainId, '15px', '15px') : ''}
               <WalletTypography fontSize={14} fontWeight={600} textTransform="capitalize">
-                {chooseNetwork && (chooseNetwork.name || chooseNetwork.label)}
+                {chosenNetwork && (chosenNetwork.name || chosenNetwork.label)}
               </WalletTypography>
             </Box>
           </AccountPreviewItemstyled>
@@ -51,7 +51,7 @@ export const AccountInfo = ({ account, chooseNetwork }: IAccountInfo) => {
             <WalletTypography fontSize={14} fontWeight={600} style={{ whiteSpace: 'nowrap' }}>
               Safe Account RPC
             </WalletTypography>
-            <Link href={(chooseNetwork && chooseNetwork.rpc) ?? '/'} target="_black">
+            <Link href={(chosenNetwork && chosenNetwork.rpc) ?? '/'} target="_black">
               <Box
                 display={'flex'}
                 alignItems={'left'}
@@ -59,7 +59,7 @@ export const AccountInfo = ({ account, chooseNetwork }: IAccountInfo) => {
                 sx={{ overflowWrap: 'break-word' }}
               >
                 <WalletTypography fontSize={14} style={{ width: '100%' }}>
-                  {(chooseNetwork && chooseNetwork.rpc) ?? ''}
+                  {(chosenNetwork && chosenNetwork.rpc) ?? ''}
                 </WalletTypography>
               </Box>
             </Link>

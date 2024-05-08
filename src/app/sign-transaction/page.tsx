@@ -54,7 +54,7 @@ const SignTransactionComponent = () => {
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
   const { open } = useWeb3Modal();
-  const { networks, setChooseNetwork } = useNetworkStore();
+  const { networks, setChosenNetwork } = useNetworkStore();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
@@ -104,7 +104,7 @@ const SignTransactionComponent = () => {
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
     if (!existingNetwork) {
-      setChooseNetwork({
+      setChosenNetwork({
         ...userNetwork,
         label: userNetwork.name,
         value: userNetwork.name,
@@ -171,7 +171,7 @@ const SignTransactionComponent = () => {
       return;
     }
 
-    signedCount === threshold ? handleExecute() : handleSignTransaction();
+    signedCount >= threshold ? handleExecute() : handleSignTransaction();
   };
 
   const handleSignTransaction = useCallback(async () => {

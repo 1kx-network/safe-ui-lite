@@ -52,7 +52,7 @@ export default function CreatePageAccount() {
   const [isAddNewNetwork, setIsAddNewNetwork] = useState(false);
   const [isChangeVariables, setIsChangeVariables] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { networks, setNetwork, chooseNetwork, setChooseNetwork } = useNetworkStore();
+  const { networks, setNetwork, chosenNetwork, setChosenNetwork } = useNetworkStore();
 
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
@@ -64,7 +64,7 @@ export default function CreatePageAccount() {
     setIsLoading(true);
     setOptions(prevOptions => {
       const activeNetworks = isFirstTime ? networks ?? [] : prevOptions;
-      setChooseNetwork(activeNetworks[0]);
+      setChosenNetwork(activeNetworks[0]);
 
       return activeNetworks;
     });
@@ -88,18 +88,18 @@ export default function CreatePageAccount() {
     router.push(routes.safeAccountOwners);
   };
 
-  const handleChooseNetwork = async (chooseNetwork: IOptionNetwork) => {
-    setChooseNetwork(chooseNetwork);
+  const handleChooseNetwork = async (chosenNetwork: IOptionNetwork) => {
+    setChosenNetwork(chosenNetwork);
   };
 
   const { switchNetwork } = useSwitchNetwork();
 
   const handleSwitchNetwork = async () => {
-    if (!chooseNetwork) return;
-    await switchNetwork(chooseNetwork.chainId);
+    if (!chosenNetwork) return;
+    await switchNetwork(chosenNetwork.chainId);
   };
 
-  const condNetwork = chooseNetwork && chainId !== chooseNetwork.chainId;
+  const condNetwork = chosenNetwork && chainId !== chosenNetwork.chainId;
 
   const {
     handleSubmit,
@@ -240,7 +240,7 @@ export default function CreatePageAccount() {
                     <WalletTypography fontWeight={500}>Change your wallet network</WalletTypography>
                     <WalletTypography fontSize={14} fontWeight={400}>
                       Change your wallet network You are trying to create an account on{' '}
-                      {chooseNetwork.label}. Make sure that your wallet is set to the same network.
+                      {chosenNetwork.label}. Make sure that your wallet is set to the same network.
                     </WalletTypography>
                     <WalletButton
                       variant="outlined"
@@ -249,9 +249,9 @@ export default function CreatePageAccount() {
                     >
                       Switch to{' '}
                       <Box display={'flex'} minWidth={'18px'}>
-                        {formatterIcon(chooseNetwork.chainId, '18px', '18px')}
+                        {formatterIcon(chosenNetwork.chainId, '18px', '18px')}
                       </Box>
-                      {chooseNetwork.label}
+                      {chosenNetwork.label}
                     </WalletButton>
                   </Box>
                 </WarningCreateAccounStyled>
@@ -366,7 +366,7 @@ export default function CreatePageAccount() {
           </Box>
 
           {/* --- */}
-          <AccountInfo account={address} chooseNetwork={chooseNetwork} />
+          <AccountInfo account={address} chosenNetwork={chosenNetwork} />
         </GridContainer>
       </WrapperStyled>
       {/*  */}
