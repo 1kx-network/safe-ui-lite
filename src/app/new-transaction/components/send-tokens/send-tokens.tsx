@@ -54,11 +54,8 @@ interface IInputsForm {
   calldata: string;
 }
 
-interface SendTokensProps {}
-
-export const SendTokens = ({}: SendTokensProps) => {
+export const SendTokens = () => {
   const { chosenNetwork } = useNetworkStore();
-
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
@@ -86,6 +83,7 @@ export const SendTokens = ({}: SendTokensProps) => {
   });
 
   const [nonce, setNonce] = useState('1');
+  const [thresholders, setThresholders] = useState(0);
   const [tokenType, setTokenType] = useState<string>(NATIVE_TOKENS.ETH);
   const [balanceAcc, setBalanceAcc] = useState('');
 
@@ -94,8 +92,10 @@ export const SendTokens = ({}: SendTokensProps) => {
       const pendingBalance = async () => {
         const balanceAccount = await safeSdk.getBalance();
         const nonce = await safeSdk.getNonce();
+        const thresholders = await safeSdk.getThreshold();
         const parceBalance = utils.formatEther(String(balanceAccount));
 
+        setThresholders(thresholders);
         setNonce(String(nonce));
         setBalanceAcc(parceBalance);
       };
@@ -347,7 +347,7 @@ export const SendTokens = ({}: SendTokensProps) => {
               <ItemProccessingStyled sx={{ opacity: 0.2 }}>
                 {isConfirmed ? <ConfirmIcon /> : <ConfirmedWaitStyled>+</ConfirmedWaitStyled>}
                 <WalletTypography fontSize={17} fontWeight={600}>
-                  Confirmed (0 of 2)
+                  Confirmed (0 of {thresholders})
                 </WalletTypography>
               </ItemProccessingStyled>
 

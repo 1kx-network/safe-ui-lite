@@ -64,7 +64,7 @@ const useNetworkStore = create<Store>(set => ({
     (async () => {
       const networksDB = await getNetworksDB();
 
-      const updateNetwork = networksDB.map(elem => ({
+      const updateNetworkDB = networksDB.map(elem => ({
         ...elem,
         label: elem.name,
         value: elem.name,
@@ -72,8 +72,22 @@ const useNetworkStore = create<Store>(set => ({
         icon: () => formatterIcon(elem.chainId ?? 0),
       }));
 
-      const networkArray = [...optionsNetwork, ...updateNetwork];
-      set({ networks: networkArray });
+      const mergedNetwork = [...optionsNetwork];
+
+      updateNetworkDB.forEach(dbNetwork => {
+        if (dbNetwork.isNew) {
+          mergedNetwork.push(dbNetwork);
+        } else {
+          const index = mergedNetwork.findIndex(
+            defNetwork => defNetwork.chainId === dbNetwork.chainId
+          );
+          if (index !== -1) {
+            mergedNetwork[index] = dbNetwork;
+          }
+        }
+      });
+
+      set({ networks: mergedNetwork });
     })();
   },
 }));

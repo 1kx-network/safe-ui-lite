@@ -50,8 +50,8 @@ export const LabelStyled = styled(
 export const InputStyled = styled(
   'input',
   withTransientProps
-)<{ startAdornment?: boolean; isSearch?: boolean }>(({ theme, startAdornment, isSearch }) => {
-  const customPadding = startAdornment
+)<{ $startadornment?: boolean; isSearch?: boolean }>(({ theme, $startadornment, isSearch }) => {
+  const customPadding = $startadornment
     ? `${theme.spacing(2.5)} 0 ${theme.spacing(2.5)} ${theme.spacing(0.75)}`
     : `${theme.spacing(2.5)} ${theme.spacing(5)}`;
 
@@ -61,7 +61,7 @@ export const InputStyled = styled(
     width: 100%;
     line-height: 1.5;
     padding:  ${customPadding};
-    padding-left: ${isSearch || startAdornment ? theme.spacing(1) : theme.spacing(5)};
+    padding-left: ${isSearch || $startadornment ? theme.spacing(1) : theme.spacing(5)};
     color: ${theme.palette.textDark};
     border: none;
     border-radius: ${theme.spacing(2)};

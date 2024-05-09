@@ -10,7 +10,6 @@ import IconUser from '@/assets/svg/user.svg';
 import {
   WalletButton,
   WalletInput,
-  WalletLayout,
   WalletPaper,
   WalletSelect,
   WalletTypography,
@@ -21,7 +20,7 @@ import { useNetwork } from '@/hooks/useNetwork';
 import InfoIcon from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import { networks } from '@/context/networks';
-import { CustomModal, CustomTabs } from '@/components';
+import { CustomModal } from '@/components';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import useSafeStore from '@/stores/safe-store';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
@@ -29,7 +28,6 @@ import routes from '@/app/routes';
 
 import {
   BoxStyled,
-  WrapperStyled,
   styledBtn,
   GridBtnStyled,
   ConfirmationsStyled,
@@ -41,9 +39,8 @@ import {
   styledNonce,
 } from './owners-list.styles';
 import { ListAccount } from './components/list-account/list-account';
-import { settingsMenu } from './fixutres';
 
-export default function SettingsOwner() {
+export const SettingsOwner = () => {
   const network = useNetwork();
   const router = useRouter();
   const { chainId } = useWeb3ModalAccount();
@@ -258,99 +255,86 @@ export default function SettingsOwner() {
   };
 
   return (
-    <WalletLayout>
-      <WrapperStyled>
-        <Box mb={8}>
-          <WalletTypography fontSize={22} fontWeight={600} component="h2">
-            Settings
-          </WalletTypography>
-        </Box>
-
-        <CustomTabs tabs={settingsMenu} />
-
-        <WalletPaper>
-          <Box display={'flex'} gap={themeMuiBase.spacing(3)}>
-            <BoxStyled>
-              <Box mr={themeMuiBase.spacing(3)} display={'flex'} alignItems={'center'} gap={2}>
-                <WalletTypography fontSize={18} fontWeight={600}>
-                  Safe Account nonce
-                </WalletTypography>
-                <Box display={'flex'} color={themeMuiBase.palette.error}>
-                  <InfoIcon width="20px" height="20px" />
-                </Box>
-              </Box>
-              <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                Current nonce: {contractNonce}
-              </WalletTypography>
-            </BoxStyled>
-            <BoxStyled>
+    <>
+      <WalletPaper>
+        <Box display={'flex'} gap={themeMuiBase.spacing(3)}>
+          <BoxStyled>
+            <Box mr={themeMuiBase.spacing(3)} display={'flex'} alignItems={'center'} gap={2}>
               <WalletTypography fontSize={18} fontWeight={600}>
-                Contract Version
+                Safe Account nonce
               </WalletTypography>
-              <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                {contractVersion}
-              </WalletTypography>
-              <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                Latest version
-              </WalletTypography>
-            </BoxStyled>
-          </Box>
-        </WalletPaper>
-
-        <WalletPaper>
-          <BodyAccountsStyled>
-            <Box mr={4} width={'40%'}>
-              <WalletTypography fontSize={17} fontWeight={600}>
-                Manage Safe Account owners
-              </WalletTypography>
-            </Box>
-            <Box>
-              <Box mb={3}>
-                <WalletTypography
-                  fontSize={17}
-                  fontWeight={300}
-                  color={themeMuiBase.palette.greyToo}
-                >
-                  Add, remove and replace or rename existing owners. Owner names are only stored
-                  locally and will never be shared with us or any third parties.
-                </WalletTypography>
+              <Box display={'flex'} color={themeMuiBase.palette.error}>
+                <InfoIcon width="20px" height="20px" />
               </Box>
-              <BodyListAccountsStyled>
-                <ListAccount
-                  safeAccountOwners={safeAccountOwners}
-                  linkOnScan={linkOnScan}
-                  handleRemoveOwnerAddress={handleRemoveOwnerAddress}
-                />
-              </BodyListAccountsStyled>
-              <GridBtnStyled>
-                <WalletButton
-                  variant="text"
-                  styles={styledBtn}
-                  onClick={() => setIsOpenAddOwner(true)}
-                >
-                  <IconPlus width="20px" height="21px" color={themeMuiBase.palette.success} />
-                  Add new owner
-                </WalletButton>
-                <CSVLink data={csvData} style={styledCSV} onClick={handleGetCSV} href="/">
-                  <WalletButton variant="text" styles={styledBtn}>
-                    Export as CSV
-                  </WalletButton>
-                </CSVLink>
-              </GridBtnStyled>
             </Box>
-          </BodyAccountsStyled>
+            <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+              Current nonce: {contractNonce}
+            </WalletTypography>
+          </BoxStyled>
+          <BoxStyled>
+            <WalletTypography fontSize={18} fontWeight={600}>
+              Contract Version
+            </WalletTypography>
+            <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+              {contractVersion}
+            </WalletTypography>
+            <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+              Latest version
+            </WalletTypography>
+          </BoxStyled>
+        </Box>
+      </WalletPaper>
 
-          <ConfirmationsStyled>
+      <WalletPaper>
+        <BodyAccountsStyled>
+          <Box mr={4} width={'40%'}>
             <WalletTypography fontSize={17} fontWeight={600}>
-              Required confirmations
+              Manage Safe Account owners
             </WalletTypography>
-            <WalletTypography fontSize={17} fontWeight={400}>
-              Any transaction requires the confirmation of:
-            </WalletTypography>
+          </Box>
+          <Box>
+            <Box mb={3}>
+              <WalletTypography fontSize={17} fontWeight={300} color={themeMuiBase.palette.greyToo}>
+                Add, remove and replace or rename existing owners. Owner names are only stored
+                locally and will never be shared with us or any third parties.
+              </WalletTypography>
+            </Box>
+            <BodyListAccountsStyled>
+              <ListAccount
+                safeAccountOwners={safeAccountOwners}
+                linkOnScan={linkOnScan}
+                handleRemoveOwnerAddress={handleRemoveOwnerAddress}
+              />
+            </BodyListAccountsStyled>
+            <GridBtnStyled>
+              <WalletButton
+                variant="text"
+                styles={styledBtn}
+                onClick={() => setIsOpenAddOwner(true)}
+              >
+                <IconPlus width="20px" height="21px" color={themeMuiBase.palette.success} />
+                Add new owner
+              </WalletButton>
+              <CSVLink data={csvData} style={styledCSV} onClick={handleGetCSV} href="/">
+                <WalletButton variant="text" styles={styledBtn}>
+                  Export as CSV
+                </WalletButton>
+              </CSVLink>
+            </GridBtnStyled>
+          </Box>
+        </BodyAccountsStyled>
 
-            <Box mt={3} display="flex" alignItems="center">
-              <Box mr={3} width={'84px'}>
-                {/* <WalletSelect
+        <ConfirmationsStyled>
+          <WalletTypography fontSize={17} fontWeight={600}>
+            Required confirmations
+          </WalletTypography>
+          <WalletTypography fontSize={17} fontWeight={400}>
+            Any transaction requires the confirmation of:
+          </WalletTypography>
+
+          <Box mt={3} display="flex" alignItems="center">
+            <Box mr={3} width={'84px'}>
+              {/* <WalletSelect
                   isLoading={Boolean(!needConfirmOwner)}
                   controlShouldRenderValue
                   options={optionsCount}
@@ -359,27 +343,26 @@ export default function SettingsOwner() {
                   ]}
                   onChange={handleChooseAccounConfirm}
                 /> */}
-                <WalletSelect
-                  isLoading={Boolean(!needConfirmOwner)}
-                  controlShouldRenderValue
-                  options={optionsCount}
-                  defaultValue={[
-                    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-                  ]}
-                  onChange={handleChooseAccounConfirm}
-                />
-              </Box>
-              <WalletTypography fontSize={13} fontWeight={600}>
-                out of {safeAccountOwners.length} owner(s)
-              </WalletTypography>
+              <WalletSelect
+                isLoading={Boolean(!needConfirmOwner)}
+                controlShouldRenderValue
+                options={optionsCount}
+                defaultValue={[
+                  { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
+                ]}
+                onChange={handleChooseAccounConfirm}
+              />
             </Box>
+            <WalletTypography fontSize={13} fontWeight={600}>
+              out of {safeAccountOwners.length} owner(s)
+            </WalletTypography>
+          </Box>
 
-            <WalletButton variant="contained" onClick={handleChangeSettings} loading={isLoading}>
-              Change
-            </WalletButton>
-          </ConfirmationsStyled>
-        </WalletPaper>
-      </WrapperStyled>
+          <WalletButton variant="contained" onClick={handleChangeSettings} loading={isLoading}>
+            Change
+          </WalletButton>
+        </ConfirmationsStyled>
+      </WalletPaper>
 
       <CustomModal
         isOpen={isOpenAddOwner}
@@ -453,6 +436,6 @@ export default function SettingsOwner() {
           </GridBtnAddOwnerStyled>
         </AddOwnerStyled>
       </CustomModal>
-    </WalletLayout>
+    </>
   );
-}
+};
