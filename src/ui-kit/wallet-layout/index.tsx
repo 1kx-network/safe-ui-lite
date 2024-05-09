@@ -24,7 +24,7 @@ export function WalletLayout({ children, hideSidebar }: IWalletLayoutProps) {
 
       <React.Suspense
         fallback={
-          <Box sx={{ border: '3px solid red', height: '150px', width: '150px', margin: 'auto' }}>
+          <Box sx={{ height: '150px', width: '150px', margin: 'auto' }}>
             <Loading />
           </Box>
         }
