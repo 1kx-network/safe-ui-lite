@@ -195,6 +195,7 @@ export function useMultySign({
       const thesholders = await safeSdk.getThreshold();
       const currentDate = new Date();
       const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
+      const { signers, signatures } = getSignaturesMulty();
       const transactionDB = {
         id: uuid(),
         date: dateTrx,
@@ -205,7 +206,7 @@ export function useMultySign({
         calldata: safeTransaction.data.data,
         destinationAddress: safeTransaction.data.to,
         nonce,
-        signatures: [],
+        signatures: signers.map((s, idx) => ({ data: signatures[idx], signer: s })),
       };
 
       await setDataDB(safeAddress, {
