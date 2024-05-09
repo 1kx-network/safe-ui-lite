@@ -70,7 +70,7 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
         <InputStyled
           {...props}
           value={props.value ?? ''}
-          startAdornment={startAdornment}
+          $startadornment={startAdornment}
           style={{
             ...style,
             ...errorStyle,

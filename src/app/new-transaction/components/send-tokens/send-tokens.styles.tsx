@@ -53,6 +53,7 @@ export const ConfirmedWaitStyled = styled('div')(
   border-radius: 50%;
   min-width: 1rem;
   height: 1rem;
+  padding-bottom: 2px;
 `
 );
 

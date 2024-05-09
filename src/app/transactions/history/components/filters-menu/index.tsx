@@ -2,11 +2,6 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { WalletButton, WalletInput, WalletSelect } from '@/ui-kit';
 import useTransactionsStore from '@/stores/transactions-store';
-import USDCIcon from '@/assets/svg/USDC.svg';
-import USDTIcon from '@/assets/svg/USDT.svg';
-import EthIcon from '@/assets/svg/eth-icon.svg';
-import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
-
 import { ItemMenuStyled, WrapperStyled, styledBtn } from './filters-menu.styles';
 
 interface IOption {
@@ -27,13 +22,6 @@ const optionsAmount: IOption[] = [
   { id: 1, label: 'All', value: 'All', item: -1 },
   { id: 2, label: 'Less 100', value: 'Less 100', item: 100 },
   { id: 3, label: 'Less 200', value: 'Less 200', item: 200 },
-];
-
-const optionsToken: IOption[] = [
-  { id: 1, label: 'All', value: 'All', item: -1 },
-  { id: 2, label: NATIVE_TOKENS.ETH, value: NATIVE_TOKENS.ETH, item: 0, icon: EthIcon },
-  { id: 3, label: TOKENS_ERC20.USDT, value: TOKENS_ERC20.USDT, item: 0, icon: USDTIcon },
-  { id: 4, label: TOKENS_ERC20.USDC, value: TOKENS_ERC20.USDC, item: 0, icon: USDCIcon },
 ];
 
 export const MenuFilters = () => {
@@ -126,20 +114,6 @@ export const MenuFilters = () => {
                 return;
               }
               setSelectedAmount(newValue);
-            }}
-          />
-        </ItemMenuStyled>
-        <ItemMenuStyled>
-          <WalletSelect
-            placeholder="Token"
-            options={optionsToken}
-            value={selectedToken}
-            onChange={(newValue: IOption | null | undefined) => {
-              if (newValue?.item === -1) {
-                setSelectedToken(null);
-                return;
-              }
-              setSelectedToken(newValue);
             }}
           />
         </ItemMenuStyled>

@@ -7,26 +7,17 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { IOptionNetwork } from '@/constants/networks';
 import useNetworkStore from '@/stores/networks-store';
-import { CustomTabs, customToasty } from '@/components';
-import {
-  WalletButton,
-  WalletInput,
-  WalletLayout,
-  WalletPaper,
-  WalletSelect,
-  WalletTypography,
-} from '@/ui-kit';
-import { settingsMenu } from '../owners-list/fixutres';
+import { customToasty } from '@/components';
+import { WalletButton, WalletInput, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
 import { ChangeNetworkEnvSchema } from '@/utils/validations.utils';
-import { networks as networksDefault } from '@/context/networks';
 import { addCustomNetworkDB } from '@/db/set-info';
 import { formatterIcon } from '@/utils/icon-formatter';
+import { INetworkDB } from '@/db';
 
 import {
   BodyStyled,
   BoxChangedStyled,
   GridInfoValueStyled,
-  WrapperStyled,
   styledBtn,
 } from './environment-variables.styles';
 
@@ -44,7 +35,7 @@ export const NetworksSettings = ({
   handleSave?: () => void;
   handleClose?: () => void;
 }) => {
-  const { networks, setNetworksArray, updateNetwork } = useNetworkStore();
+  const { networks, loadNetworks, updateNetwork } = useNetworkStore();
 
   const [network, setNetworkLocal] = useState<IOptionNetwork>();
   const [isLoadingChain, setIsLoadingChain] = useState(false);
@@ -72,22 +63,12 @@ export const NetworksSettings = ({
     setValue('rpc', elem.rpc);
   };
 
-  interface INetworkDB {
-    id?: string;
-    name: string;
-    currency: string;
-    explorerUrl: string;
-    rpcUrl: string;
-    symbol: string;
-    decimals: number;
-    chainId: number;
-  }
-
   const selectInputRef = useRef();
 
   const onSubmit: SubmitHandler<IChangeNetwork> = async (data: IChangeNetwork) => {
-    if (!network?.chainId) return;
-    const defNetwork = networksDefault.find(elem => elem.chainId === network?.chainId);
+    if (!networks || !network?.chainId) return;
+    const defNetwork = networks.find(elem => elem.chainId === network?.chainId);
+
     if (!defNetwork) return;
     const { explorerUrl, chainId } = defNetwork;
     setIsLoadingChain(true);
@@ -96,7 +77,7 @@ export const NetworksSettings = ({
       chainId: Number(chainId),
       name: data.name,
       currency: data.name,
-      explorerUrl: explorerUrl,
+      explorerUrl: explorerUrl ?? '',
       rpcUrl: data.rpc,
       symbol: data.name,
       decimals: 18,
@@ -111,16 +92,14 @@ export const NetworksSettings = ({
     });
 
     await addCustomNetworkDB(updateNetworkDB);
-
-    setNetworksArray(networks);
-
+    loadNetworks();
     setTimeout(() => setIsLoadingChain(false), 500);
     reset();
     customToasty('Network was changed', 'success');
     handleSave && handleSave();
   };
 
-  const ChangeNetworkVariables = () => (
+  return (
     <WalletPaper style={{ minWidth: '50%', width: isComponent ? '100%' : '50%' }}>
       <BodyStyled>
         {/*  */}
@@ -212,24 +191,5 @@ export const NetworksSettings = ({
         {/*  */}
       </BodyStyled>
     </WalletPaper>
-  );
-
-  if (isComponent) {
-    return <ChangeNetworkVariables />;
-  }
-
-  return (
-    <WalletLayout>
-      <WrapperStyled>
-        <Box mb={8}>
-          <WalletTypography fontSize={22} fontWeight={600} component="h2">
-            Settings
-          </WalletTypography>
-        </Box>
-
-        <CustomTabs tabs={settingsMenu} />
-        <ChangeNetworkVariables />
-      </WrapperStyled>
-    </WalletLayout>
   );
 };

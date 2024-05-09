@@ -46,7 +46,6 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   const isUser =
     hasAddressUser && hasAddressUser.trim() !== '' && pathname !== routes.signTransaction;
 
-  const isSettings = pathname === routes.settings;
   const isTransactions = pathname === routes.transactions;
 
   if (isSign) {
@@ -54,10 +53,6 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   }
 
   if (isUser) {
-    if (isSettings) {
-      return NextResponse.redirect(new URL(routes.settingsOwnersList, url));
-    }
-
     if (isTransactions) {
       return NextResponse.redirect(new URL(routes.transactionsHistory, url));
     }
