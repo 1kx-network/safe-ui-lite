@@ -368,7 +368,7 @@ const NewSignTransactionComponent = () => {
   };
 
   return (
-    <WalletLayout hideSidebar>
+    <WalletLayout>
       <WrapperStyled>
         <WalletPaper>
           <Box display={'flex'} alignItems={'center'} gap={2} mb={2}>
