@@ -68,7 +68,7 @@ export const TableTransaction = ({ smallType }: ITableTransaction) => {
                 fontWeight={600}
                 textAlign="center"
               >
-                Trasholders
+                Thresholders
               </WalletTypography>
             )}
           </HeaderListStyled>

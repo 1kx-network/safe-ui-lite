@@ -45,7 +45,7 @@ export const BodyOpenStyled = styled('div')<{ isOpen?: boolean }>(
       flex-direction: column;
       padding: ${theme.spacing(3)};
       top: 40px;
-      right: 22px;
+      right: 183px;
   `
 );
 

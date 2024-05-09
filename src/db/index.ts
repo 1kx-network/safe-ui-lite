@@ -12,6 +12,7 @@ export interface INetworkDB {
   symbol: string;
   decimals: number;
   chainId: number;
+  isNew?: boolean;
 }
 
 export interface IUserCustomNetwork {
