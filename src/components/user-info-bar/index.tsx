@@ -73,7 +73,7 @@ export const UserInfoBar = () => {
     return { get: () => null };
   }, [router]);
 
-  const { networks, chooseNetwork, setNetworksArray, setChooseNetwork } = useNetworkStore();
+  const { networks, chosenNetwork, setNetworksArray, setChosenNetwork } = useNetworkStore();
 
   const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
   const [balance, setBalance] = useState('0');
@@ -98,11 +98,11 @@ export const UserInfoBar = () => {
 
   useEffect(() => {
     if (chainId) {
-      if (!chooseNetwork) {
-        const chooseNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
+      if (!chosenNetwork) {
+        const chosenNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
 
-        if (!chooseNetworkDef) return;
-        setChooseNetwork(chooseNetworkDef);
+        if (!chosenNetworkDef) return;
+        setChosenNetwork(chosenNetworkDef);
       }
     }
   }, [chainId]);
@@ -220,7 +220,7 @@ export const UserInfoBar = () => {
 
   const handleChangeNetwork = async (elem: IOptionNetwork) => {
     await switchNetwork(elem.chainId)
-      .then(() => setChooseNetwork(elem))
+      .then(() => setChosenNetwork(elem))
       .finally(() => {
         setIsOpenNetworkMenu(false);
         setIsOpenNetworkModal(false);
@@ -327,7 +327,7 @@ export const UserInfoBar = () => {
                   textOverflow: 'ellipsis',
                 }}
               >
-                {chooseNetwork?.value}
+                {chosenNetwork?.value}
               </WalletTypography>
             </Box>
             <IconArrowStyled isOpen={isOpenNetworkMenu}>
@@ -408,7 +408,7 @@ export const UserInfoBar = () => {
                 textOverflow: 'ellipsis',
               }}
             >
-              {chooseNetwork?.value}
+              {chosenNetwork?.value}
             </WalletTypography>
           </Box>
         </ItemInfoStyled>
@@ -421,7 +421,7 @@ export const UserInfoBar = () => {
           >
             Safe RPC
           </WalletTypography>
-          <Link href={chooseNetwork?.rpc ?? '/'} target="_black">
+          <Link href={chosenNetwork?.rpc ?? '/'} target="_black">
             <Box
               display={'flex'}
               alignItems={'left'}
@@ -433,7 +433,7 @@ export const UserInfoBar = () => {
                 color={themeMuiBase.palette.white}
                 style={{ width: '100%' }}
               >
-                {chooseNetwork?.rpc ?? ''}
+                {chosenNetwork?.rpc ?? ''}
               </WalletTypography>
             </Box>
           </Link>

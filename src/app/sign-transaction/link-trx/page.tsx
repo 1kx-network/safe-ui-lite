@@ -116,7 +116,7 @@ const NewSignTransactionComponent = () => {
   const [chainIdUrl, setChainIdUrl] = useState<string | null>('0');
   const [typeTrx, setTypeTrx] = useState<keyof ITypeSignTrx | null>(null);
   const [signedCount, setSignedCount] = useState(0);
-  const [queryParams, setuQeryParams] = useState<IQueryParams | null>(null);
+  const [queryParams, setQueryParams] = useState<IQueryParams | null>(null);
 
   const { createSdkInstance } = useSafeSdk();
   const { address, chainId } = useWeb3ModalAccount();
@@ -160,7 +160,7 @@ const NewSignTransactionComponent = () => {
           };
         }
 
-        setuQeryParams(queryParams);
+        setQueryParams(queryParams);
         createSdkInstance(queryParams.safeAddress);
 
         const signatures = queryParams.signatures ? queryParams.signatures.split(',') : [];
@@ -300,7 +300,7 @@ const NewSignTransactionComponent = () => {
   const transaction = safeFromDb?.transactions.find(tx => tx.hash === dataQuery.safeTxHash);
 
   useEffect(() => {
-    if (transaction && transaction.signatures.length !== dataQuery.signatures?.length) {
+    if (transaction && transaction.signatures.length > (dataQuery.signatures?.length ?? 0)) {
       const { signatures, signers } = multySign.getSignaturesFromDbMulty();
       setDataQuery(prev => ({
         ...prev,
@@ -368,7 +368,7 @@ const NewSignTransactionComponent = () => {
   };
 
   return (
-    <WalletLayout hideSidebar>
+    <WalletLayout>
       <WrapperStyled>
         <WalletPaper>
           <Box display={'flex'} alignItems={'center'} gap={2} mb={2}>

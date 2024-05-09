@@ -6,18 +6,18 @@ import { formatterIcon } from '@/utils/icon-formatter';
 
 type Store = {
   networks: null | IOptionNetwork[];
-  chooseNetwork: null | IOptionNetwork;
+  chosenNetwork: null | IOptionNetwork;
 
   setNetwork: (payload: null | IOptionNetwork) => void;
   setNetworksArray: (payload: null | IOptionNetwork[]) => void;
   updateNetwork: (payload: IOptionNetwork) => void;
-  setChooseNetwork: (payload: null | IOptionNetwork) => void;
+  setChosenNetwork: (payload: null | IOptionNetwork) => void;
   loadNetworks: () => void;
 };
 
 const useNetworkStore = create<Store>(set => ({
   networks: null,
-  chooseNetwork: null,
+  chosenNetwork: null,
 
   setNetwork: (payload: null | IOptionNetwork) => {
     if (!payload) return;
@@ -57,8 +57,8 @@ const useNetworkStore = create<Store>(set => ({
     });
   },
 
-  setChooseNetwork: (payload: null | IOptionNetwork) =>
-    set(state => ({ ...state, chooseNetwork: payload })),
+  setChosenNetwork: (payload: null | IOptionNetwork) =>
+    set(state => ({ ...state, chosenNetwork: payload })),
 
   loadNetworks: () => {
     (async () => {

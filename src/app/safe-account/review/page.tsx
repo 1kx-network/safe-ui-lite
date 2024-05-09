@@ -37,7 +37,7 @@ export default function CreatePageAccount() {
   const [isLoading, setIsLoading] = useState(false);
   const [isErrorDeploy, setIsErrorDeploy] = useState(false);
 
-  const { networks, chooseNetwork } = useNetworkStore();
+  const { networks, chosenNetwork } = useNetworkStore();
 
   const chainId = Number(network?.chainId);
 
@@ -47,8 +47,8 @@ export default function CreatePageAccount() {
       return;
     }
 
-    if (chooseNetwork) {
-      setLinkOnScan(chooseNetwork.explorerUrl ?? '');
+    if (chosenNetwork) {
+      setLinkOnScan(chosenNetwork.explorerUrl ?? '');
     }
   }, [chainId]);
 
@@ -118,7 +118,7 @@ export default function CreatePageAccount() {
                 <Box display={'flex'} alignItems={'center'} gap={themeMuiBase.spacing(2)}>
                   {chainId ? formatterIcon(chainId) : ``}
                   <WalletTypography fontSize={14} fontWeight={600} textTransform="capitalize">
-                    {chooseNetwork && (chooseNetwork.name || chooseNetwork.label)}
+                    {chosenNetwork && (chosenNetwork.name || chosenNetwork.label)}
                   </WalletTypography>
                 </Box>
               </ItemInfoStyled>
@@ -127,7 +127,7 @@ export default function CreatePageAccount() {
                   Name
                 </WalletTypography>
                 <WalletTypography component="p" fontSize={14} fontWeight={500}>
-                  {chooseNetwork && (chooseNetwork.name || chooseNetwork.label)}
+                  {chosenNetwork && (chosenNetwork.name || chosenNetwork.label)}
                 </WalletTypography>
               </ItemInfoStyled>
               <ItemInfoStyled>
@@ -135,7 +135,7 @@ export default function CreatePageAccount() {
                   Safe Account RPC
                 </WalletTypography>
                 <WalletTypography component="p" fontSize={14} fontWeight={500}>
-                  {chooseNetwork && (chooseNetwork.rpc || chooseNetwork.rpc)}
+                  {chosenNetwork && (chosenNetwork.rpc || chosenNetwork.rpc)}
                 </WalletTypography>
               </ItemInfoStyled>
               <ItemInfoStyled>

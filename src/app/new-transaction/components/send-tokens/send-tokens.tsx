@@ -57,7 +57,7 @@ interface IInputsForm {
 interface SendTokensProps {}
 
 export const SendTokens = ({}: SendTokensProps) => {
-  const { chooseNetwork } = useNetworkStore();
+  const { chosenNetwork } = useNetworkStore();
 
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
@@ -156,14 +156,14 @@ export const SendTokens = ({}: SendTokensProps) => {
         amount: data.amount,
         destinationAddress: data.address,
         tokenType,
-        networkName: chooseNetwork?.value ?? '',
+        networkName: chosenNetwork?.value ?? '',
         safeTxHash,
         nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
         userNetworkTrx: JSON.stringify({
-          ...chooseNetwork,
-          name: chooseNetwork?.value,
-          rpcUrl: chooseNetwork?.rpc,
+          ...chosenNetwork,
+          name: chosenNetwork?.value,
+          rpcUrl: chosenNetwork?.rpc,
           symbol: 18,
         }),
       };
@@ -207,23 +207,23 @@ export const SendTokens = ({}: SendTokensProps) => {
         options={[
           {
             id: 0,
-            value: chooseNetwork?.label ?? '',
-            label: chooseNetwork?.label ?? '',
-            icon: () => formatterIcon(chooseNetwork?.chainId ?? 0, '18px', '18px'),
+            value: chosenNetwork?.label ?? '',
+            label: chosenNetwork?.label ?? '',
+            icon: () => formatterIcon(chosenNetwork?.chainId ?? 0, '18px', '18px'),
           },
           ...options,
         ]}
         defaultValue={{
           id: 0,
-          value: chooseNetwork?.value ?? '',
-          label: chooseNetwork?.label ?? '',
-          icon: () => formatterIcon(chooseNetwork?.chainId ?? 0, '18px', '18px'),
+          value: chosenNetwork?.value ?? '',
+          label: chosenNetwork?.label ?? '',
+          icon: () => formatterIcon(chosenNetwork?.chainId ?? 0, '18px', '18px'),
         }}
         isSearchable={false}
         onChange={handleChangeToken}
       />
     ),
-    [chooseNetwork, isLoading]
+    [chosenNetwork, isLoading]
   );
 
   return (

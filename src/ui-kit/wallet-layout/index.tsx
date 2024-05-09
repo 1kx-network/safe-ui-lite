@@ -1,6 +1,8 @@
 import * as React from 'react';
+import { Box } from '@mui/system';
 
 import { Sidebar, UserInfoBar } from '@/components';
+import Loading from '@/assets/svg/loader.svg';
 
 import { LayoutStyled, InfoUserStyled } from './wallet-layout.styles';
 
@@ -19,7 +21,16 @@ export function WalletLayout({ children, hideSidebar }: IWalletLayoutProps) {
           <UserInfoBar />
         </InfoUserStyled>
       )}
-      {children}
+
+      <React.Suspense
+        fallback={
+          <Box sx={{ border: '3px solid red', height: '150px', width: '150px', margin: 'auto' }}>
+            <Loading />
+          </Box>
+        }
+      >
+        {children}
+      </React.Suspense>
     </LayoutStyled>
   );
 }
