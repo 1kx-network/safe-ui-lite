@@ -42,7 +42,5 @@ export const networks = [
     currency: 'SPO',
     explorerUrl: 'https://sepolia.etherscan.io/',
     rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
-    // explorerUrl: 'https://explorer.buildbear.io/male-boomboom-ed3bca45',
-    // rpcUrl: 'https://rpc.buildbear.io/male-boomboom-ed3bca45',
   },
 ];
