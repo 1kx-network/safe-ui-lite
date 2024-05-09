@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { WalletButton, WalletInput, WalletSelect } from '@/ui-kit';
 import useTransactionsStore from '@/stores/transactions-store';
+
 import { ItemMenuStyled, WrapperStyled, styledBtn } from './filters-menu.styles';
 
 interface IOption {
