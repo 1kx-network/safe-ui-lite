@@ -40,9 +40,7 @@ export const networks = [
     chainId: 11155111,
     name: 'Sepolia',
     currency: 'SPO',
-    // explorerUrl: 'https://sepolia.etherscan.io/',
-    // rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
-    explorerUrl: 'https://explorer.buildbear.io/male-boomboom-ed3bca45',
-    rpcUrl: 'https://rpc.buildbear.io/male-boomboom-ed3bca45',
+    explorerUrl: 'https://sepolia.etherscan.io/',
+    rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
   },
 ];
