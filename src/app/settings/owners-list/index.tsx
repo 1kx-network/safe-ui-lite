@@ -7,13 +7,7 @@ import { SingleValue } from 'react-select';
 import { useRouter } from 'next/navigation';
 
 import IconUser from '@/assets/svg/user.svg';
-import {
-  WalletButton,
-  WalletInput,
-  WalletPaper,
-  WalletSelect,
-  WalletTypography,
-} from '@/ui-kit';
+import { WalletButton, WalletInput, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { useNetwork } from '@/hooks/useNetwork';
