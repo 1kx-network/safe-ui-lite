@@ -25,11 +25,20 @@ export default function Home() {
   const router = useRouter();
   const { walletProvider } = useWeb3ModalProvider();
 
-  const handleCreateTransaction = async () => {
+  useEffect(() => {
+    const walletIsConnected: string | null =
+      typeof window !== 'undefined' ? localStorage.getItem('@w3m/wallet_id') : null;
+    if (walletIsConnected) return;
+
+    open();
+  }, [address, walletProvider]);
+
+  const handleCreateTransaction = () => {
+    console.log('__address__', address);
     if (address) {
       router.push(routes.newTransaction);
     } else {
-      await open();
+      open();
     }
   };
 
@@ -43,14 +52,6 @@ export default function Home() {
       }
     }
   }, [data, chainId]);
-
-  useEffect(() => {
-    const walletIsConnected: string | null =
-      typeof window !== 'undefined' ? localStorage.getItem('@w3m/wallet_id') : null;
-    if (walletIsConnected) return;
-
-    open();
-  }, [address, walletProvider]);
 
   return (
     <WalletLayout>

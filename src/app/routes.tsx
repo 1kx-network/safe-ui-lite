@@ -6,8 +6,9 @@ const routes = {
   safeAccountReview: '/safe-account/review',
 
   settings: '/settings',
-  settingsOwnersList: '/settings/owners-list',
-  settingsEnvironmentVariables: '/settings/environment-variables',
+  settingsOwnersList: '/settings?owners-list',
+  settingsEnvironmentVariables: '/settings?environment-variables',
+  settingsAddVariables: '/settings?add-variables',
 
   transactions: '/transactions',
 
