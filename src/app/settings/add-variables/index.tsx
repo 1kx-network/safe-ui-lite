@@ -3,13 +3,12 @@ import { useState } from 'react';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { v4 as uuid } from 'uuid';
 
 import useNetworkStore from '@/stores/networks-store';
 import { customToasty } from '@/components';
 import { WalletButton, WalletInput, WalletPaper, WalletTypography } from '@/ui-kit';
 import { AddNetworkSchema } from '@/utils/validations.utils';
-import { addCustomNetworkDB } from '@/db/set-info';
+import { setNetworkDB } from '@/db/set-info';
 import IconPlus from '@/assets/svg/plus.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 
@@ -62,7 +61,6 @@ export const AddVariables = ({
 
     const objNetworkDB = {
       ...newNetwork,
-      id: uuid(),
       name,
       currency: name,
       explorerUrl,
@@ -70,9 +68,10 @@ export const AddVariables = ({
       symbol: name,
       decimals: 18,
       isNew: true,
+      rpcOriginal: rpc,
     };
 
-    await addCustomNetworkDB(objNetworkDB);
+    await setNetworkDB(objNetworkDB);
     loadNetworks();
     customToasty('Network was add!', 'success');
     handleSave && handleSave();

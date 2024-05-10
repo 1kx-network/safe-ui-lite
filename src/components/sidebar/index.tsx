@@ -26,7 +26,7 @@ import { safeNetworksObj } from '@/constants/networks';
 import { useNetwork } from '@/hooks/useNetwork';
 import { getNetworksDB } from '@/db/get-info';
 import { TYPE_IMPORT } from '@/constants/types';
-import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
+import { setNetworkDB, setDataDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
 
 import {
@@ -191,7 +191,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   useEffect(() => {
     (async () => {
       if (shareNetwork) {
-        await addCustomNetworkDB(shareNetwork as INetworkDB);
+        await setNetworkDB(shareNetwork as INetworkDB);
 
         const accountsNet = shareAccounts ? JSON.parse(shareAccounts) : null;
         if (accountsNet && accountsNet.length) {

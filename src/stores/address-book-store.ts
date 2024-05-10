@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { addAddressToDB, addAddressesArrayToDB, removeAddressFromDB } from '@/db/set-info';
+import { setAddressToDB, setAddressesArrayToDB, removeAddressFromDB } from '@/db/set-info';
 
 export interface IAddressBook {
   address: string;
@@ -22,7 +22,7 @@ const useAddressBookStore = create<Store>(set => ({
 
   setAddressBook: (payload: IAddressBook) =>
     set(state => {
-      (async () => await addAddressToDB(payload))();
+      (async () => await setAddressToDB(payload))();
 
       const existingIndex = state.addressBook.findIndex(entry => entry.address === payload.address);
       if (existingIndex !== -1) {
@@ -46,7 +46,7 @@ const useAddressBookStore = create<Store>(set => ({
 
   setAddressBookArray: (payload: IAddressBook[]) =>
     set(state => {
-      (async () => await addAddressesArrayToDB(payload))();
+      (async () => await setAddressesArrayToDB(payload))();
 
       return { ...state, addressBook: payload };
     }),

@@ -22,8 +22,7 @@ import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/foramtters';
 import { ITypeSignTrx } from '@/constants/type-sign';
-import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
-import { INetworkDB } from '@/db';
+import { setNetworkDB, setDataDB } from '@/db/set-info';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
@@ -54,7 +53,7 @@ const SignTransactionComponent = () => {
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
   const { open } = useWeb3Modal();
-  const { networks, setChosenNetwork } = useNetworkStore();
+  const { networks, setChosenNetwork, loadNetworks } = useNetworkStore();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
@@ -64,7 +63,7 @@ const SignTransactionComponent = () => {
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
   const tokenType = searchParams.get('tokenType');
-  const networkName = searchParams.get('networkName');
+  // const networkName = searchParams.get('networkName');
   const thresholdUrl = searchParams.get('thresholdUrl');
   const newThreshold = searchParams.get('newThreshold');
   const nonceUrl = searchParams.get('nonce');
@@ -78,6 +77,7 @@ const SignTransactionComponent = () => {
 
   const safeTxHashParam = searchParams.get('safeTxHash');
   const safeTxHashJSON = safeTxHashParam ? JSON.parse(JSON.stringify(safeTxHashParam)) : null;
+  const userNetwork = userNetworkTrxUrl ? JSON.parse(userNetworkTrxUrl) : null;
 
   const trxUrlInfo = {
     safeAddress,
@@ -86,7 +86,7 @@ const SignTransactionComponent = () => {
     address: destinationAddress,
     safeTxHash: safeTxHashJSON,
     tokenType,
-    networkName,
+    // networkName,
     typeSignTrx,
     linkOnScan,
     safeTransaction,
@@ -96,29 +96,29 @@ const SignTransactionComponent = () => {
   };
 
   const addNetworkForUserSign = async () => {
-    if (!userNetworkTrxUrl) return;
-    const userNetwork = JSON.parse(userNetworkTrxUrl) as INetworkDB;
-
     const existingNetwork =
       networks && networks.find(network => network.rpc === userNetwork.rpcUrl);
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
     if (!existingNetwork) {
       setChosenNetwork({
-        ...userNetwork,
+        chainId: userNetwork.chainId,
         label: userNetwork.name,
         value: userNetwork.name,
         rpc: userNetwork.rpcUrl,
       });
-      await addCustomNetworkDB(userNetwork);
+
+      await setNetworkDB(userNetwork);
+      loadNetworks();
 
       if (safeAddress) {
         await setDataDB(safeAddress, {});
       }
 
-      // networks.push(userNetwork);
+      if (!walletProvider) {
+        throw Error('<-- Wallet provider is undefined -->');
+      }
 
-      if (!walletProvider) return;
       await walletProvider.request({
         method: 'wallet_addEthereumChain',
         params: {
@@ -222,7 +222,7 @@ const SignTransactionComponent = () => {
             </WalletTypography>
             <Box display={'flex'} alignItems={'center'} gap={1}>
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-                Network: {networkName}
+                Network: {userNetwork && userNetwork.name}
               </WalletTypography>
               {chainIdUrl && formatterIcon(+chainIdUrl)}
             </Box>
