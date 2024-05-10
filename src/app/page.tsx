@@ -45,12 +45,9 @@ export default function Home() {
   }, [data, chainId]);
 
   const handleCreateTransaction = useCallback(() => {
-    console.log('__address__', address);
     if (address) {
-      console.log('__address__1');
       router.push(routes.newTransaction);
     } else {
-      console.log('__address__2');
       open();
     }
   }, [address]);
