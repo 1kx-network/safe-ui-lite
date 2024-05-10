@@ -1,8 +1,8 @@
 'use client';
+import { useCallback, useEffect } from 'react';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
-import { useEffect } from 'react';
 
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -22,8 +22,8 @@ export default function Home() {
   const { address, chainId } = useWeb3ModalAccount();
   const { data } = useOwnerList(address);
   const { open } = useWeb3Modal();
-  const router = useRouter();
   const { walletProvider } = useWeb3ModalProvider();
+  const router = useRouter();
 
   useEffect(() => {
     const walletIsConnected: string | null =
@@ -32,15 +32,6 @@ export default function Home() {
 
     open();
   }, [address, walletProvider]);
-
-  const handleCreateTransaction = () => {
-    console.log('__address__', address);
-    if (address) {
-      router.push(routes.newTransaction);
-    } else {
-      open();
-    }
-  };
 
   useEffect(() => {
     if (chainId && data && data.length) {
@@ -52,6 +43,19 @@ export default function Home() {
       }
     }
   }, [data, chainId]);
+
+  const handleCreateTransaction = useCallback(() => {
+    () => {
+      console.log('__address__', address);
+      if (address) {
+        console.log('__address__1');
+        router.push(routes.newTransaction);
+      } else {
+        console.log('__address__2');
+        open();
+      }
+    };
+  }, [address]);
 
   return (
     <WalletLayout>
