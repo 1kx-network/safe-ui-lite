@@ -68,7 +68,7 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
         )}
 
         <InputStyled
-          {...props}
+          onChange={props.onChange}
           value={props.value ?? ''}
           $startadornment={startAdornment}
           style={{
