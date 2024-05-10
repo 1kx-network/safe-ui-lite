@@ -1,3 +1,4 @@
+'use client';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
@@ -156,15 +157,19 @@ export const SendTokens = () => {
         amount: data.amount,
         destinationAddress: data.address,
         tokenType,
-        networkName: chosenNetwork?.value ?? '',
+        // networkName: chosenNetwork?.value ?? '',
         safeTxHash,
         nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
         userNetworkTrx: JSON.stringify({
-          ...chosenNetwork,
-          name: chosenNetwork?.value,
-          rpcUrl: chosenNetwork?.rpc,
-          symbol: 18,
+          name: chosenNetwork?.value ?? '',
+          chainId: chosenNetwork?.chainId ?? '',
+          rpcUrl: chosenNetwork?.rpc ?? '',
+          explorerUrl: chosenNetwork?.explorerUrl ?? '',
+          // ...chosenNetwork,
+          // name: chosenNetwork?.value,
+          // rpcUrl: chosenNetwork?.rpc,
+          // symbol: 18,
         }),
       };
 

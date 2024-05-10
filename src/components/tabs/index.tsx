@@ -1,7 +1,5 @@
 import { useSearchParams } from 'next/navigation';
 
-import routes from '@/app/routes';
-
 import { ItemMenuStyled, WrapperStyled } from './tabs.styles';
 
 export interface ITab {
@@ -12,21 +10,12 @@ export interface ITab {
 
 export const CustomTabs = ({ tabs }: { tabs: ITab[] }) => {
   const searchParams = useSearchParams();
-
-  const defaultActive = (url: string) => url === routes.settingsOwnersList;
+  const isActive = (url: string) => searchParams.toString().includes(url.split('?')[1]);
 
   return (
     <WrapperStyled>
       {tabs.map(item => (
-        <ItemMenuStyled
-          href={item.url}
-          key={item.id}
-          $isActive={
-            searchParams.toString().includes(item.url.split('?')[1])
-              ? true
-              : defaultActive(item.url)
-          }
-        >
+        <ItemMenuStyled href={item.url} key={item.id} $isActive={isActive(item.url)}>
           {item.title}
         </ItemMenuStyled>
       ))}

@@ -1,4 +1,5 @@
 'use client';
+
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { CSVLink } from 'react-csv';
@@ -10,7 +11,6 @@ import IconUser from '@/assets/svg/user.svg';
 import { WalletButton, WalletInput, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
-import { useNetwork } from '@/hooks/useNetwork';
 import InfoIcon from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import { networks } from '@/context/networks';
@@ -19,6 +19,7 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 import useSafeStore from '@/stores/safe-store';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 import routes from '@/app/routes';
+import useNetworkStore from '@/stores/networks-store';
 
 import {
   BoxStyled,
@@ -35,7 +36,6 @@ import {
 import { ListAccount } from './components/list-account/list-account';
 
 export const SettingsOwner = () => {
-  const network = useNetwork();
   const router = useRouter();
   const { chainId } = useWeb3ModalAccount();
   const { getInfoByAccount } = useSafeSdk();
@@ -53,6 +53,7 @@ export const SettingsOwner = () => {
     setContractNonce,
     setContractVersion,
   } = useActiveSafeAddress();
+  const { chosenNetwork } = useNetworkStore();
 
   // eslint-disable-next-line
   const [csvData, setCsvData] = useState<Array<Array<string>>>([]);
@@ -66,9 +67,6 @@ export const SettingsOwner = () => {
 
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
-  const networkName =
-    (network?.name || '').toString().charAt(0).toUpperCase() +
-    (network?.name || '').toString().slice(1);
 
   useEffect(() => {
     const newCountNeedCormed = Array.from({ length: safeAccountOwners.length }, (_, index) => ({
@@ -106,7 +104,7 @@ export const SettingsOwner = () => {
     };
 
     pendingBalance();
-  }, [network, chainId, safeSdk, safeAddress]);
+  }, [chainId, safeSdk, safeAddress]);
 
   const handleGetCSV = () => {
     const csvContent = safeAccountOwners.map(address => `${address},"",${chainId}`).join('\n');
@@ -145,10 +143,15 @@ export const SettingsOwner = () => {
       amount: '0',
       destinationAddress: address,
       tokenType: '',
-      networkName: networkName,
       safeTxHash: safeTxHash,
       newThreshold: String(threshold),
       nonce: String(nonce),
+      userNetworkTrx: JSON.stringify({
+        name: chosenNetwork?.value ?? '',
+        chainId: chosenNetwork?.chainId ?? '',
+        rpcUrl: chosenNetwork?.rpc ?? '',
+        explorerUrl: chosenNetwork?.explorerUrl ?? '',
+      }),
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
@@ -169,10 +172,15 @@ export const SettingsOwner = () => {
       amount: '0',
       destinationAddress: safeAddress,
       tokenType: '',
-      networkName: networkName,
       safeTxHash: safeTxHash,
       newThreshold: String(newCountNeedConfirm),
       nonce: String(nonce),
+      userNetworkTrx: JSON.stringify({
+        name: chosenNetwork?.value ?? '',
+        chainId: chosenNetwork?.chainId ?? '',
+        rpcUrl: chosenNetwork?.rpc ?? '',
+        explorerUrl: chosenNetwork?.explorerUrl ?? '',
+      }),
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
@@ -223,9 +231,14 @@ export const SettingsOwner = () => {
       amount: '0',
       destinationAddress: valueNewOwner,
       tokenType: '',
-      networkName: networkName,
       safeTxHash: safeTxHash,
       nonce: String(contractNonce),
+      userNetworkTrx: JSON.stringify({
+        name: chosenNetwork?.value ?? '',
+        chainId: chosenNetwork?.chainId ?? '',
+        rpcUrl: chosenNetwork?.rpc ?? '',
+        explorerUrl: chosenNetwork?.explorerUrl ?? '',
+      }),
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
@@ -328,15 +341,6 @@ export const SettingsOwner = () => {
 
           <Box mt={3} display="flex" alignItems="center">
             <Box mr={3} width={'84px'}>
-              {/* <WalletSelect
-                  isLoading={Boolean(!needConfirmOwner)}
-                  controlShouldRenderValue
-                  options={optionsCount}
-                  defaultValue={[
-                    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-                  ]}
-                  onChange={handleChooseAccounConfirm}
-                /> */}
               <WalletSelect
                 isLoading={Boolean(!needConfirmOwner)}
                 controlShouldRenderValue
