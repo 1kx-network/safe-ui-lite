@@ -22,7 +22,7 @@ import useSafeStore from '@/stores/safe-store';
 import { INetworkDB, db } from '@/db';
 import { useMultySign } from '@/hooks/useMultySign';
 import { customToasty } from '@/components';
-import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
+import { setNetworkDB, setDataDB } from '@/db/set-info';
 import { networks } from '@/context/networks';
 import { IQueryParams } from '@/constants/interfaces';
 import routes from '@/app/routes';
@@ -245,7 +245,7 @@ const NewSignTransactionComponent = () => {
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
     if (!existingNetwork) {
-      await addCustomNetworkDB(userNetwork);
+      await setNetworkDB(userNetwork);
 
       if (dataQuery.safeAddress) {
         await setDataDB(dataQuery.safeAddress, {});

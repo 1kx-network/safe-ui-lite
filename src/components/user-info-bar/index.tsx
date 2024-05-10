@@ -265,7 +265,7 @@ export const UserInfoBar = () => {
   //   setErrorNewNetwork(null);
   //   setNetwork(newNetwork);
 
-  //   await addCustomNetworkDB(objNetworkDB);
+  //   await setNetworkDB(objNetworkDB);
   //   setIsOpenNetworkModal(false);
   //   customToasty('Network was add', 'success');
   // };
