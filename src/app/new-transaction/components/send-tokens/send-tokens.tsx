@@ -1,3 +1,4 @@
+'use client';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
