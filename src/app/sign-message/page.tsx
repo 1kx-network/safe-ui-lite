@@ -200,7 +200,7 @@ const SignMessageComponent = () => {
 
   let buttonText = 'Sign Transaction';
   if (status === 'success') {
-    buttonText = 'Successfully deployed';
+    buttonText = 'Executed Successfully';
   } else if (signedCount >= threshold) {
     buttonText = 'Execute';
   } else if (status === 'loading') {
