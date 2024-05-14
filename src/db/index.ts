@@ -13,6 +13,10 @@ export interface INetworkDB {
   decimals: number;
   chainId: number;
   isNew?: boolean;
+  isChanged?: boolean;
+  rpcOriginal?: string;
+  prevRpc?: string;
+  unicId?: string;
 }
 
 export interface IUserCustomNetwork {

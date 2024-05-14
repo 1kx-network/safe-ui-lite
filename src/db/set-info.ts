@@ -71,9 +71,9 @@ export async function setMultipleDataDB(data: Record<string, Partial<ISafe>>): P
   }
 }
 
-export async function addCustomNetworkDB(network: INetworkDB): Promise<void> {
+export async function setNetworkDB(network: INetworkDB): Promise<void> {
   try {
-    const networkWithId: INetworkDB = { ...network, id: String(network.rpcUrl) };
+    const networkWithId: INetworkDB = { ...network, id: String(network.rpcOriginal) };
 
     const existingNetwork = await db.networks.get(networkWithId.id || '');
 
@@ -96,7 +96,7 @@ export const removeAddressFromDB = async (address: string) => {
   }
 };
 
-export const addAddressToDB = async (payload: IAddressBook) => {
+export const setAddressToDB = async (payload: IAddressBook) => {
   try {
     await db.addressBook.put(payload);
   } catch (error) {
@@ -104,7 +104,7 @@ export const addAddressToDB = async (payload: IAddressBook) => {
   }
 };
 
-export const addAddressesArrayToDB = async (payload: IAddressBook[]) => {
+export const setAddressesArrayToDB = async (payload: IAddressBook[]) => {
   try {
     await db.transaction('rw', db.addressBook, async () => {
       for (const entry of payload) {

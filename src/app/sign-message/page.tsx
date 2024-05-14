@@ -23,7 +23,7 @@ import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/foramtters';
 // import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
-import { addCustomNetworkDB, setDataDB } from '@/db/set-info';
+import { setNetworkDB, setDataDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
@@ -105,18 +105,16 @@ const SignMessageComponent = () => {
 
     if (!existingNetwork) {
       setChosenNetwork({
-        ...userNetwork,
+        chainId: userNetwork.chainId,
         label: userNetwork.name,
         value: userNetwork.name,
         rpc: userNetwork.rpcUrl,
       });
-      await addCustomNetworkDB(userNetwork);
+      await setNetworkDB(userNetwork);
 
       if (safeAddress) {
         await setDataDB(safeAddress, {});
       }
-
-      // networks.push(userNetwork);
 
       if (!walletProvider) return;
       await walletProvider.request({

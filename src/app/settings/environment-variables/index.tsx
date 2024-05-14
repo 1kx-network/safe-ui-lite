@@ -10,8 +10,7 @@ import useNetworkStore from '@/stores/networks-store';
 import { customToasty } from '@/components';
 import { WalletButton, WalletInput, WalletPaper, WalletSelect, WalletTypography } from '@/ui-kit';
 import { ChangeNetworkEnvSchema } from '@/utils/validations.utils';
-import { addCustomNetworkDB } from '@/db/set-info';
-import { formatterIcon } from '@/utils/icon-formatter';
+import { setNetworkDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
 
 import {
@@ -35,7 +34,7 @@ export const NetworksSettings = ({
   handleSave?: () => void;
   handleClose?: () => void;
 }) => {
-  const { networks, loadNetworks, updateNetwork } = useNetworkStore();
+  const { networks, loadNetworks } = useNetworkStore();
 
   const [network, setNetworkLocal] = useState<IOptionNetwork>();
   const [isLoadingChain, setIsLoadingChain] = useState(false);
@@ -81,17 +80,20 @@ export const NetworksSettings = ({
       rpcUrl: data.rpc,
       symbol: data.name,
       decimals: 18,
+      rpcOriginal: network.rpcOriginal,
     };
 
-    updateNetwork({
-      chainId: Number(chainId),
-      label: data.name,
-      value: data.name,
-      rpc: data.rpc,
-      icon: () => formatterIcon(chainId),
-    });
+    // updateNetwork({
+    //   chainId: Number(chainId),
+    //   label: data.name,
+    //   value: data.name,
+    //   rpc: data.rpc,
+    //   icon: () => formatterIcon(chainId),
+    // });
 
-    await addCustomNetworkDB(updateNetworkDB);
+    await setNetworkDB(updateNetworkDB);
+    // await updateNetworkDB(updateNetworkDB);
+
     loadNetworks();
     setTimeout(() => setIsLoadingChain(false), 500);
     reset();

@@ -34,7 +34,7 @@ import { formatterIcon } from '@/utils/icon-formatter';
 import IconInfo from '@/assets/svg/infoIcon.svg';
 import IconPlus from '@/assets/svg/plus.svg';
 import { AddNetworkSchema } from '@/utils/validations.utils';
-import { addCustomNetworkDB } from '@/db/set-info';
+import { setNetworkDB } from '@/db/set-info';
 import { customToasty } from '@/components';
 import { NetworksSettings } from '@/app/settings/environment-variables';
 import useNetworkStore from '@/stores/networks-store';
@@ -143,7 +143,7 @@ export default function CreatePageAccount() {
     });
 
     setNetwork(objNetworkDB);
-    await addCustomNetworkDB(objNetworkDB);
+    await setNetworkDB(objNetworkDB);
     setIsAddNewNetwork(false);
     customToasty('Network was add', 'success');
   };

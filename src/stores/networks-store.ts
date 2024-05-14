@@ -81,6 +81,7 @@ const useNetworkStore = create<Store>(set => ({
           const index = mergedNetwork.findIndex(
             defNetwork => defNetwork.chainId === dbNetwork.chainId
           );
+
           if (index !== -1) {
             mergedNetwork[index] = dbNetwork;
           }

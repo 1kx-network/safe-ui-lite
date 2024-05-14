@@ -48,6 +48,8 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
 
   const isTransactions = pathname === routes.transactions;
 
+  return NextResponse.next();
+
   if (isSign) {
     return NextResponse.next();
   }
