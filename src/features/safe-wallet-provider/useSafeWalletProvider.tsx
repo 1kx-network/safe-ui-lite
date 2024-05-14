@@ -16,6 +16,7 @@ import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 //   SignMessageOnChainFlow,
 // } from '@/components/tx-flow/flows';
 // import { safeMsgSubscribe, SafeMsgEvent } from '@/services/safe-messages/safeMsgEvents';
+
 import { TxEvent, txSubscribe } from '@/features/tx/txEvents';
 import { useWeb3ReadOnly } from '@/features/web3';
 // import { AppRoutes } from '@/config/routes';
@@ -30,6 +31,7 @@ import { NATIVE_TOKENS } from '@/constants/tokens';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { setDataDB } from '@/db/set-info';
 import routes from '@/app/routes';
+import { SafeMsgEvent, safeMsgSubscribe } from '../safe-messages/safeMsgEvents';
 
 import { NotificationMessages, showNotification } from './notifications';
 
@@ -68,8 +70,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       appInfo: AppInfo,
       _method: Methods.signMessage | Methods.signTypedMessage
     ): Promise<{ signature: string }> => {
-      console.log(`called sign message`, message, appInfo, _method);
-
       const { title, options } = NotificationMessages.SIGNATURE_REQUEST(appInfo);
       showNotification(title, options);
 
@@ -93,7 +93,9 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
           chainId: String(chainId),
           address: encodeURIComponent(safeAddress),
           networkName: networkUserInfo?.chainName ?? 'Ethereum',
-          safeMsgHash,
+          name: appInfo.name,
+          description: appInfo.description,
+          safeMsg: message.toString(),
           userNetworkTrx: JSON.stringify(networkUserInfo),
         };
 
@@ -101,8 +103,10 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
           id,
           date: dateMsg,
           data: message.toString(),
+          name: appInfo.name,
+          description: appInfo.description,
           tokenType: NATIVE_TOKENS.ETH,
-          theshold: thesholders,
+          threshold: thesholders,
           hash: safeMsgHash,
           signatures: [],
         };
@@ -115,41 +119,20 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
         const queryString = new URLSearchParams(queryParams).toString();
         router.push(`${routes.signMessage}?${queryString}`);
       }
-      return new Promise((_resolve, _reject) => {
-        // const onClose = () => {
-        //   reject({
-        //     code: RpcErrorCode.USER_REJECTED,
-        //     message: 'User rejected signature',
-        //   });
-        //   unsubscribe();
-        // };
-        // const unsubscribeSignaturePrepared = safeMsgSubscribe(
-        //   SafeMsgEvent.SIGNATURE_PREPARED,
-        //   ({ requestId, signature }: { requestId: string; signature: string }) => {
-        //     if (requestId === id) {
-        //       resolve({ signature });
-        //       unsubscribe();
-        //     }
-        //   }
-        // );
-        // const unsubscribe = () => {
-        //   onClose = () => {};
-        //   unsubscribeSignaturePrepared();
-        // };
-        // if (shouldSignOffChain) {
-        //   setTxFlow(
-        //     <SignMessageFlow
-        //       logoUri={appInfo.iconUrl}
-        //       name={appInfo.name}
-        //       message={message}
-        //       requestId={id}
-        //       safeAppId={appInfo.id}
-        //     />,
-        //     onClose
-        //   );
-        // } else {
-        //   setTxFlow(<SignMessageOnChainFlow props={{ requestId: id, message, method }} />, onClose);
-        // }
+      return new Promise((resolve, _reject) => {
+        const unsubscribeSignaturePrepared = safeMsgSubscribe(
+          SafeMsgEvent.SIGNATURE_PREPARED,
+          ({ requestId, signatures }) => {
+            if (requestId) {
+              resolve({ signature: signatures[0] });
+              unsubscribe();
+            }
+          }
+        );
+
+        const unsubscribe = () => {
+          unsubscribeSignaturePrepared();
+        };
       });
     };
 
@@ -228,32 +211,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
           router.push(`${routes.signTransaction}?${queryString}`);
         }
 
-        return new Promise((_resolve, _reject) => {
-          // let onClose = () => {
-          //   reject({
-          //     code: RpcErrorCode.USER_REJECTED,
-          //     message: 'User rejected transaction',
-          //   });
-          // };
-          // const onSubmit = (txId: string, safeTxHash: string) => {
-          //   const txHash = pendingTxs.current[txId];
-          //   onClose = () => {};
-          //   resolve({ safeTxHash, txHash });
-          // };
-          //   setTxFlow(
-          //     <SafeAppsTxFlow
-          //       data={{
-          //         appId: undefined,
-          //         app: appInfo,
-          //         requestId: id,
-          //         txs: transactions,
-          //         params: params.params,
-          //       }}
-          //       onSubmit={onSubmit}
-          //     />,
-          //     onClose
-          //   );
-        });
+        return new Promise((_resolve, _reject) => {});
       },
 
       async getBySafeTxHash(safeTxHash) {
@@ -266,8 +224,8 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
           return null;
         }
 
-        // const cfg = configs.find((c: { chainId: string }) => c.chainId === chainId);
-        const cfg = { shortName: 'Eth' };
+        const cfg = configs.find((c: { chainId: string }) => c.chainId === chainId);
+        // const cfg = { shortName: 'Eth' };
         if (!cfg) {
           throw new Error(`Chain ${chainId} not supported`);
         }
@@ -318,7 +276,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
     // onChainSigning,
     settings,
     setTxFlow,
-    // configs,
+    configs,
     router,
     web3ReadOnly,
   ]);

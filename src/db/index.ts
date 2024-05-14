@@ -27,7 +27,9 @@ export interface IMessage {
   id: string;
   date: string;
   data: string | EIP712TypedData;
-  theshold: number;
+  name: string;
+  description: string;
+  threshold: number;
   hash: string;
   signatures: ISignature[];
 }

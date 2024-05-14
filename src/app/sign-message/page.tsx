@@ -31,7 +31,7 @@ import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import IconArrowLeft from '@/assets/svg/left-arrow.svg';
 import routes from '../routes';
 import useNetworkStore from '@/stores/networks-store';
-import { useMultySign } from '@/hooks/useMultySign';
+import { useMessageMultySign } from '@/hooks/useMessageMultySign';
 
 import {
   BoxOwnerLinkStyled,
@@ -45,14 +45,14 @@ import {
   styledPaper,
   styledSecondaryBtn,
 } from './sing-message.styles';
-import { SignTransactionInfo } from './sing-msg-info';
+import { SignMessageInfo } from './sing-msg-info';
 
 const SignMessageComponent = () => {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
   const [signedCount, setSignedCount] = useState(0);
-  const { safeTransaction, safeSdk } = useSafeStore();
+  const { safeMessage, safeSdk } = useSafeStore();
   const { threshold, status, owners } = useSignStore();
   const { address, chainId } = useWeb3ModalAccount();
   const { switchNetwork } = useSwitchNetwork();
@@ -66,9 +66,10 @@ const SignMessageComponent = () => {
   const chainIdUrl = searchParams.get('chainId');
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
-  const safeTxHash = searchParams.get('safeTxHash');
-  const tokenType = searchParams.get('tokenType');
+  const safeMsg = searchParams.get('safeMsg');
   const networkName = searchParams.get('networkName');
+  const name = searchParams.get('name');
+  const description = searchParams.get('description');
   const thresholdUrl = searchParams.get('thresholdUrl');
   const newThreshold = searchParams.get('newThreshold');
   const nonceUrl = searchParams.get('nonce');
@@ -80,20 +81,15 @@ const SignMessageComponent = () => {
     | keyof ITypeSignTrx
     | null;
 
-  const safeTxHashParam = searchParams.get('safeTxHash');
-  const safeTxHashJSON = safeTxHashParam ? JSON.parse(JSON.stringify(safeTxHashParam)) : null;
-
-  const trxUrlInfo = {
+  const msgUrlInfo = {
     safeAddress,
     chainIdUrl,
     amount,
     address: destinationAddress,
-    safeTxHash: safeTxHashJSON,
-    tokenType,
+    safeMsg: safeMsg,
     networkName,
     typeSignTrx,
     linkOnScan,
-    safeTransaction,
     thresholdUrl,
     newThreshold,
     nonce: nonceUrl,
@@ -161,32 +157,26 @@ const SignMessageComponent = () => {
     }
   }, [router, searchParams]);
 
-  const multySign = useMultySign({
-    ...trxUrlInfo,
+  const multySign = useMessageMultySign({
+    ...msgUrlInfo,
     safeAddress: safeAddress ?? '',
-    safeTxHash: safeTxHash ?? '',
+    safeMsg: safeMsg ?? '',
     mode: 'url',
   });
 
-  const handleTransaction = async () => {
-    if (!safeSdk || !safeTransaction) return;
+  const handleMessageClick = async () => {
+    if (!safeSdk || !safeMessage) return;
     if (status === 'success') return;
-    signedCount === threshold ? handleExecute() : handleSignTransaction();
+    signedCount >= threshold ? multySign.executeMulty() : handleSignMessage();
   };
 
-  const handleSignTransaction = useCallback(async () => {
+  const handleSignMessage = useCallback(async () => {
     if (!multySign) return;
 
-    if (!safeSdk || !safeTransaction || !safeTxHash) return;
+    if (!safeSdk || !safeMessage || !safeMsg) return;
 
-    await multySign.signTransactionMulty();
-  }, [safeSdk, safeTransaction, safeTxHash, status]);
-
-  const handleExecute = useCallback(async () => {
-    if (!multySign) return;
-
-    await multySign.executeMulty();
-  }, [safeSdk, safeTransaction, searchParams]);
+    await multySign.signMessageMulty();
+  }, [safeSdk, safeMessage, safeMsg, status]);
 
   const handleCopy = (address: string | null) => {
     if (!address) return;
@@ -198,11 +188,11 @@ const SignMessageComponent = () => {
     open();
   };
 
-  let buttonText = 'Sign Transaction';
+  let buttonText = 'Sign Message';
   if (status === 'success') {
     buttonText = 'Executed Successfully';
   } else if (signedCount >= threshold) {
-    buttonText = 'Execute';
+    buttonText = 'Confirm';
   } else if (status === 'loading') {
     buttonText = 'Loading...';
   } else if (status === 'signed') {
@@ -255,7 +245,11 @@ const SignMessageComponent = () => {
             </Box>
           </TransactionInfoStyled>
 
-          <SignTransactionInfo {...trxUrlInfo} address={destinationAddress} />
+          <SignMessageInfo
+            message={safeMsg ?? ''}
+            name={name ?? ''}
+            description={description ?? ''}
+          />
 
           <GridButtonStyled>
             {address ? (
@@ -266,9 +260,9 @@ const SignMessageComponent = () => {
                     // disabled={status === 'loading'}
                     variant={status === 'success' ? 'outlined' : 'contained'}
                     styles={styledSecondaryBtn}
-                    onClick={handleSignTransaction}
+                    onClick={handleMessageClick}
                   >
-                    {status === 'signed' ? 'Signed' : 'Sign Transaction'}
+                    {status === 'signed' ? 'Signed' : 'Sign Message'}
                   </WalletButton>
                 )}
                 <WalletButton
@@ -276,7 +270,7 @@ const SignMessageComponent = () => {
                   // disabled={status === 'loading'}
                   variant={status === 'success' ? 'outlined' : 'contained'}
                   styles={styledBtn}
-                  onClick={handleTransaction}
+                  onClick={handleMessageClick}
                 >
                   {buttonText}
                 </WalletButton>

@@ -27,7 +27,7 @@ interface SignedMessageEvents {
   [SafeMsgEvent.CONFIRM_PROPOSE]: SafeMessageHash;
   [SafeMsgEvent.CONFIRM_PROPOSE_FAILED]: SafeMessageHash & { error: Error };
   [SafeMsgEvent.UPDATED]: SafeMessageHash;
-  [SafeMsgEvent.SIGNATURE_PREPARED]: SafeMessageHash & { requestId?: RequestId; signature: string };
+  [SafeMsgEvent.SIGNATURE_PREPARED]: SafeMessageHash & { requestId?: RequestId; signatures: any };
 }
 
 const safeMsgEventBus = new EventBus<SignedMessageEvents>();
