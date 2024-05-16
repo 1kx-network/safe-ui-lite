@@ -28,7 +28,7 @@ export const dispatchPreparedSignature = async (
     safeMsgDispatch(SafeMsgEvent.SIGNATURE_PREPARED, {
       messageHash: safeMessageHash,
       requestId,
-      signature: message.preparedSignature,
+      signatures: message.preparedSignature,
     });
     onClose();
   }
