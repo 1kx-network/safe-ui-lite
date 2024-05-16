@@ -2,7 +2,8 @@ const { NODE_ENV } = process.env;
 
 export const IS_PRODUCTION = NODE_ENV === 'production';
 
-export const WALLETCONNECT_V2_PROJECT_ID = '9e563929bac6bf53b1552485242deb1d';
+export const WALLETCONNECT_V2_PROJECT_ID =
+  process.env.NEXT_PUBLIC_WC_PROJECT_ID ?? '9e563929bac6bf53b1552485242deb1d';
 
 export const SAFE_WALLET_METADATA = {
   name: 'Safe Wallet',
