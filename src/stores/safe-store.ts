@@ -1,5 +1,5 @@
 import Safe from '@safe-global/protocol-kit';
-import { SafeTransaction, SafeMessage } from '@safe-global/safe-core-sdk-types';
+import type { SafeTransaction, SafeMessage } from '@safe-global/safe-core-sdk-types';
 import { create } from 'zustand';
 
 type Store = {
