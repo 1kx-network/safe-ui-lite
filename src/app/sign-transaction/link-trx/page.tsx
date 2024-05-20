@@ -29,6 +29,7 @@ import routes from '@/app/routes';
 import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import {
   BoxLinkStyled,
@@ -118,7 +119,7 @@ const NewSignTransactionComponent = () => {
   const [signedCount, setSignedCount] = useState(0);
   const [queryParams, setQueryParams] = useState<IQueryParams | null>(null);
 
-  const { createSdkInstance } = useSafeSdk();
+  const { createSdkInstance, getInfoByAccount } = useSafeSdk();
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk, setSafeTransaction } = useSafeStore();
   const { switchNetwork } = useSwitchNetwork();
@@ -132,6 +133,27 @@ const NewSignTransactionComponent = () => {
 
   const [dataQuery, setDataQuery] = useState<IDataQuery>(defaultDataQuery);
   const [ownerList, setOwnerList] = useState<string[] | null>();
+
+  const { setBalanceAccount, setIsLoading } = useActiveSafeAddress();
+
+  // Update the balance
+  useEffect(() => {
+    if (status === 'success') {
+      const pendingBalance = async () => {
+        setIsLoading(true);
+        const dataAcc = await getInfoByAccount(safeSdk);
+        if (!dataAcc) return;
+
+        const { balanceAccount } = dataAcc;
+        const parceBalance = ethers.formatEther(String(balanceAccount));
+
+        setBalanceAccount(parceBalance);
+      };
+
+      pendingBalance();
+      setTimeout(() => setIsLoading(false), 400);
+    }
+  }, [status]);
 
   const handleChangeLink = async (value: string) => {
     if (value) {

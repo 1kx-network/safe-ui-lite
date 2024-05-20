@@ -356,7 +356,12 @@ export const SettingsOwner = () => {
             </WalletTypography>
           </Box>
 
-          <WalletButton variant="contained" onClick={handleChangeSettings} loading={isLoading}>
+          <WalletButton
+            disabled={!newCountNeedConfirm || newCountNeedConfirm === needConfirmOwner}
+            variant="contained"
+            onClick={handleChangeSettings}
+            loading={isLoading}
+          >
             Change
           </WalletButton>
         </ConfirmationsStyled>
@@ -411,7 +416,7 @@ export const SettingsOwner = () => {
                 Any transaction requires the confirmation of:
               </WalletTypography>
               <WalletTypography fontSize={14} fontWeight={600}>
-                {needConfirmOwner} Thresholde
+                {needConfirmOwner} Thresholders
               </WalletTypography>
             </Box>
           </Box>
