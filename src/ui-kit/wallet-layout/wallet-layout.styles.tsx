@@ -9,7 +9,8 @@ export const LayoutStyled = styled('main')(
       position: relative;
       display: flex;
       padding: 0 20px;
-      overflow-y: scroll;
+      // overflow-y: scroll;
+      overflow-y: hidden;
 
       &::-webkit-scrollbar {
         width: 1px !important;

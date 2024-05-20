@@ -71,7 +71,7 @@ export const TableAddressBook = ({
     };
 
     const queryString = new URLSearchParams(queryParams).toString();
-    router.push(`${routes.newTransaction}?${queryString}`);
+    router.push(`${routes.newTransactionSendToken}?${queryString}`);
   };
 
   const handleChangeUserName = (e: ChangeEvent<HTMLInputElement>) => {

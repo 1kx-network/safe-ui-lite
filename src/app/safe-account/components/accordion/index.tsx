@@ -14,7 +14,7 @@ interface IAccordionProps {
 const Accordion = ({ title, description, initialOpen = false }: IAccordionProps) => {
   const [open, setOpen] = React.useState(initialOpen);
   return (
-    <AccordionStyled>
+    <AccordionStyled onClick={() => setOpen(!open)}>
       <Box justifyContent="space-between" display="flex" alignItems="center">
         <WalletTypography fontWeight={600} component="p">
           {title}

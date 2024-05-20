@@ -357,7 +357,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
           )}
         </InfoUserStyled>
         <MenuStyled suppressHydrationWarning>
-          <ItemMenuStyled style={styleBtnTransaction} href={address ? routes.newTransaction : ''}>
+          <ItemMenuStyled
+            style={styleBtnTransaction}
+            href={address ? routes.newTransactionSendToken : ''}
+          >
             <WalletTypography>New transaction</WalletTypography>
           </ItemMenuStyled>
           <ItemMenuStyled style={styleBtnTransaction} href={routes.newSignTransaction}>

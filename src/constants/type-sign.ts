@@ -3,6 +3,7 @@ export interface ITypeSignTrx {
   ADD_OWNER: 'ADD_OWNER';
   REMOVE_OWNER: 'REMOVE_OWNER';
   CHANGE_THRESHOLD: 'CHANGE_THRESHOLD';
+  B
 }
 
 export const TYPE_SIGN_TRX: ITypeSignTrx = {

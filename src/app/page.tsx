@@ -46,7 +46,7 @@ export default function Home() {
 
   const handleCreateTransaction = useCallback(() => {
     if (address) {
-      router.push(routes.newTransaction);
+      router.push(routes.newTransactionSendToken);
     } else {
       open();
     }

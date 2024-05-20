@@ -13,10 +13,10 @@ export type SelectProps<
 export const WalletSelect = <
   Option,
   IsMulti extends boolean = false,
-  Group extends GroupBase<Option> = GroupBase<Option>,
+  Group extends GroupBase<Option> = GroupBase<Option & { activeItemId?: string }>,
 >(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  props: SelectProps<Option, IsMulti, Group> & { ref?: any }
+  props: SelectProps<Option, IsMulti, Group> & { ref?: any; activeItemId?: string }
 ) => {
   //   const id = props.id || Math.random().toString();
 
@@ -33,6 +33,7 @@ export const WalletSelect = <
       isClearable={false}
       isSearchable={false}
       components={components}
+      menuPlacement="auto"
       {...props}
       ref={props.ref}
       styles={stylesSelect}

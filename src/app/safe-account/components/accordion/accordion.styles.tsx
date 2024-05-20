@@ -15,6 +15,7 @@ export const AccordionStyled = styled(
     borderRadius: '28px',
     backgroundColor: $backgroundColor || theme.palette.white,
     userSelect: 'none',
+    cursor: 'pointer',
   };
 });
 

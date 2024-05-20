@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { Box } from '@mui/system';
 
@@ -16,7 +18,7 @@ import {
   IconSearchStyled,
 } from './wallet-input.styles';
 
-interface IWalletInputProps {
+export interface IWalletInputProps {
   placeholder?: string;
   value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,11 +34,20 @@ interface IWalletInputProps {
   startAdornment?: boolean;
   isSearch?: boolean;
   contentEditable?: boolean;
+  required?: boolean;
 }
 
 export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>((props, _ref) => {
-  const { onClickEndAdornment, error, endAdornment, label, style, startAdornment, isSearch } =
-    props;
+  const {
+    onClickEndAdornment,
+    error,
+    endAdornment,
+    label,
+    style,
+    startAdornment,
+    isSearch,
+    required,
+  } = props;
 
   const errorStyle = error ? styleErrorInput : {};
 
@@ -49,7 +60,7 @@ export const WalletInput = React.forwardRef<HTMLInputElement, IWalletInputProps>
             fontWeight={400}
             color={themeMuiBase.palette.tetriaryGrey}
           >
-            {props.label}
+            {props.label} {required ? '*' : ''}
           </WalletTypography>
         </LabelStyled>
       )}

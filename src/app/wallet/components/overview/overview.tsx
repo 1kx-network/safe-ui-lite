@@ -88,7 +88,7 @@ export const Overview = () => {
   };
 
   const handleReceive = () => setIsOpenModal(true);
-  const handleSend = () => router.push(routes.newTransaction);
+  const handleSend = () => router.push(routes.newTransactionSendToken);
 
   const handleCopyAddress = () => {
     if (safeAddress) {

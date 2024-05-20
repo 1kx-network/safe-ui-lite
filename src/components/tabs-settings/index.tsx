@@ -10,7 +10,7 @@ export const TabsSettings = ({ tabs }: { tabs: ITab[] }) => {
   return (
     <WrapperStyled>
       {tabs.map(item => (
-        <ItemMenuStyled href={item.url} key={item.id} $isActive={true}>
+        <ItemMenuStyled href={item.url} key={item.id} $isactive={true}>
           {item.title}
         </ItemMenuStyled>
       ))}

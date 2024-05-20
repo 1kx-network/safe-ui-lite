@@ -68,7 +68,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
       appInfo: AppInfo,
       _method: Methods.signMessage | Methods.signTypedMessage
     ): Promise<{ signature: string }> => {
-      console.log(`called sign message`, message, appInfo, _method);
+      console.log(`<-- called sign message -->`, message, appInfo, _method);
 
       const { title, options } = NotificationMessages.SIGNATURE_REQUEST(appInfo);
       showNotification(title, options);
