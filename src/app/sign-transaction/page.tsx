@@ -28,6 +28,8 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import routes from '../routes';
 import useNetworkStore from '@/stores/networks-store';
+import useActiveSafeAddress from '@/stores/safe-address-store';
+import { useSafeSdk } from '@/hooks/useSafeSdk';
 
 import {
   BoxOwnerLinkStyled,
@@ -54,6 +56,8 @@ const SignTransactionComponent = () => {
   const { walletProvider } = useWeb3ModalProvider();
   const { open } = useWeb3Modal();
   const { networks, setChosenNetwork, loadNetworks } = useNetworkStore();
+  const { setBalanceAccount, setIsLoading } = useActiveSafeAddress();
+  const { getInfoByAccount } = useSafeSdk();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
 
@@ -156,6 +160,25 @@ const SignTransactionComponent = () => {
       }
     }
   }, [router, searchParams]);
+
+  // Update the balance
+  useEffect(() => {
+    if (status === 'success') {
+      const pendingBalance = async () => {
+        setIsLoading(true);
+        const dataAcc = await getInfoByAccount(safeSdk);
+        if (!dataAcc) return;
+
+        const { balanceAccount } = dataAcc;
+        const parceBalance = ethers.formatEther(String(balanceAccount));
+
+        setBalanceAccount(parceBalance);
+      };
+
+      pendingBalance();
+      setTimeout(() => setIsLoading(false), 400);
+    }
+  }, [status]);
 
   const multySign = useMultySign({
     ...trxUrlInfo,
