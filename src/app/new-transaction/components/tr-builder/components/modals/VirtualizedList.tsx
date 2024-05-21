@@ -55,4 +55,6 @@ const HeightPreservingContainer = styled('div')<{ size: number }>`
   }
 `;
 
+HeightPreservingItem.displayName = 'HeightPreservingItem';
+
 export default VirtualizedList;

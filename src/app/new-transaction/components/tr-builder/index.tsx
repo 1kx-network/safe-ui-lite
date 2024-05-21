@@ -37,8 +37,6 @@ export const TrxBuilder = () => {
     implementationAddress: '',
     proxyAddress: '',
   });
-  // const [valueAddress, setValueAddress] = useState('');
-  // const [valueAbi, setValueAbi] = useState('');
   const [isPrettified, setIsPrettified] = useState(false);
 
   const [hasErrorABI, setHasErrorABI] = useState<null | string>(null);
@@ -116,7 +114,6 @@ export const TrxBuilder = () => {
     const value = e.target.value;
     setAbiAddress(value);
     handleAbiAddressInput(value);
-    // handleSetAbi(value);
     useAbi(value);
   };
 
@@ -125,12 +122,9 @@ export const TrxBuilder = () => {
     setAbi(value);
 
     if (!!value) setHasErrorABI(isValidJSON(value) ? null : 'Invalid JSON value');
-    // handleSetAbi(value);
-    // setValueAbi(value);
   };
 
   const handleCloseModal = () => {
-    // implementationABIDialog.open
     setImplementationABIDialog(state => ({ ...state, open: false }));
   };
 

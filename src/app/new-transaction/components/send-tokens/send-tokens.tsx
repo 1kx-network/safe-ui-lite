@@ -157,7 +157,6 @@ export const SendTokens = () => {
         amount: data.amount,
         destinationAddress: data.address,
         tokenType,
-        // networkName: chosenNetwork?.value ?? '',
         safeTxHash,
         nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
@@ -166,10 +165,6 @@ export const SendTokens = () => {
           chainId: chosenNetwork?.chainId ?? '',
           rpcUrl: chosenNetwork?.rpc ?? '',
           explorerUrl: chosenNetwork?.explorerUrl ?? '',
-          // ...chosenNetwork,
-          // name: chosenNetwork?.value,
-          // rpcUrl: chosenNetwork?.rpc,
-          // symbol: 18,
         }),
       };
 

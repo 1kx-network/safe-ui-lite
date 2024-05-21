@@ -26,7 +26,7 @@ const CreateTransactions = () => {
     reorderTransactions,
     removeTransaction,
   } = useTransactionStore();
-  const { importBatch, downloadBatch, saveBatch } = useTransactionLibrary();
+  const { importBatch, downloadBatch } = useTransactionLibrary();
   const { safeSdk } = useSafeStore();
   const { chainId } = useWeb3ModalAccount();
   const router = useRouter();
@@ -95,7 +95,6 @@ const CreateTransactions = () => {
               batchTitle={fileName ? <FileNameTitle filename={fileName} /> : 'Transactions Batch'}
               transactions={transactions}
               removeTransaction={removeTransaction}
-              saveBatch={saveBatch}
               downloadBatch={downloadBatch}
               removeAllTransactions={removeAllTransactions}
               replaceTransaction={replaceTransaction}
@@ -153,7 +152,6 @@ const FileNameTitle = ({ filename }: { filename: string }) => {
   return (
     <>
       <FilenameLabelStyled>{filename}</FilenameLabelStyled>
-      {/* <UploadedLabelStyled>uploaded</UploadedLabelStyled> */}
     </>
   );
 };

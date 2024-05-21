@@ -47,7 +47,7 @@ const useTransactionStore = create<Store>((set, get) => ({
     }),
 
   submitTransactions: async () => {
-    const { safeSdk } = useSafeStore();
+    const { safeSdk } = useSafeStore.getState();
     if (!safeSdk) return;
     const { transactions } = get();
 

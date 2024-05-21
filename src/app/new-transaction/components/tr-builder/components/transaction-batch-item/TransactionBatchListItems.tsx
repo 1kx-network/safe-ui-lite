@@ -173,4 +173,6 @@ const getDisplayedTxPosition = (
   return `${index + 1}`;
 };
 
+TransactionBatchListItem.displayName = 'TransactionBatchListItem';
+
 export default TransactionBatchListItem;

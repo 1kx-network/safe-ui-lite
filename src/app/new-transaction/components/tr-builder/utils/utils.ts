@@ -229,7 +229,6 @@ export const encodeToHexData = (
 
   if (isValidContractMethod) {
     try {
-      // TODO
       const parsedValues = contractFields.map((contractField: ContractInput, index: any) => {
         const contractFieldName = contractField.name || index;
         const cleanValue = contractFieldsValues[contractFieldName] || '';

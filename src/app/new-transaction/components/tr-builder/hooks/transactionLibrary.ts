@@ -13,7 +13,7 @@ import { validateChecksum, addChecksum } from '../utils/checksum';
 import useTransactionStore from '../store/tr-context-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 
-const { version } = require('../../../../../../package.json');
+// const { version } = require('../../../../../../package.json');
 
 type TransactionLibraryContextProps = {
   batches: Batch[];
@@ -87,7 +87,6 @@ const useTransactionLibrary = () => {
     return [];
   }, [chainId]);
 
-  // on App init we load stored batches
   useEffect(() => {
     loadBatches();
   }, [loadBatches]);
@@ -101,26 +100,6 @@ const useTransactionLibrary = () => {
 
     return () => clearTimeout(id);
   }, [hasChecksumWarning]);
-
-  // TODO
-  const saveBatch = useCallback(async () => {
-    // async (name: any, transactions: any) => {
-    // if (chosenNetwork && safeAddress) {
-    //   const { batchId } = await StorageManager.saveBatch;
-    //   addChecksum(
-    //     generateBatchFile({
-    //       name,
-    //       description: '',
-    //       transactions,
-    //       chainInfo: chosenNetwork,
-    //       safeAddress,
-    //     })
-    //   )();
-    //   const batches = await loadBatches();
-    //   const batch = batches.find(batch => +batch.id === +batchId);
-    //   setBatch(batch);
-    // }
-  }, [chainId, safeAddress, loadBatches]);
 
   const updateBatch = useCallback(
     async (batchId: string | number, name: string, transactions: ProposedTransaction[]) => {
@@ -242,7 +221,7 @@ const useTransactionLibrary = () => {
   return {
     batches,
     batch,
-    saveBatch,
+    // saveBatch,
     updateBatch,
     removeBatch,
     renameBatch,
@@ -276,7 +255,7 @@ const generateBatchFile = ({
     meta: {
       name,
       description,
-      txBuilderVersion: version,
+      // txBuilderVersion: version,
       createdFromSafeAddress: safeAddress,
       createdFromOwnerAddress: '',
     },

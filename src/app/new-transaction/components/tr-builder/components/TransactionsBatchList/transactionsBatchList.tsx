@@ -45,7 +45,7 @@ type TransactionsBatchListProps = {
     | React.ReactElement<EditableLabelProps>
     | React.ReactElement<{ filename: string }>;
   removeTransaction?: (index: number) => void;
-  saveBatch?: (name: string, transactions: ProposedTransaction[]) => void;
+  // saveBatch?: (name: string, transactions: ProposedTransaction[]) => void;
   downloadBatch?: (name: string, transactions: ProposedTransaction[]) => void;
   removeAllTransactions?: () => void;
   replaceTransaction?: (newTransaction: ProposedTransaction, index: number) => void;
