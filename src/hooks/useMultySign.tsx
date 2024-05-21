@@ -178,7 +178,7 @@ export function useMultySign({
         console.log('__4__');
 
         if (typeSignTrx === TR_BUILD) {
-          console.log('__5__');
+          console.log('__5__', rawTr);
           transactionsArray = rawTr ? rawTr : undefined;
         }
         if (typeSignTrx === SEND_TOKEN && amount && address) {

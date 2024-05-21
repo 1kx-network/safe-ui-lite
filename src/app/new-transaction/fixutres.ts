@@ -9,4 +9,3 @@ export enum TYPE_ABI {
   PROXY = 'PROXY',
   IMPLEMENTATION = 'IMPLEMENTATION',
 }
-

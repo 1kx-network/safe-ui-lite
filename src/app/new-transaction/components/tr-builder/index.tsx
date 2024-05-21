@@ -114,7 +114,7 @@ export const TrxBuilder = () => {
     const value = e.target.value;
     setAbiAddress(value);
     handleAbiAddressInput(value);
-    useAbi(value);
+    // useAbi(value);
   };
 
   const handleValueAbi = (e: ChangeEvent<HTMLTextAreaElement> | string) => {

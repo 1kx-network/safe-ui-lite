@@ -34,7 +34,7 @@ interface RawTr {
   customData?: string;
 }
 
-interface IBatchTr {
+export interface IBatchTr {
   method: string;
   networkPrefix: string;
   rawTr: RawTr;
@@ -44,6 +44,9 @@ interface IBatchTr {
 const TrBuildComponent = () => {
   const searchParams = useSearchParams();
   const batchTr = searchParams.get('batchTr');
+  // const rawTr = searchParams.get('rawTr');
+
+  // const parserawTr: IBatchTr[] = parseSearchParams(batchTr);
   const parseBatchTr: IBatchTr[] = parseSearchParams(batchTr);
 
   if (!parseBatchTr) {

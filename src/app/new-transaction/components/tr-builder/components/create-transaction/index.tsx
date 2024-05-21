@@ -69,6 +69,7 @@ const CreateTransactions = () => {
         address: encodeURIComponent(safeAddress),
         safeTxHash,
         typeSignTrx: TYPE_SIGN_TRX.TR_BUILD,
+        // rawTr: JSON.stringify(rawTr),
         batchTr: JSON.stringify(description),
 
         userNetworkTrx: JSON.stringify({

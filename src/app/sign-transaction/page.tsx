@@ -42,6 +42,7 @@ import {
   styledSecondaryBtn,
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sing-trx-info';
+import { IBatchTr } from './tr-builder';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -64,14 +65,16 @@ const SignTransactionComponent = () => {
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
   const tokenType = searchParams.get('tokenType');
-  // const networkName = searchParams.get('networkName');
   const thresholdUrl = searchParams.get('thresholdUrl');
   const newThreshold = searchParams.get('newThreshold');
   const nonceUrl = searchParams.get('nonce');
   const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
   const signatures = searchParams.getAll('signatures')[0];
   const signers = searchParams.getAll('signers')[0];
-  const rawTr = searchParams.get('rawTr');
+
+  const batchTr = searchParams.get('batchTr');
+  const parseRawTr: IBatchTr[] | null = parseSearchParams(batchTr);
+  const rawTr = parseRawTr ? parseRawTr.map(elem => elem.rawTr) : undefined;
 
   const typeSignTrx: keyof ITypeSignTrx | null = searchParams.get('typeSignTrx') as
     | keyof ITypeSignTrx
@@ -88,14 +91,13 @@ const SignTransactionComponent = () => {
     address: destinationAddress,
     safeTxHash: safeTxHashJSON,
     tokenType,
-    // networkName,
     typeSignTrx,
     linkOnScan,
     safeTransaction,
     thresholdUrl,
     newThreshold,
     nonce: nonceUrl,
-    rawTr: parseSearchParams(rawTr),
+    rawTr,
   };
 
   const addNetworkForUserSign = async () => {
