@@ -162,6 +162,13 @@ const SolidityForm = ({
     }
   }, [isSubmitSuccessful, reset, toAddress, initialValues]);
 
+  useEffect(() => {
+    console.log('contract', contract?.methods);
+  }, [contract]);
+  useEffect(() => {
+    console.log('contractMethod', contractMethod);
+  }, [contractMethod]);
+
   return (
     <>
       <form id={id} onSubmit={handleSubmit(onSubmit)} noValidate>

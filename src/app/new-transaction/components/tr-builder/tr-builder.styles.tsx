@@ -8,7 +8,9 @@ export const WrapperStyled = styled('div')(
   gap: ${theme.spacing(6)};
   width: 100%;
   height: calc(100% - 190px);
-  overflow: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   @media (max-width: 1056px) {
     flex-direction: column;
@@ -19,11 +21,12 @@ export const WrapperStyled = styled('div')(
 export const BodyStyled = styled('div')(
   ({ theme }) => `
   display: flex;
+  position: relative;
   width: 40%;
   flex-direction: column;
   gap: ${theme.spacing(6)};
   height: 100%;
-  overflow-y: scroll;
+  
 
   @media (max-width: 1056px) {
     width: 100%;
@@ -35,7 +38,10 @@ export const BodyBatchStyled = styled('div')`
   width: 60%;
   max-width: 650px;
   height: 100%;
-  overflow-y: scroll;
+  position: relative;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   @media (max-width: 1056px) {
     width: 100%;
