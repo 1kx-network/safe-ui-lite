@@ -30,8 +30,6 @@ const WcInput = ({ uri }: { uri: string }) => {
         return;
       }
 
-      setError(undefined);
-
       if (!val) return;
 
       setIsLoading(WCLoadingState.CONNECT);

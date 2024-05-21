@@ -11,15 +11,13 @@ import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
 import useSignStore from '@/stores/sign-store';
 import { setDataDB } from '@/db/set-info';
-import { NATIVE_TOKENS } from '@/constants/tokens';
+import { SafeMsgEvent, safeMsgDispatch } from '@/features/safe-messages/safeMsgEvents';
 
 export interface IUseMultySign {
   mode: 'runtime' | 'url';
   safeAddress: string;
   safeMsg: string;
-  address: string | null;
   chainIdUrl: string | null;
-  tokenType: string | null;
   nonce: string | null;
 }
 
@@ -28,7 +26,7 @@ export interface IMultySignResult {
   getSignaturesFromDbMulty: () => { signatures: string[]; signers: string[] };
   getSignaturesMulty: () => { signatures: string[]; signers: string[] };
   saveSignaturesMulty: (signatures: string[], signers: string[]) => void;
-  signTransactionMulty: () => Promise<void>;
+  signMessageMulty: () => Promise<void>;
   executeMulty: () => Promise<void | unknown>;
 }
 
@@ -46,10 +44,8 @@ export function useMessageMultySign({
   safeAddress,
   safeMsg,
   chainIdUrl,
-  tokenType,
-  address,
 }: IUseMultySign): IMultySignResult {
-  const conditionMulty = useMemo(() => !safeAddress || !safeMsg, [safeAddress]);
+  const conditionMulty = useMemo(() => !safeAddress || !safeMsg, [safeAddress, safeMsg]);
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
   const { createSdkInstance } = useSafeSdk();
@@ -99,29 +95,32 @@ export function useMessageMultySign({
 
     getOwners();
 
-    const conditionForCreateTrx = address && !safeMessage && safeSdk && safeAddress;
+    const conditionForCreateTrx = !safeMessage && safeSdk && safeAddress;
 
     const pendingCreateTrxData = async () => {
       if (!safeSdk || !conditionForCreateTrx) return -1;
 
-      if (!chainId || !safeSdk || !tokenType) return -1;
+      if (!chainId || !safeSdk) return -1;
       if (debounceCreation) return -1;
       debounceCreation = true;
       setTimeout(() => (debounceCreation = false), 500);
 
       const safeMessage = await safeSdk.createMessage(safeMsg);
       await setSafeMessage(safeMessage);
-
+      if (message) {
+        return;
+      }
       const safeMsgHash = await safeSdk.getSafeMessageHash(safeMsg);
-      const thesholders = await safeSdk.getThreshold();
+      const thresholders = await safeSdk.getThreshold();
       const currentDate = new Date();
       const dateMsg = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
       const messageDB = {
         id: uuid(),
         date: dateMsg,
         data: safeMsg,
-        tokenType: NATIVE_TOKENS.ETH,
-        theshold: thesholders,
+        name: 'Message',
+        description: 'Message for sign',
+        threshold: thresholders,
         hash: safeMsgHash,
         signatures: [],
       };
@@ -136,7 +135,7 @@ export function useMessageMultySign({
     };
 
     pendingCreateTrxData();
-  }, [safeSdk, conditionMulty, chainId, safeAddress, safeMsg, address, status]);
+  }, [safeSdk, message, conditionMulty, chainId, safeAddress, safeMsg, status]);
 
   useEffect(() => {
     return () => {
@@ -205,13 +204,13 @@ export function useMessageMultySign({
       if (message) {
         if (message.signatures.length !== signers.length) {
           db.safes.where({ address: safeAddress }).modify(safe => {
-            safe.transactions = safe.transactions.map(trx => {
-              if (trx.hash !== message.hash) return trx;
-              trx.signatures = [];
+            safe.messages = safe.messages.map(msg => {
+              if (msg.hash !== message.hash) return msg;
+              msg.signatures = [];
               signers.map((s, idx) => {
-                trx.signatures.push({ data: signatures[idx], signer: signers[idx] });
+                msg.signatures.push({ data: signatures[idx], signer: signers[idx] });
               });
-              return trx;
+              return msg;
             });
           });
         }
@@ -233,17 +232,17 @@ export function useMessageMultySign({
     }
   }, [userWalletAddress, chainId, getSignaturesMulty]);
 
-  const signTransactionMulty = useCallback(async () => {
+  const signMessageMulty = useCallback(async () => {
     if (conditionMulty) return;
     if (!safeSdk || !safeMessage || !userWalletAddress) return;
 
     try {
-      const signedTransaction = await safeSdk.signMessage(safeMessage);
-      setSafeMessage(signedTransaction);
+      const signedMessage = await safeSdk.signMessage(safeMessage);
+      setSafeMessage(signedMessage);
 
       const { signatures, signers } = getSignaturesMulty();
       let signature = '';
-      signedTransaction.signatures.forEach(value => {
+      signedMessage.signatures.forEach(value => {
         if (value.signer !== userWalletAddress) return;
         signature = value.data;
       });
@@ -265,13 +264,11 @@ export function useMessageMultySign({
 
   const executeMulty = useCallback(async () => {
     try {
-      if (conditionMulty) return;
-
-      setStatus('loading');
-      /* const { signatures, signers } = getSignaturesMulty();
-      if (!safeSdk || !safeTransaction || !signatures || !signers) return;
+      // setStatus('loading');
+      const { signatures, signers } = getSignaturesMulty();
+      if (!safeSdk || !safeMessage || !message || !signatures || !signers) return;
       signatures.map((sig: string, idx: number) =>
-        safeTransaction.addSignature({
+        safeMessage.addSignature({
           data: sig,
           isContractSignature: false,
           signer: signers[idx],
@@ -279,10 +276,13 @@ export function useMessageMultySign({
           dynamicPart: () => '',
         })
       );
-      const txResponse = await safeSdk.executeTransaction(safeTransaction);
-      await txResponse.transactionResponse?.wait(); */
 
-      setStatus('success');
+      safeMsgDispatch(SafeMsgEvent.SIGNATURE_PREPARED, {
+        messageHash: message.hash,
+        requestId: message.id,
+        signatures,
+      });
+      // setStatus('success');
       customToasty('Execute success', 'success');
     } catch (error) {
       checkSignedStatus();
@@ -309,7 +309,7 @@ export function useMessageMultySign({
     getSignaturesFromDbMulty,
     getSignaturesMulty,
     saveSignaturesMulty,
-    signTransactionMulty,
+    signMessageMulty,
     executeMulty,
   };
 }

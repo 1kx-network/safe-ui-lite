@@ -184,7 +184,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       };
 
       pendingBalance();
-      setTimeout(() => setIsLoading(false), 200);
+      setTimeout(() => setIsLoading(false), 400);
     }
   }, [data, chainId, address, safeSdk]);
 
@@ -369,7 +369,9 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
           {condMenuList.map(item => (
             <ItemMenuStyled key={item.id} href={item.url}>
-              <WrapperIconStyled isActive={item.url === pathname}>
+              <WrapperIconStyled
+                isActive={pathname === '/' ? item.url === '/' : item.url.includes(pathname)}
+              >
                 <item.icon />
               </WrapperIconStyled>
               <WalletTypography>{item.title}</WalletTypography>
