@@ -11,6 +11,7 @@ const routes = {
   settingsAddVariables: '/settings?add-variables',
 
   transactions: '/transactions',
+  transactionsHistory: '/transactions/history',
 
   safeLightWallet: '/safe-light-wallet',
   safeAccountList: '/safe-account/list',
@@ -19,11 +20,14 @@ const routes = {
 
   safeAddressBook: '/address-book',
 
-  transactionsHistory: '/transactions/history',
   newTransaction: '/new-transaction',
+  newTransactionSendToken: '/new-transaction?send-tokens',
+  newTransactionTrxBuilder: '/new-transaction?tr-builder',
+
   signTransaction: '/sign-transaction',
   signMessage: '/sign-message',
-  newSignTransaction: '/sign-transaction/link-trx',
+  newSignTransaction: '/sign-transaction/link-tr',
+  signTrBuilder: '/sign-transaction?tr-builder',
 };
 
 export default routes;

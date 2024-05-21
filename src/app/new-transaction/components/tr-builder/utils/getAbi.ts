@@ -1,0 +1,73 @@
+import axios from 'axios';
+
+enum PROVIDER {
+  SOURCIFY = 1,
+  GATEWAY = 2,
+}
+
+type SourcifyResponse = {
+  name: string;
+  path: string;
+  content: string;
+};
+
+const METADATA_FILE = 'metadata.json';
+const DEFAULT_TIMEOUT = 10000;
+
+const getProviderURL = (chainId: string, address: string, urlProvider: PROVIDER): string => {
+  switch (urlProvider) {
+    case PROVIDER.SOURCIFY:
+      return `https://sourcify.dev/server/files/${chainId}/${address}`;
+    case PROVIDER.GATEWAY:
+      return `https://safe-client.safe.global/v1/chains/${chainId}/contracts/${address}`;
+    default:
+      throw new Error('The Provider is not supported');
+  }
+};
+
+const getAbiFromSourcify = async (address: string, chainId: string): Promise<any> => {
+  const { data } = await axios.get<SourcifyResponse[]>(
+    getProviderURL(chainId, address, PROVIDER.SOURCIFY),
+    {
+      timeout: DEFAULT_TIMEOUT,
+    }
+  );
+
+  if (data.length) {
+    const metadata = data.find((item: SourcifyResponse) => item.name === METADATA_FILE);
+    return metadata && JSON.parse(metadata.content)?.output?.abi;
+  }
+
+  throw new Error('Contract found but could not found abi using Sourcify');
+};
+
+const getAbiFromGateway = async (address: string, chainName: string): Promise<any> => {
+  const { data } = await axios.get(getProviderURL(chainName, address, PROVIDER.GATEWAY), {
+    timeout: DEFAULT_TIMEOUT,
+  });
+
+  // We need to check if the abi is present in the response because it's possible
+  // That the transaction service just stores the contract and returns 200 without querying for the abi
+  // (or querying for the abi failed)
+  if (data && data.contractAbi?.abi) {
+    return data?.contractAbi?.abi;
+  }
+
+  throw new Error('Contract found but could not found ABI using the Gateway');
+};
+
+const getAbi = async (address: string, chainId: string | number): Promise<any> => {
+  try {
+    const res = await getAbiFromSourcify(address, chainId.toString());
+    return res;
+  } catch {
+    try {
+      const res = await getAbiFromGateway(address, chainId.toString());
+      return res;
+    } catch {
+      return null;
+    }
+  }
+};
+
+export default getAbi;

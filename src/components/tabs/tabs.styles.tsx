@@ -14,9 +14,9 @@ export const WrapperStyled = styled('div')(
 `
 );
 
-export const ItemMenuStyled = styled(Link)<{ $isActive: boolean }>(
-  ({ theme, $isActive }) => `
-    color: ${$isActive ? theme.palette.textDark : theme.palette.tetriaryGrey}; 
+export const ItemMenuStyled = styled(Link)<{ $isactive: boolean }>(
+  ({ theme, $isactive }) => `
+    color: ${$isactive ? theme.palette.textDark : theme.palette.tetriaryGrey}; 
     position: relative; 
     font-size: 18px;
     font-weight: 500;
@@ -34,7 +34,7 @@ export const ItemMenuStyled = styled(Link)<{ $isActive: boolean }>(
       left: 0;
       width: 100%;
       height: 2px;
-      border-bottom: 2px solid ${$isActive ? theme.palette.textDark : 'transparent'};
+      border-bottom: 2px solid ${$isactive ? theme.palette.textDark : 'transparent'};
     }
 `
 );

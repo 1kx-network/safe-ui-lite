@@ -18,6 +18,7 @@ export const customStyles = {
     inset: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     backdropFilter: 'blur(8px)',
+    zIndex: 999,
   },
 };
 

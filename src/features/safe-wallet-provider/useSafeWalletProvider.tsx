@@ -6,25 +6,11 @@ import { useRouter } from 'next/navigation';
 import { Methods } from '@safe-global/safe-apps-sdk';
 import type { EIP712TypedData, SafeSettings } from '@safe-global/safe-apps-sdk';
 import { ChainInfo, getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk';
-// import { getAddress } from 'ethers';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-
-// import { TxModalContext } from '@/components/tx-flow';
-// import {
-//   SignMessageFlow,
-//   SafeAppsTxFlow,
-//   SignMessageOnChainFlow,
-// } from '@/components/tx-flow/flows';
-// import { safeMsgSubscribe, SafeMsgEvent } from '@/services/safe-messages/safeMsgEvents';
 
 import { TxEvent, txSubscribe } from '@/features/tx/txEvents';
 import { useWeb3ReadOnly } from '@/features/web3';
-// import { AppRoutes } from '@/config/routes';
 import useChains from '@/hooks/useChains';
-// import { useAppSelector } from '@/store';
-// import { selectOnChainSigning } from '@/store/settingsSlice';
-// import { isOffchainEIP1271Supported } from '@/utils/safe-messages';
-// import useActiveSafeAddress from '@/stores/safe-address-store';
 import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { NATIVE_TOKENS } from '@/constants/tokens';
@@ -40,7 +26,6 @@ import type { AppInfo, WalletSDK } from '.';
 
 export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK | undefined => {
   const { safeSdk: safe } = useSafeStore();
-  // const { setTxFlow } = useContext(TxModalContext);
   const setTxFlow = () => {};
 
   const router = useRouter();
@@ -49,7 +34,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
 
   const web3ReadOnly = useWeb3ReadOnly();
   const { configs } = useChains();
-  // const onChainSigning = useAppSelector(selectOnChainSigning);
+
   const [settings, setSettings] = useState<SafeSettings>({
     offChainSigning: true,
   });
@@ -272,8 +257,6 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
     chainId,
     safeAddress,
     safe,
-    // currentChain,
-    // onChainSigning,
     settings,
     setTxFlow,
     configs,

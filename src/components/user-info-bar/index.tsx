@@ -47,15 +47,6 @@ import {
   ItemInfoNetworkStyled,
 } from './user-info-bar.styles';
 
-// interface IAddNetwork {
-//   name: string;
-//   chainId: string;
-//   rpc: string;
-//   symbol: string;
-//   decimals: string;
-//   explorerUrl: string;
-// }
-
 export const UserInfoBar = () => {
   const { address, chainId } = useWeb3ModalAccount();
   const { disconnect } = useDisconnect();

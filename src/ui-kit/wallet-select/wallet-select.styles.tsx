@@ -1,5 +1,5 @@
 import { Box } from '@mui/system';
-import { components, OptionProps, SingleValueProps } from 'react-select';
+import { components, GroupBase, OptionProps, SingleValueProps } from 'react-select';
 import { CSSObject } from '@emotion/react';
 
 import IconCheck from '@/assets/svg/check.svg';
@@ -23,9 +23,22 @@ const styledLabel = {
   overflow: 'hidden',
 };
 
+interface ExtendedSelectProps extends OptionProps<any, boolean, GroupBase<any>> {
+  selectProps: OptionProps<any, boolean, GroupBase<any>>['selectProps'] & {
+    activeItemId?: string;
+  };
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const CustomOption = (props: OptionProps<any>) => {
-  const IconOption = props.data.icon;
+export const CustomOption = (props: ExtendedSelectProps) => {
+  const { icon, id } = props.data;
+  const { activeItemId, className } = props.selectProps;
+
+  const isMethodOptions = className && className.includes('method-options');
+
+  const IconOption = icon;
+  const isSelected = isMethodOptions ? activeItemId && activeItemId === id : props.isSelected;
+
   return (
     <Option {...props}>
       <Box sx={stylesOption}>
@@ -43,7 +56,7 @@ export const CustomOption = (props: OptionProps<any>) => {
           )}
           <WalletTypography style={styledLabel}>{props.data.label}</WalletTypography>
         </Box>
-        {props.isSelected && (
+        {isSelected && (
           <Box minWidth={'17px'} width={'17px'} height={'18px'}>
             <IconCheck />
           </Box>
@@ -119,28 +132,46 @@ export const stylesSelect = {
     },
   }),
 
+  // eslint-disable-next-line
   menu: (base: CSSObject) => ({
     ...base,
     borderRadius: themeMuiBase.spacing(5.75),
   }),
 
-  menuList: (base: CSSObject) => ({
-    ...base,
-    borderRadius: themeMuiBase.spacing(5.75),
-  }),
+  // eslint-disable-next-line
+  menuList: (
+    base: CSSObject,
+    { selectProps: { className } }: { selectProps: { className?: string } }
+  ) => {
+    const isMethodOptions = className && className.includes('method-options');
+
+    return {
+      ...base,
+      height: isMethodOptions ? '175px' : base.height,
+      borderRadius: themeMuiBase.spacing(5.75),
+    };
+  },
 
   // eslint-disable-next-line
-  option: (base: any) => ({
-    ...base,
-    display: 'flex',
-    height: '44px',
-    padding: '0 20px',
-    flexWrap: 'nowrap',
-    backgroundColor: 'transparent',
-    color: themeMuiBase.palette.greyToo,
-    fontSize: '14px',
-    cursor: 'pointer',
-  }),
+  option: (base: any, { selectProps: { className } }: { selectProps: { className?: string } }) => {
+    const isMethodOptions = className && className.includes('method-options');
+
+    return {
+      ...base,
+      display: 'flex',
+      height: isMethodOptions ? '32px' : '44px',
+      padding: '0 20px',
+      flexWrap: 'nowrap',
+      backgroundColor: 'transparent',
+      color: themeMuiBase.palette.greyToo,
+      fontSize: '14px',
+      cursor: 'pointer',
+
+      '&:hover': {
+        backgroundColor: themeMuiBase.palette.hover,
+      },
+    };
+  },
 
   // eslint-disable-next-line
   valueContainer: (base: any) => ({
