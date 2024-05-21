@@ -253,16 +253,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
         return web3ReadOnly?.send(method, params);
       },
     };
-  }, [
-    chainId,
-    safeAddress,
-    safe,
-    settings,
-    setTxFlow,
-    configs,
-    router,
-    web3ReadOnly,
-  ]);
+  }, [chainId, safeAddress, safe, settings, setTxFlow, configs, router, web3ReadOnly]);
 };
 
 const useSafeWalletProvider = (): SafeWalletProvider | undefined => {

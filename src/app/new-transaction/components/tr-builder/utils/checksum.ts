@@ -1,4 +1,4 @@
-import utils from 'ethers';
+import * as utils from 'ethers';
 
 import { BatchFile } from '../typings/models';
 
