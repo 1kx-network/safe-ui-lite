@@ -156,8 +156,6 @@ export function useMultySign({
 
     if (conditionMulty) return;
     getOwners();
-    console.log('__3__');
-
     const conditionForCreateTrx = !safeTransaction && safeSdk && safeAddress;
 
     const pendingCreateTrxData = async () => {
@@ -172,17 +170,13 @@ export function useMultySign({
 
       // create transaction array
       const typeNativeTr = typeSignTrx === SEND_TOKEN || typeSignTrx === TR_BUILD;
-      console.log('_typeNativeTr_', typeNativeTr);
 
       if (typeNativeTr) {
-        console.log('__4__');
-
         if (typeSignTrx === TR_BUILD) {
           console.log('__5__', rawTr);
           transactionsArray = rawTr ? rawTr : undefined;
         }
         if (typeSignTrx === SEND_TOKEN && amount && address) {
-          console.log('__6__');
           const res = await returnTransactionObj(
             address,
             amount,
@@ -194,15 +188,16 @@ export function useMultySign({
           transactionsArray = res ? [res] : undefined;
         }
 
-        console.log('__WORK_transactionsArray__', transactionsArray);
-
         if (!transactionsArray) return;
-
         safeTransaction = await safeSdk.createTransaction({
           transactions: transactionsArray,
-          options: {
-            nonce: nonce ? +nonce : 0,
-          },
+          ...(typeSignTrx === TR_BUILD
+            ? {}
+            : {
+                options: {
+                  nonce: nonce ? +nonce : 0,
+                },
+              }),
         });
 
         setSafeTransaction(safeTransaction);
@@ -344,9 +339,7 @@ export function useMultySign({
   }, [userWalletAddress, chainId, getSignaturesMulty]);
 
   const signTransactionMulty = useCallback(async () => {
-    console.log('_sign_Trx_0_');
     if (conditionMulty) return;
-    console.log('_sign_Trx_1_');
 
     if (!safeSdk || !safeTransaction || !userWalletAddress) return;
 
@@ -397,7 +390,10 @@ export function useMultySign({
           dynamicPart: () => '',
         })
       );
+      console.log('_safeTransaction_7_', safeTransaction);
+
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
+      console.log('__8__');
       await txResponse.transactionResponse?.wait();
 
       setStatus('success');
@@ -413,7 +409,7 @@ export function useMultySign({
       }
 
       customToasty(shortMessage, 'error');
-      console.error(`<-- ${error} -->`);
+      console.error(`1- <-- ${error} -->`);
       return error;
     }
   }, [mode, conditionMulty, safeSdk, safeTransaction, chainId, status, safeTxHash]);

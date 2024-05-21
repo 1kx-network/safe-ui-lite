@@ -136,14 +136,16 @@ const TransactionsBatchList = ({
       <TransactionsBatchWrapper>
         {showBatchHeader && (
           <TransactionHeader>
-            <Box display={'flex'} alignItems={'center'}>
-              <CountTrStyled>
-                <WalletTypography fontSize={14} fontWeight={600} color="#fff">
-                  {transactions.length}
-                </WalletTypography>
-              </CountTrStyled>
+            <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'} gap={3}>
+              <Box display={'flex'} alignItems={'center'}>
+                <CountTrStyled>
+                  <WalletTypography fontSize={14} fontWeight={600} color="#fff">
+                    {transactions.length}
+                  </WalletTypography>
+                </CountTrStyled>
 
-              {batchTitle && <WalletTypography>{batchTitle}</WalletTypography>}
+                {batchTitle && <WalletTypography>{batchTitle}</WalletTypography>}
+              </Box>
             </Box>
 
             <Box display={'flex'} alignItems={'center'} gap={0.5}>
