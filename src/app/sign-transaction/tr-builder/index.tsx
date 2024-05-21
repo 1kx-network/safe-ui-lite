@@ -27,7 +27,7 @@ import {
 interface FieldsValues {
   [key: string]: string | undefined;
 }
-interface RawTr {
+export interface RawTr {
   to: string;
   data: string;
   value: string;
@@ -40,14 +40,17 @@ export interface IBatchTr {
   rawTr: RawTr;
   fieldsValues: FieldsValues;
 }
+interface ITrBuildComponent {
+  batchTrProps?: IBatchTr[] | null;
+}
 
-const TrBuildComponent = () => {
+const TrBuildComponent = ({ batchTrProps }: ITrBuildComponent) => {
   const searchParams = useSearchParams();
   const batchTr = searchParams.get('batchTr');
   // const rawTr = searchParams.get('rawTr');
 
   // const parserawTr: IBatchTr[] = parseSearchParams(batchTr);
-  const parseBatchTr: IBatchTr[] = parseSearchParams(batchTr);
+  const parseBatchTr: IBatchTr[] = batchTrProps ? batchTrProps : parseSearchParams(batchTr);
 
   if (!parseBatchTr) {
     return <div />;
