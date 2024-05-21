@@ -15,7 +15,7 @@ export const CustomTabs = ({ tabs }: { tabs: ITab[] }) => {
   return (
     <WrapperStyled>
       {tabs.map(item => (
-        <ItemMenuStyled href={item.url} key={item.id} $isActive={isActive(item.url)}>
+        <ItemMenuStyled href={item.url} key={item.id} $isactive={isActive(item.url)}>
           {item.title}
         </ItemMenuStyled>
       ))}

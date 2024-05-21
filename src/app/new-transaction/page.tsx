@@ -1,46 +1,34 @@
 'use client';
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Box } from '@mui/system';
 
-import { WalletLayout, WalletTypography, WalletButton } from '@/ui-kit';
+import { WalletLayout, WalletTypography } from '@/ui-kit';
+import { CustomTabs } from '@/components';
 
-import { TrxBuilder } from './components/trx-builder/trx-builder';
+import { TrxBuilder } from './components/tr-builder';
 import { SendTokens } from './components/send-tokens/send-tokens';
-import { Flex, WrapperStyled } from './new-transaction.styles';
+import { WrapperStyled } from './new-transaction.styles';
+import { tabsMenu } from './fixutres';
 
 export default function NewTransaction() {
-  const [state, setState] = useState<'send' | 'trx-builder'>('send');
-  const [btnTitle, setBtnTitle] = useState<'Send Tokens' | 'Transaction Builder'>('Send Tokens');
-
-  const toggleState = () => {
-    setState(state === 'send' ? 'trx-builder' : 'send');
-  };
-
-  const onHoverHandler = () => {
-    setBtnTitle(state === 'send' ? 'Transaction Builder' : 'Send Tokens');
-  };
-
-  const onLeaveHandler = () => {
-    setBtnTitle(state !== 'send' ? 'Transaction Builder' : 'Send Tokens');
-  };
+  const searchParams = useSearchParams();
+  const isSendTokens = searchParams.has('send-tokens');
+  const isTrxBuilder = searchParams.has('tr-builder');
+  const isDefault = !isTrxBuilder && !isSendTokens;
 
   return (
     <WalletLayout>
       <WrapperStyled>
-        <Flex>
-          <WalletTypography fontSize={22} fontWeight={600}>
+        <Box mb={8}>
+          <WalletTypography fontSize={22} fontWeight={600} component="h2">
             New Transaction
           </WalletTypography>
-          <WalletButton
-            onClick={toggleState}
-            styles={{ marginLeft: '2rem', width: '12rem', height: '2rem' }}
-            onMouseOver={onHoverHandler}
-            onMouseLeave={onLeaveHandler}
-          >
-            {btnTitle}
-          </WalletButton>
-        </Flex>
+        </Box>
 
-        {state === 'send' ? <SendTokens /> : <TrxBuilder />}
+        <CustomTabs tabs={tabsMenu} />
+
+        {(isSendTokens || isDefault) && <SendTokens />}
+        {isTrxBuilder && <TrxBuilder />}
       </WrapperStyled>
     </WalletLayout>
   );

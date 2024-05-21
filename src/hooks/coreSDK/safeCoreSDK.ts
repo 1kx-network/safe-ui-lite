@@ -10,7 +10,7 @@ import { ethers } from 'ethers';
 import semverSatisfies from 'semver/functions/satisfies';
 
 import { invariant } from '@/utils/helpers';
-import { Gnosis_safe__factory } from '@/types/contracts';
+import { Gnosis_safe__factory } from '@/typings/contracts';
 import ExternalStore from '@/features/ExternalStore';
 import { getWeb3ReadOnly } from '@/hooks/wallets/web3';
 import chains from '@/utils/chainsConfig';

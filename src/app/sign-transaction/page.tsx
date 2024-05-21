@@ -28,6 +28,7 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import routes from '../routes';
 import useNetworkStore from '@/stores/networks-store';
+import { parseSearchParams } from '@/utils/helpers';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 
@@ -43,6 +44,7 @@ import {
   styledSecondaryBtn,
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sing-trx-info';
+import { IBatchTr } from './tr-builder';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -67,13 +69,16 @@ const SignTransactionComponent = () => {
   const destinationAddress = searchParams.get('destinationAddress');
   const safeTxHash = searchParams.get('safeTxHash');
   const tokenType = searchParams.get('tokenType');
-  // const networkName = searchParams.get('networkName');
   const thresholdUrl = searchParams.get('thresholdUrl');
   const newThreshold = searchParams.get('newThreshold');
   const nonceUrl = searchParams.get('nonce');
   const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
   const signatures = searchParams.getAll('signatures')[0];
   const signers = searchParams.getAll('signers')[0];
+
+  const batchTr = searchParams.get('batchTr');
+  const parseRawTr: IBatchTr[] | null = parseSearchParams(batchTr);
+  const rawTr = parseRawTr ? parseRawTr.map(elem => elem.rawTr) : undefined;
 
   const typeSignTrx: keyof ITypeSignTrx | null = searchParams.get('typeSignTrx') as
     | keyof ITypeSignTrx
@@ -90,13 +95,13 @@ const SignTransactionComponent = () => {
     address: destinationAddress,
     safeTxHash: safeTxHashJSON,
     tokenType,
-    // networkName,
     typeSignTrx,
     linkOnScan,
     safeTransaction,
     thresholdUrl,
     newThreshold,
     nonce: nonceUrl,
+    rawTr,
   };
 
   const addNetworkForUserSign = async () => {
@@ -189,6 +194,7 @@ const SignTransactionComponent = () => {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
+
     if (status === 'success') {
       router.push(routes.home);
       return;
@@ -199,7 +205,6 @@ const SignTransactionComponent = () => {
 
   const handleSignTransaction = useCallback(async () => {
     if (!multySign) return;
-
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
 
     await multySign.signTransactionMulty();
@@ -247,10 +252,10 @@ const SignTransactionComponent = () => {
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
                 Network: {userNetwork && userNetwork.name}
               </WalletTypography>
-              {chainIdUrl && formatterIcon(+chainIdUrl)}
+              {userNetwork && formatterIcon(+userNetwork.chainId)}
             </Box>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Chain: {chainIdUrl}
+              Chain: {userNetwork.chainId}
             </WalletTypography>
             <Box display={'flex'} alignItems={'center'} gap={1}>
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>

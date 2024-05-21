@@ -29,7 +29,7 @@ export const InfoUserStyled = styled('div')(
     overflow: hidden;
     padding: 0 ${theme.spacing(2)};
     margin-bottom: ${theme.spacing(1)};
-    z-index: 1;
+    z-index: 3;
 `
 );
 
