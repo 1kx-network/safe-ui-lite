@@ -30,6 +30,8 @@ import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography 
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import TrBuildComponent, { IBatchTr, RawTr } from '../tr-builder';
+import { parseSearchParams } from '@/utils/helpers';
 
 import {
   BoxLinkStyled,
@@ -43,8 +45,6 @@ import {
   SingInfoStyled,
   styledSecondaryBtn,
 } from './link-tr.styles';
-import TrBuildComponent, { IBatchTr, RawTr } from '../tr-builder';
-import { parseSearchParams } from '@/utils/helpers';
 
 interface IForm {
   safeAddress: string | null;
