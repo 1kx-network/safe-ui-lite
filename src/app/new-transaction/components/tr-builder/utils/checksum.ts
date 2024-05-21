@@ -26,6 +26,7 @@ const serializeJSONObject = (json: any): string => {
   return `${JSON.stringify(json, stringifyReplacer)}`;
 };
 
+// TODO
 const calculateChecksum = (batchFile: BatchFile): string | undefined => {
   // TODO
   // const serialized = serializeJSONObject({

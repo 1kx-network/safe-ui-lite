@@ -138,6 +138,7 @@ const TransactionBatchListItem = memo(
                 </Box>
               </AccordionItemButtonStyled>
             </AccordionItemHeading>
+
             <AccordionItemPanel style={styledItemPanel}>
               <TransactionDetailsItem transaction={transaction} />
             </AccordionItemPanel>

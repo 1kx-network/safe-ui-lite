@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useRouter } from 'next/navigation';
+import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 
 import { WalletButton } from '@/ui-kit';
+import routes from '@/app/routes';
 import CreateNewBatchCard from '../create-batch/CreateBatch';
 import TransactionsBatchList from '../TransactionsBatchList/transactionsBatchList';
 import useTransactionStore from '../../store/tr-context-store';
@@ -9,12 +12,13 @@ import useTransactionLibrary from '../../hooks/transactionLibrary';
 import useModal from '../../hooks/useModal';
 import WrongChainBatchModal from '../modals/WrongChainBatchModal';
 import useSafeStore from '@/stores/safe-store';
+import useNetworkStore from '@/stores/networks-store';
+import useActiveSafeAddress from '@/stores/safe-address-store';
+import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 
 import { FilenameLabelStyled, TransactionsSectionWrapperStyled } from './create-transaction.styles';
 
 const CreateTransactions = () => {
-  const [fileName, setFileName] = useState('');
-
   const {
     transactions,
     removeAllTransactions,
@@ -24,9 +28,12 @@ const CreateTransactions = () => {
   } = useTransactionStore();
   const { importBatch, downloadBatch, saveBatch } = useTransactionLibrary();
   const { safeSdk } = useSafeStore();
-
   const { chainId } = useWeb3ModalAccount();
+  const router = useRouter();
+  const { chosenNetwork } = useNetworkStore();
+  const { safeAddress } = useActiveSafeAddress();
 
+  const [fileName, setFileName] = useState('');
   const [fileChainId, setFileChainId] = useState<string>();
 
   const {
@@ -37,42 +44,45 @@ const CreateTransactions = () => {
 
   const createBatch = async () => {
     try {
-      // await submitTransactions();
-      // openSuccessBatchModal();
-      if (!safeSdk) return;
+      if (!safeSdk || !chosenNetwork || !safeAddress) return;
+      const rawTr: MetaTransactionData[] = transactions.map(transaction => transaction.raw);
 
-      // TODO: Implement the SDK transaction submission
-      // await sdk.txs.send({
-      //   txs: transactions.map(transaction => transaction.raw),
-      // });
-      // await safeSdk.createTransaction({
-      //   transactions: [transactionObj],
-      // });
-      // const trx1 = await safeSdk.createTransaction({
-      //   transactions: transactions.map(transaction => transaction.raw),
-      // });
+      const safeTransaction = await safeSdk.createTransaction({
+        transactions: rawTr,
+      });
 
-      console.log('___transactions___', transactions);
+      const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+      const description = transactions.map(({ description, raw }) => {
+        const { contractMethod, contractFieldsValues, networkPrefix, customTransactionData } =
+          description;
+        return {
+          method: contractMethod?.name ?? 'Transfer',
+          fieldsValues: contractFieldsValues,
+          networkPrefix,
+          rawTr: raw,
+          customData: customTransactionData,
+        };
+      });
 
-      const rawTrx = transactions.map(transaction => transaction.raw);
-      console.log('_rawTrx_', rawTrx);
+      const queryParams = {
+        chainId: JSON.stringify(chosenNetwork.chainId),
+        address: encodeURIComponent(safeAddress),
+        safeTxHash,
+        typeSignTrx: TYPE_SIGN_TRX.TR_BUILD,
+        batchTr: JSON.stringify(description),
 
-      console.log(
-        await safeSdk.createTransaction({
-          transactions: rawTrx,
-        })
-      );
+        userNetworkTrx: JSON.stringify({
+          name: chosenNetwork.value,
+          chainId: chosenNetwork.chainId,
+          rpcUrl: chosenNetwork.rpc,
+          explorerUrl: chosenNetwork.explorerUrl,
+        }),
+      };
 
-      const trx2 = await safeSdk.createTransactionBatch(rawTrx);
-      console.log(trx2);
-
-      console.log(
-        await safeSdk.createTransaction({
-          transactions: [trx2],
-        })
-      );
+      const queryString = new URLSearchParams(queryParams).toString();
+      router.push(`${routes.signTrBuilder}?${queryString}`);
     } catch (e) {
-      console.error('Error sending transactions:', e);
+      console.error('<-- Error sending transactions: ', e);
     }
   };
 

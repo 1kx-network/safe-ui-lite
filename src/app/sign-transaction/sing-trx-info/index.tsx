@@ -12,6 +12,7 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import { customToasty } from '@/components';
 import { formattedLabel } from '@/utils/foramtters';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
+import TrBuildComponent from '../tr-builder';
 
 interface ISendTokenInfo {
   amount: string | null;
@@ -32,7 +33,7 @@ export const SignTransactionInfo = ({
   amount,
   tokenType,
 }: ISendTokenInfo) => {
-  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
+  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } = TYPE_SIGN_TRX;
 
   const handleCopy = (address: string | null) => {
     if (!address) return;
@@ -40,10 +41,13 @@ export const SignTransactionInfo = ({
     customToasty('Was copy', 'success');
   };
 
+  console.log('_typeSignTrx_', typeSignTrx);
+
   const isSendToken = typeSignTrx === SEND_TOKEN;
   const isTresholder = typeSignTrx === CHANGE_THRESHOLD;
   const isChangeOwner = typeSignTrx === ADD_OWNER || typeSignTrx === REMOVE_OWNER;
   const isAddOwner = typeSignTrx === ADD_OWNER;
+  const isTrBuild = typeSignTrx === TR_BUILD;
 
   return (
     <TransactionInfoStyled>
@@ -111,6 +115,8 @@ export const SignTransactionInfo = ({
           />
         </Box>
       )}
+
+      {isTrBuild && <TrBuildComponent />}
 
       {safeTransaction?.data.data && (
         <Box display={'flex'} alignItems={'center'} gap={1}>

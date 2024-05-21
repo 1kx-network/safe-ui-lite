@@ -22,12 +22,14 @@ const WrongChainBatchModal = ({
     <CustomModal closeModal={onClose} isOpen={isOpen}>
       <StyledModalBodyWrapper>
         <Box display={'flex'} gap={2}>
-          <IconWarning width="21px" height="21px" color={'tomato'} />
-          <StyledWarningLabel>Warning</StyledWarningLabel>
+          <IconWarning width="21px" height="21px" color={'red'} />
+          <WalletTypography fontSize={18} fontWeight={500}>
+            Warning
+          </WalletTypography>
         </Box>
         <WalletTypography textAlign="center">
           This batch is from another Chain
-          {fileChainId ? ` (${fileChainId})` : ''}!
+          {fileChainId ? ` ( ${fileChainId} )` : ''}!
         </WalletTypography>
 
         <StyleButtonContainer
@@ -46,10 +48,6 @@ const WrongChainBatchModal = ({
 };
 
 export default WrongChainBatchModal;
-
-const StyledWarningLabel = styled('span')`
-  margin-left: 8px;
-`;
 
 const StyledModalBodyWrapper = styled('div')`
   padding: 24px;

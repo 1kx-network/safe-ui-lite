@@ -3,7 +3,7 @@ import { useEffect, useCallback, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { SafeTransaction } from '@safe-global/safe-core-sdk-types';
+import { MetaTransactionData, SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import { v4 as uuid } from 'uuid';
 
 import { db } from '@/db';
@@ -27,6 +27,7 @@ export interface IUseMultySign {
   typeSignTrx: keyof ITypeSignTrx | null;
   newThreshold: string | null;
   nonce: string | null;
+  rawTr?: MetaTransactionData[];
 }
 
 export interface IMultySignResult {
@@ -59,9 +60,11 @@ export function useMultySign({
   address,
   newThreshold,
   nonce,
+  rawTr,
 }: IUseMultySign): IMultySignResult {
   const conditionMulty = useMemo(() => !safeAddress || !safeTxHash, [safeAddress, safeTxHash]);
-  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD } = TYPE_SIGN_TRX;
+
+  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } = TYPE_SIGN_TRX;
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
   const { createSdkInstance, createTrancationERC20 } = useSafeSdk();
@@ -127,7 +130,6 @@ export function useMultySign({
       case CHANGE_THRESHOLD:
         resTrx = await safeSdk.createChangeThresholdTx(newThreshold ? +newThreshold : 1);
         break;
-
       default:
         break;
     }
@@ -154,41 +156,61 @@ export function useMultySign({
 
     if (conditionMulty) return;
     getOwners();
+    console.log('__3__');
 
-    const conditionForCreateTrx = amount && address && !safeTransaction && safeSdk && safeAddress;
+    const conditionForCreateTrx = !safeTransaction && safeSdk && safeAddress;
 
     const pendingCreateTrxData = async () => {
-      if (!safeSdk || !conditionForCreateTrx) return;
+      if (!safeSdk || !conditionForCreateTrx || !chainId) return;
 
-      if (!chainId || !safeSdk) return;
       if (debounceCreation) return;
-
       debounceCreation = true;
       setTimeout(() => (debounceCreation = false), 500);
+
       let safeTransaction: SafeTransaction | null = null;
+      let transactionsArray = null;
 
-      if (typeSignTrx === SEND_TOKEN) {
-        const objTrx = await returnTransactionObj(
-          address,
-          amount,
-          tokenType ?? 'ETH',
-          chainId,
-          searchParams.get('calldata') || '0x',
-          createTrancationERC20
-        );
+      // create transaction array
+      const typeNativeTr = typeSignTrx === SEND_TOKEN || typeSignTrx === TR_BUILD;
+      console.log('_typeNativeTr_', typeNativeTr);
 
-        if (!objTrx) return;
+      if (typeNativeTr) {
+        console.log('__4__');
+
+        if (typeSignTrx === TR_BUILD) {
+          console.log('__5__');
+          transactionsArray = rawTr ? rawTr : undefined;
+        }
+        if (typeSignTrx === SEND_TOKEN && amount && address) {
+          console.log('__6__');
+          const res = await returnTransactionObj(
+            address,
+            amount,
+            tokenType ?? 'ETH',
+            chainId,
+            searchParams.get('calldata') || '0x',
+            createTrancationERC20
+          );
+          transactionsArray = res ? [res] : undefined;
+        }
+
+        console.log('__WORK_transactionsArray__', transactionsArray);
+
+        if (!transactionsArray) return;
+
         safeTransaction = await safeSdk.createTransaction({
-          transactions: [objTrx],
+          transactions: transactionsArray,
           options: {
             nonce: nonce ? +nonce : 0,
           },
         });
+
         setSafeTransaction(safeTransaction);
       } else {
         safeTransaction = await trxResponseByType();
         setSafeTransaction(safeTransaction);
       }
+
       if (!safeTransaction) return;
 
       const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
@@ -322,7 +344,10 @@ export function useMultySign({
   }, [userWalletAddress, chainId, getSignaturesMulty]);
 
   const signTransactionMulty = useCallback(async () => {
+    console.log('_sign_Trx_0_');
     if (conditionMulty) return;
+    console.log('_sign_Trx_1_');
+
     if (!safeSdk || !safeTransaction || !userWalletAddress) return;
 
     try {

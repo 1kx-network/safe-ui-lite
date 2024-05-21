@@ -4,7 +4,6 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import detectProxyTarget from 'evm-proxy-detection';
 import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { Box } from '@mui/system';
-import { useAbi } from './utils/useAbi';
 
 import { WalletButton, WalletInput, WalletPaper, WalletTextArea, WalletTypography } from '@/ui-kit';
 import { CustomModal, customToasty } from '@/components';
@@ -13,6 +12,7 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import WalletSwitch from '@/ui-kit/wallet-switch';
 
+import { useAbi } from './utils/useAbi';
 import useNetwork from './hooks/useNetwork';
 import { FETCH_STATUS, isValidAddress, isValidJSON } from './utils/utils';
 import { ContractInterface } from './typings/models';

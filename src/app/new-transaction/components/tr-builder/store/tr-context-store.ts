@@ -51,31 +51,12 @@ const useTransactionStore = create<Store>((set, get) => ({
     if (!safeSdk) return;
     const { transactions } = get();
 
-    // TODO: Implement the SDK transaction submission
-    // await sdk.txs.send({
-    //   txs: transactions.map(transaction => transaction.raw),
-    // });
-    // await safeSdk.createTransaction({
-    //   transactions: [transactionObj],
-    // });
-    // const trx1 = await safeSdk.createTransaction({
-    //   transactions: transactions.map(transaction => transaction.raw),
-    // });
-
-    console.log('___STORE___', transactions);
-
     const rawTrx = transactions.map(transaction => transaction.raw);
     const trx2 = await safeSdk.createTransactionBatch(rawTrx);
 
     set(state => ({ ...state, safeTransactions: trx2 }));
     customToasty('Submit transactions confirmed');
   },
-
-  // submitTransactions = useCallback(async () => {
-  //   await sdk.txs.send({
-  //     txs: transactions.map(transaction => transaction.raw),
-  //   });
-  // }),
 }));
 
 export default useTransactionStore;

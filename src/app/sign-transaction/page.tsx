@@ -28,6 +28,7 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import routes from '../routes';
 import useNetworkStore from '@/stores/networks-store';
+import { parseSearchParams } from '@/utils/helpers';
 
 import {
   BoxOwnerLinkStyled,
@@ -70,6 +71,7 @@ const SignTransactionComponent = () => {
   const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
   const signatures = searchParams.getAll('signatures')[0];
   const signers = searchParams.getAll('signers')[0];
+  const rawTr = searchParams.get('rawTr');
 
   const typeSignTrx: keyof ITypeSignTrx | null = searchParams.get('typeSignTrx') as
     | keyof ITypeSignTrx
@@ -93,6 +95,7 @@ const SignTransactionComponent = () => {
     thresholdUrl,
     newThreshold,
     nonce: nonceUrl,
+    rawTr: parseSearchParams(rawTr),
   };
 
   const addNetworkForUserSign = async () => {
@@ -166,6 +169,7 @@ const SignTransactionComponent = () => {
 
   const handleTransaction = async () => {
     if (!safeSdk || !safeTransaction) return;
+
     if (status === 'success') {
       router.push(routes.home);
       return;
@@ -176,7 +180,6 @@ const SignTransactionComponent = () => {
 
   const handleSignTransaction = useCallback(async () => {
     if (!multySign) return;
-
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
 
     await multySign.signTransactionMulty();
@@ -224,10 +227,10 @@ const SignTransactionComponent = () => {
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
                 Network: {userNetwork && userNetwork.name}
               </WalletTypography>
-              {chainIdUrl && formatterIcon(+chainIdUrl)}
+              {userNetwork && formatterIcon(+userNetwork.chainId)}
             </Box>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Chain: {chainIdUrl}
+              Chain: {userNetwork.chainId}
             </WalletTypography>
             <Box display={'flex'} alignItems={'center'} gap={1}>
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
