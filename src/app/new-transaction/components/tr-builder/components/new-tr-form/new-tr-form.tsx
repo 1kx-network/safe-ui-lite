@@ -1,5 +1,7 @@
 'use client';
 
+import { useRef } from 'react';
+
 import { ContractInterface } from '../../typings/models';
 import SolidityForm, {
   CONTRACT_METHOD_INDEX_FIELD_NAME,
@@ -19,9 +21,10 @@ type NewTransactionForm = {
 };
 
 const NewTransactionForm = ({ contract, to, showHexEncodedData }: NewTransactionForm) => {
+  const memorizedMethod = useRef('0');
   const initialFormValues = {
     [TO_ADDRESS_FIELD_NAME]: isValidAddress(to) ? to : '',
-    [CONTRACT_METHOD_INDEX_FIELD_NAME]: '0',
+    [CONTRACT_METHOD_INDEX_FIELD_NAME]: memorizedMethod.current ?? '0',
   };
 
   const { addTransaction } = useTransactionStore();
@@ -34,6 +37,7 @@ const NewTransactionForm = ({ contract, to, showHexEncodedData }: NewTransaction
       nativeCurrencySymbol,
       networkPrefix
     );
+    memorizedMethod.current = values[CONTRACT_METHOD_INDEX_FIELD_NAME];
 
     addTransaction(proposedTransaction);
   };
