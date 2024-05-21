@@ -1,4 +1,5 @@
 'use client';
+
 import { v4 as uuid } from 'uuid';
 import { getAddress } from 'ethers';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -7,7 +8,6 @@ import { Methods } from '@safe-global/safe-apps-sdk';
 import type { EIP712TypedData, SafeSettings } from '@safe-global/safe-apps-sdk';
 import { ChainInfo, getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-
 import { TxEvent, txSubscribe } from '@/features/tx/txEvents';
 import { useWeb3ReadOnly } from '@/features/web3';
 import useChains from '@/hooks/useChains';
