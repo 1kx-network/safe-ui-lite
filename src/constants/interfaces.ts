@@ -16,4 +16,5 @@ export interface IQueryParams {
   signatures: string | null;
   signers: string | null;
   typeSignTrx: keyof ITypeSignTrx | null;
+  batchTr?: string | null;
 }

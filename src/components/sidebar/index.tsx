@@ -227,27 +227,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     }
   }, [address, chainId, safeAddress, networks]);
 
-  // useEffect(() => {
-  //   if (!safeSdk || !chainId) return;
-
-  //   const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
-  //   if (linkOnScan) {
-  //     setLinkOnScan(linkOnScan);
-  //   }
-
-  //   const pendingBalance = async () => {
-  //     const dataAcc = await getInfoByAccount(safeSdk);
-  //     if (!dataAcc) return;
-
-  //     const { balanceAccount } = dataAcc;
-  //     const parceBalance = utils.formatEther(String(balanceAccount));
-
-  //     setBalanceAccount(parceBalance);
-  //   };
-
-  //   pendingBalance();
-  // }, [safeSdk, chainId]);
-
   const handleClickAccount = (address: string) => {
     localStorage.setItem('safeAddress', address);
     setSafeAddress(address);

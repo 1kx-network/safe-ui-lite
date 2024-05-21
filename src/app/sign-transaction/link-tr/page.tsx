@@ -30,6 +30,8 @@ import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography 
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import TrBuildComponent, { IBatchTr, RawTr } from '../tr-builder';
+import { parseSearchParams } from '@/utils/helpers';
 
 import {
   BoxLinkStyled,
@@ -42,7 +44,7 @@ import {
   SignersBoxStyled,
   SingInfoStyled,
   styledSecondaryBtn,
-} from './link-trx.styles';
+} from './link-tr.styles';
 
 interface IForm {
   safeAddress: string | null;
@@ -68,6 +70,8 @@ interface IDataQuery {
   signatures: string[] | null;
   signers: string[] | null;
   userNetworkTrxUrl: string | null;
+  batchTr?: IBatchTr[] | null;
+  rawTr?: RawTr[] | undefined;
 }
 
 const defaultDataQuery: IDataQuery = {
@@ -82,6 +86,8 @@ const defaultDataQuery: IDataQuery = {
   signatures: null,
   signers: null,
   userNetworkTrxUrl: null,
+  batchTr: null,
+  rawTr: undefined,
 };
 
 const parseParamsFromString = (input: string): IQueryParams | null => {
@@ -105,6 +111,7 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
       signatures: searchParams.get('signatures'),
       signers: searchParams.get('signers'),
       typeSignTrx: searchParams.get('typeSignTrx') as keyof ITypeSignTrx | null,
+      batchTr: searchParams.get('batchTr'),
     };
   } catch (error) {
     console.error('Error parsing URL:', error);
@@ -158,7 +165,7 @@ const NewSignTransactionComponent = () => {
   const handleChangeLink = async (value: string) => {
     if (value) {
       try {
-        let queryParams = parseParamsFromString(value);
+        let queryParams: IQueryParams | null = parseParamsFromString(value);
 
         if (!queryParams) {
           const searchParams = new URLSearchParams(value);
@@ -179,8 +186,14 @@ const NewSignTransactionComponent = () => {
             signatures: searchParams.get('signatures'),
             signers: searchParams.get('signers'),
             typeSignTrx: searchParams.get('typeSignTrx') as keyof ITypeSignTrx | null,
+            batchTr: searchParams.get('batchTr'),
           };
         }
+
+        const parseRawTr: IBatchTr[] | null = queryParams.batchTr
+          ? parseSearchParams(queryParams.batchTr)
+          : null;
+        const rawTr = parseRawTr ? parseRawTr.map(elem => elem.rawTr) : undefined;
 
         setQueryParams(queryParams);
         createSdkInstance(queryParams.safeAddress);
@@ -199,6 +212,8 @@ const NewSignTransactionComponent = () => {
           signatures,
           signers,
           userNetworkTrxUrl: queryParams.userNetworkTrxUrl,
+          batchTr: parseRawTr,
+          rawTr: rawTr,
         });
 
         setChainIdUrl(queryParams.chainIdUrl);
@@ -389,6 +404,11 @@ const NewSignTransactionComponent = () => {
     reset(defaultDataQuery);
   };
 
+  const recipientAddress =
+    TYPE_SIGN_TRX.ADD_OWNER !== typeTrx &&
+    TYPE_SIGN_TRX.REMOVE_OWNER !== typeTrx &&
+    TYPE_SIGN_TRX.TR_BUILD !== typeTrx;
+
   return (
     <WalletLayout>
       <WrapperStyled>
@@ -438,25 +458,24 @@ const NewSignTransactionComponent = () => {
                       render={({ field }) => (
                         <Box width={'120px'}>
                           <ItemInfoLabelStyled>Nonce#</ItemInfoLabelStyled>
-                          <ItemInfoStyled>{field.value}</ItemInfoStyled>
+                          <ItemInfoStyled>{field.value ?? 1}</ItemInfoStyled>
                         </Box>
                       )}
                     />
                   </Box>
 
-                  {TYPE_SIGN_TRX.ADD_OWNER !== typeTrx &&
-                    TYPE_SIGN_TRX.REMOVE_OWNER !== typeTrx && (
-                      <Controller
-                        control={control}
-                        name="destinationAddress"
-                        render={({ field }) => (
-                          <Box width={'100%'}>
-                            <ItemInfoLabelStyled>Recipient Address</ItemInfoLabelStyled>
-                            <ItemInfoStyled>{field.value}</ItemInfoStyled>
-                          </Box>
-                        )}
-                      />
-                    )}
+                  {recipientAddress && (
+                    <Controller
+                      control={control}
+                      name="destinationAddress"
+                      render={({ field }) => (
+                        <Box width={'100%'}>
+                          <ItemInfoLabelStyled>Recipient Address</ItemInfoLabelStyled>
+                          <ItemInfoStyled>{field.value}</ItemInfoStyled>
+                        </Box>
+                      )}
+                    />
+                  )}
 
                   {TYPE_SIGN_TRX.SEND_TOKEN === typeTrx && (
                     <BoxAmountStyled>
@@ -545,8 +564,12 @@ const NewSignTransactionComponent = () => {
                     </Box>
                   )}
 
+                  {TYPE_SIGN_TRX.TR_BUILD === typeTrx && (
+                    <TrBuildComponent batchTrProps={dataQuery.batchTr} />
+                  )}
+
                   <Box width={'60%'} display={'flex'} flexDirection={'column'}>
-                    <ItemInfoLabelStyled>Signers</ItemInfoLabelStyled>
+                    {dataQuery.signers && <ItemInfoLabelStyled>Signers</ItemInfoLabelStyled>}
                     <SignersBoxStyled>
                       {dataQuery.signers ? (
                         dataQuery.signers.map(elem => (
