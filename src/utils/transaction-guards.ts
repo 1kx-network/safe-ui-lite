@@ -99,10 +99,6 @@ export const isMultiSendTxInfo = (value: TransactionInfo): value is MultiSend =>
   );
 };
 
-export const isSwapTxInfo = (value: TransactionInfo): value is SwapOrder => {
-  return value.type === TransactionInfoType.SWAP_ORDER;
-};
-
 export const isCancellationTxInfo = (value: TransactionInfo): value is Cancellation => {
   return isCustomTxInfo(value) && value.isCancellation;
 };

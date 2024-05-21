@@ -23,14 +23,15 @@ const styledLabel = {
   overflow: 'hidden',
 };
 
+// eslint-disable-next-line
 interface ExtendedSelectProps extends OptionProps<any, boolean, GroupBase<any>> {
   selectProps: OptionProps<any, boolean, GroupBase<any>>['selectProps'] & {
     activeItemId?: string;
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const CustomOption = (props: ExtendedSelectProps) => {
+// eslint-disable-next-line
+export const CustomOption = (props: any) => {
   const { icon, id } = props.data;
   const { activeItemId, className } = props.selectProps;
 
