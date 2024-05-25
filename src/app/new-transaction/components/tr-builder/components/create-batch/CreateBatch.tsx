@@ -46,7 +46,15 @@ const CreateNewBatchCard = ({ onFileSelected }: CreateNewBatchCardProps) => {
         ) : (
           <>
             <Box onClick={handleBrowse}>
-              <WalletTypography>Drag and drop a JSON file or choose a file</WalletTypography>
+              <WalletTypography>
+                Drag and drop a JSON file or{' '}
+                <WalletTypography
+                  color={themeMuiBase.palette.success}
+                  style={{ cursor: 'pointer' }}
+                >
+                  choose a file
+                </WalletTypography>
+              </WalletTypography>
             </Box>
           </>
         )}
