@@ -120,7 +120,9 @@ const CreateTransactions = () => {
               if (uploadedFile) {
                 const batchFile = await importBatch(uploadedFile);
 
-                if (!batchFile) return;
+                if (!batchFile) {
+                  throw Error('<-- Something wrong width batchFile -->');
+                }
 
                 setFileName(batchFile.meta.name);
                 const isWrongChain = +batchFile.chainId !== chainId;
