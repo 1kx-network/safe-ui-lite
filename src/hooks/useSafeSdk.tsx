@@ -37,11 +37,11 @@ export function useSafeSdk(safeAddress: string | null = null) {
     }
 
     if (safeAddress) {
-      await createSafe(safeAddress);
+      return await createSafe(safeAddress);
     }
 
     if (address) {
-      await createSafe(address);
+      return await createSafe(address);
     }
   };
 
