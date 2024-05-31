@@ -11,6 +11,7 @@ import {
 import { Box } from '@mui/system';
 import Link from 'next/link';
 import * as ethers from 'ethers';
+import Safe from '@safe-global/protocol-kit';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
@@ -45,7 +46,6 @@ import {
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sing-trx-info';
 import { IBatchTr } from './tr-builder';
-import Safe from '@safe-global/protocol-kit';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -223,10 +223,8 @@ const SignTransactionComponent = () => {
   };
 
   const handleSignTransaction = useCallback(async () => {
-    if (!multySign || status === 'signed') return;
+    if (!multySign) return;
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
-
-    console.log(ownerList);
 
     if (ownerList && ownerList.find(elem => elem === String(address))) {
       await multySign.signTransactionMulty();
@@ -269,7 +267,7 @@ const SignTransactionComponent = () => {
   } else if (status === 'loading') {
     buttonText = 'Loading...';
   } else if (status === 'signed') {
-    buttonText = 'Signed';
+    buttonText = 'Sign again';
   }
 
   return (
@@ -289,9 +287,6 @@ const SignTransactionComponent = () => {
               </WalletTypography>
               {userNetwork && formatterIcon(+userNetwork.chainId)}
             </Box>
-            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Nonce: {trxUrlInfo.nonce}
-            </WalletTypography>
 
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Chain: {userNetwork.chainId}
@@ -316,7 +311,7 @@ const SignTransactionComponent = () => {
             </Box>
           </TransactionInfoStyled>
 
-          <SignTransactionInfo {...trxUrlInfo} address={destinationAddress} />
+          <SignTransactionInfo {...trxUrlInfo} address={destinationAddress} hash={multySign.hash} />
 
           <GridButtonStyled>
             {address ? (
@@ -324,12 +319,11 @@ const SignTransactionComponent = () => {
                 {buttonText === 'Execute' && (
                   <WalletButton
                     loading={status === 'loading'}
-                    disabled={status === 'signed'}
                     variant={status === 'success' ? 'outlined' : 'contained'}
                     styles={styledSecondaryBtn}
                     onClick={handleSignTransaction}
                   >
-                    {status === 'signed' ? 'Signed' : 'Sign Transaction'}
+                    {status === 'signed' ? 'Sign again' : 'Sign Transaction'}
                   </WalletButton>
                 )}
                 <WalletButton

@@ -194,7 +194,7 @@ const SignMessageComponent = () => {
   } else if (status === 'loading') {
     buttonText = 'Loading...';
   } else if (status === 'signed') {
-    buttonText = 'Signed';
+    buttonText = 'Sign again';
   }
 
   return (
@@ -260,7 +260,7 @@ const SignMessageComponent = () => {
                     styles={styledSecondaryBtn}
                     onClick={handleMessageClick}
                   >
-                    {status === 'signed' ? 'Signed' : 'Sign Message'}
+                    {status === 'signed' ? 'Sign again' : 'Sign Message'}
                   </WalletButton>
                 )}
                 <WalletButton

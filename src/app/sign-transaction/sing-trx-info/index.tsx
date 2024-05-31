@@ -15,6 +15,8 @@ import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import TrBuildComponent from '../tr-builder';
 
 interface ISendTokenInfo {
+  nonce: string | null;
+  hash: string | null;
   amount: string | null;
   tokenType: string | null;
   linkOnScan: string | null;
@@ -25,6 +27,8 @@ interface ISendTokenInfo {
 }
 
 export const SignTransactionInfo = ({
+  nonce,
+  hash,
   linkOnScan,
   safeTransaction,
   address,
@@ -61,6 +65,9 @@ export const SignTransactionInfo = ({
             </WalletTypography>
             {tokenType && formatterIcon(tokenType)}
           </Box>
+          <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+            Nonce: {nonce}
+          </WalletTypography>
           <Box display={'flex'} alignItems={'center'} gap={1}>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Destination:{' '}
@@ -69,6 +76,7 @@ export const SignTransactionInfo = ({
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               {address}
             </WalletTypography>
+
             <Link href={`${linkOnScan}address/${address}`} target="_blanck">
               <OpenInNewIcon width="19px" height="18px" />
             </Link>
@@ -80,6 +88,21 @@ export const SignTransactionInfo = ({
             />
           </Box>
         </>
+      )}
+
+      {linkOnScan && hash && (
+        <Box display={'flex'} alignItems={'center'} gap={1}>
+          <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+            Hash:
+          </WalletTypography>
+          <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+            {formattedLabel(hash)}
+          </WalletTypography>
+          <Link href={`${linkOnScan}transaction/${hash}`} target="_blanck">
+            <OpenInNewIcon width="19px" height="18px" />
+          </Link>
+          <CopyIcon width="18px" height="19px" cursor="pointer" onClick={() => handleCopy(hash)} />
+        </Box>
       )}
 
       {isTresholder && (

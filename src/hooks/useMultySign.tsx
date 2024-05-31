@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
@@ -31,6 +31,7 @@ export interface IUseMultySign {
 }
 
 export interface IMultySignResult {
+  hash: string | null;
   safeTransaction: SafeTransaction | null;
   thresholdMulty: number;
   getSignaturesFromDbMulty: () => { signatures: string[]; signers: string[] };
@@ -62,6 +63,7 @@ export function useMultySign({
   nonce,
   rawTr,
 }: IUseMultySign): IMultySignResult {
+  const [hash, setHash] = useState<string | null>(null);
   const conditionMulty = useMemo(() => !safeAddress || !safeTxHash, [safeAddress, safeTxHash]);
 
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } = TYPE_SIGN_TRX;
@@ -394,8 +396,8 @@ export function useMultySign({
       );
 
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
+      setHash(txResponse.hash);
       await txResponse.transactionResponse?.wait();
-
       setStatus('success');
       customToasty('Execute success', 'success');
     } catch (error) {
@@ -415,6 +417,7 @@ export function useMultySign({
   }, [mode, conditionMulty, safeSdk, safeTransaction, chainId, status, safeTxHash]);
 
   return {
+    hash,
     safeTransaction,
     thresholdMulty: threshold,
     getSignaturesFromDbMulty,
