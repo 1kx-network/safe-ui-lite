@@ -11,6 +11,7 @@ import {
 } from '@web3modal/ethers/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Link from 'next/link';
+import Safe from '@safe-global/protocol-kit';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
@@ -45,7 +46,6 @@ import {
   SingInfoStyled,
   styledSecondaryBtn,
 } from './link-tr.styles';
-import Safe from '@safe-global/protocol-kit';
 
 interface IForm {
   safeAddress: string | null;

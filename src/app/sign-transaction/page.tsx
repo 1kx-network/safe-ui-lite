@@ -45,6 +45,7 @@ import {
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sing-trx-info';
 import { IBatchTr } from './tr-builder';
+import Safe from '@safe-global/protocol-kit';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -59,7 +60,7 @@ const SignTransactionComponent = () => {
   const { open } = useWeb3Modal();
   const { networks, setChosenNetwork, loadNetworks } = useNetworkStore();
   const { setBalanceAccount, setIsLoading } = useActiveSafeAddress();
-  const { getInfoByAccount } = useSafeSdk();
+  const { getInfoByAccount, createSdkInstance } = useSafeSdk();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [ownerList, setOwnerList] = useState<string[] | null>(null);
@@ -87,6 +88,7 @@ const SignTransactionComponent = () => {
 
   const safeTxHashParam = searchParams.get('safeTxHash');
   const safeTxHashJSON = safeTxHashParam ? JSON.parse(JSON.stringify(safeTxHashParam)) : null;
+
   const userNetwork = userNetworkTrxUrl ? JSON.parse(userNetworkTrxUrl) : null;
 
   const trxUrlInfo = {
@@ -167,6 +169,22 @@ const SignTransactionComponent = () => {
     }
   }, [router, searchParams]);
 
+  useEffect(() => {
+    if (safeAddress) {
+      (async () => {
+        await createSdkInstance(safeAddress)
+          .then(async (safe: Safe | undefined | null) => {
+            if (safe) {
+              const ownersList = await safe.getOwners();
+
+              setOwnerList(ownersList);
+            }
+          })
+          .catch(error => console.log(`<--${error}-->`));
+      })();
+    }
+  }, [safeAddress]);
+
   // Update the balance
   useEffect(() => {
     if (status === 'success') {
@@ -175,17 +193,16 @@ const SignTransactionComponent = () => {
         const dataAcc = await getInfoByAccount(safeSdk);
         if (!dataAcc) return;
 
-        const { balanceAccount, ownersAccount } = dataAcc;
+        const { balanceAccount } = dataAcc;
         const parceBalance = ethers.formatEther(String(balanceAccount));
 
-        setOwnerList(ownersAccount);
         setBalanceAccount(parceBalance);
       };
 
       pendingBalance();
       setTimeout(() => setIsLoading(false), 400);
     }
-  }, [status]);
+  }, [status, safeSdk]);
 
   const multySign = useMultySign({
     ...trxUrlInfo,
@@ -208,6 +225,8 @@ const SignTransactionComponent = () => {
   const handleSignTransaction = useCallback(async () => {
     if (!multySign || status === 'signed') return;
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
+
+    console.log(ownerList);
 
     if (ownerList && ownerList.find(elem => elem === String(address))) {
       await multySign.signTransactionMulty();
