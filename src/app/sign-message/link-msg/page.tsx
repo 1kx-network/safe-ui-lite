@@ -346,7 +346,7 @@ const NewSignTransactionComponent = () => {
   } else if (status === 'loading') {
     buttonText = 'Loading...';
   } else if (status === 'signed') {
-    buttonText = 'Signed';
+    buttonText = 'Sign again';
   }
 
   const handleCopy = (paramsCopy: string | null) => {
@@ -555,7 +555,7 @@ const NewSignTransactionComponent = () => {
                       styles={styledSecondaryBtn}
                       onClick={() => handleTransaction(false)}
                     >
-                      {status === 'signed' ? 'Signed' : 'Sign Transaction'}
+                      {status === 'signed' ? 'Sign again' : 'Sign Transaction'}
                     </WalletButton>
                   )}
                   <WalletButton
