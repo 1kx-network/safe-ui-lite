@@ -45,6 +45,7 @@ import {
   SingInfoStyled,
   styledSecondaryBtn,
 } from './link-tr.styles';
+import Safe from '@safe-global/protocol-kit';
 
 interface IForm {
   safeAddress: string | null;
@@ -115,6 +116,7 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
     };
   } catch (error) {
     console.error('Error parsing URL:', error);
+    customToasty('Error parsing URL');
     return null;
   }
 };
@@ -196,7 +198,6 @@ const NewSignTransactionComponent = () => {
         const rawTr = parseRawTr ? parseRawTr.map(elem => elem.rawTr) : undefined;
 
         setQueryParams(queryParams);
-        createSdkInstance(queryParams.safeAddress);
 
         const signatures = queryParams.signatures ? queryParams.signatures.split(',') : [];
         const signers = queryParams.signers ? queryParams.signers.split(',') : [];
@@ -253,7 +254,7 @@ const NewSignTransactionComponent = () => {
   }, [queryParams, dataQuery.signatures, dataQuery.signers]);
 
   useEffect(() => {
-    if (safeSdk) {
+    if (dataQuery.safeAddress) {
       (async () => {
         if (!safeFromDb && dataQuery.safeAddress !== '') {
           await setDataDB(dataQuery.safeAddress, {
@@ -261,16 +262,21 @@ const NewSignTransactionComponent = () => {
             transactions: [],
           });
         }
-        const threshold = await safeSdk.getThreshold();
-        const ownersList = await safeSdk.getOwners();
 
-        setOwnerList(ownersList);
-        setThreshold(threshold);
+        await createSdkInstance(dataQuery.safeAddress)
+          .then(async (safe: Safe | undefined | null) => {
+            if (safe) {
+              const threshold = await safe.getThreshold();
+              const ownersList = await safe.getOwners();
+
+              setOwnerList(ownersList);
+              setThreshold(threshold);
+            }
+          })
+          .catch(error => console.log(`<--${error}-->`));
       })();
-    } else {
-      createSdkInstance(dataQuery.safeAddress);
     }
-  }, [safeSdk, address, dataQuery.safeAddress]);
+  }, [address, dataQuery.safeAddress]);
 
   const onSubmit: SubmitHandler<any> = () => {};
 

@@ -41,8 +41,6 @@ export const SignTransactionInfo = ({
     customToasty('Was copy', 'success');
   };
 
-  console.log('_typeSignTrx_', typeSignTrx);
-
   const isSendToken = typeSignTrx === SEND_TOKEN;
   const isTresholder = typeSignTrx === CHANGE_THRESHOLD;
   const isChangeOwner = typeSignTrx === ADD_OWNER || typeSignTrx === REMOVE_OWNER;

@@ -62,6 +62,7 @@ const SignTransactionComponent = () => {
   const { getInfoByAccount } = useSafeSdk();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [ownerList, setOwnerList] = useState<string[] | null>(null);
 
   const safeAddress = typeof window !== 'undefined' ? searchParams.get('address') : null;
   const chainIdUrl = searchParams.get('chainId');
@@ -174,9 +175,10 @@ const SignTransactionComponent = () => {
         const dataAcc = await getInfoByAccount(safeSdk);
         if (!dataAcc) return;
 
-        const { balanceAccount } = dataAcc;
+        const { balanceAccount, ownersAccount } = dataAcc;
         const parceBalance = ethers.formatEther(String(balanceAccount));
 
+        setOwnerList(ownersAccount);
         setBalanceAccount(parceBalance);
       };
 
@@ -204,17 +206,31 @@ const SignTransactionComponent = () => {
   };
 
   const handleSignTransaction = useCallback(async () => {
-    if (!multySign) return;
+    if (!multySign || status === 'signed') return;
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
 
-    await multySign.signTransactionMulty();
-  }, [safeSdk, safeTransaction, safeTxHash, status]);
+    if (ownerList && ownerList.find(elem => elem === String(address))) {
+      await multySign.signTransactionMulty();
+    } else {
+      customToasty(
+        'Transactions can only be signed by Safe owners. Please change your account',
+        'error'
+      );
+    }
+  }, [safeSdk, safeTransaction, safeTxHash, status, ownerList, address]);
 
   const handleExecute = useCallback(async () => {
     if (!multySign) return;
 
-    await multySign.executeMulty();
-  }, [safeSdk, safeTransaction, searchParams]);
+    if (ownerList && ownerList.find(elem => elem === String(address))) {
+      await multySign.executeMulty();
+    } else {
+      customToasty(
+        'Transactions can only be signed by Safe owners. Please change your account',
+        'error'
+      );
+    }
+  }, [safeSdk, safeTransaction, searchParams, address, ownerList]);
 
   const handleCopy = (address: string | null) => {
     if (!address) return;
@@ -255,6 +271,10 @@ const SignTransactionComponent = () => {
               {userNetwork && formatterIcon(+userNetwork.chainId)}
             </Box>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+              Nonce: {trxUrlInfo.nonce}
+            </WalletTypography>
+
+            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Chain: {userNetwork.chainId}
             </WalletTypography>
             <Box display={'flex'} alignItems={'center'} gap={1}>
@@ -285,7 +305,7 @@ const SignTransactionComponent = () => {
                 {buttonText === 'Execute' && (
                   <WalletButton
                     loading={status === 'loading'}
-                    // disabled={status === 'loading'}
+                    disabled={status === 'signed'}
                     variant={status === 'success' ? 'outlined' : 'contained'}
                     styles={styledSecondaryBtn}
                     onClick={handleSignTransaction}

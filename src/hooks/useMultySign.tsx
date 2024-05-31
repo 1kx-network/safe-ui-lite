@@ -173,7 +173,6 @@ export function useMultySign({
 
       if (typeNativeTr) {
         if (typeSignTrx === TR_BUILD) {
-          console.log('__5__', rawTr);
           transactionsArray = rawTr ? rawTr : undefined;
         }
         if (typeSignTrx === SEND_TOKEN && amount && address) {
@@ -331,11 +330,14 @@ export function useMultySign({
     const signed = signers.some(signer => signer === userWalletAddress);
     if (signed) {
       setStatus('signed');
+      return;
     } else {
       if (status === 'signed') {
         setStatus('');
+        return;
       }
     }
+    setStatus('');
   }, [userWalletAddress, chainId, getSignaturesMulty]);
 
   const signTransactionMulty = useCallback(async () => {
@@ -390,10 +392,8 @@ export function useMultySign({
           dynamicPart: () => '',
         })
       );
-      console.log('_safeTransaction_7_', safeTransaction);
 
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
-      console.log('__8__');
       await txResponse.transactionResponse?.wait();
 
       setStatus('success');

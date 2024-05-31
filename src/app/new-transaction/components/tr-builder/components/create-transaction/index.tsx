@@ -18,7 +18,7 @@ import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 
 import { FilenameLabelStyled, TransactionsSectionWrapperStyled } from './create-transaction.styles';
 
-const CreateTransactions = () => {
+const CreateTransactions = ({ nonce }: { nonce: string }) => {
   const {
     transactions,
     removeAllTransactions,
@@ -49,6 +49,9 @@ const CreateTransactions = () => {
 
       const safeTransaction = await safeSdk.createTransaction({
         transactions: rawTr,
+        options: {
+          nonce: nonce ? +nonce : 0,
+        },
       });
 
       const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
@@ -69,7 +72,7 @@ const CreateTransactions = () => {
         address: encodeURIComponent(safeAddress),
         safeTxHash,
         typeSignTrx: TYPE_SIGN_TRX.TR_BUILD,
-        // rawTr: JSON.stringify(rawTr),
+        nonce: nonce,
         batchTr: JSON.stringify(description),
 
         userNetworkTrx: JSON.stringify({
