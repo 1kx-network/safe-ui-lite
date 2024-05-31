@@ -10,9 +10,9 @@ export interface IQueryParams {
   networkName: string | null;
   thresholdUrl: string | null;
   newThreshold: string | null;
-  nonceUrl: string | null;
+  nonce: string | null;
   calldata: string | null;
-  userNetworkTrxUrl: string | null;
+  userNetworkTrx: string | null;
   signatures: string | null;
   signers: string | null;
   typeSignTrx: keyof ITypeSignTrx | null;

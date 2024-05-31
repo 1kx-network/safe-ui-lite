@@ -289,7 +289,7 @@ const SignTransactionComponent = () => {
             </Box>
 
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Chain: {userNetwork.chainId}
+              Chain: {userNetwork && userNetwork.chainId}
             </WalletTypography>
             <Box display={'flex'} alignItems={'center'} gap={1}>
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
