@@ -96,6 +96,7 @@ export const SettingsOwner = () => {
 
       setSafeAccountOwners(ownersAccount);
       setContractNonce(contractNonce);
+      setNonce(contractNonce);
       setContractVersion(contractVersion);
       setNeedConfirmOwner(accountThreshold);
 
@@ -232,7 +233,7 @@ export const SettingsOwner = () => {
       destinationAddress: valueNewOwner,
       tokenType: '',
       safeTxHash: safeTxHash,
-      nonce: String(contractNonce),
+      nonce: String(nonce),
       userNetworkTrx: JSON.stringify({
         name: chosenNetwork?.value ?? '',
         chainId: chosenNetwork?.chainId ?? '',
@@ -274,9 +275,19 @@ export const SettingsOwner = () => {
                 <InfoIcon width="20px" height="20px" />
               </Box>
             </Box>
-            <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-              Current nonce: {contractNonce}
-            </WalletTypography>
+
+            <Box display={'flex'} alignItems={'center'}>
+              <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
+                Current nonce:
+              </WalletTypography>
+              <Box width={'75px'}>
+                <WalletInput
+                  value={nonce?.toString() ?? '1'}
+                  onChange={handleChangeNonce}
+                  style={{ ...styledNonce, width: '75px' }}
+                />
+              </Box>
+            </Box>
           </BoxStyled>
           <BoxStyled>
             <WalletTypography fontSize={18} fontWeight={600}>

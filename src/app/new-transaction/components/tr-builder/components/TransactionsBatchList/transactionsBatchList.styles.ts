@@ -6,7 +6,7 @@ export const TransactionsBatchWrapper = styled('div')`
 `;
 
 export const TransactionHeader = styled('div')`
-  margin-top: 24px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;

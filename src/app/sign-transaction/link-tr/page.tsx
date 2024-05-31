@@ -11,6 +11,7 @@ import {
 } from '@web3modal/ethers/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Link from 'next/link';
+import Safe from '@safe-global/protocol-kit';
 
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
@@ -48,7 +49,7 @@ import {
 
 interface IForm {
   safeAddress: string | null;
-  nonceUrl: string | null;
+  nonce: string | null;
   destinationAddress: string | null;
   amount: string | null;
   tokenType: string | null;
@@ -69,7 +70,7 @@ interface IDataQuery {
   calldata: string | null;
   signatures: string[] | null;
   signers: string[] | null;
-  userNetworkTrxUrl: string | null;
+  userNetworkTrx: string | null;
   batchTr?: IBatchTr[] | null;
   rawTr?: RawTr[] | undefined;
 }
@@ -85,7 +86,7 @@ const defaultDataQuery: IDataQuery = {
   nonce: null,
   signatures: null,
   signers: null,
-  userNetworkTrxUrl: null,
+  userNetworkTrx: null,
   batchTr: null,
   rawTr: undefined,
 };
@@ -105,9 +106,9 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
       networkName: searchParams.get('networkName'),
       thresholdUrl: searchParams.get('thresholdUrl'),
       newThreshold: searchParams.get('newThreshold'),
-      nonceUrl: searchParams.get('nonce'),
+      nonce: searchParams.get('nonce'),
       calldata: searchParams.get('calldata'),
-      userNetworkTrxUrl: searchParams.get('userNetworkTrx'), // JSON.parse
+      userNetworkTrx: searchParams.get('userNetworkTrx'), // JSON.parse
       signatures: searchParams.get('signatures'),
       signers: searchParams.get('signers'),
       typeSignTrx: searchParams.get('typeSignTrx') as keyof ITypeSignTrx | null,
@@ -115,6 +116,7 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
     };
   } catch (error) {
     console.error('Error parsing URL:', error);
+    customToasty('Error parsing URL');
     return null;
   }
 };
@@ -180,9 +182,9 @@ const NewSignTransactionComponent = () => {
             networkName: searchParams.get('networkName'),
             thresholdUrl: searchParams.get('thresholdUrl'),
             newThreshold: searchParams.get('newThreshold'),
-            nonceUrl: searchParams.get('nonce'),
+            nonce: searchParams.get('nonce'),
             calldata: searchParams.get('calldata'),
-            userNetworkTrxUrl: searchParams.get('userNetworkTrx'), // JSON.parse
+            userNetworkTrx: searchParams.get('userNetworkTrx'), // JSON.parse
             signatures: searchParams.get('signatures'),
             signers: searchParams.get('signers'),
             typeSignTrx: searchParams.get('typeSignTrx') as keyof ITypeSignTrx | null,
@@ -196,7 +198,6 @@ const NewSignTransactionComponent = () => {
         const rawTr = parseRawTr ? parseRawTr.map(elem => elem.rawTr) : undefined;
 
         setQueryParams(queryParams);
-        createSdkInstance(queryParams.safeAddress);
 
         const signatures = queryParams.signatures ? queryParams.signatures.split(',') : [];
         const signers = queryParams.signers ? queryParams.signers.split(',') : [];
@@ -207,11 +208,11 @@ const NewSignTransactionComponent = () => {
           newThreshold: queryParams.newThreshold,
           tokenType: queryParams.tokenType,
           amount: queryParams.amount,
-          nonce: queryParams.nonceUrl,
+          nonce: queryParams.nonce,
           calldata: queryParams.calldata,
           signatures,
           signers,
-          userNetworkTrxUrl: queryParams.userNetworkTrxUrl,
+          userNetworkTrx: queryParams.userNetworkTrx,
           batchTr: parseRawTr,
           rawTr: rawTr,
         });
@@ -219,7 +220,7 @@ const NewSignTransactionComponent = () => {
         setChainIdUrl(queryParams.chainIdUrl);
         setTypeTrx(queryParams.typeSignTrx);
 
-        if (queryParams.userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
+        if (queryParams.userNetworkTrx) (async () => await addNetworkForUserSign())();
 
         reset({ ...queryParams, signers: queryParams.signers?.split(',') ?? [] });
         setValueLink(JSON.stringify(queryParams));
@@ -253,7 +254,7 @@ const NewSignTransactionComponent = () => {
   }, [queryParams, dataQuery.signatures, dataQuery.signers]);
 
   useEffect(() => {
-    if (safeSdk) {
+    if (dataQuery.safeAddress) {
       (async () => {
         if (!safeFromDb && dataQuery.safeAddress !== '') {
           await setDataDB(dataQuery.safeAddress, {
@@ -261,22 +262,27 @@ const NewSignTransactionComponent = () => {
             transactions: [],
           });
         }
-        const threshold = await safeSdk.getThreshold();
-        const ownersList = await safeSdk.getOwners();
 
-        setOwnerList(ownersList);
-        setThreshold(threshold);
+        await createSdkInstance(dataQuery.safeAddress)
+          .then(async (safe: Safe | undefined | null) => {
+            if (safe) {
+              const threshold = await safe.getThreshold();
+              const ownersList = await safe.getOwners();
+
+              setOwnerList(ownersList);
+              setThreshold(threshold);
+            }
+          })
+          .catch(error => console.log(`<--${error}-->`));
       })();
-    } else {
-      createSdkInstance(dataQuery.safeAddress);
     }
-  }, [safeSdk, address, dataQuery.safeAddress]);
+  }, [address, dataQuery.safeAddress]);
 
   const onSubmit: SubmitHandler<any> = () => {};
 
   const addNetworkForUserSign = async () => {
-    if (!dataQuery.userNetworkTrxUrl) return;
-    const userNetwork = JSON.parse(dataQuery.userNetworkTrxUrl) as INetworkDB;
+    if (!dataQuery.userNetworkTrx) return;
+    const userNetwork = JSON.parse(dataQuery.userNetworkTrx) as INetworkDB;
     const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
 
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
@@ -383,7 +389,7 @@ const NewSignTransactionComponent = () => {
   } else if (status === 'loading') {
     buttonText = 'Loading...';
   } else if (status === 'signed') {
-    buttonText = 'Signed';
+    buttonText = 'Sign again';
   }
 
   const handleCopy = (paramsCopy: string | null) => {
@@ -454,7 +460,7 @@ const NewSignTransactionComponent = () => {
                     />
                     <Controller
                       control={control}
-                      name="nonceUrl"
+                      name="nonce"
                       render={({ field }) => (
                         <Box width={'120px'}>
                           <ItemInfoLabelStyled>Nonce#</ItemInfoLabelStyled>
@@ -600,7 +606,7 @@ const NewSignTransactionComponent = () => {
                       styles={styledSecondaryBtn}
                       onClick={() => handleTransaction(false)}
                     >
-                      {status === 'signed' ? 'Signed' : 'Sign Transaction'}
+                      {status === 'signed' ? 'Sign again' : 'Sign Transaction'}
                     </WalletButton>
                   )}
                   <WalletButton

@@ -25,6 +25,7 @@ import {
 } from './tr-builder.styles';
 import NewTransactionForm from './components/new-tr-form/new-tr-form';
 import CreateTransactions from './components/create-transaction';
+import { styledNonce } from './components/create-transaction/create-transaction.styles';
 
 export const TrxBuilder = () => {
   const [abiAddress, setAbiAddress] = useState('');
@@ -37,6 +38,8 @@ export const TrxBuilder = () => {
     implementationAddress: '',
     proxyAddress: '',
   });
+  const [nonce, setNonce] = useState('1');
+
   const [isPrettified, setIsPrettified] = useState(false);
 
   const [hasErrorABI, setHasErrorABI] = useState<null | string>(null);
@@ -162,6 +165,12 @@ export const TrxBuilder = () => {
     setShowHexEncodedData(!showHexEncodedData);
   };
 
+  const handleChangeNonce = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const newValue = value.replace(/\D/g, '');
+    setNonce(newValue);
+  };
+
   return (
     <WrapperStyled>
       <BodyStyled>
@@ -211,10 +220,18 @@ export const TrxBuilder = () => {
       </BodyStyled>
 
       <BodyBatchStyled>
-        <WalletTypography fontSize={18} fontWeight={500}>
-          Start creating a new batch
-        </WalletTypography>
-        <CreateTransactions />
+        <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+          <WalletTypography fontSize={18} fontWeight={500}>
+            Start creating a new batch
+          </WalletTypography>
+          <Box display={'flex'} alignItems={'center'}>
+            <WalletTypography>Nonce #: </WalletTypography>
+            <Box width={'75px'}>
+              <WalletInput value={nonce} onChange={handleChangeNonce} style={styledNonce} />
+            </Box>
+          </Box>
+        </Box>
+        <CreateTransactions nonce={nonce} />
       </BodyBatchStyled>
 
       {/* ABI Warning */}

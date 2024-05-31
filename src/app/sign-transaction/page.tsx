@@ -11,6 +11,7 @@ import {
 import { Box } from '@mui/system';
 import Link from 'next/link';
 import * as ethers from 'ethers';
+import Safe from '@safe-global/protocol-kit';
 
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
@@ -59,9 +60,10 @@ const SignTransactionComponent = () => {
   const { open } = useWeb3Modal();
   const { networks, setChosenNetwork, loadNetworks } = useNetworkStore();
   const { setBalanceAccount, setIsLoading } = useActiveSafeAddress();
-  const { getInfoByAccount } = useSafeSdk();
+  const { getInfoByAccount, createSdkInstance } = useSafeSdk();
 
   const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [ownerList, setOwnerList] = useState<string[] | null>(null);
 
   const safeAddress = typeof window !== 'undefined' ? searchParams.get('address') : null;
   const chainIdUrl = searchParams.get('chainId');
@@ -86,6 +88,7 @@ const SignTransactionComponent = () => {
 
   const safeTxHashParam = searchParams.get('safeTxHash');
   const safeTxHashJSON = safeTxHashParam ? JSON.parse(JSON.stringify(safeTxHashParam)) : null;
+
   const userNetwork = userNetworkTrxUrl ? JSON.parse(userNetworkTrxUrl) : null;
 
   const trxUrlInfo = {
@@ -166,6 +169,22 @@ const SignTransactionComponent = () => {
     }
   }, [router, searchParams]);
 
+  useEffect(() => {
+    if (safeAddress) {
+      (async () => {
+        await createSdkInstance(safeAddress)
+          .then(async (safe: Safe | undefined | null) => {
+            if (safe) {
+              const ownersList = await safe.getOwners();
+
+              setOwnerList(ownersList);
+            }
+          })
+          .catch(error => console.log(`<--${error}-->`));
+      })();
+    }
+  }, [safeAddress]);
+
   // Update the balance
   useEffect(() => {
     if (status === 'success') {
@@ -183,7 +202,7 @@ const SignTransactionComponent = () => {
       pendingBalance();
       setTimeout(() => setIsLoading(false), 400);
     }
-  }, [status]);
+  }, [status, safeSdk]);
 
   const multySign = useMultySign({
     ...trxUrlInfo,
@@ -207,14 +226,28 @@ const SignTransactionComponent = () => {
     if (!multySign) return;
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
 
-    await multySign.signTransactionMulty();
-  }, [safeSdk, safeTransaction, safeTxHash, status]);
+    if (ownerList && ownerList.find(elem => elem === String(address))) {
+      await multySign.signTransactionMulty();
+    } else {
+      customToasty(
+        'Transactions can only be signed by Safe owners. Please change your account',
+        'error'
+      );
+    }
+  }, [safeSdk, safeTransaction, safeTxHash, status, ownerList, address]);
 
   const handleExecute = useCallback(async () => {
     if (!multySign) return;
 
-    await multySign.executeMulty();
-  }, [safeSdk, safeTransaction, searchParams]);
+    if (ownerList && ownerList.find(elem => elem === String(address))) {
+      await multySign.executeMulty();
+    } else {
+      customToasty(
+        'Transactions can only be signed by Safe owners. Please change your account',
+        'error'
+      );
+    }
+  }, [safeSdk, safeTransaction, searchParams, address, ownerList]);
 
   const handleCopy = (address: string | null) => {
     if (!address) return;
@@ -234,7 +267,7 @@ const SignTransactionComponent = () => {
   } else if (status === 'loading') {
     buttonText = 'Loading...';
   } else if (status === 'signed') {
-    buttonText = 'Signed';
+    buttonText = 'Sign again';
   }
 
   return (
@@ -254,8 +287,9 @@ const SignTransactionComponent = () => {
               </WalletTypography>
               {userNetwork && formatterIcon(+userNetwork.chainId)}
             </Box>
+
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-              Chain: {userNetwork.chainId}
+              Chain: {userNetwork && userNetwork.chainId}
             </WalletTypography>
             <Box display={'flex'} alignItems={'center'} gap={1}>
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
@@ -277,7 +311,7 @@ const SignTransactionComponent = () => {
             </Box>
           </TransactionInfoStyled>
 
-          <SignTransactionInfo {...trxUrlInfo} address={destinationAddress} />
+          <SignTransactionInfo {...trxUrlInfo} address={destinationAddress} hash={multySign.hash} />
 
           <GridButtonStyled>
             {address ? (
@@ -285,12 +319,11 @@ const SignTransactionComponent = () => {
                 {buttonText === 'Execute' && (
                   <WalletButton
                     loading={status === 'loading'}
-                    // disabled={status === 'loading'}
                     variant={status === 'success' ? 'outlined' : 'contained'}
                     styles={styledSecondaryBtn}
                     onClick={handleSignTransaction}
                   >
-                    {status === 'signed' ? 'Signed' : 'Sign Transaction'}
+                    {status === 'signed' ? 'Sign again' : 'Sign Transaction'}
                   </WalletButton>
                 )}
                 <WalletButton

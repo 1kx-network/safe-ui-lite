@@ -23,3 +23,10 @@ export const FilenameLabelStyled = styled('div')`
   overflow: hidden;
   text-overflow: ellipsis;
 `;
+
+export const styledNonce = {
+  display: 'flex',
+  alignItems: 'center',
+  width: '75px',
+  overflow: 'hidden',
+};

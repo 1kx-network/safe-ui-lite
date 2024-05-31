@@ -173,8 +173,6 @@ const useTransactionLibrary = () => {
     (batchFile: BatchFile) => {
       setErrorMessage(undefined);
       if (chainId && chosenNetwork) {
-        console.log('chainId && chosenNetwork', chainId, chosenNetwork);
-
         if (!validateTransactionsInBatch(batchFile)) {
           setErrorMessage(
             'Invalid transaction in the batch file. Make sure all numbers are encoded as strings.'
