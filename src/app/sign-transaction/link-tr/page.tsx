@@ -49,7 +49,7 @@ import {
 
 interface IForm {
   safeAddress: string | null;
-  nonceUrl: string | null;
+  nonce: string | null;
   destinationAddress: string | null;
   amount: string | null;
   tokenType: string | null;
@@ -70,7 +70,7 @@ interface IDataQuery {
   calldata: string | null;
   signatures: string[] | null;
   signers: string[] | null;
-  userNetworkTrxUrl: string | null;
+  userNetworkTrx: string | null;
   batchTr?: IBatchTr[] | null;
   rawTr?: RawTr[] | undefined;
 }
@@ -86,7 +86,7 @@ const defaultDataQuery: IDataQuery = {
   nonce: null,
   signatures: null,
   signers: null,
-  userNetworkTrxUrl: null,
+  userNetworkTrx: null,
   batchTr: null,
   rawTr: undefined,
 };
@@ -106,9 +106,9 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
       networkName: searchParams.get('networkName'),
       thresholdUrl: searchParams.get('thresholdUrl'),
       newThreshold: searchParams.get('newThreshold'),
-      nonceUrl: searchParams.get('nonce'),
+      nonce: searchParams.get('nonce'),
       calldata: searchParams.get('calldata'),
-      userNetworkTrxUrl: searchParams.get('userNetworkTrx'), // JSON.parse
+      userNetworkTrx: searchParams.get('userNetworkTrx'), // JSON.parse
       signatures: searchParams.get('signatures'),
       signers: searchParams.get('signers'),
       typeSignTrx: searchParams.get('typeSignTrx') as keyof ITypeSignTrx | null,
@@ -182,9 +182,9 @@ const NewSignTransactionComponent = () => {
             networkName: searchParams.get('networkName'),
             thresholdUrl: searchParams.get('thresholdUrl'),
             newThreshold: searchParams.get('newThreshold'),
-            nonceUrl: searchParams.get('nonce'),
+            nonce: searchParams.get('nonce'),
             calldata: searchParams.get('calldata'),
-            userNetworkTrxUrl: searchParams.get('userNetworkTrx'), // JSON.parse
+            userNetworkTrx: searchParams.get('userNetworkTrx'), // JSON.parse
             signatures: searchParams.get('signatures'),
             signers: searchParams.get('signers'),
             typeSignTrx: searchParams.get('typeSignTrx') as keyof ITypeSignTrx | null,
@@ -208,11 +208,11 @@ const NewSignTransactionComponent = () => {
           newThreshold: queryParams.newThreshold,
           tokenType: queryParams.tokenType,
           amount: queryParams.amount,
-          nonce: queryParams.nonceUrl,
+          nonce: queryParams.nonce,
           calldata: queryParams.calldata,
           signatures,
           signers,
-          userNetworkTrxUrl: queryParams.userNetworkTrxUrl,
+          userNetworkTrx: queryParams.userNetworkTrx,
           batchTr: parseRawTr,
           rawTr: rawTr,
         });
@@ -220,7 +220,7 @@ const NewSignTransactionComponent = () => {
         setChainIdUrl(queryParams.chainIdUrl);
         setTypeTrx(queryParams.typeSignTrx);
 
-        if (queryParams.userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
+        if (queryParams.userNetworkTrx) (async () => await addNetworkForUserSign())();
 
         reset({ ...queryParams, signers: queryParams.signers?.split(',') ?? [] });
         setValueLink(JSON.stringify(queryParams));
@@ -281,8 +281,8 @@ const NewSignTransactionComponent = () => {
   const onSubmit: SubmitHandler<any> = () => {};
 
   const addNetworkForUserSign = async () => {
-    if (!dataQuery.userNetworkTrxUrl) return;
-    const userNetwork = JSON.parse(dataQuery.userNetworkTrxUrl) as INetworkDB;
+    if (!dataQuery.userNetworkTrx) return;
+    const userNetwork = JSON.parse(dataQuery.userNetworkTrx) as INetworkDB;
     const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
 
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
@@ -460,7 +460,7 @@ const NewSignTransactionComponent = () => {
                     />
                     <Controller
                       control={control}
-                      name="nonceUrl"
+                      name="nonce"
                       render={({ field }) => (
                         <Box width={'120px'}>
                           <ItemInfoLabelStyled>Nonce#</ItemInfoLabelStyled>
