@@ -162,7 +162,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         if (listAccount.some((elem: string) => elem === safeAddress)) {
           setSafeAddress(safeAddress);
         } else if (defaultAccount) {
-          localStorage.setItem('safeAddress', defaultAccount);
           setSafeAddress(defaultAccount);
         }
       }
