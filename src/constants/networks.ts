@@ -95,7 +95,7 @@ export interface IOptionNetwork {
   label: string;
   value: string;
   name?: string;
-  currency?: string;
+  currency: string;
   rpc: string;
   explorerUrl?: string;
   rpcOriginal?: string;

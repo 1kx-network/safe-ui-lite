@@ -65,35 +65,6 @@ export default function CreatePageAccount() {
 
   const chainId = Number(network?.chainId);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const networksDB = await getNetworksDB();
-  //     const updateNetwork = networksDB.map(elem => ({
-  //       label: elem.name,
-  //       value: elem.name,
-  //       rpc: elem.rpcUrl,
-  //       icon: () => formatterIcon(0),
-  //       ...elem,
-  //     }));
-
-  //     setOptions(prevOptions => {
-  //       const uniqueNetworks = updateNetwork.filter(
-  //         network => !prevOptions.some(option => option.rpc === network.rpcUrl)
-  //       );
-  //       return [...prevOptions, ...uniqueNetworks];
-  //     });
-  //   })();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (chainId) {
-  //     const updatedOption = options.find(option => option.chainId === +chainId);
-  //     if (updatedOption) {
-  //       setChooseOpt(updatedOption);
-  //     }
-  //   }
-  // }, [chainId]);
-
   const handleUpdateOptions = async (isFirstTime?: boolean) => {
     setIsLoadingSelect(true);
     setOptions(prevOptions => {
@@ -209,6 +180,7 @@ export default function CreatePageAccount() {
       value: name,
       rpc: rpc,
       chainId: +chainId,
+      currency: name,
     };
 
     const objNetworkDB = {

@@ -125,6 +125,7 @@ export default function CreatePageAccount() {
       value: name,
       rpc: rpc,
       chainId: +chainId,
+      currency: name,
     };
 
     const objNetworkDB = {

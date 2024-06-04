@@ -47,9 +47,6 @@ interface ITrBuildComponent {
 const TrBuildComponent = ({ batchTrProps }: ITrBuildComponent) => {
   const searchParams = useSearchParams();
   const batchTr = searchParams.get('batchTr');
-  // const rawTr = searchParams.get('rawTr');
-
-  // const parserawTr: IBatchTr[] = parseSearchParams(batchTr);
   const parseBatchTr: IBatchTr[] = batchTrProps ? batchTrProps : parseSearchParams(batchTr);
 
   if (!parseBatchTr) {
