@@ -183,7 +183,7 @@ const SignTransactionComponent = () => {
           .catch(error => console.log(`<--${error}-->`));
       })();
     }
-  }, [safeAddress]);
+  }, [safeAddress, address]);
 
   // Update the balance
   useEffect(() => {
@@ -225,6 +225,7 @@ const SignTransactionComponent = () => {
   const handleSignTransaction = useCallback(async () => {
     if (!multySign) return;
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
+    console.log('ownerList_', ownerList);
 
     if (ownerList && ownerList.find(elem => elem === String(address))) {
       await multySign.signTransactionMulty();
