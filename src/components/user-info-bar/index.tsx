@@ -292,7 +292,7 @@ export const UserInfoBar = () => {
             style={{ width: '100%' }}
             color={themeMuiBase.palette.grey}
           >
-            Create account
+            Connect wallet
           </WalletTypography>
         )}
       </InfoUserStyled>
