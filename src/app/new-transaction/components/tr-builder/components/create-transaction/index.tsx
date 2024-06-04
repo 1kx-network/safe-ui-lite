@@ -18,7 +18,7 @@ import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 
 import { FilenameLabelStyled, TransactionsSectionWrapperStyled } from './create-transaction.styles';
 
-const CreateTransactions = ({ nonce }: { nonce: string }) => {
+const CreateTransactions = ({ nonce }: { nonce: string | number }) => {
   const {
     transactions,
     removeAllTransactions,
@@ -72,7 +72,7 @@ const CreateTransactions = ({ nonce }: { nonce: string }) => {
         address: encodeURIComponent(safeAddress),
         safeTxHash,
         typeSignTrx: TYPE_SIGN_TRX.TR_BUILD,
-        nonce: nonce,
+        nonce: JSON.stringify(nonce),
         batchTr: JSON.stringify(description),
 
         userNetworkTrx: JSON.stringify({
@@ -80,6 +80,7 @@ const CreateTransactions = ({ nonce }: { nonce: string }) => {
           chainId: chosenNetwork.chainId,
           rpcUrl: chosenNetwork.rpc,
           explorerUrl: chosenNetwork.explorerUrl,
+          currency: chosenNetwork.currency ?? '',
         }),
       };
 

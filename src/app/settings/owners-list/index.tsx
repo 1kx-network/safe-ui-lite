@@ -50,7 +50,6 @@ export const SettingsOwner = () => {
     setIsLoading,
     setSafeAccountOwners,
     setNeedConfirmOwner,
-    setContractNonce,
     setContractVersion,
   } = useActiveSafeAddress();
   const { chosenNetwork } = useNetworkStore();
@@ -95,7 +94,6 @@ export const SettingsOwner = () => {
       const { ownersAccount, contractVersion, contractNonce, accountThreshold } = dataAcc;
 
       setSafeAccountOwners(ownersAccount);
-      setContractNonce(contractNonce);
       setNonce(contractNonce);
       setContractVersion(contractVersion);
       setNeedConfirmOwner(accountThreshold);
@@ -152,6 +150,7 @@ export const SettingsOwner = () => {
         chainId: chosenNetwork?.chainId ?? '',
         rpcUrl: chosenNetwork?.rpc ?? '',
         explorerUrl: chosenNetwork?.explorerUrl ?? '',
+        currency: chosenNetwork?.currency ?? '',
       }),
     };
 
@@ -181,6 +180,7 @@ export const SettingsOwner = () => {
         chainId: chosenNetwork?.chainId ?? '',
         rpcUrl: chosenNetwork?.rpc ?? '',
         explorerUrl: chosenNetwork?.explorerUrl ?? '',
+        currency: chosenNetwork?.currency ?? '',
       }),
     };
 
@@ -239,6 +239,7 @@ export const SettingsOwner = () => {
         chainId: chosenNetwork?.chainId ?? '',
         rpcUrl: chosenNetwork?.rpc ?? '',
         explorerUrl: chosenNetwork?.explorerUrl ?? '',
+        currency: chosenNetwork?.currency ?? '',
       }),
     };
 

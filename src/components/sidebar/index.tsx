@@ -105,6 +105,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     setIsLoading,
     accountList,
     setAccountList,
+    setContractNonce,
   } = useActiveSafeAddress();
   const { createSafe, getInfoByAccount } = useSafeSdk();
 
@@ -177,9 +178,10 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         const dataAcc = await getInfoByAccount(safeSdk);
         if (!dataAcc) return;
 
-        const { balanceAccount } = dataAcc;
+        const { balanceAccount, contractNonce } = dataAcc;
         const parceBalance = utils.formatEther(String(balanceAccount));
 
+        setContractNonce(contractNonce);
         setBalanceAccount(parceBalance);
       };
 

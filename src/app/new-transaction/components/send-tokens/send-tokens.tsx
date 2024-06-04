@@ -165,6 +165,7 @@ export const SendTokens = () => {
           chainId: chosenNetwork?.chainId ?? '',
           rpcUrl: chosenNetwork?.rpc ?? '',
           explorerUrl: chosenNetwork?.explorerUrl ?? '',
+          currency: chosenNetwork?.currency ?? '',
         }),
       };
 
