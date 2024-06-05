@@ -254,7 +254,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     }
   };
 
-  const condMenuList = address ? menuList : [menuList[0]];
+  const condMenuList = address && accountList.length > 0 ? menuList : [menuList[0]];
 
   const handleChangeSelect = (elems: MultiValue<IOptionShareAcc>) => {
     setChooseOptionsShareAcc(elems as IOptionShareAcc[]);
@@ -337,16 +337,21 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             </IconOpenAccountsStyled>
           )}
         </InfoUserStyled>
+
         <MenuStyled suppressHydrationWarning>
-          <ItemMenuStyled
-            style={styleBtnTransaction}
-            href={address ? routes.newTransactionSendToken : ''}
-          >
-            <WalletTypography>New transaction</WalletTypography>
-          </ItemMenuStyled>
-          <ItemMenuStyled style={styleBtnTransaction} href={routes.newSignTransaction}>
-            <WalletTypography>Sign Transaction</WalletTypography>
-          </ItemMenuStyled>
+          {accountList.length > 0 && (
+            <>
+              <ItemMenuStyled
+                style={styleBtnTransaction}
+                href={address ? routes.newTransactionSendToken : ''}
+              >
+                <WalletTypography>New transaction</WalletTypography>
+              </ItemMenuStyled>
+              <ItemMenuStyled style={styleBtnTransaction} href={routes.newSignTransaction}>
+                <WalletTypography>Sign Transaction</WalletTypography>
+              </ItemMenuStyled>
+            </>
+          )}
 
           {condMenuList.map(item => (
             <ItemMenuStyled key={item.id} href={item.url}>

@@ -40,7 +40,6 @@ import {
   GridButtonStyled,
   IconArrowStyled,
   IconCopyStyled,
-  styledBtn,
   styledBtnDisconnect,
   ImgWalletStyled,
   styledNetworks,
@@ -440,9 +439,6 @@ export const UserInfoBar = () => {
         </ItemInfoStyled>
 
         <GridButtonStyled>
-          <WalletButton variant="outlined" styles={styledBtn} onClick={() => open()}>
-            Switch Wallet
-          </WalletButton>
           <WalletButton variant="text" styles={styledBtnDisconnect} onClick={handleDisconnect}>
             Disconnect
           </WalletButton>
