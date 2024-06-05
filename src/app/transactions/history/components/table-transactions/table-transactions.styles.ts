@@ -37,8 +37,10 @@ export const styledPaper: React.CSSProperties = {
   flexDirection: 'column',
   maxHeight: '70vh',
   width: '100%',
-  overflow: 'scroll',
+  overflow: 'auto',
   gap: themeMuiBase.spacing(1),
+  msOverflowStyle: 'none' /* IE and Edge */,
+  scrollbarWidth: 'none' /* Firefox */,
 };
 
 export const styledPaperSmallType: React.CSSProperties = {
