@@ -245,19 +245,6 @@ const SafeAccountOwners = () => {
                 <Accordion title="Address book privacy" description="Some info" />
               </WalletPaper>
             </Box>
-            <Box mt={3}>
-              <WalletPaper style={styleWalletPaper}>
-                <Box mb={3}>
-                  <WalletTypography fontSize={17} fontWeight={600}>
-                    Safe account setup
-                  </WalletTypography>
-                </Box>
-                <Accordion
-                  title="1/1 policy"
-                  description="We recommend using a threshold higher than one to prevent losing access to your safe account in case an owner key is lost or compromised."
-                />
-              </WalletPaper>
-            </Box>
           </PreviewSectionStyled>
         </GridContainer>
       </WrapperStyled>

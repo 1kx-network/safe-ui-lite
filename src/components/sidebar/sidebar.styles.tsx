@@ -239,3 +239,9 @@ export const ShareAccountItemStyled = styled('div')(
   padding: ${theme.spacing(2)} 0;
 `
 );
+
+export const styledBalance = {
+  overflow: 'hidden',
+  maxWidth: '75px',
+  textOverflow: 'ellipsis',
+};
