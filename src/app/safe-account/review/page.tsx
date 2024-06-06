@@ -14,7 +14,7 @@ import { formattedLabel } from '@/utils/foramtters';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import routes from '@/app/routes';
 import useActiveOwnerStore from '@/stores/active-owners-store';
-import { customToasty } from '@/components';
+import { CustomModal, customToasty } from '@/components';
 import IconInfo from '@/assets/svg/infoIcon.svg';
 import useNetworkStore from '@/stores/networks-store';
 
@@ -36,6 +36,7 @@ export default function CreatePageAccount() {
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isErrorDeploy, setIsErrorDeploy] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const { networks, chosenNetwork } = useNetworkStore();
 
@@ -62,10 +63,11 @@ export default function CreatePageAccount() {
       setIsLoading(true);
       await deploySafe(owners, needConfirmOwner)
         .then(() => {
-          router.push(routes.home);
-          customToasty('Account successfully created', 'success');
+          setIsOpenModal(true);
         })
-        .catch(e => console.error(`<--${e}-->`));
+        .catch(e => {
+          console.log(e);
+        });
     } catch (e) {
       setIsErrorDeploy(true);
     } finally {
@@ -78,6 +80,11 @@ export default function CreatePageAccount() {
     setOwners([]);
     setNeedConfirmOwner(1);
     router.push(routes.safeAccountOwners);
+  };
+
+  const handleBtnStartWallet = () => {
+    router.push(routes.home);
+    setIsOpenModal(false);
   };
 
   return (
@@ -230,6 +237,27 @@ export default function CreatePageAccount() {
           </WalletPaper>
         </GridContainer>
       </WrapperStyled>
+      <CustomModal
+        isOpen={isOpenModal}
+        closeModal={() => setIsOpenModal(false)}
+        styles={{ width: '654px' }}
+      >
+        <Box display={'flex'} flexDirection={'column'} alignItems={'center'} gap={3}>
+          <WalletTypography fontSize={22} fontWeight={600}>
+            Success
+          </WalletTypography>
+          <WalletTypography color={'#777F88'} fontSize={14}>
+            Your safe account was successfully created
+          </WalletTypography>
+          <WalletButton
+            variant="contained"
+            onClick={handleBtnStartWallet}
+            styles={{ width: '295px' }}
+          >
+            Start using Wallet
+          </WalletButton>
+        </Box>
+      </CustomModal>
     </WalletLayout>
   );
 }

@@ -14,6 +14,7 @@ import useSignStore from '@/stores/sign-store';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { setDataDB } from '@/db/set-info';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 export interface IUseMultySign {
   mode: 'runtime' | 'url';
@@ -69,6 +70,7 @@ export function useMultySign({
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } = TYPE_SIGN_TRX;
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
+  const { setSafeAddress } = useActiveSafeAddress();
   const { createSdkInstance, createTrancationERC20 } = useSafeSdk();
   const { chainId } = useWeb3ModalAccount();
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
@@ -259,6 +261,8 @@ export function useMultySign({
   useEffect(() => {
     if (userWalletAddress) {
       createSdkInstance(safeAddress);
+      localStorage.setItem('safeAddress', safeAddress);
+      setSafeAddress(safeAddress);
     }
   }, [userWalletAddress]);
 

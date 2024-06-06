@@ -56,6 +56,9 @@ export const MenuStyled = styled('div')(
 	gap: 1.25rem;
 	font-weight: 600; 
 	height: 100%;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
   `
 );
 
@@ -72,7 +75,6 @@ export const ItemMenuStyled = styled(Link)<{ disabled?: boolean }>(
   background-color: ${disabled ? theme.palette.textDarkLight : 'transparent'};
   cursor: ${disabled ? 'not-allowed' : 'pointer'};
   opacity: ${disabled ? 0.3 : 1};
-
  	&:hover {
     text-decoration: none;
     background-color: ${theme.palette.textDarkLight};
@@ -146,6 +148,9 @@ export const AccountWrapperStyled = styled('div')(
   padding: ${theme.spacing(5)};
   border-radius:  0 0 0.625rem 0.625rem;
   height: calc(100% - 60px);
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `
 );
 
