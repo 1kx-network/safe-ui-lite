@@ -8,7 +8,7 @@ type Store = {
   contractNonce: number | string | null;
   contractVersion: string | null;
   isLoading: boolean;
-  accountList: string[] | [];
+  accountList: string[];
 
   setIsLoading: (payload: boolean) => void;
   setSafeAddress: (payload: string | null) => void;
@@ -37,7 +37,11 @@ const defaultData = {
 const useActiveSafeAddress = create<Store>(set => ({
   ...defaultData,
 
-  setSafeAddress: (payload: string | null) => set(state => ({ ...state, safeAddress: payload })),
+  setSafeAddress: (payload: string | null) => {
+    set(state => {
+      return { ...state, safeAddress: payload };
+    });
+  },
 
   setBalanceAccount: (payload: string) => set(state => ({ ...state, balanceAccount: payload })),
 
