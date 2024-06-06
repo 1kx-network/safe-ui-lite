@@ -21,7 +21,9 @@ export const OwnerListStyled = styled('div')(
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing(5)};
-  overflow: scroll;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   max-height: 300px;
   width: 80%;
   align-items: end;

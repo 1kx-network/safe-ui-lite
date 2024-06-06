@@ -57,7 +57,9 @@ export const ConfirmationsStyled = styled('div')(
 export const BodyListAccountsStyled = styled('div')`
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   height: auto;
   max-height: 350px;
 `;
