@@ -156,14 +156,13 @@ export default function CreatePageAccount() {
                       <IconDefualtAddress width={'16px'} height={'16px'} />
 
                       <WalletTypography fontSize={14}>{formattedLabel(owner)}</WalletTypography>
-
+                      <CopyIconStyled onClick={() => handleCopyAddress('owner.address')} />
                       <LinkOpenInNewIconStyled
                         href={`${linkOnScan}address/${owner}`}
                         target="_blank"
                       >
                         <OpenInNewIconStyled />
                       </LinkOpenInNewIconStyled>
-                      <CopyIconStyled onClick={() => handleCopyAddress('owner.address')} />
                     </Box>
                   ))}
                 </OwnerListStyled>
@@ -254,7 +253,7 @@ export default function CreatePageAccount() {
             onClick={handleBtnStartWallet}
             styles={{ width: '295px' }}
           >
-            Start using Wallet
+            Start using Safe Wallet
           </WalletButton>
         </Box>
       </CustomModal>
