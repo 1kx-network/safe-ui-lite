@@ -201,8 +201,8 @@ export default function CreatePageAccount() {
                 <Box display={'flex'} flexDirection={'column'} mt={2}>
                   <WalletButton
                     onClick={() => {
-                      setIsAddNewNetwork(true);
                       setIsChangeVariables(false);
+                      setIsAddNewNetwork(!isAddNewNetwork);
                     }}
                     variant="text"
                     styles={styledCustomNetworkBtn}
@@ -214,7 +214,7 @@ export default function CreatePageAccount() {
                   <WalletButton
                     onClick={() => {
                       setIsAddNewNetwork(false);
-                      setIsChangeVariables(true);
+                      setIsChangeVariables(!isChangeVariables);
                     }}
                     variant="text"
                     styles={styledCustomNetworkBtn}

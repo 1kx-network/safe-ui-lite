@@ -50,6 +50,7 @@ import {
   ShareAccountsListStyled,
   ShareAccountItemStyled,
   styledNetwork,
+  styledBalance,
 } from './sidebar.styles';
 import { dataUserMock, menuList } from './fixtures';
 
@@ -320,7 +321,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
               </Box>
             ) : (
               <Box height={'25px'} display={'flex'} alignItems={'center'} gap={2}>
-                <WalletTypography fontSize={14} fontWeight={500}>
+                <WalletTypography fontSize={14} fontWeight={500} style={styledBalance}>
                   {safeAddress ? balanceAccount : 0}
                 </WalletTypography>
                 <WalletTypography fontSize={14} fontWeight={500} style={styledNetwork}>

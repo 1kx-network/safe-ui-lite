@@ -86,3 +86,23 @@ export const styledNonce = {
   width: '5.25rem',
   overflow: 'hidden',
 };
+
+export const OnceSelectStyled = styled('div')(
+  ({ theme }) => `
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-color: ${theme.palette.tetriaryLightGrey};
+  border-radius: 1.75rem;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: none;
+  box-sizing: border-box;
+  height: 44px;
+  min-width: 38px;
+  padding: 0 0.5rem;
+  margin-right: ${theme.spacing(2)};
+`
+);

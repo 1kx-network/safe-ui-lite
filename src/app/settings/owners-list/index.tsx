@@ -32,6 +32,7 @@ import {
   AddOwnerStyled,
   GridBtnAddOwnerStyled,
   styledNonce,
+  OnceSelectStyled,
 } from './owners-list.styles';
 import { ListAccount } from './components/list-account/list-account';
 
@@ -352,17 +353,24 @@ export const SettingsOwner = () => {
           </WalletTypography>
 
           <Box mt={3} display="flex" alignItems="center">
-            <Box mr={3} width={'84px'}>
-              <WalletSelect
-                isLoading={Boolean(!needConfirmOwner)}
-                controlShouldRenderValue
-                options={optionsCount}
-                defaultValue={[
-                  { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-                ]}
-                onChange={handleChooseAccounConfirm}
-              />
-            </Box>
+            {optionsCount && optionsCount.length === 1 ? (
+              <OnceSelectStyled>
+                <WalletTypography fontSize={14}>1</WalletTypography>
+              </OnceSelectStyled>
+            ) : (
+              <Box mr={3} width={'84px'}>
+                <WalletSelect
+                  isDisabled={optionsCount && optionsCount.length === 1}
+                  isLoading={Boolean(!needConfirmOwner)}
+                  controlShouldRenderValue
+                  options={optionsCount}
+                  defaultValue={[
+                    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
+                  ]}
+                  onChange={handleChooseAccounConfirm}
+                />
+              </Box>
+            )}
             <WalletTypography fontSize={13} fontWeight={600}>
               out of {safeAccountOwners.length} owner(s)
             </WalletTypography>
