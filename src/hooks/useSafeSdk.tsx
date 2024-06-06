@@ -14,6 +14,7 @@ import { safeNetworksObj } from '@/constants/networks';
 import usdABI from '@/app/contracts/abi/usd.json';
 import { CONTRACTS_TOKEN } from '@/constants/tokens-contract';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import { SEPOLIA_ZK_MODULE } from '../constants/addresses';
 
 import { useEthersAdapter } from './useEthersAdapter';
 
@@ -131,6 +132,16 @@ export function useSafeSdk(safeAddress: string | null = null) {
     }
   };
 
+  const addZKModule = async (safeSdk: null | Safe, moduleAddress = SEPOLIA_ZK_MODULE) => {
+    try {
+      const txndata = safeSdk?.createEnableModuleTx(moduleAddress);
+      return txndata;
+    } catch (e) {
+      customToasty(`Error add ZK module`, 'error');
+      console.error(e);
+    }
+  };
+
   const getInfoByAccount = async (safeSdk: null | Safe) => {
     if (!safeSdk) return;
 
@@ -187,6 +198,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
   };
 
   return {
+    addZKModule,
     deploySafe,
     createSafe,
     getInfoByAccount,

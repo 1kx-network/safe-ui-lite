@@ -17,6 +17,7 @@ import {
   styledBtn,
 } from './home.styles';
 import routes from './routes';
+import AddModule from './add-module/add-module';
 
 export default function Home() {
   const { address, chainId } = useWeb3ModalAccount();
@@ -73,6 +74,7 @@ export default function Home() {
             </WalletPaper>
           </ItemStepPaperStyled>
         </GridStepsStyled>
+        <AddModule />
       </WrapperStyled>
     </WalletLayout>
   );
