@@ -6,7 +6,8 @@ display: flex;
 flex-direction: column;
 height: 100%;
 max-height: 400px;
-overflow: scroll;
+-ms-overflow-style: none;
+scrollbar-width: none;
 margin-top: ${theme.spacing(3)};
 `
 );

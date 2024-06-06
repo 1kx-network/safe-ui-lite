@@ -1,4 +1,4 @@
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback } from 'react';
 import { Box } from '@mui/system';
@@ -21,6 +21,7 @@ interface GetStartedWidgetWidgetProps {
 
 export const GetStartedWidget: React.FC<GetStartedWidgetWidgetProps> = ({ routes }) => {
   const { address } = useWeb3ModalAccount();
+  const { open } = useWeb3Modal();
   const router = useRouter();
 
   const handleImportAccount = useCallback(() => {
