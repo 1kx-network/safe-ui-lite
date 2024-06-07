@@ -33,6 +33,7 @@ import { parseSearchParams } from '@/utils/helpers';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 
+import Proof from './components/proof';
 import {
   BoxOwnerLinkStyled,
   GridButtonStyled,
@@ -62,9 +63,11 @@ const SignTransactionComponent = () => {
   const { setBalanceAccount, setIsLoading } = useActiveSafeAddress();
   const { getInfoByAccount, createSdkInstance } = useSafeSdk();
 
-  const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [ownerList, setOwnerList] = useState<string[] | null>(null);
 
+  const [linkOnScan, setLinkOnScan] = useState<string>('');
+  const [safeTransactionHash, setSafeTransactionHash] = useState<string | null>(null);
+  const [safeOwners, setSafeOwners] = useState<string[]>([]);
   const safeAddress = typeof window !== 'undefined' ? searchParams.get('address') : null;
   const chainIdUrl = searchParams.get('chainId');
   const amount = searchParams.get('amount');
@@ -156,6 +159,24 @@ const SignTransactionComponent = () => {
   useEffect(() => {
     if (userNetworkTrxUrl) (async () => await addNetworkForUserSign())();
 
+    const getTransactionHash = async () => {
+      if (!safeSdk || !safeTransaction) return;
+      const hash = await safeSdk.getTransactionHash(safeTransaction);
+      setSafeTransactionHash(hash);
+    };
+    getTransactionHash();
+  }, [safeTransaction, safeSdk]);
+
+  useEffect(() => {
+    const getSafeOwners = async () => {
+      if (!safeSdk) return;
+      const owners = await safeSdk.getOwners();
+      setSafeOwners(owners);
+    };
+    getSafeOwners();
+  }, [safeSdk, safeAddress]);
+
+  useEffect(() => {
     if (chainIdUrl) {
       const linkOnScan = networks?.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
       if (linkOnScan) {
@@ -386,6 +407,20 @@ const SignTransactionComponent = () => {
             <WalletTypography fontWeight={500}>Need threshold: {threshold}</WalletTypography>
             <WalletTypography fontWeight={500}>Signed: {signedCount}</WalletTypography>
           </OwnersInfoStyled>
+          {safeTransaction &&
+            safeAddress &&
+            signedCount >= threshold &&
+            safeTransactionHash &&
+            signatures && (
+              <Proof
+                owners={safeOwners}
+                threshold={threshold}
+                signatures={signatures.split(',')}
+                txHash={safeTransactionHash}
+                transaction={safeTransaction}
+                safeAddress={safeAddress}
+              />
+            )}
         </WalletPaper>
       </WrapperStyled>
     </WalletLayout>

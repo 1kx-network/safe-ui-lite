@@ -12,6 +12,7 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import { WrapperStyled } from './home.styles';
 import routes from './routes';
+import AddModule from './add-module/add-module';
 
 export default function Home() {
   const { address, chainId } = useWeb3ModalAccount();
@@ -48,6 +49,7 @@ export default function Home() {
         ) : (
           <GetStartedWidget routes={routes} />
         )}
+        <AddModule />
       </WrapperStyled>
     </WalletLayout>
   );

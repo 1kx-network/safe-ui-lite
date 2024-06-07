@@ -1,0 +1,132 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "contract UltraVerifier",
+                "name": "_verifier",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "module",
+                "type": "address"
+            }
+        ],
+        "name": "enableModule",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "nonce",
+                "type": "uint256"
+            }
+        ],
+        "name": "increaseNonce",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract GnosisSafe",
+                "name": "safeContract",
+                "type": "address"
+            },
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "enum Enum.Operation",
+                        "name": "operation",
+                        "type": "uint8"
+                    }
+                ],
+                "internalType": "struct ZkSafeModule.Transaction",
+                "name": "transaction",
+                "type": "tuple"
+            },
+            {
+                "internalType": "bytes",
+                "name": "proof",
+                "type": "bytes"
+            }
+        ],
+        "name": "sendZkSafeTransaction",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract GnosisSafe",
+                "name": "safeContract",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "txHash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "proof",
+                "type": "bytes"
+            }
+        ],
+        "name": "verifyZkSafeTransaction",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "zkSafeModuleVersion",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+    }
+]
