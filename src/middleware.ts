@@ -48,7 +48,6 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
     hasAddressUser && hasAddressUser.trim() !== '' && pathname !== routes.signTransaction;
 
   const isTransactions = pathname === routes.transactions;
-  console.log('_safeAddress_', safeAddress);
 
   if (!safeAddress) {
     return NextResponse.rewrite(new URL(routes.home, url));
