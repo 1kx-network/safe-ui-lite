@@ -47,6 +47,7 @@ export interface ITransaction {
   amount: string;
   destinationAddress: string;
   calldata: string;
+  nonce: string;
   signatures: ISignature[];
 }
 

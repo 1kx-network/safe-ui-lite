@@ -6,7 +6,7 @@ import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/
 import { MetaTransactionData, SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import { v4 as uuid } from 'uuid';
 
-import { db } from '@/db';
+import { ITransaction, db } from '@/db';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
@@ -216,7 +216,7 @@ export function useMultySign({
       const currentDate = new Date();
       const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
       const { signers, signatures } = getSignaturesMulty();
-      const transactionDB = {
+      const transactionDB: ITransaction = {
         id: uuid(),
         date: dateTrx,
         tokenType: tokenType ?? 'ETH',
@@ -225,10 +225,11 @@ export function useMultySign({
         amount: safeTransaction.data.value,
         calldata: safeTransaction.data.data,
         destinationAddress: safeTransaction.data.to,
-        nonce,
+        nonce: nonce ?? '1',
         signatures: signers.map((s, idx) => ({ data: signatures[idx], signer: s })),
       };
 
+      if (transaction) return;
       await setDataDB(safeAddress, {
         address: safeAddress,
         transactions: [transactionDB],
