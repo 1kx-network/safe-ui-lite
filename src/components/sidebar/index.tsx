@@ -162,9 +162,12 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
         if (listAccount.some((elem: string) => elem === safeAddress)) {
           setSafeAddress(safeAddress);
+          safeAddress && localStorage.setItem('safeAddress', safeAddress);
         } else if (defaultAccount) {
+          localStorage.setItem('safeAddress', defaultAccount);
           setSafeAddress(defaultAccount);
         } else {
+          localStorage.removeItem('safeAddress');
           setSafeAddress(null);
         }
       }
@@ -189,6 +192,8 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       pendingBalance();
       setTimeout(() => setIsLoading(false), 400);
     }
+
+    setIsLoading(false);
   }, [data, chainId, address, safeSdk]);
 
   useEffect(() => {
