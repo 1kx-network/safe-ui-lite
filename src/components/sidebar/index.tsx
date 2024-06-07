@@ -158,13 +158,14 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
       if (listAccount !== undefined) {
         setAccountList(listAccount);
-
         const defaultAccount = listAccount[0];
 
         if (listAccount.some((elem: string) => elem === safeAddress)) {
           setSafeAddress(safeAddress);
         } else if (defaultAccount) {
           setSafeAddress(defaultAccount);
+        } else {
+          setSafeAddress(null);
         }
       }
 
