@@ -71,7 +71,8 @@ const SafeAccountOwners = () => {
 
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
-    storeOwners.setOwners(filledOwners);
+    storeOwners.setArrayOwners(filledOwners);
+
     const filterSigners =
       needConfirmOwner > filledOwners.length ? filledOwners.length : needConfirmOwner;
     storeOwners.setNeedConfirmOwner(filterSigners);
