@@ -52,7 +52,7 @@ export default function CreatePageAccount() {
   const [isAddNewNetwork, setIsAddNewNetwork] = useState(false);
   const [isChangeVariables, setIsChangeVariables] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { networks, setNetwork, chosenNetwork, setChosenNetwork, loadNetworks } = useNetworkStore();
+  const { networks, setNetwork, chosenNetwork, setChosenNetwork } = useNetworkStore();
 
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
