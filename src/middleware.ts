@@ -23,7 +23,7 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   const cookies = parseCookie(cookieHeader);
 
   const hasAddressUser = cookies['addressUser'];
-  const safeAddress = cookies['safeAddress'];
+  // const safeAddress = cookies['safeAddress'];
 
   if (pathname.startsWith('/_next') || pathname.includes('/api/') || PUBLIC_FILE.test(pathname)) {
     return NextResponse.next();
@@ -48,10 +48,6 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
     hasAddressUser && hasAddressUser.trim() !== '' && pathname !== routes.signTransaction;
 
   const isTransactions = pathname === routes.transactions;
-
-  if (!safeAddress) {
-    return NextResponse.rewrite(new URL(routes.home, url));
-  }
 
   return NextResponse.next();
 
