@@ -28,6 +28,7 @@ const routes = {
   signMessage: '/sign-message',
   newSignTransaction: '/sign-transaction/link-tr',
   signTrBuilder: '/sign-transaction?tr-builder',
+  executeTransaction: '/execute-transaction',
 };
 
 export default routes;
