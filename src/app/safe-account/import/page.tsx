@@ -232,7 +232,7 @@ export default function CreatePageAccount() {
     <WalletLayout hideSidebar>
       <WrapperStyled style={{ height: 'fit-content' }}>
         <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
-          Import Safe Account
+          Add Safe Account
         </WalletTypography>
 
         <GridContainer>

@@ -93,8 +93,8 @@ export const NetworksSettings = ({
 
     await setNetworkDB(updateNetworkDB);
     // await updateNetworkDB(updateNetworkDB);
+    await loadNetworks();
 
-    loadNetworks();
     setTimeout(() => setIsLoadingChain(false), 500);
     reset();
     customToasty('Network was changed', 'success');

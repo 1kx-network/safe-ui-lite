@@ -57,6 +57,7 @@ export default function CreatePageAccount() {
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
   const network = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
 
   const chainId = Number(network?.chainId);
 
@@ -76,7 +77,7 @@ export default function CreatePageAccount() {
     (async () => {
       await handleUpdateOptions(true);
     })();
-  }, []);
+  }, [networks]);
 
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -91,8 +92,6 @@ export default function CreatePageAccount() {
   const handleChooseNetwork = async (chosenNetwork: IOptionNetwork) => {
     setChosenNetwork(chosenNetwork);
   };
-
-  const { switchNetwork } = useSwitchNetwork();
 
   const handleSwitchNetwork = async () => {
     if (!chosenNetwork) return;
@@ -126,6 +125,7 @@ export default function CreatePageAccount() {
       rpc: rpc,
       chainId: +chainId,
       currency: name,
+      icon: () => formatterIcon(chainId),
     };
 
     const objNetworkDB = {
@@ -140,7 +140,7 @@ export default function CreatePageAccount() {
     };
 
     setOptions(prevOptions => {
-      return [...prevOptions, { ...newNetwork, icon: () => formatterIcon(newNetwork.chainId) }];
+      return [...prevOptions, newNetwork];
     });
 
     setNetwork(objNetworkDB);
