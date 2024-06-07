@@ -121,8 +121,8 @@ export const SettingsOwner = () => {
   };
 
   const handleRemoveOwnerAddress = async (address: string) => {
-    setIsLoading(true);
     if (!safeAddress || !safeSdk) return;
+    setIsLoading(true);
 
     let threshold = needConfirmOwner;
 
@@ -161,8 +161,8 @@ export const SettingsOwner = () => {
   };
 
   const handleChangeSettings = async () => {
-    setIsLoading(true);
     if (!safeAddress || !safeSdk) return;
+    setIsLoading(true);
     const safeTx = await safeSdk.createChangeThresholdTx(newCountNeedConfirm);
     const safeTxHash = await safeSdk.getTransactionHash(safeTx);
 
