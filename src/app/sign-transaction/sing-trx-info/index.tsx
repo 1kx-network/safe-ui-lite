@@ -37,7 +37,8 @@ export const SignTransactionInfo = ({
   amount,
   tokenType,
 }: ISendTokenInfo) => {
-  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } = TYPE_SIGN_TRX;
+  const { REMOVE_OWNER, ADD_OWNER, ADD_MODULE, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } =
+    TYPE_SIGN_TRX;
 
   const handleCopy = (address: string | null) => {
     if (!address) return;
@@ -50,12 +51,20 @@ export const SignTransactionInfo = ({
   const isChangeOwner = typeSignTrx === ADD_OWNER || typeSignTrx === REMOVE_OWNER;
   const isAddOwner = typeSignTrx === ADD_OWNER;
   const isTrBuild = typeSignTrx === TR_BUILD;
+  const isAddModule = typeSignTrx === ADD_MODULE;
 
   return (
     <TransactionInfoStyled>
       <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
         Transaction Info
       </WalletTypography>
+      {isAddModule && (
+        <>
+          <Box fontWeight={100} color="white">
+            This transaction will enable add the zk module to the Safe.
+          </Box>
+        </>
+      )}
 
       {isSendToken && (
         <>

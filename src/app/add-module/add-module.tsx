@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useReadContract } from 'wagmi';
 import { Box } from '@mui/system';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { useRouter } from 'next/navigation';
 
 import abi from '../../app/contracts/abi/safe.json';
-import { ItemStepPaperStyled, IconPlusStyled } from '../../app/home.styles'; // Assuming these are imported correctly
+import { ItemStepPaperStyled } from '../../app/home.styles'; // Assuming these are imported correctly
 import { WalletButton, WalletPaper, WalletTypography } from '@/ui-kit';
 import useActiveSafeAddress from '../../stores/safe-address-store';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
@@ -18,6 +18,9 @@ import { SEPOLIA_ZK_MODULE } from '../../constants/addresses';
 import routes from '../../app/routes';
 import { NATIVE_TOKENS } from '../../constants/tokens';
 import { ITransaction } from '@/db';
+import { IconPlusStyled } from '../../components/widgets/create-transaction/create-transaction.styles';
+import { TYPE_SIGN_TRX } from '../../constants/type-sign';
+import useNetworkStore from '../../stores/networks-store';
 
 export default function AddModule() {
   const { address, chainId } = useWeb3ModalAccount();
@@ -26,6 +29,20 @@ export default function AddModule() {
   const { addZKModule } = useSafeSdk(safeAddress);
   const network = useNetwork();
   const router = useRouter();
+  const { chosenNetwork } = useNetworkStore();
+  const [nonce, setNonce] = useState('1');
+
+  useEffect(() => {
+    if (safeSdk) {
+      const getNonce = async () => {
+        const nonce = await safeSdk.getNonce();
+
+        setNonce(String(nonce));
+      };
+
+      getNonce();
+    }
+  }, [safeSdk, safeAddress]);
 
   const { data: isModuleEnabled, isError } = useReadContract({
     abi,
@@ -57,7 +74,16 @@ export default function AddModule() {
         destinationAddress: safeTransaction.data.to,
         networkName,
         safeTxHash,
+        nonce: nonce,
         tokenType: NATIVE_TOKENS.ETH,
+        typeSignTrx: TYPE_SIGN_TRX.ADD_MODULE,
+        userNetworkTrx: JSON.stringify({
+          name: chosenNetwork?.value ?? '',
+          chainId: chosenNetwork?.chainId ?? '',
+          rpcUrl: chosenNetwork?.rpc ?? '',
+          explorerUrl: chosenNetwork?.explorerUrl ?? '',
+          currency: chosenNetwork?.currency ?? '',
+        }),
       };
 
       const transactionDB: ITransaction = {
@@ -83,7 +109,7 @@ export default function AddModule() {
     }
   };
 
-  if (!safeAddress) return <div>Safe address not found</div>;
+  if (!safeAddress) return null;
 
   if (isError) return <div>Error loading module status</div>;
 
@@ -94,7 +120,7 @@ export default function AddModule() {
           <IconPlusStyled />
           <Box display={'flex'} flexDirection={'column'} gap={4}>
             <WalletTypography fontSize={22} fontWeight={600}>
-              Proofer Module
+              Prover Module
             </WalletTypography>
             <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
               {isModuleEnabled
