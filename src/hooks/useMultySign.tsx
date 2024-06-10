@@ -6,7 +6,7 @@ import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/
 import { MetaTransactionData, SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import { v4 as uuid } from 'uuid';
 
-import { db } from '@/db';
+import { ITransaction, db } from '@/db';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
@@ -14,6 +14,7 @@ import useSignStore from '@/stores/sign-store';
 import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { setDataDB } from '@/db/set-info';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 export interface IUseMultySign {
   mode: 'runtime' | 'url';
@@ -48,7 +49,8 @@ export interface ICheckAndSwitchNetwork {
   open: () => void;
 }
 
-let debounceCreation = false;
+let debounceCreation = false,
+  debounceCreateSafeInDb = false;
 
 export function useMultySign({
   mode,
@@ -64,11 +66,11 @@ export function useMultySign({
   rawTr,
 }: IUseMultySign): IMultySignResult {
   const [hash, setHash] = useState<string | null>(null);
-  const conditionMulty = useMemo(() => !safeAddress || !safeTxHash, [safeAddress, safeTxHash]);
 
   const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } = TYPE_SIGN_TRX;
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
+  const { setSafeAddress } = useActiveSafeAddress();
   const { createSdkInstance, createTrancationERC20 } = useSafeSdk();
   const { chainId } = useWeb3ModalAccount();
   const { safeTransaction, safeSdk, setSafeTransaction } = useSafeStore();
@@ -84,6 +86,21 @@ export function useMultySign({
     [safeTxHash]
   );
   const transaction = safeFromDb?.transactions.find(tx => tx.hash === safeTxHash);
+
+  const conditionMulty = useMemo(
+    () => !safeAddress || !safeTxHash || !safeFromDb,
+    [safeAddress, safeTxHash, safeFromDb]
+  );
+
+  useEffect(() => {
+    if (!debounceCreateSafeInDb) {
+      debounceCreateSafeInDb = true;
+      return;
+    }
+    if (!safeFromDb) {
+      setDataDB(safeAddress, {});
+    }
+  }, [safeFromDb]);
 
   const switchNetworkMulty = async (props: ICheckAndSwitchNetwork) => {
     if (conditionMulty) return;
@@ -214,7 +231,7 @@ export function useMultySign({
       const currentDate = new Date();
       const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
       const { signers, signatures } = getSignaturesMulty();
-      const transactionDB = {
+      const transactionDB: ITransaction = {
         id: uuid(),
         date: dateTrx,
         tokenType: tokenType ?? 'ETH',
@@ -223,10 +240,11 @@ export function useMultySign({
         amount: safeTransaction.data.value,
         calldata: safeTransaction.data.data,
         destinationAddress: safeTransaction.data.to,
-        nonce,
+        nonce: nonce ?? '1',
         signatures: signers.map((s, idx) => ({ data: signatures[idx], signer: s })),
       };
 
+      if (transaction) return;
       await setDataDB(safeAddress, {
         address: safeAddress,
         transactions: [transactionDB],
@@ -239,6 +257,7 @@ export function useMultySign({
 
     pendingCreateTrxData();
   }, [
+    transaction,
     safeSdk,
     conditionMulty,
     chainId,
@@ -259,6 +278,8 @@ export function useMultySign({
   useEffect(() => {
     if (userWalletAddress) {
       createSdkInstance(safeAddress);
+      localStorage.setItem('safeAddress', safeAddress);
+      setSafeAddress(safeAddress);
     }
   }, [userWalletAddress]);
 
@@ -358,10 +379,15 @@ export function useMultySign({
         signature = value.data;
       });
       const signer = userWalletAddress;
-      signatures.push(encodeURIComponent(signature));
-      signers.push(encodeURIComponent(signer));
 
-      saveSignaturesMulty(signatures, signers);
+      const filteredSignatures = signatures.filter(sig => sig !== encodeURIComponent(signature));
+      filteredSignatures.push(encodeURIComponent(signature));
+      const filteredSigners = signers.filter(
+        signer => signer !== encodeURIComponent(userWalletAddress)
+      );
+      filteredSigners.push(encodeURIComponent(signer));
+
+      saveSignaturesMulty(filteredSignatures, filteredSigners);
       customToasty('This wallet signed successfully', 'success');
     } catch (error) {
       const message = (error as { message: string }).message;
@@ -385,15 +411,15 @@ export function useMultySign({
       setStatus('loading');
       const { signatures, signers } = getSignaturesMulty();
       if (!safeSdk || !safeTransaction || !signatures || !signers) return;
-      signatures.map((sig: string, idx: number) =>
+      signatures.map((sig: string, idx: number) => {
         safeTransaction.addSignature({
           data: sig,
           isContractSignature: false,
           signer: signers[idx],
           staticPart: () => sig,
           dynamicPart: () => '',
-        })
-      );
+        });
+      });
 
       const txResponse = await safeSdk.executeTransaction(safeTransaction);
       setHash(txResponse.hash);

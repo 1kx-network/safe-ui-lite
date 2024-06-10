@@ -50,6 +50,7 @@ import {
   ShareAccountsListStyled,
   ShareAccountItemStyled,
   styledNetwork,
+  styledBalance,
 } from './sidebar.styles';
 import { dataUserMock, menuList } from './fixtures';
 
@@ -105,6 +106,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     setIsLoading,
     accountList,
     setAccountList,
+    setContractNonce,
   } = useActiveSafeAddress();
   const { createSafe, getInfoByAccount } = useSafeSdk();
 
@@ -156,14 +158,17 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
       if (listAccount !== undefined) {
         setAccountList(listAccount);
-
         const defaultAccount = listAccount[0];
 
         if (listAccount.some((elem: string) => elem === safeAddress)) {
           setSafeAddress(safeAddress);
+          safeAddress && localStorage.setItem('safeAddress', safeAddress);
         } else if (defaultAccount) {
           localStorage.setItem('safeAddress', defaultAccount);
           setSafeAddress(defaultAccount);
+        } else {
+          localStorage.removeItem('safeAddress');
+          setSafeAddress(null);
         }
       }
 
@@ -177,15 +182,18 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         const dataAcc = await getInfoByAccount(safeSdk);
         if (!dataAcc) return;
 
-        const { balanceAccount } = dataAcc;
+        const { balanceAccount, contractNonce } = dataAcc;
         const parceBalance = utils.formatEther(String(balanceAccount));
 
+        setContractNonce(contractNonce);
         setBalanceAccount(parceBalance);
       };
 
       pendingBalance();
       setTimeout(() => setIsLoading(false), 400);
     }
+
+    setIsLoading(false);
   }, [data, chainId, address, safeSdk]);
 
   useEffect(() => {
@@ -252,7 +260,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     }
   };
 
-  const condMenuList = address ? menuList : [menuList[0]];
+  const condMenuList = address && accountList.length > 0 ? menuList : [menuList[0]];
 
   const handleChangeSelect = (elems: MultiValue<IOptionShareAcc>) => {
     setChooseOptionsShareAcc(elems as IOptionShareAcc[]);
@@ -318,7 +326,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
               </Box>
             ) : (
               <Box height={'25px'} display={'flex'} alignItems={'center'} gap={2}>
-                <WalletTypography fontSize={14} fontWeight={500}>
+                <WalletTypography fontSize={14} fontWeight={500} style={styledBalance}>
                   {safeAddress ? balanceAccount : 0}
                 </WalletTypography>
                 <WalletTypography fontSize={14} fontWeight={500} style={styledNetwork}>
@@ -335,16 +343,21 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
             </IconOpenAccountsStyled>
           )}
         </InfoUserStyled>
+
         <MenuStyled suppressHydrationWarning>
-          <ItemMenuStyled
-            style={styleBtnTransaction}
-            href={address ? routes.newTransactionSendToken : ''}
-          >
-            <WalletTypography>New transaction</WalletTypography>
-          </ItemMenuStyled>
-          <ItemMenuStyled style={styleBtnTransaction} href={routes.newSignTransaction}>
-            <WalletTypography>Sign Transaction</WalletTypography>
-          </ItemMenuStyled>
+          {accountList.length > 0 && (
+            <>
+              <ItemMenuStyled
+                style={styleBtnTransaction}
+                href={address ? routes.newTransactionSendToken : ''}
+              >
+                <WalletTypography>New transaction</WalletTypography>
+              </ItemMenuStyled>
+              <ItemMenuStyled style={styleBtnTransaction} href={routes.newSignTransaction}>
+                <WalletTypography>Sign Transaction</WalletTypography>
+              </ItemMenuStyled>
+            </>
+          )}
 
           {condMenuList.map(item => (
             <ItemMenuStyled key={item.id} href={item.url}>

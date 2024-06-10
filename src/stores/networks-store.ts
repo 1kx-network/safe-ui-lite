@@ -73,7 +73,6 @@ const useNetworkStore = create<Store>(set => ({
       }));
 
       const mergedNetwork = [...optionsNetwork];
-
       updateNetworkDB.forEach(dbNetwork => {
         if (dbNetwork.isNew) {
           mergedNetwork.push(dbNetwork);

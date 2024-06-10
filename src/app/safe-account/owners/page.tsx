@@ -71,7 +71,8 @@ const SafeAccountOwners = () => {
 
   const handleNext = async () => {
     const filledOwners = owners.filter(owner => owner.address).map(owner => owner.address);
-    storeOwners.setOwners(filledOwners);
+    storeOwners.setArrayOwners(filledOwners);
+
     const filterSigners =
       needConfirmOwner > filledOwners.length ? filledOwners.length : needConfirmOwner;
     storeOwners.setNeedConfirmOwner(filterSigners);
@@ -132,7 +133,7 @@ const SafeAccountOwners = () => {
           fontWeight={600}
           component="h1"
         >
-          Add Safe Account
+          Create Safe Account
         </WalletTypography>
         <GridContainer>
           <WalletPaper style={styleWalletPaper} minWidth="653px">
@@ -245,8 +246,9 @@ const SafeAccountOwners = () => {
                 <Accordion title="Address book privacy" description="Some info" />
               </WalletPaper>
             </Box>
+
             <Box mt={3}>
-              <WalletPaper style={styleWalletPaper}>
+              <WalletPaper style={{ ...styleWalletPaper, gap: themeMuiBase.spacing(3) }}>
                 <Box mb={3}>
                   <WalletTypography fontSize={17} fontWeight={600}>
                     Safe account setup
@@ -254,7 +256,7 @@ const SafeAccountOwners = () => {
                 </Box>
                 <Accordion
                   title="1/1 policy"
-                  description="We recommend using a threshold higher than one to prevent losing access to your safe account in case an owner key is lost or compromised."
+                  description="Use a threshold higher than one to prevent losing access to your Safe Account in case a signer key is lost or compromised."
                 />
               </WalletPaper>
             </Box>

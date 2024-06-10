@@ -1,26 +1,22 @@
 'use client';
-import { useCallback, useEffect } from 'react';
-import { Box } from '@mui/system';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 
-import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
-import { themeMuiBase } from '@/assets/styles/theme-mui';
+import { WalletLayout } from '@/ui-kit';
 import { useOwnerList } from '@/queries/safe-accounts';
 import { safeNetworksObj } from '@/constants/networks';
+import { CreateTransactionWidget } from '@/components/widgets/create-transaction';
+import { GetStartedWidget } from '@/components/widgets/get-started';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
-import {
-  GridStepsStyled,
-  IconPlusStyled,
-  ItemStepPaperStyled,
-  WrapperStyled,
-  styledBtn,
-} from './home.styles';
+import { WrapperStyled } from './home.styles';
 import routes from './routes';
 import AddModule from './add-module/add-module';
 
 export default function Home() {
   const { address, chainId } = useWeb3ModalAccount();
+  const { accountList } = useActiveSafeAddress();
   const { data } = useOwnerList(address);
   const { open } = useWeb3Modal();
   const { walletProvider } = useWeb3ModalProvider();
@@ -45,35 +41,14 @@ export default function Home() {
     }
   }, [data, chainId]);
 
-  const handleCreateTransaction = useCallback(() => {
-    if (address) {
-      router.push(routes.newTransactionSendToken);
-    } else {
-      open();
-    }
-  }, [address]);
-
   return (
     <WalletLayout>
       <WrapperStyled>
-        <GridStepsStyled>
-          <ItemStepPaperStyled>
-            <WalletPaper>
-              <IconPlusStyled />
-              <Box display={'flex'} flexDirection={'column'} gap={4}>
-                <WalletTypography fontSize={22} fontWeight={600}>
-                  Create transaction
-                </WalletTypography>
-                <WalletTypography color={themeMuiBase.palette.tetriaryGrey}>
-                  Simply send funds, add a new signer or swap tokens through a safe app.
-                </WalletTypography>
-              </Box>
-              <WalletButton variant="outlined" styles={styledBtn} onClick={handleCreateTransaction}>
-                Create Transaction
-              </WalletButton>
-            </WalletPaper>
-          </ItemStepPaperStyled>
-        </GridStepsStyled>
+        {address && accountList.length > 0 ? (
+          <CreateTransactionWidget routes={routes} />
+        ) : (
+          <GetStartedWidget routes={routes} />
+        )}
         <AddModule />
       </WrapperStyled>
     </WalletLayout>

@@ -32,6 +32,7 @@ import {
   AddOwnerStyled,
   GridBtnAddOwnerStyled,
   styledNonce,
+  OnceSelectStyled,
 } from './owners-list.styles';
 import { ListAccount } from './components/list-account/list-account';
 
@@ -50,7 +51,6 @@ export const SettingsOwner = () => {
     setIsLoading,
     setSafeAccountOwners,
     setNeedConfirmOwner,
-    setContractNonce,
     setContractVersion,
   } = useActiveSafeAddress();
   const { chosenNetwork } = useNetworkStore();
@@ -95,7 +95,6 @@ export const SettingsOwner = () => {
       const { ownersAccount, contractVersion, contractNonce, accountThreshold } = dataAcc;
 
       setSafeAccountOwners(ownersAccount);
-      setContractNonce(contractNonce);
       setNonce(contractNonce);
       setContractVersion(contractVersion);
       setNeedConfirmOwner(accountThreshold);
@@ -122,8 +121,8 @@ export const SettingsOwner = () => {
   };
 
   const handleRemoveOwnerAddress = async (address: string) => {
-    setIsLoading(true);
     if (!safeAddress || !safeSdk) return;
+    setIsLoading(true);
 
     let threshold = needConfirmOwner;
 
@@ -152,6 +151,7 @@ export const SettingsOwner = () => {
         chainId: chosenNetwork?.chainId ?? '',
         rpcUrl: chosenNetwork?.rpc ?? '',
         explorerUrl: chosenNetwork?.explorerUrl ?? '',
+        currency: chosenNetwork?.currency ?? '',
       }),
     };
 
@@ -161,8 +161,8 @@ export const SettingsOwner = () => {
   };
 
   const handleChangeSettings = async () => {
-    setIsLoading(true);
     if (!safeAddress || !safeSdk) return;
+    setIsLoading(true);
     const safeTx = await safeSdk.createChangeThresholdTx(newCountNeedConfirm);
     const safeTxHash = await safeSdk.getTransactionHash(safeTx);
 
@@ -181,6 +181,7 @@ export const SettingsOwner = () => {
         chainId: chosenNetwork?.chainId ?? '',
         rpcUrl: chosenNetwork?.rpc ?? '',
         explorerUrl: chosenNetwork?.explorerUrl ?? '',
+        currency: chosenNetwork?.currency ?? '',
       }),
     };
 
@@ -239,6 +240,7 @@ export const SettingsOwner = () => {
         chainId: chosenNetwork?.chainId ?? '',
         rpcUrl: chosenNetwork?.rpc ?? '',
         explorerUrl: chosenNetwork?.explorerUrl ?? '',
+        currency: chosenNetwork?.currency ?? '',
       }),
     };
 
@@ -351,17 +353,24 @@ export const SettingsOwner = () => {
           </WalletTypography>
 
           <Box mt={3} display="flex" alignItems="center">
-            <Box mr={3} width={'84px'}>
-              <WalletSelect
-                isLoading={Boolean(!needConfirmOwner)}
-                controlShouldRenderValue
-                options={optionsCount}
-                defaultValue={[
-                  { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
-                ]}
-                onChange={handleChooseAccounConfirm}
-              />
-            </Box>
+            {optionsCount && optionsCount.length === 1 ? (
+              <OnceSelectStyled>
+                <WalletTypography fontSize={14}>1</WalletTypography>
+              </OnceSelectStyled>
+            ) : (
+              <Box mr={3} width={'84px'}>
+                <WalletSelect
+                  isDisabled={optionsCount && optionsCount.length === 1}
+                  isLoading={Boolean(!needConfirmOwner)}
+                  controlShouldRenderValue
+                  options={optionsCount}
+                  defaultValue={[
+                    { id: needConfirmOwner, label: needConfirmOwner, value: needConfirmOwner },
+                  ]}
+                  onChange={handleChooseAccounConfirm}
+                />
+              </Box>
+            )}
             <WalletTypography fontSize={13} fontWeight={600}>
               out of {safeAccountOwners.length} owner(s)
             </WalletTypography>

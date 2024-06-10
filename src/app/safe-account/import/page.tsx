@@ -59,40 +59,11 @@ export default function CreatePageAccount() {
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
   const network = useNetwork();
-  const { setIsLoading, safeAddress } = useActiveSafeAddress();
+  const { setIsLoading, isLoading, safeAddress } = useActiveSafeAddress();
   const { createSafe } = useSafeSdk();
   const { switchNetwork } = useSwitchNetwork();
 
   const chainId = Number(network?.chainId);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const networksDB = await getNetworksDB();
-  //     const updateNetwork = networksDB.map(elem => ({
-  //       label: elem.name,
-  //       value: elem.name,
-  //       rpc: elem.rpcUrl,
-  //       icon: () => formatterIcon(0),
-  //       ...elem,
-  //     }));
-
-  //     setOptions(prevOptions => {
-  //       const uniqueNetworks = updateNetwork.filter(
-  //         network => !prevOptions.some(option => option.rpc === network.rpcUrl)
-  //       );
-  //       return [...prevOptions, ...uniqueNetworks];
-  //     });
-  //   })();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (chainId) {
-  //     const updatedOption = options.find(option => option.chainId === +chainId);
-  //     if (updatedOption) {
-  //       setChooseOpt(updatedOption);
-  //     }
-  //   }
-  // }, [chainId]);
 
   const handleUpdateOptions = async (isFirstTime?: boolean) => {
     setIsLoadingSelect(true);
@@ -110,7 +81,7 @@ export default function CreatePageAccount() {
     (async () => {
       await handleUpdateOptions(true);
     })();
-  }, []);
+  }, [networks]);
 
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -139,14 +110,17 @@ export default function CreatePageAccount() {
         const localList = localStorage.getItem('createdSafes')
           ? localStorage.getItem('createdSafes')
           : null;
+
         const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+
         const updateLocalList =
           chainId && localListParsed[String(chainId)] === undefined
             ? {
                 ...localListParsed,
                 [chainId]: [],
               }
-            : localList;
+            : localListParsed;
+
         updateLocalList[chainId ?? 1].push(valueAcc);
         localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
         localStorage.setItem('safeAddress', valueAcc);
@@ -209,6 +183,7 @@ export default function CreatePageAccount() {
       value: name,
       rpc: rpc,
       chainId: +chainId,
+      currency: name,
     };
 
     const objNetworkDB = {
@@ -260,7 +235,7 @@ export default function CreatePageAccount() {
     <WalletLayout hideSidebar>
       <WrapperStyled style={{ height: 'fit-content' }}>
         <WalletTypography className="safe-account_main-header" fontSize={22} fontWeight={600}>
-          Import Safe Account
+          Add Safe Account
         </WalletTypography>
 
         <GridContainer>
@@ -351,6 +326,7 @@ export default function CreatePageAccount() {
                 <WalletButton
                   onClick={handleNext}
                   variant="contained"
+                  loading={isLoading}
                   disabled={!!condNetwork || !valueAcc.length}
                 >
                   Next

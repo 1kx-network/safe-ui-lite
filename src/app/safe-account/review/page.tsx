@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 
@@ -14,7 +14,7 @@ import { formattedLabel } from '@/utils/foramtters';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import routes from '@/app/routes';
 import useActiveOwnerStore from '@/stores/active-owners-store';
-import { customToasty } from '@/components';
+import { CustomModal, customToasty } from '@/components';
 import IconInfo from '@/assets/svg/infoIcon.svg';
 import useNetworkStore from '@/stores/networks-store';
 
@@ -28,7 +28,7 @@ import {
 } from './review.styles';
 
 export default function CreatePageAccount() {
-  const { owners, needConfirmOwner, setOwners, setNeedConfirmOwner } = useActiveOwnerStore();
+  const { owners, needConfirmOwner, setClearOwners } = useActiveOwnerStore();
   const network = useNetwork();
   const { deploySafe } = useSafeSdk();
   const router = useRouter();
@@ -36,6 +36,7 @@ export default function CreatePageAccount() {
   const [linkOnScan, setLinkOnScan] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isErrorDeploy, setIsErrorDeploy] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const { networks, chosenNetwork } = useNetworkStore();
 
@@ -50,7 +51,7 @@ export default function CreatePageAccount() {
     if (chosenNetwork) {
       setLinkOnScan(chosenNetwork.explorerUrl ?? '');
     }
-  }, [chainId]);
+  }, [chainId, owners]);
 
   const handleCopyAddress = (address: string) => {
     navigator.clipboard.writeText(address);
@@ -62,10 +63,11 @@ export default function CreatePageAccount() {
       setIsLoading(true);
       await deploySafe(owners, needConfirmOwner)
         .then(() => {
-          router.push(routes.home);
-          customToasty('Account successfully created', 'success');
+          setIsOpenModal(true);
         })
-        .catch(e => console.error(`<--${e}-->`));
+        .catch(e => {
+          console.error(`<-- ${e} -->`);
+        });
     } catch (e) {
       setIsErrorDeploy(true);
     } finally {
@@ -75,10 +77,33 @@ export default function CreatePageAccount() {
 
   const handleClickBack = () => {
     setIsErrorDeploy(false);
-    setOwners([]);
-    setNeedConfirmOwner(1);
+    setClearOwners();
     router.push(routes.safeAccountOwners);
   };
+
+  const handleBtnStartWallet = () => {
+    router.push(routes.home);
+    setIsOpenModal(false);
+  };
+
+  const ownersList = useCallback(
+    () => (
+      <OwnerListStyled>
+        {owners.map((owner, index) => (
+          <Box display={'flex'} gap={1.5} key={index}>
+            <IconDefualtAddress width={'16px'} height={'16px'} />
+
+            <WalletTypography fontSize={14}>{formattedLabel(owner)}</WalletTypography>
+            <CopyIconStyled onClick={() => handleCopyAddress('owner.address')} />
+            <LinkOpenInNewIconStyled href={`${linkOnScan}address/${owner}`} target="_blank">
+              <OpenInNewIconStyled />
+            </LinkOpenInNewIconStyled>
+          </Box>
+        ))}
+      </OwnerListStyled>
+    ),
+    [owners]
+  );
 
   return (
     <WalletLayout hideSidebar>
@@ -143,23 +168,7 @@ export default function CreatePageAccount() {
                   Owner{owners.length > 1 ? 's' : ''}
                 </WalletTypography>
 
-                <OwnerListStyled>
-                  {owners.map((owner, index) => (
-                    <Box display={'flex'} gap={1.5} key={index}>
-                      <IconDefualtAddress width={'16px'} height={'16px'} />
-
-                      <WalletTypography fontSize={14}>{formattedLabel(owner)}</WalletTypography>
-
-                      <LinkOpenInNewIconStyled
-                        href={`${linkOnScan}address/${owner}`}
-                        target="_blank"
-                      >
-                        <OpenInNewIconStyled />
-                      </LinkOpenInNewIconStyled>
-                      <CopyIconStyled onClick={() => handleCopyAddress('owner.address')} />
-                    </Box>
-                  ))}
-                </OwnerListStyled>
+                {ownersList()}
               </ItemInfoStyled>
               <ItemInfoStyled>
                 <WalletTypography component="p" fontSize={14} fontWeight={500}>
@@ -230,6 +239,27 @@ export default function CreatePageAccount() {
           </WalletPaper>
         </GridContainer>
       </WrapperStyled>
+      <CustomModal
+        isOpen={isOpenModal}
+        closeModal={() => setIsOpenModal(false)}
+        styles={{ width: '654px' }}
+      >
+        <Box display={'flex'} flexDirection={'column'} alignItems={'center'} gap={3}>
+          <WalletTypography fontSize={22} fontWeight={600}>
+            Success
+          </WalletTypography>
+          <WalletTypography color={'#777F88'} fontSize={14}>
+            Your safe account was successfully created
+          </WalletTypography>
+          <WalletButton
+            variant="contained"
+            onClick={handleBtnStartWallet}
+            styles={{ width: '295px' }}
+          >
+            Start using Safe Wallet
+          </WalletButton>
+        </Box>
+      </CustomModal>
     </WalletLayout>
   );
 }

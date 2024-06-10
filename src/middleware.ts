@@ -23,6 +23,7 @@ export function middleware({ url, headers, nextUrl: { pathname } }: NextRequest)
   const cookies = parseCookie(cookieHeader);
 
   const hasAddressUser = cookies['addressUser'];
+  // const safeAddress = cookies['safeAddress'];
 
   if (pathname.startsWith('/_next') || pathname.includes('/api/') || PUBLIC_FILE.test(pathname)) {
     return NextResponse.next();

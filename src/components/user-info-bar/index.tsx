@@ -40,7 +40,6 @@ import {
   GridButtonStyled,
   IconArrowStyled,
   IconCopyStyled,
-  styledBtn,
   styledBtnDisconnect,
   ImgWalletStyled,
   styledNetworks,
@@ -58,7 +57,7 @@ export const UserInfoBar = () => {
   const { walletInfo } = useWalletInfo();
 
   const { switchNetwork } = useSwitchNetwork();
-  const { setClearActiveSafeStore } = useActiveSafeAddress();
+  const { setClearActiveSafeStore, safeAddress } = useActiveSafeAddress();
   const searchParams = useMemo(() => {
     if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
     return { get: () => null };
@@ -69,23 +68,11 @@ export const UserInfoBar = () => {
   const isShareAcc = searchParams.get('import') === TYPE_IMPORT.SHARE_ACC;
   const [balance, setBalance] = useState('0');
 
-  // const [options, setOptions] = useState<IOptionNetwork[]>([]);
   const [isOpenNetworkMenu, setIsOpenNetworkMenu] = useState(false);
-  // const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenNetworkModal, setIsOpenNetworkModal] = useState(false);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
   const [networksDBState, setNetworksDB] = useState<INetworkDB[]>([]);
-
-  // const {
-  //   handleSubmit,
-  //   formState: { errors },
-  //   control,
-  //   reset,
-  // } = useForm<IAddNetwork>({
-  //   mode: 'onSubmit',
-  //   resolver: yupResolver(AddNetworkSchema),
-  // });
 
   useEffect(() => {
     if (chainId) {
@@ -180,29 +167,26 @@ export const UserInfoBar = () => {
   };
 
   useEffect(() => {
+    if (safeAddress) {
+      Cookies.set('safeAddress', safeAddress);
+    } else {
+      Cookies.remove('safeAddress');
+    }
+
     if (address) {
       Cookies.set('addressUser', address);
-      // setIsOpenModal(false);
       setIsCreateNewAccount(false);
     } else {
       Cookies.remove('addressUser');
     }
 
     if (isCreateNewAccount && address) router.push(routes.safeAccountCreate);
-  }, [address, isCreateNewAccount]);
-
-  // const handleConnect = async () => {
-  //   setIsCreateNewAccount(true);
-  //   open();
-  // };
-
-  // const handleConnectExisting = async () => {
-  //   open();
-  // };
+  }, [address, isCreateNewAccount, safeAddress]);
 
   const handleDisconnect = async () => {
     await disconnect();
     Cookies.remove('addressUser');
+    Cookies.remove('safeAddress');
     setIsOpenMenu(false);
     localStorage.removeItem('safeAddress');
     setClearActiveSafeStore();
@@ -217,49 +201,6 @@ export const UserInfoBar = () => {
         setIsOpenNetworkModal(false);
       });
   };
-
-  // const handleAddNetwork = async () => {
-  //   reset();
-  //   setIsOpenMenu(false);
-  //   setIsOpenNetworkMenu(false);
-
-  //   setIsOpenNetworkModal(true);
-  // };
-
-  // const onSubmit: SubmitHandler<IAddNetwork> = async (data: IAddNetwork) => {
-  //   const { name, rpc, symbol, decimals, explorerUrl, chainId } = data;
-
-  //   if (networks && networks.some(option => option.rpc === rpc)) {
-  //     setErrorNewNetwork('This RPC was added');
-  //     customToasty('Error with adding a new network', 'error');
-  //     return;
-  //   }
-
-  //   const newNetwork = {
-  //     label: name,
-  //     value: name,
-  //     rpc: rpc,
-  //     chainId: +chainId,
-  //   };
-
-  //   const objNetworkDB = {
-  //     ...newNetwork,
-  //     id: uuid(),
-  //     name,
-  //     currency: name,
-  //     explorerUrl,
-  //     rpcUrl: rpc,
-  //     symbol: symbol,
-  //     decimals: +decimals,
-  //   };
-
-  //   setErrorNewNetwork(null);
-  //   setNetwork(newNetwork);
-
-  //   await setNetworkDB(objNetworkDB);
-  //   setIsOpenNetworkModal(false);
-  //   customToasty('Network was add', 'success');
-  // };
 
   return (
     <WrapperStyled ref={wrapperRef}>
@@ -350,11 +291,6 @@ export const UserInfoBar = () => {
                     </ItemInfoNetworkStyled>
                   ))}
               </Box>
-
-              {/* <WalletButton variant="text" styles={styledBtnAddNetwork} onClick={handleAddNetwork}>
-                <IconPlus width="18px" height="18px" color={themeMuiBase.palette.success} />
-                Add network
-              </WalletButton> */}
             </BodyOpenStyled>
           )}
         </InfoUserStyled>
@@ -440,172 +376,11 @@ export const UserInfoBar = () => {
         </ItemInfoStyled>
 
         <GridButtonStyled>
-          <WalletButton variant="outlined" styles={styledBtn} onClick={() => open()}>
-            Switch Wallet
-          </WalletButton>
           <WalletButton variant="text" styles={styledBtnDisconnect} onClick={handleDisconnect}>
             Disconnect
           </WalletButton>
         </GridButtonStyled>
       </BodyOpenStyled>
-
-      {/* <CustomModal
-        title=""
-        isOpen={isOpenModal}
-        closeModal={() => setIsOpenModal(false)}
-        styles={{
-          minWidth: '360px',
-          maxWidth: '560px',
-        }}
-      >
-        <Box
-          display={'flex'}
-          justifyContent={'center'}
-          flexDirection={'column'}
-          gap={4}
-          alignItems={'center'}
-        >
-          <WalletTypography fontSize={22} fontWeight={600} textAlign={'center'}>
-            Get started
-          </WalletTypography>
-          <WalletTypography
-            fontSize={14}
-            fontWeight={400}
-            color={themeMuiBase.palette.tetriaryGrey}
-            textAlign={'center'}
-          >
-            The most trusted decentralized custody protocol and collective asset management platform
-          </WalletTypography>
-          <WalletButton variant="contained" onClick={handleConnectExisting}>
-            + Add Existing Account
-          </WalletButton>
-
-          <WalletButton variant="contained" onClick={handleConnect}>
-            Create Account
-          </WalletButton>
-        </Box>
-      </CustomModal> */}
-
-      {/* <CustomModal
-        title=""
-        isOpen={isOpenNetworkModal}
-        closeModal={() => setIsOpenNetworkModal(false)}
-        styles={{
-          minWidth: '360px',
-          maxWidth: '560px',
-        }}
-      >
-        <WalletTypography fontSize={18} fontWeight={500}>
-          Add new network
-        </WalletTypography>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Box display={'flex'} width="100%" gap={4} mt={2}>
-            <Box display={'flex'} flexDirection={'column'} gap={1} width="50%">
-              <Controller
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <Box width={'100%'}>
-                    <WalletInput
-                      {...field}
-                      label="Name"
-                      error={!!errors.name}
-                      errorValue={errors.name?.message}
-                    />
-                  </Box>
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="chainId"
-                render={({ field }) => (
-                  <Box width={'100%'}>
-                    <WalletInput
-                      {...field}
-                      label="Chain ID"
-                      error={!!errors.chainId}
-                      errorValue={errors.chainId?.message}
-                    />
-                  </Box>
-                )}
-              />
-              <Controller
-                control={control}
-                name="rpc"
-                render={({ field }) => (
-                  <Box width={'100%'}>
-                    <WalletInput
-                      {...field}
-                      label="RPC URL"
-                      error={!!errors.rpc}
-                      errorValue={errors.rpc?.message}
-                    />
-                  </Box>
-                )}
-              />
-            </Box>
-            <Box display={'flex'} flexDirection={'column'} gap={1} width="50%">
-              <Controller
-                control={control}
-                name="symbol"
-                render={({ field }) => (
-                  <Box width={'100%'}>
-                    <WalletInput
-                      {...field}
-                      label="Symbol"
-                      error={!!errors.symbol}
-                      errorValue={errors.symbol?.message}
-                    />
-                  </Box>
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="decimals"
-                render={({ field }) => (
-                  <Box width={'100%'}>
-                    <WalletInput
-                      {...field}
-                      label="Decimals"
-                      error={!!errors.decimals}
-                      errorValue={errors.decimals?.message}
-                    />
-                  </Box>
-                )}
-              />
-              <Controller
-                control={control}
-                name="explorerUrl"
-                render={({ field }) => (
-                  <Box width={'100%'}>
-                    <WalletInput
-                      {...field}
-                      label="Explorer url"
-                      error={!!errors.explorerUrl}
-                      errorValue={errors.explorerUrl?.message}
-                    />
-                  </Box>
-                )}
-              />
-            </Box>
-          </Box>
-          <Box display={'flex'} gap={4} mt={8} mb={4}>
-            <WalletButton onClick={() => reset()} variant="outlined">
-              Cancel
-            </WalletButton>
-            <WalletButton type="submit" variant="contained">
-              <IconPlus color={themeMuiBase.palette.success} width="21px" height="21px" />
-              Add network
-            </WalletButton>
-          </Box>
-        </form>
-
-        <WalletTypography fontWeight={400} fontSize={14} color={themeMuiBase.palette.error}>
-          {errorNewNetwork}
-        </WalletTypography>
-      </CustomModal> */}
     </WrapperStyled>
   );
 };

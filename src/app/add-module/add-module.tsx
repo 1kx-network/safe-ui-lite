@@ -17,6 +17,7 @@ import { setDataDB } from '../../db/set-info';
 import { SEPOLIA_ZK_MODULE } from '../../constants/addresses';
 import routes from '../../app/routes';
 import { NATIVE_TOKENS } from '../../constants/tokens';
+import { ITransaction } from '@/db';
 
 export default function AddModule() {
   const { address, chainId } = useWeb3ModalAccount();
@@ -59,7 +60,7 @@ export default function AddModule() {
         tokenType: NATIVE_TOKENS.ETH,
       };
 
-      const transactionDB = {
+      const transactionDB: ITransaction = {
         id: uuid(),
         date: dateTrx,
         theshold: thesholders,
@@ -67,6 +68,7 @@ export default function AddModule() {
         amount: safeTransaction.data.value,
         calldata: safeTransaction.data.data,
         destinationAddress: safeTransaction.data.to,
+        nonce: safeTransaction.data.nonce.toString(),
         signatures: [],
         tokenType: NATIVE_TOKENS.ETH,
       };

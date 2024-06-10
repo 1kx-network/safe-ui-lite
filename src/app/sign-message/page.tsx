@@ -109,6 +109,7 @@ const SignMessageComponent = () => {
         label: userNetwork.name,
         value: userNetwork.name,
         rpc: userNetwork.rpcUrl,
+        currency: userNetwork.symbol,
       });
       await setNetworkDB(userNetwork);
 

@@ -7,7 +7,6 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { v4 as uuid } from 'uuid';
 
-import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import {
@@ -53,12 +52,11 @@ export default function CreatePageAccount() {
   const [isChangeVariables, setIsChangeVariables] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { networks, setNetwork, chosenNetwork, setChosenNetwork } = useNetworkStore();
+  const { chainId } = useWeb3ModalAccount();
 
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
-  const network = useNetwork();
-
-  const chainId = Number(network?.chainId);
+  const { switchNetwork } = useSwitchNetwork();
 
   const handleUpdateOptions = async (isFirstTime?: boolean) => {
     setIsLoading(true);
@@ -76,7 +74,7 @@ export default function CreatePageAccount() {
     (async () => {
       await handleUpdateOptions(true);
     })();
-  }, []);
+  }, [networks]);
 
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -92,14 +90,12 @@ export default function CreatePageAccount() {
     setChosenNetwork(chosenNetwork);
   };
 
-  const { switchNetwork } = useSwitchNetwork();
-
   const handleSwitchNetwork = async () => {
     if (!chosenNetwork) return;
     await switchNetwork(chosenNetwork.chainId);
   };
 
-  const condNetwork = chosenNetwork && chainId !== chosenNetwork.chainId;
+  const condNetwork = chainId && chosenNetwork && chainId !== chosenNetwork.chainId;
 
   const {
     handleSubmit,
@@ -125,6 +121,8 @@ export default function CreatePageAccount() {
       value: name,
       rpc: rpc,
       chainId: +chainId,
+      currency: name,
+      icon: () => formatterIcon(chainId),
     };
 
     const objNetworkDB = {
@@ -139,7 +137,7 @@ export default function CreatePageAccount() {
     };
 
     setOptions(prevOptions => {
-      return [...prevOptions, { ...newNetwork, icon: () => formatterIcon(newNetwork.chainId) }];
+      return [...prevOptions, newNetwork];
     });
 
     setNetwork(objNetworkDB);
@@ -200,8 +198,8 @@ export default function CreatePageAccount() {
                 <Box display={'flex'} flexDirection={'column'} mt={2}>
                   <WalletButton
                     onClick={() => {
-                      setIsAddNewNetwork(true);
                       setIsChangeVariables(false);
+                      setIsAddNewNetwork(!isAddNewNetwork);
                     }}
                     variant="text"
                     styles={styledCustomNetworkBtn}
@@ -213,7 +211,7 @@ export default function CreatePageAccount() {
                   <WalletButton
                     onClick={() => {
                       setIsAddNewNetwork(false);
-                      setIsChangeVariables(true);
+                      setIsChangeVariables(!isChangeVariables);
                     }}
                     variant="text"
                     styles={styledCustomNetworkBtn}

@@ -11,6 +11,7 @@ import { TYPE_ABI } from '../../fixutres';
 import CopyIcon from '@/assets/svg/copy.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import WalletSwitch from '@/ui-kit/wallet-switch';
+import useActiveSafeAddress from '@/stores/safe-address-store';
 
 import { useAbi } from './utils/useAbi';
 import useNetwork from './hooks/useNetwork';
@@ -38,15 +39,18 @@ export const TrxBuilder = () => {
     implementationAddress: '',
     proxyAddress: '',
   });
-  const [nonce, setNonce] = useState('1');
 
+  const { contractNonce } = useActiveSafeAddress();
+
+  const [nonce, setNonce] = useState(contractNonce);
   const [isPrettified, setIsPrettified] = useState(false);
-
   const [hasErrorABI, setHasErrorABI] = useState<null | string>(null);
-
   const { walletProvider } = useWeb3ModalProvider();
-
   const { interfaceRepo } = useNetwork();
+
+  useEffect(() => {
+    setNonce(contractNonce);
+  }, [contractNonce]);
 
   useEffect(() => {
     if (!abi || !interfaceRepo) {
@@ -227,11 +231,11 @@ export const TrxBuilder = () => {
           <Box display={'flex'} alignItems={'center'}>
             <WalletTypography>Nonce #: </WalletTypography>
             <Box width={'75px'}>
-              <WalletInput value={nonce} onChange={handleChangeNonce} style={styledNonce} />
+              <WalletInput value={nonce ?? ''} onChange={handleChangeNonce} style={styledNonce} />
             </Box>
           </Box>
         </Box>
-        <CreateTransactions nonce={nonce} />
+        <CreateTransactions nonce={nonce ?? '1'} />
       </BodyBatchStyled>
 
       {/* ABI Warning */}

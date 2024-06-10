@@ -54,7 +54,7 @@ const SignTransactionComponent = () => {
   const searchParams = useSearchParams();
   const [signedCount, setSignedCount] = useState(0);
   const { safeTransaction, safeSdk } = useSafeStore();
-  const { threshold, status, owners } = useSignStore();
+  const { threshold, status, setThreshold } = useSignStore();
   const { address, chainId } = useWeb3ModalAccount();
   const { switchNetwork } = useSwitchNetwork();
   const { walletProvider } = useWeb3ModalProvider();
@@ -121,6 +121,7 @@ const SignTransactionComponent = () => {
         label: userNetwork.name,
         value: userNetwork.name,
         rpc: userNetwork.rpcUrl,
+        currency: userNetwork.currency ?? userNetwork.name,
       });
 
       await setNetworkDB(userNetwork);
@@ -197,7 +198,9 @@ const SignTransactionComponent = () => {
           .then(async (safe: Safe | undefined | null) => {
             if (safe) {
               const ownersList = await safe.getOwners();
+              const threshold = await safe.getThreshold();
 
+              setThreshold(threshold);
               setOwnerList(ownersList);
             }
           })
@@ -246,7 +249,6 @@ const SignTransactionComponent = () => {
   const handleSignTransaction = useCallback(async () => {
     if (!multySign) return;
     if (!safeSdk || !safeTransaction || !safeTxHash) return;
-    console.log('ownerList_', ownerList);
 
     if (ownerList && ownerList.find(elem => elem === String(address))) {
       await multySign.signTransactionMulty();
@@ -309,6 +311,10 @@ const SignTransactionComponent = () => {
               </WalletTypography>
               {userNetwork && formatterIcon(+userNetwork.chainId)}
             </Box>
+
+            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+              Nonce: {nonceUrl && nonceUrl}
+            </WalletTypography>
 
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Chain: {userNetwork && userNetwork.chainId}
@@ -397,7 +403,7 @@ const SignTransactionComponent = () => {
           </BoxOwnerLinkStyled>
 
           <OwnersInfoStyled>
-            <WalletTypography fontWeight={500}>Owners: {owners?.length ?? 0}</WalletTypography>
+            <WalletTypography fontWeight={500}>Owners: {ownerList?.length ?? 0}</WalletTypography>
             <WalletTypography fontWeight={500}>Need threshold: {threshold}</WalletTypography>
             <WalletTypography fontWeight={500}>Signed: {signedCount}</WalletTypography>
           </OwnersInfoStyled>

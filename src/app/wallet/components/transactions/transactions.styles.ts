@@ -17,7 +17,7 @@ export const styledPaper = {
   height: 'auto',
   marginTop: themeMuiBase.spacing(3.5),
   maxHeght: '250px',
-  overflow: 'scroll',
+  overflow: 'auto',
   gap: themeMuiBase.spacing(3),
   padding: themeMuiBase.spacing(6),
 };
