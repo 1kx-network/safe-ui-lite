@@ -59,7 +59,7 @@ export default function CreatePageAccount() {
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
   const network = useNetwork();
-  const { setIsLoading, safeAddress } = useActiveSafeAddress();
+  const { setIsLoading, isLoading, safeAddress } = useActiveSafeAddress();
   const { createSafe } = useSafeSdk();
   const { switchNetwork } = useSwitchNetwork();
 
@@ -119,7 +119,7 @@ export default function CreatePageAccount() {
                 ...localListParsed,
                 [chainId]: [],
               }
-            : localList;
+            : localListParsed;
 
         updateLocalList[chainId ?? 1].push(valueAcc);
         localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
@@ -326,6 +326,7 @@ export default function CreatePageAccount() {
                 <WalletButton
                   onClick={handleNext}
                   variant="contained"
+                  loading={isLoading}
                   disabled={!!condNetwork || !valueAcc.length}
                 >
                   Next
