@@ -81,7 +81,7 @@ export default function CreatePageAccount() {
     (async () => {
       await handleUpdateOptions(true);
     })();
-  }, []);
+  }, [networks]);
 
   const handleClickCancel = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
@@ -110,7 +110,9 @@ export default function CreatePageAccount() {
         const localList = localStorage.getItem('createdSafes')
           ? localStorage.getItem('createdSafes')
           : null;
+
         const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+
         const updateLocalList =
           chainId && localListParsed[String(chainId)] === undefined
             ? {
@@ -118,6 +120,7 @@ export default function CreatePageAccount() {
                 [chainId]: [],
               }
             : localList;
+
         updateLocalList[chainId ?? 1].push(valueAcc);
         localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
         localStorage.setItem('safeAddress', valueAcc);
