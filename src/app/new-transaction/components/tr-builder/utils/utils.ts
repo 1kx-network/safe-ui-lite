@@ -1,5 +1,5 @@
 import { AbiItem, toBN, isAddress, fromWei } from 'web3-utils';
-import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import abiCoder from 'web3-eth-abi';
 
 import { ContractInput, ContractMethod, ProposedTransaction } from '../typings/models';
 import {
@@ -38,7 +38,7 @@ export const isValidJSON = (value: string | undefined) => {
   return true;
 };
 
-export class SoliditySyntaxError extends Error {}
+export class SoliditySyntaxError extends Error { }
 
 export const parseBooleanValue = (value: any): boolean => {
   const isStringValue = typeof value === 'string';
@@ -153,10 +153,10 @@ const parseArrayOfValues = (values: string, fieldType: string): any => {
     isArray(itemValue)
       ? parseArrayOfValues(itemValue, fieldType) // recursive call because Matrix and MultiDimensional Arrays field types
       : parseInputValue(
-          // recursive call to parseInputValue
-          getBaseFieldType(fieldType), // based on the base field type
-          itemValue.replace(/"/g, '').replace(/'/g, '') // removing " and ' chars from the value
-        )
+        // recursive call to parseInputValue
+        getBaseFieldType(fieldType), // based on the base field type
+        itemValue.replace(/"/g, '').replace(/'/g, '') // removing " and ' chars from the value
+      )
   );
 };
 
@@ -210,9 +210,8 @@ export const isInputValueValid = (val: string) => {
 };
 
 export const getCustomDataError = (value: string | undefined) => {
-  return `Has to be a valid strict hex data${
-    !value?.startsWith('0x') ? ' (it must start with 0x)' : ''
-  }`;
+  return `Has to be a valid strict hex data${!value?.startsWith('0x') ? ' (it must start with 0x)' : ''
+    }`;
 };
 
 const NON_VALID_CONTRACT_METHODS = ['receive', 'fallback'];
@@ -236,7 +235,7 @@ export const encodeToHexData = (
         return parseInputValue(contractField.type, cleanValue);
       });
       const abi = abiCoder as unknown; // a bug in the web3-eth-abi types
-      const hexEncondedData = (abi as AbiCoder).encodeFunctionCall(
+      const hexEncondedData = (abi as any).encodeFunctionCall(
         contractMethod as AbiItem,
         parsedValues
       );
