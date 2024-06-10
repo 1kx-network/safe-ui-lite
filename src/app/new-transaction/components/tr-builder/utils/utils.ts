@@ -1,5 +1,5 @@
 import { AbiItem, toBN, isAddress, fromWei } from 'web3-utils';
-import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import * as abiCoder from 'web3-eth-abi';
 
 import { ContractInput, ContractMethod, ProposedTransaction } from '../typings/models';
 import {
@@ -236,7 +236,7 @@ export const encodeToHexData = (
         return parseInputValue(contractField.type, cleanValue);
       });
       const abi = abiCoder as unknown; // a bug in the web3-eth-abi types
-      const hexEncondedData = (abi as AbiCoder).encodeFunctionCall(
+      const hexEncondedData = (abi as any).encodeFunctionCall(
         contractMethod as AbiItem,
         parsedValues
       );
