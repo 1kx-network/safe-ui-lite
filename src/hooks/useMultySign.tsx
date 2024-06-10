@@ -67,7 +67,8 @@ export function useMultySign({
 }: IUseMultySign): IMultySignResult {
   const [hash, setHash] = useState<string | null>(null);
 
-  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } = TYPE_SIGN_TRX;
+  const { REMOVE_OWNER, ADD_OWNER, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD, ADD_MODULE } =
+    TYPE_SIGN_TRX;
   const { address: userWalletAddress } = useWeb3ModalAccount();
 
   const { setSafeAddress } = useActiveSafeAddress();
@@ -188,13 +189,17 @@ export function useMultySign({
       let transactionsArray = null;
 
       // create transaction array
-      const typeNativeTr = typeSignTrx === SEND_TOKEN || typeSignTrx === TR_BUILD;
+      const typeNativeTr =
+        typeSignTrx === SEND_TOKEN || typeSignTrx === TR_BUILD || typeSignTrx === ADD_MODULE;
+
+      const simpleTrxCond =
+        (typeSignTrx === ADD_MODULE || typeSignTrx === SEND_TOKEN) && amount && address;
 
       if (typeNativeTr) {
         if (typeSignTrx === TR_BUILD) {
           transactionsArray = rawTr ? rawTr : undefined;
         }
-        if (typeSignTrx === SEND_TOKEN && amount && address) {
+        if (simpleTrxCond) {
           const res = await returnTransactionObj(
             address,
             amount,
