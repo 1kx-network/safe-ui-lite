@@ -1,5 +1,5 @@
 import { ValidateResult } from 'react-hook-form';
-import abiCoder from 'web3-eth-abi';
+import * as abiCoder from 'web3-eth-abi';
 
 import { NON_SOLIDITY_TYPES } from '../fields/fields';
 import { parseInputValue } from '../../utils/utils';

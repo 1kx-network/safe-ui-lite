@@ -1,5 +1,5 @@
 import { AbiItem, toBN, isAddress, fromWei } from 'web3-utils';
-import abiCoder from 'web3-eth-abi';
+import * as abiCoder from 'web3-eth-abi';
 
 import { ContractInput, ContractMethod, ProposedTransaction } from '../typings/models';
 import {
