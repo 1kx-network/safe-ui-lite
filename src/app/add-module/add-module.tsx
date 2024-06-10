@@ -83,7 +83,7 @@ export default function AddModule() {
     }
   };
 
-  if (!safeAddress) return <div>Safe address not found</div>;
+  if (!safeAddress) return null;
 
   if (isError) return <div>Error loading module status</div>;
 
