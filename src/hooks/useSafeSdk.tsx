@@ -70,22 +70,20 @@ export function useSafeSdk(safeAddress: string | null = null) {
         throw new Error('<-- Chain Id is undefinded -->');
       }
 
-      if (safeNetworksObj[String(chainId)] === undefined) {
-        const localList = localStorage.getItem('createdSafes')
-          ? localStorage.getItem('createdSafes')
-          : null;
+      const localList = localStorage.getItem('createdSafes')
+        ? localStorage.getItem('createdSafes')
+        : null;
 
-        const parseListNetwork = localList ? JSON.parse(localList) : {};
+      const parsedNetworkList = localList ? JSON.parse(localList) : safeNetworksObj;
 
-        if (parseListNetwork[chainId]) {
-          parseListNetwork[chainId].push(addressAccount);
-        } else {
-          parseListNetwork[chainId ?? 1] = [addressAccount];
-        }
+      if (parsedNetworkList[chainId]) {
+        parsedNetworkList[chainId].push(addressAccount);
+      } else {
+        parsedNetworkList[chainId ?? 1] = [addressAccount];
+      }
 
-        if (parseListNetwork) {
-          localStorage.setItem('createdSafes', JSON.stringify(parseListNetwork));
-        }
+      if (parsedNetworkList) {
+        localStorage.setItem('createdSafes', JSON.stringify(parsedNetworkList));
       }
 
       localStorage.setItem('safeAddress', addressAccount);
