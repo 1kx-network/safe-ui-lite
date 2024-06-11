@@ -28,7 +28,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const createEthAdapter = useEthersAdapter();
   const { saveSdk, safeSdk } = useSafeStore();
   const { walletProvider } = useWeb3ModalProvider();
-  const { chainId } = useWeb3ModalAccount();
+  const { chainId, address } = useWeb3ModalAccount();
   const { setClearActiveSafeStore } = useActiveSafeAddress();
 
   const createSdkInstance = async (address: string | null) => {
