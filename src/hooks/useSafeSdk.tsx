@@ -14,9 +14,9 @@ import usdABI from '@/app/contracts/abi/usd.json';
 import { CONTRACTS_TOKEN } from '@/constants/tokens-contract';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { SEPOLIA_ZK_MODULE } from '../constants/addresses';
+import { updateSafeAccounts } from '@/utils/foramtters';
 
 import { useEthersAdapter } from './useEthersAdapter';
-import { updateSafeAccounts } from '@/utils/foramtters';
 
 export interface ICreateTrancationERC20 {
   tokenAddress: string;

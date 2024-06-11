@@ -7,7 +7,6 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { v4 as uuid } from 'uuid';
 
-import { useNetwork } from '@/hooks/useNetwork';
 import routes from '@/app/routes';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import {
@@ -27,7 +26,7 @@ import {
   styledBtnSwitchNetwork,
   styledCustomNetworkBtn,
 } from '../safe-account.styles';
-import { IOptionNetwork, safeNetworksObj } from '@/constants/networks';
+import { IOptionNetwork } from '@/constants/networks';
 import { AccountInfo } from '../components/account-info/account-info';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconInfo from '@/assets/svg/infoIcon.svg';
@@ -59,12 +58,10 @@ export default function CreatePageAccount() {
   const { networks, setNetwork, chosenNetwork, setChosenNetwork } = useNetworkStore();
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
-  const network = useNetwork();
   const { setIsLoading, isLoading, safeAddress } = useActiveSafeAddress();
   const { createSafe } = useSafeSdk();
   const { switchNetwork } = useSwitchNetwork();
-
-  const chainId = Number(network?.chainId);
+  const { chainId } = useWeb3ModalAccount();
 
   const handleUpdateOptions = async (isFirstTime?: boolean) => {
     setIsLoadingSelect(true);
@@ -122,7 +119,7 @@ export default function CreatePageAccount() {
           ? localStorage.getItem('createdSafes')
           : null;
 
-        updateSafeAccounts(chainId, [String(address)], valueAcc, localList);
+        updateSafeAccounts(chainId ?? options[0].chainId, [String(address)], valueAcc, localList);
 
         customToasty('Address was added', 'success');
         setIsLoading(false);
