@@ -79,6 +79,16 @@ export default function CreatePageAccount() {
 
   useEffect(() => {
     (async () => {
+      if (!chosenNetwork) return;
+      if (chainId !== chosenNetwork.chainId) {
+        const network = options.find(network => network.chainId === chainId) ?? null;
+        setChosenNetwork(network);
+      }
+    })();
+  }, [options]);
+
+  useEffect(() => {
+    (async () => {
       await handleUpdateOptions(true);
     })();
   }, [networks]);
@@ -222,7 +232,7 @@ export default function CreatePageAccount() {
       <WalletSelect
         isLoading={isLoadingSelect}
         options={options}
-        defaultValue={options[0]}
+        defaultValue={chosenNetwork ?? options[0]}
         onChange={(newValue: IOptionNetwork | null | undefined) =>
           newValue && setChosenNetwork(newValue)
         }
