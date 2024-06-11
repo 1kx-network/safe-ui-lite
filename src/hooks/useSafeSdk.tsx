@@ -10,13 +10,13 @@ import { Transaction } from '@safe-global/safe-core-sdk-types';
 
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
-import { safeNetworksObj } from '@/constants/networks';
 import usdABI from '@/app/contracts/abi/usd.json';
 import { CONTRACTS_TOKEN } from '@/constants/tokens-contract';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { SEPOLIA_ZK_MODULE } from '../constants/addresses';
 
 import { useEthersAdapter } from './useEthersAdapter';
+import { updateSafeAccounts } from '@/utils/foramtters';
 
 export interface ICreateTrancationERC20 {
   tokenAddress: string;
@@ -28,7 +28,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
   const createEthAdapter = useEthersAdapter();
   const { saveSdk, safeSdk } = useSafeStore();
   const { walletProvider } = useWeb3ModalProvider();
-  const { chainId } = useWeb3ModalAccount();
+  const { chainId, address } = useWeb3ModalAccount();
   const { setClearActiveSafeStore } = useActiveSafeAddress();
 
   const createSdkInstance = async (address: string | null) => {
@@ -74,19 +74,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
         ? localStorage.getItem('createdSafes')
         : null;
 
-      const parsedNetworkList = localList ? JSON.parse(localList) : safeNetworksObj;
-
-      if (parsedNetworkList[chainId]) {
-        parsedNetworkList[chainId].push(addressAccount);
-      } else {
-        parsedNetworkList[chainId ?? 1] = [addressAccount];
-      }
-
-      if (parsedNetworkList) {
-        localStorage.setItem('createdSafes', JSON.stringify(parsedNetworkList));
-      }
-
-      localStorage.setItem('safeAddress', addressAccount);
+      updateSafeAccounts(chainId, owners, addressAccount, localList);
 
       return safeSdk;
     } catch (e) {
