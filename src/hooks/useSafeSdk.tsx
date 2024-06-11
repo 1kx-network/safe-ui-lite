@@ -91,7 +91,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
       return safeSdk;
     } catch (e) {
       const error = e instanceof Error ? e.message : String(e);
-      if (error.includes('Create2')) {
+      if (error.includes('Create2') || error.includes('reverted')) {
         customToasty(
           `A similar account has already been created. Error with deploy new safe account.`,
           'error',
