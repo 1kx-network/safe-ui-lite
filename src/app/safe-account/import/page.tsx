@@ -39,6 +39,7 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useNetworkStore from '@/stores/networks-store';
 import { NetworksSettings } from '@/app/settings/environment-variables';
+import { updateSafeAccounts } from '@/utils/foramtters';
 
 interface IAddNetwork {
   name: string;
@@ -121,19 +122,7 @@ export default function CreatePageAccount() {
           ? localStorage.getItem('createdSafes')
           : null;
 
-        const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
-
-        const updateLocalList =
-          chainId && localListParsed[String(chainId)] === undefined
-            ? {
-                ...localListParsed,
-                [chainId]: [],
-              }
-            : localListParsed;
-
-        updateLocalList[chainId ?? 1].push(valueAcc);
-        localStorage.setItem('createdSafes', JSON.stringify(updateLocalList));
-        localStorage.setItem('safeAddress', valueAcc);
+        updateSafeAccounts(chainId, [String(address)], valueAcc, localList);
 
         customToasty('Address was added', 'success');
         setIsLoading(false);

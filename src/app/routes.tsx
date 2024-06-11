@@ -14,7 +14,7 @@ const routes = {
   transactionsHistory: '/transactions/history',
 
   safeLightWallet: '/safe-light-wallet',
-  safeAccountList: '/safe-account/list',
+  // safeAccountList: '/safe-account/list',
   walletPage: '/wallet',
   walletSetup: '/wallet-setup',
 

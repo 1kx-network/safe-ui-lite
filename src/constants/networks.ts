@@ -8,25 +8,25 @@ import {
 import { networks } from '@/context/networks';
 import { formatterIcon } from '@/utils/icon-formatter';
 
-interface ISafeNetworksObj {
-  [key: string]: never[];
+export interface ISafeNetworksObj {
+  [key: string]: { [key: string]: string[] };
 }
 
 export const safeNetworksObj: ISafeNetworksObj = {
-  '1': [],
-  '10': [],
-  '56': [],
-  '100': [],
-  '137': [],
-  '324': [],
-  '1101': [],
-  '8453': [],
-  '42161': [],
-  '42220': [],
-  '43114': [],
-  '84532': [],
-  '11155111': [],
-  '1313161554': [],
+  '1': {},
+  '10': {},
+  '56': {},
+  '100': {},
+  '137': {},
+  '324': {},
+  '1101': {},
+  '8453': {},
+  '42161': {},
+  '42220': {},
+  '43114': {},
+  '84532': {},
+  '11155111': {},
+  '1313161554': {},
 };
 
 export const walletConnectChains: ChainInfo[] = [
