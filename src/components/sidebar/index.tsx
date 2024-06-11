@@ -15,14 +15,14 @@ import IconLoading from '@/assets/svg/loader.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import { CustomModal, customToasty } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel, updateAddressSafe, updateSafeAccounts } from '@/utils/foramtters';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { networks } from '@/context/networks';
 import useSafeStore from '@/stores/safe-store';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
-import { safeNetworksObj } from '@/constants/networks';
+import { ISafeNetworksObj, safeNetworksObj } from '@/constants/networks';
 import { useNetwork } from '@/hooks/useNetwork';
 import { getNetworksDB } from '@/db/get-info';
 import { TYPE_IMPORT } from '@/constants/types';
@@ -145,32 +145,20 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   }, [safeAddress, address, chainId]);
 
   useEffect(() => {
-    if (chainId) {
+    if (chainId && address) {
       const localList = localStorage.getItem('createdSafes');
-      const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+      const localListParsed: ISafeNetworksObj = localList ? JSON.parse(localList) : safeNetworksObj;
 
-      const listAccount =
-        data && data[chainId] && localListParsed[chainId]
-          ? [...data[chainId], ...localListParsed[chainId]]
-          : data && data[chainId]
-            ? data[chainId]
-            : localListParsed[chainId];
+      const { activeAafeAddress, accountList } = updateAddressSafe({
+        localListParsed,
+        chainId,
+        address,
+        safeAddress,
+        data,
+      });
 
-      if (listAccount !== undefined) {
-        setAccountList(listAccount);
-        const defaultAccount = listAccount[0];
-
-        if (listAccount.some((elem: string) => elem === safeAddress)) {
-          setSafeAddress(safeAddress);
-          safeAddress && localStorage.setItem('safeAddress', safeAddress);
-        } else if (defaultAccount) {
-          localStorage.setItem('safeAddress', defaultAccount);
-          setSafeAddress(defaultAccount);
-        } else {
-          localStorage.removeItem('safeAddress');
-          setSafeAddress(null);
-        }
-      }
+      setAccountList(accountList);
+      setSafeAddress(activeAafeAddress);
 
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
@@ -198,28 +186,29 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   useEffect(() => {
     (async () => {
-      if (shareNetwork) {
-        await setNetworkDB(shareNetwork as INetworkDB);
+      // if (shareNetwork) {
+      //   await setNetworkDB(shareNetwork as INetworkDB);
 
-        const accountsNet = shareAccounts ? JSON.parse(shareAccounts) : null;
-        if (accountsNet && accountsNet.length) {
-          const localList = localStorage.getItem('createdSafes');
-          const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+      //   const accountsNet = shareAccounts ? JSON.parse(shareAccounts) : null;
+      //   if (accountsNet && accountsNet.length) {
+      //     const localList = localStorage.getItem('createdSafes');
+      //     const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
+      //     const chainId = String(shareNetwork.chainId);
 
-          const chainId = String(shareNetwork.chainId);
+      //     updateSafeAccounts(chainId, [String(address)], shareAccounts, localList);
 
-          if (localListParsed[chainId]) {
-            const uniqueAddresses = accountsNet.filter(
-              (address: string) => !localListParsed[chainId].includes(address)
-            );
-            localListParsed[chainId].push(...uniqueAddresses);
-          } else {
-            localListParsed[chainId] = accountsNet;
-          }
+      //     // if (localListParsed[chainId]) {
+      //     //   const uniqueAddresses = accountsNet.filter(
+      //     //     (address: string) => !localListParsed[chainId].includes(address)
+      //     //   );
+      //     //   localListParsed[chainId].push(...uniqueAddresses);
+      //     // } else {
+      //     //   localListParsed[chainId] = accountsNet;
+      //     // }
 
-          localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
-        }
-      }
+      //     // localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
+      //   }
+      // }
       await getNetworksDB();
 
       if (shareAccounts) {
@@ -440,12 +429,12 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
               </BoxAccountActionStyled>
             </Link>
 
-            <BoxAccountActionStyled onClick={() => setIsOpenShareModal(true)}>
+            {/* <BoxAccountActionStyled onClick={() => setIsOpenShareModal(true)}>
               <IconPlus width="17px" height="17px" color={themeMuiBase.palette.success} />
               <WalletTypography fontSize={14} fontWeight={500}>
                 Share your account
               </WalletTypography>
-            </BoxAccountActionStyled>
+            </BoxAccountActionStyled> */}
           </Box>
         </AccountWrapperStyled>
       </CustomModal>
