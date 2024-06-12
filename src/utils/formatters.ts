@@ -26,8 +26,6 @@ export function updateSafeAccounts(
   addressAccount: string,
   localList: string | null
 ) {
-  console.log(localList);
-
   const parsedNetworkList: ISafeNetworksObj =
     (localList && JSON.parse(localList)) || safeNetworksObj;
 
@@ -38,8 +36,11 @@ export function updateSafeAccounts(
   owners.forEach(address => {
     if (parsedNetworkList[chainId]) {
       if (parsedNetworkList[chainId][address]) {
-        // If the chainId exists and the address key exists within it, push addressAccount to the array
-        parsedNetworkList[chainId][address].push(addressAccount);
+        // Ensure that the safe is not duplicated
+        if (!parsedNetworkList[chainId][address].includes(addressAccount)) {
+          // If the chainId exists and the address key exists within it, push addressAccount to the array
+          parsedNetworkList[chainId][address].push(addressAccount);
+        }
       } else {
         // If the chainId exists but the address key does not, create a new address key and add an array containing addressAccount
         parsedNetworkList[chainId][address] = [addressAccount];
@@ -90,7 +91,7 @@ export const updateAddressSafe = ({
         const activeAddress = data[chainId].find((elem: string) => elem === safeAddress);
 
         return {
-          activeSafeAddress: activeAddress ?? data[chainId][0],
+          activeSafeAddress: activeAddress ?? data[chainId][0] ?? null,
           accountList: data[chainId],
         };
       }

@@ -15,7 +15,7 @@ import IconLoading from '@/assets/svg/loader.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import { CustomModal, customToasty } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
-import { formattedLabel, updateAddressSafe, updateSafeAccounts } from '@/utils/formatters';
+import { formattedLabel, updateAddressSafe } from '@/utils/formatters';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { networks } from '@/context/networks';
@@ -26,8 +26,7 @@ import { ISafeNetworksObj, safeNetworksObj } from '@/constants/networks';
 import { useNetwork } from '@/hooks/useNetwork';
 import { getNetworksDB } from '@/db/get-info';
 import { TYPE_IMPORT } from '@/constants/types';
-import { setNetworkDB, setDataDB } from '@/db/set-info';
-import { INetworkDB } from '@/db';
+import { setDataDB } from '@/db/set-info';
 
 import {
   MenuStyled,
@@ -71,7 +70,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const pathname = usePathname();
   const { address, chainId } = useWeb3ModalAccount();
   const { data } = useOwnerList(address);
-  const { safeSdk, saveSdk } = useSafeStore();
+  const { safeSdk } = useSafeStore();
   const network = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
 
@@ -101,7 +100,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     balanceAccount,
     setSafeAddress,
     setBalanceAccount,
-    setClearActiveSafeStore,
     isLoading,
     setIsLoading,
     accountList,
@@ -135,11 +133,12 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   }, [accountList]);
 
   useEffect(() => {
-    if (!safeAddress) return;
+    const safeAddressLocalStorage = localStorage.getItem('safeAddress');
+    if (!safeAddressLocalStorage) return;
 
     setIsLoading(true);
-    setSafeAddress(safeAddress);
-    createSafe(safeAddress);
+    setSafeAddress(safeAddressLocalStorage);
+    createSafe(safeAddressLocalStorage);
 
     setIsLoading(false);
   }, [safeAddress, address, chainId]);
@@ -157,10 +156,17 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         safeAddress: safeAddressLocalStorage,
         data,
       });
+      if (activeSafeAddress) {
+        localStorage.setItem('safeAddress', activeSafeAddress);
+        setSafeAddress(activeSafeAddress);
+      }
+      if (accountList.length === 0) {
+        localStorage.removeItem('safeAddress');
+        setSafeAddress(null);
+      }
 
       localStorage.setItem('safeAddress', activeSafeAddress);
       setAccountList(accountList);
-      setSafeAddress(activeSafeAddress);
 
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
@@ -169,6 +175,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
       const pendingBalance = async () => {
         setIsLoading(true);
+        if (!safeSdk) return;
         const dataAcc = await getInfoByAccount(safeSdk);
         if (!dataAcc) return;
 
@@ -180,7 +187,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
       };
 
       pendingBalance();
-      setTimeout(() => setIsLoading(false), 400);
+      setTimeout(() => setIsLoading(false), 300);
     }
 
     setIsLoading(false);
@@ -188,29 +195,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   useEffect(() => {
     (async () => {
-      // if (shareNetwork) {
-      //   await setNetworkDB(shareNetwork as INetworkDB);
-
-      //   const accountsNet = shareAccounts ? JSON.parse(shareAccounts) : null;
-      //   if (accountsNet && accountsNet.length) {
-      //     const localList = localStorage.getItem('createdSafes');
-      //     const localListParsed = localList ? JSON.parse(localList) : safeNetworksObj;
-      //     const chainId = String(shareNetwork.chainId);
-
-      //     updateSafeAccounts(chainId, [String(address)], shareAccounts, localList);
-
-      //     // if (localListParsed[chainId]) {
-      //     //   const uniqueAddresses = accountsNet.filter(
-      //     //     (address: string) => !localListParsed[chainId].includes(address)
-      //     //   );
-      //     //   localListParsed[chainId].push(...uniqueAddresses);
-      //     // } else {
-      //     //   localListParsed[chainId] = accountsNet;
-      //     // }
-
-      //     // localStorage.setItem('createdSafes', JSON.stringify(localListParsed));
-      //   }
-      // }
       await getNetworksDB();
 
       if (shareAccounts) {
@@ -218,12 +202,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         await setDataDB(accounts[0], {});
       }
     })();
-
-    if (!address && !chainId) {
-      saveSdk(null);
-      localStorage.removeItem('safeAddress');
-      setClearActiveSafeStore();
-    }
   }, [address, chainId, safeAddress, networks]);
 
   const handleClickAccount = (address: string) => {
@@ -237,7 +215,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   };
 
   const headerAddress = useCallback(() => {
-    if (safeAddress) {
+    if (safeAddress && safeAddress !== 'null') {
       return formattedLabel(safeAddress);
     }
     return 'Safe account';
