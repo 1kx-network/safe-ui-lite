@@ -38,7 +38,7 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useNetworkStore from '@/stores/networks-store';
 import { NetworksSettings } from '@/app/settings/environment-variables';
-import { updateSafeAccounts } from '@/utils/foramtters';
+import { updateSafeAccounts } from '@/utils/formatters';
 
 interface IAddNetwork {
   name: string;

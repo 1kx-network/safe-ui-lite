@@ -21,7 +21,7 @@ import { customToasty } from '@/components';
 import { useMultySign } from '@/hooks/useMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { setNetworkDB, setDataDB } from '@/db/set-info';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
@@ -80,7 +80,7 @@ const SignTransactionComponent = () => {
   const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
   const signatures = searchParams.getAll('signatures')[0];
   const signers = searchParams.getAll('signers')[0];
-  const callData = searchParams.get('callData');
+  const calldata = searchParams.get('calldata');
 
   const batchTr = searchParams.get('batchTr');
   const parseRawTr: IBatchTr[] | null = parseSearchParams(batchTr);
@@ -109,7 +109,7 @@ const SignTransactionComponent = () => {
     newThreshold,
     nonce: nonceUrl,
     rawTr,
-    callData,
+    calldata,
   };
 
   const addNetworkForUserSign = async () => {

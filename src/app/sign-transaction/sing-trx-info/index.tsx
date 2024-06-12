@@ -10,7 +10,7 @@ import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import { customToasty } from '@/components';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import TrBuildComponent from '../tr-builder';
 
@@ -24,7 +24,7 @@ interface ISendTokenInfo {
   address: string | null;
   typeSignTrx: keyof ITypeSignTrx | null;
   newThreshold: string | null;
-  callData: string | null;
+  calldata: string | null;
 }
 
 export const SignTransactionInfo = ({
@@ -37,7 +37,7 @@ export const SignTransactionInfo = ({
   newThreshold,
   amount,
   tokenType,
-  callData,
+  calldata,
 }: ISendTokenInfo) => {
   const { REMOVE_OWNER, ADD_OWNER, ADD_MODULE, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } =
     TYPE_SIGN_TRX;
@@ -157,13 +157,13 @@ export const SignTransactionInfo = ({
           </WalletTypography>
           <IconDefaultAddress width="21px" height="21px" />
           <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-            {callData ?? formattedLabel(safeTransaction?.data.data ?? '0x')}
+            {calldata ?? formattedLabel(safeTransaction?.data.data ?? '0x')}
           </WalletTypography>
           <CopyIcon
             width="18px"
             height="19px"
             cursor="pointer"
-            onClick={() => handleCopy(callData)}
+            onClick={() => handleCopy(calldata)}
           />
         </Box>
       )}

@@ -12,7 +12,7 @@ import { DraggableProvided, DraggableStateSnapshot } from 'react-beautiful-dnd';
 
 import { getTransactionText } from '../../utils/utils';
 import { WalletTypography } from '@/ui-kit';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { ProposedTransaction } from '../../typings/models';
 import TransactionDetailsItem from '../TransactionDetailsItem/TransactionDetailsItem';
 import IconEdit from '@/assets/svg/edit.svg';

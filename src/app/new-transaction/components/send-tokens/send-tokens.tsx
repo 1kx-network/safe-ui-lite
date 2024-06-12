@@ -160,7 +160,7 @@ export const SendTokens = () => {
         safeTxHash,
         nonce: nonce,
         typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
-        callData: data.calldata,
+        calldata: data.calldata,
         userNetworkTrx: JSON.stringify({
           name: chosenNetwork?.value ?? '',
           chainId: chosenNetwork?.chainId ?? '',
