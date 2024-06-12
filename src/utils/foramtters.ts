@@ -75,22 +75,24 @@ export const updateAddressSafe = ({
       const activeAddress = listAccount.find(elem => elem === safeAddress);
 
       return {
-        activeAafeAddress: activeAddress ?? localListParsed[chainId][address][0],
+        activeSafeAddress: activeAddress ?? localListParsed[chainId][address][0],
         accountList: listAccount,
       };
     } else {
       if (data && data[chainId]) {
         const activeAddress = data[chainId].find((elem: string) => elem === safeAddress);
+        console.log('___1___', safeAddress, activeAddress);
+        console.log('___2___', { activeSafeAddress: activeAddress ?? data[chainId][0] });
 
         return {
-          activeAafeAddress: activeAddress ?? data[chainId][0],
+          activeSafeAddress: activeAddress ?? data[chainId][0],
           accountList: data[chainId],
         };
       }
-      return { activeAafeAddress: null, accountList: [] };
+      return { activeSafeAddress: null, accountList: [] };
     }
   } else {
-    return { activeAafeAddress: null, accountList: [] };
+    return { activeSafeAddress: null, accountList: [] };
   }
 };
 
