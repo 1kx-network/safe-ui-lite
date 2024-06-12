@@ -80,7 +80,7 @@ const SignTransactionComponent = () => {
   const userNetworkTrxUrl = searchParams.get('userNetworkTrx');
   const signatures = searchParams.getAll('signatures')[0];
   const signers = searchParams.getAll('signers')[0];
-  const callData = searchParams.get('callData');
+  const calldata = searchParams.get('calldata');
 
   const batchTr = searchParams.get('batchTr');
   const parseRawTr: IBatchTr[] | null = parseSearchParams(batchTr);
@@ -109,7 +109,7 @@ const SignTransactionComponent = () => {
     newThreshold,
     nonce: nonceUrl,
     rawTr,
-    callData,
+    calldata,
   };
 
   const addNetworkForUserSign = async () => {
