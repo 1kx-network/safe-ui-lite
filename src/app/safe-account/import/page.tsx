@@ -27,7 +27,7 @@ import {
   styledBtnSwitchNetwork,
   styledCustomNetworkBtn,
 } from '../safe-account.styles';
-import { IOptionNetwork, safeNetworksObj } from '@/constants/networks';
+import { IOptionNetwork } from '@/constants/networks';
 import { AccountInfo } from '../components/account-info/account-info';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconInfo from '@/assets/svg/infoIcon.svg';
@@ -39,7 +39,7 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useNetworkStore from '@/stores/networks-store';
 import { NetworksSettings } from '@/app/settings/environment-variables';
-import { updateSafeAccounts } from '@/utils/foramtters';
+import { updateSafeAccounts } from '@/utils/formatters';
 
 interface IAddNetwork {
   name: string;

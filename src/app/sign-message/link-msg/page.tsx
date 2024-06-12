@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { formatterIcon } from '@/utils/icon-formatter';
-import { formattedLabel, formattedName } from '@/utils/foramtters';
+import { formattedLabel, formattedName } from '@/utils/formatters';
 import useSignStore from '@/stores/sign-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import useSafeStore from '@/stores/safe-store';

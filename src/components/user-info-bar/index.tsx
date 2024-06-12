@@ -14,7 +14,7 @@ import Cookies from 'js-cookie';
 import * as utils from 'ethers';
 import Link from 'next/link';
 
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { WalletButton, WalletTypography } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import IconMenu from '@/assets/svg/arrow-menu.svg';

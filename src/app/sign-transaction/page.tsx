@@ -21,7 +21,7 @@ import { customToasty } from '@/components';
 import { useMultySign } from '@/hooks/useMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { setNetworkDB, setDataDB } from '@/db/set-info';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';

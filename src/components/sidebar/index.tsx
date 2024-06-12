@@ -15,7 +15,7 @@ import IconLoading from '@/assets/svg/loader.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import { CustomModal, customToasty } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
-import { formattedLabel, updateAddressSafe, updateSafeAccounts } from '@/utils/foramtters';
+import { formattedLabel, updateAddressSafe, updateSafeAccounts } from '@/utils/formatters';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { networks } from '@/context/networks';

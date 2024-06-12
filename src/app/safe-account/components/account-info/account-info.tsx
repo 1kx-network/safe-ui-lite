@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { WalletPaper, WalletTypography } from '@/ui-kit';
 import IconDefualtAddress from '@/assets/svg/defult-icon-address.svg';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { IOptionNetwork } from '@/constants/networks';

@@ -10,7 +10,7 @@ import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import { customToasty } from '@/components';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import TrBuildComponent from '../tr-builder';
 
