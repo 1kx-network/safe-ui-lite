@@ -29,6 +29,7 @@ export interface IUseMultySign {
   newThreshold: string | null;
   nonce: string | null;
   rawTr?: MetaTransactionData[];
+  callData?: string | null;
 }
 
 export interface IMultySignResult {
@@ -64,6 +65,7 @@ export function useMultySign({
   newThreshold,
   nonce,
   rawTr,
+  callData,
 }: IUseMultySign): IMultySignResult {
   const [hash, setHash] = useState<string | null>(null);
 
@@ -205,7 +207,7 @@ export function useMultySign({
             amount,
             tokenType ?? 'ETH',
             chainId,
-            searchParams.get('calldata') || '0x',
+            callData ?? '0x',
             createTrancationERC20
           );
           transactionsArray = res ? [res] : undefined;
