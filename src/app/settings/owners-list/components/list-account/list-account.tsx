@@ -2,7 +2,7 @@ import { Box } from '@mui/system';
 import Link from 'next/link';
 
 import { WalletTypography } from '@/ui-kit';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import OpenIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import IconTrash from '@/assets/svg/delete.svg';

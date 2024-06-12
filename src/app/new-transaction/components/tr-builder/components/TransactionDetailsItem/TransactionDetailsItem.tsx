@@ -6,7 +6,7 @@ import { ProposedTransaction } from '../../typings/models';
 import { weiToEther } from '../../utils/utils';
 import useElementHeight from '../../hooks/useElementHeight';
 import { WalletTypography } from '@/ui-kit';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { customToasty } from '@/components';
 
 import {

@@ -20,7 +20,7 @@ import { customToasty } from '@/components';
 // import { useMessageMultySign } from '@/hooks/useMessageMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 // import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { setNetworkDB, setDataDB } from '@/db/set-info';

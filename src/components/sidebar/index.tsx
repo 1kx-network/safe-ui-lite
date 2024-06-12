@@ -15,7 +15,7 @@ import IconLoading from '@/assets/svg/loader.svg';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import { CustomModal, customToasty } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
-import { formattedLabel, updateAddressSafe, updateSafeAccounts } from '@/utils/foramtters';
+import { formattedLabel, updateAddressSafe, updateSafeAccounts } from '@/utils/formatters';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { networks } from '@/context/networks';
@@ -145,20 +145,22 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   }, [safeAddress, address, chainId]);
 
   useEffect(() => {
-    if (chainId && address) {
+    if (chainId && address && safeSdk) {
       const localList = localStorage.getItem('createdSafes');
       const localListParsed: ISafeNetworksObj = localList ? JSON.parse(localList) : safeNetworksObj;
+      const safeAddressLocalStorage = localStorage.getItem('safeAddress');
 
-      const { activeAafeAddress, accountList } = updateAddressSafe({
+      const { activeSafeAddress, accountList } = updateAddressSafe({
         localListParsed,
         chainId,
         address,
-        safeAddress,
+        safeAddress: safeAddressLocalStorage,
         data,
       });
 
+      localStorage.setItem('safeAddress', activeSafeAddress);
       setAccountList(accountList);
-      setSafeAddress(activeAafeAddress);
+      setSafeAddress(activeSafeAddress);
 
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {

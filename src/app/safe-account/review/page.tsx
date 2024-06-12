@@ -10,7 +10,7 @@ import { themeMuiBase } from '@/assets/styles/theme-mui';
 import Accordion from '../components/accordion';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconDefualtAddress from '@/assets/svg/defult-icon-address.svg';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import routes from '@/app/routes';
 import useActiveOwnerStore from '@/stores/active-owners-store';

@@ -5,7 +5,7 @@ import { WalletTypography } from '@/ui-kit';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import { ITransaction } from '@/db';
 import { formatterIcon } from '@/utils/icon-formatter';
-import { formattedLabel } from '@/utils/foramtters';
+import { formattedLabel } from '@/utils/formatters';
 
 import { ItemInfoStyled, ItemWrapperStyled } from './item.styles';
 
