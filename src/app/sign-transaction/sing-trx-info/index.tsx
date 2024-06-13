@@ -109,7 +109,10 @@ export const SignTransactionInfo = ({
           <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
             {formattedLabel(hash)}
           </WalletTypography>
-          <Link href={`${linkOnScan}transaction/${hash}`} target="_blanck">
+          <Link
+            href={`${linkOnScan}${linkOnScan.includes('buildbear') ? 'transaction' : 'tx'}/${hash}`}
+            target="_blanck"
+          >
             <OpenInNewIcon width="19px" height="18px" />
           </Link>
           <CopyIcon width="18px" height="19px" cursor="pointer" onClick={() => handleCopy(hash)} />
