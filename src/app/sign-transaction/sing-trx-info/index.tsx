@@ -160,7 +160,8 @@ export const SignTransactionInfo = ({
           </WalletTypography>
           <IconDefaultAddress width="21px" height="21px" />
           <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-            {calldata ?? formattedLabel(safeTransaction?.data.data ?? '0x')}
+            {shortenString(calldata as string) ??
+              formattedLabel(safeTransaction?.data.data ?? '0x')}
           </WalletTypography>
           <CopyIcon
             width="18px"
@@ -173,3 +174,12 @@ export const SignTransactionInfo = ({
     </TransactionInfoStyled>
   );
 };
+
+function shortenString(str: string) {
+  // Check if the input is a valid string and long enough to be shortened
+  if (str.length < 14) {
+    return str;
+  }
+  // Extract the first 6 characters and the last 4 characters, and concatenate them with "...." in between
+  return `${str.slice(0, 5)}....${str.slice(-5)}`;
+}

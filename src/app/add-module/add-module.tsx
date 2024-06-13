@@ -77,6 +77,7 @@ export default function AddModule() {
         nonce: nonce,
         tokenType: NATIVE_TOKENS.ETH,
         typeSignTrx: TYPE_SIGN_TRX.ADD_MODULE,
+        calldata: safeTransaction.data.data,
         userNetworkTrx: JSON.stringify({
           name: chosenNetwork?.value ?? '',
           chainId: chosenNetwork?.chainId ?? '',
