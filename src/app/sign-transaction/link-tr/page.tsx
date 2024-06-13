@@ -68,8 +68,8 @@ interface IDataQuery {
   amount: string | null;
   nonce: string | null;
   calldata: string | null;
-  signatures: string[] | null;
-  signers: string[] | null;
+  signaturesFromQueryArgs: string[] | null;
+  signersFromQueryArgs: string[] | null;
   userNetworkTrx: any;
   batchTr?: IBatchTr[] | null;
   rawTr?: RawTr[] | undefined;
@@ -84,8 +84,8 @@ const defaultDataQuery: IDataQuery = {
   tokenType: null,
   amount: null,
   nonce: null,
-  signatures: null,
-  signers: null,
+  signaturesFromQueryArgs: null,
+  signersFromQueryArgs: null,
   userNetworkTrx: null,
   batchTr: null,
   rawTr: undefined,
@@ -210,8 +210,8 @@ const NewSignTransactionComponent = () => {
           amount: queryParams.amount,
           nonce: queryParams.nonce,
           calldata: queryParams.calldata,
-          signatures,
-          signers,
+          signaturesFromQueryArgs: signatures,
+          signersFromQueryArgs: signers,
           userNetworkTrx: queryParams.userNetworkTrx
             ? JSON.parse(queryParams.userNetworkTrx)
             : queryParams.userNetworkTrx,
@@ -241,8 +241,8 @@ const NewSignTransactionComponent = () => {
         ...queryParams,
         address: queryParams.safeAddress,
         chainId: queryParams.chainIdUrl,
-        signatures: dataQuery.signatures,
-        signers: dataQuery.signers,
+        signatures: dataQuery.signaturesFromQueryArgs,
+        signers: dataQuery.signersFromQueryArgs,
       })
         .filter(([, value]) => value !== null && value !== undefined && value !== '')
         .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
@@ -253,7 +253,7 @@ const NewSignTransactionComponent = () => {
       setNewQueryLink(queryParamsString);
       setNewUrlLink(newQueryLink);
     }
-  }, [queryParams, dataQuery.signatures, dataQuery.signers]);
+  }, [queryParams, dataQuery.signaturesFromQueryArgs, dataQuery.signersFromQueryArgs]);
 
   useEffect(() => {
     if (dataQuery.safeAddress) {
@@ -292,7 +292,7 @@ const NewSignTransactionComponent = () => {
     if (!existingNetwork) {
       await setNetworkDB(userNetwork);
 
-      if (dataQuery.safeAddress) {
+      if (dataQuery.safeAddress && dataQuery.safeAddress !== '') {
         await setDataDB(dataQuery.safeAddress, {});
       }
 
@@ -327,12 +327,12 @@ const NewSignTransactionComponent = () => {
   }, [address]);
 
   useEffect(() => {
-    if (dataQuery.signatures && dataQuery.signers) {
-      if (signedCount !== dataQuery.signatures.length) {
-        setSignedCount(dataQuery.signatures.length);
+    if (dataQuery.signaturesFromQueryArgs && dataQuery.signersFromQueryArgs) {
+      if (signedCount !== dataQuery.signaturesFromQueryArgs.length) {
+        setSignedCount(dataQuery.signaturesFromQueryArgs.length);
       }
     }
-  }, [dataQuery.signatures, dataQuery.signers, address]);
+  }, [dataQuery.signaturesFromQueryArgs, dataQuery.signersFromQueryArgs, address]);
 
   const safeFromDb = useLiveQuery(
     () =>
@@ -345,7 +345,10 @@ const NewSignTransactionComponent = () => {
   const transaction = safeFromDb?.transactions.find(tx => tx.hash === dataQuery.safeTxHash);
 
   useEffect(() => {
-    if (transaction && transaction.signatures.length > (dataQuery.signatures?.length ?? 0)) {
+    if (
+      transaction &&
+      transaction.signatures.length > (dataQuery.signaturesFromQueryArgs?.length ?? 0)
+    ) {
       const { signatures, signers } = multySign.getSignaturesFromDbMulty();
       setDataQuery(prev => ({
         ...prev,
@@ -353,7 +356,7 @@ const NewSignTransactionComponent = () => {
         signers,
       }));
     }
-  }, [transaction, dataQuery.signatures]);
+  }, [transaction, dataQuery.signaturesFromQueryArgs]);
 
   const multySign = useMultySign({
     ...dataQuery,
@@ -570,7 +573,7 @@ const NewSignTransactionComponent = () => {
                           <Box display={'flex'} flexDirection={'column'} width="25%">
                             <ItemInfoLabelStyled>Network</ItemInfoLabelStyled>
                             <ItemInfoStyled>
-                              {userNetworkInfo.chainId &&
+                              {userNetworkInfo?.chainId &&
                                 formatterIcon(
                                   userNetworkInfo.chainId ? +userNetworkInfo.chainId : 0
                                 )}
@@ -587,18 +590,14 @@ const NewSignTransactionComponent = () => {
                   )}
 
                   <Box width={'60%'} display={'flex'} flexDirection={'column'}>
-                    {dataQuery.signers && <ItemInfoLabelStyled>Signers</ItemInfoLabelStyled>}
+                    {transaction?.signatures.length && (
+                      <ItemInfoLabelStyled>Signers</ItemInfoLabelStyled>
+                    )}
                     <SignersBoxStyled>
-                      {dataQuery.signers ? (
-                        [
-                          ...dataQuery.signers,
-                          ...dataQuery.signers,
-                          ...dataQuery.signers,
-                          ...dataQuery.signers,
-                          ...dataQuery.signers,
-                          ...dataQuery.signers,
-                          ...dataQuery.signers,
-                        ].map(elem => <ItemInfoStyled key={elem}>{elem}</ItemInfoStyled>)
+                      {transaction?.signatures ? (
+                        transaction?.signatures.map(elem => (
+                          <ItemInfoStyled key={elem.signer}>{elem.signer}</ItemInfoStyled>
+                        ))
                       ) : (
                         <ItemInfoStyled>0x</ItemInfoStyled>
                       )}
@@ -640,7 +639,7 @@ const NewSignTransactionComponent = () => {
           )}
         </WalletPaper>
 
-        {dataQuery.signatures && dataQuery.signatures?.length > 0 ? (
+        {dataQuery.signaturesFromQueryArgs && dataQuery.signaturesFromQueryArgs?.length > 0 ? (
           <WalletPaper style={{ marginTop: themeMuiBase.spacing(3) }}>
             <Box display={'flex'} flexDirection={'column'} gap={5}>
               <Box>
