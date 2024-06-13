@@ -150,6 +150,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
 
   useEffect(() => {
     if (chainId && address) {
+      console.log(`chore: test: ${chainId} ${address}`);
       const localList = localStorage.getItem('createdSafes');
       const localListParsed: ISafeNetworksObj = localList ? JSON.parse(localList) : safeNetworksObj;
       const safeAddressLocalStorage = localStorage.getItem('safeAddress');
