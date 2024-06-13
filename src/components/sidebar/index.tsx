@@ -179,7 +179,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         })();
       }
 
-      localStorage.setItem('safeAddress', activeSafeAddress);
       setAccountList(accountList);
 
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
