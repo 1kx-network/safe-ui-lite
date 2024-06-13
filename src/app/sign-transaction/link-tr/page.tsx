@@ -70,7 +70,7 @@ interface IDataQuery {
   calldata: string | null;
   signatures: string[] | null;
   signers: string[] | null;
-  userNetworkTrx: string | null;
+  userNetworkTrx: any;
   batchTr?: IBatchTr[] | null;
   rawTr?: RawTr[] | undefined;
 }
@@ -212,7 +212,9 @@ const NewSignTransactionComponent = () => {
           calldata: queryParams.calldata,
           signatures,
           signers,
-          userNetworkTrx: queryParams.userNetworkTrx,
+          userNetworkTrx: queryParams.userNetworkTrx
+            ? JSON.parse(queryParams.userNetworkTrx)
+            : queryParams.userNetworkTrx,
           batchTr: parseRawTr,
           rawTr: rawTr,
         });
@@ -282,7 +284,7 @@ const NewSignTransactionComponent = () => {
 
   const addNetworkForUserSign = async () => {
     if (!dataQuery.userNetworkTrx) return;
-    const userNetwork = JSON.parse(dataQuery.userNetworkTrx) as INetworkDB;
+    const userNetwork = dataQuery.userNetworkTrx as INetworkDB;
     const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
 
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
@@ -415,6 +417,8 @@ const NewSignTransactionComponent = () => {
     TYPE_SIGN_TRX.REMOVE_OWNER !== typeTrx &&
     TYPE_SIGN_TRX.TR_BUILD !== typeTrx;
 
+  const userNetworkInfo = dataQuery.userNetworkTrx;
+
   return (
     <WalletLayout>
       <WrapperStyled>
@@ -503,7 +507,9 @@ const NewSignTransactionComponent = () => {
                           <Box display={'flex'} flexDirection={'column'} width="25%">
                             <ItemInfoLabelStyled>Type currency</ItemInfoLabelStyled>
                             <ItemInfoStyled>
-                              {field.value && formatterIcon(field.value)} {field.value}
+                              {(userNetworkInfo.chainId || field.value) &&
+                                formatterIcon(userNetworkInfo.chainId || field.value)}
+                              {userNetworkInfo.currency ?? field.value}
                             </ItemInfoStyled>
                           </Box>
                         )}
@@ -516,8 +522,11 @@ const NewSignTransactionComponent = () => {
                           <Box display={'flex'} flexDirection={'column'} width="25%">
                             <ItemInfoLabelStyled>Network</ItemInfoLabelStyled>
                             <ItemInfoStyled>
-                              {field.value && formatterIcon(chainIdUrl ? +chainIdUrl : 0)}
-                              {field.value}
+                              {userNetworkInfo.chainId &&
+                                formatterIcon(
+                                  userNetworkInfo.chainId ? +userNetworkInfo.chainId : 0
+                                )}
+                              {userNetworkInfo.name ?? field.value}
                             </ItemInfoStyled>
                           </Box>
                         )}
@@ -558,11 +567,14 @@ const NewSignTransactionComponent = () => {
                         control={control}
                         name="networkName"
                         render={({ field }) => (
-                          <Box display={'flex'} flexDirection={'column'} width="30%">
+                          <Box display={'flex'} flexDirection={'column'} width="25%">
                             <ItemInfoLabelStyled>Network</ItemInfoLabelStyled>
                             <ItemInfoStyled>
-                              {field.value && formatterIcon(chainIdUrl ? +chainIdUrl : 0)}
-                              {field.value}
+                              {userNetworkInfo.chainId &&
+                                formatterIcon(
+                                  userNetworkInfo.chainId ? +userNetworkInfo.chainId : 0
+                                )}
+                              {userNetworkInfo.name ?? field.value}
                             </ItemInfoStyled>
                           </Box>
                         )}
@@ -578,9 +590,15 @@ const NewSignTransactionComponent = () => {
                     {dataQuery.signers && <ItemInfoLabelStyled>Signers</ItemInfoLabelStyled>}
                     <SignersBoxStyled>
                       {dataQuery.signers ? (
-                        dataQuery.signers.map(elem => (
-                          <ItemInfoStyled key={elem}>{elem}</ItemInfoStyled>
-                        ))
+                        [
+                          ...dataQuery.signers,
+                          ...dataQuery.signers,
+                          ...dataQuery.signers,
+                          ...dataQuery.signers,
+                          ...dataQuery.signers,
+                          ...dataQuery.signers,
+                          ...dataQuery.signers,
+                        ].map(elem => <ItemInfoStyled key={elem}>{elem}</ItemInfoStyled>)
                       ) : (
                         <ItemInfoStyled>0x</ItemInfoStyled>
                       )}
