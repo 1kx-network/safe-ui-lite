@@ -202,9 +202,6 @@ const SignTransactionComponent = () => {
               const ownersList = await safe.getOwners();
               const threshold = await safe.getThreshold();
 
-              console.log('_threshold_', threshold);
-              console.log('_ownersList_', ownersList);
-
               setThreshold(threshold);
               setOwnerList(ownersList);
             }
