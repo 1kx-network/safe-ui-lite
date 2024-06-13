@@ -17,10 +17,14 @@ export const TransactionInfoStyled = styled('div')(
 );
 
 export const WrapperStyled = styled('div')`
-  padding: 2rem 0;
   width: 100%;
   margin: auto;
   max-width: 650px;
+  border-radius: 12px;
+  max-height: 87vh;
+  overflow: auto;
+  -ms-overflow-style: none;
+  -scroll-bar-width: none;
 `;
 
 export const BoxLinkStyled = styled('div')(
@@ -85,8 +89,10 @@ export const SignersBoxStyled = styled('div')(
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing(2)};
-  max-height: 350px;
-  overflow-y: scroll;
+  max-height: 175px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  -scroll-bar-width: none; 
 `
 );
 

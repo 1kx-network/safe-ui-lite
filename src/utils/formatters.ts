@@ -76,8 +76,7 @@ export const updateAddressSafe = ({
   if (localListParsed[chainId]) {
     if (localListParsed[chainId][address]) {
       const listAccount = [
-        ...((data && data[chainId]) ?? []),
-        ...localListParsed[chainId][address],
+        ...new Set([...((data && data[chainId]) ?? []), ...localListParsed[chainId][address]]),
       ];
 
       const activeAddress = listAccount.find(elem => elem === safeAddress);
