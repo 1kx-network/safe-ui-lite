@@ -167,9 +167,15 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         setSafeAddress(activeSafeAddress);
       }
 
-      if (accountList.length === 0) {
-        localStorage.removeItem('safeAddress');
-        setSafeAddress(null);
+      if (safeSdk) {
+        (async () => {
+          const isOwner = await safeSdk.isOwner(address);
+
+          if (accountList.length === 0 && !isOwner && safeAddressLocalStorage) {
+            localStorage.removeItem('safeAddress');
+            setSafeAddress(null);
+          }
+        })();
       }
 
       localStorage.setItem('safeAddress', activeSafeAddress);
