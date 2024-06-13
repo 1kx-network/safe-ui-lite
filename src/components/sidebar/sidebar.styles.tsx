@@ -203,7 +203,6 @@ export const CopyIconStyled = styled(CopyIcon)`
   height: 12px;
   cursor: pointer;
   margin-left: 8px;
-  maring: 4px;
 `;
 
 export const BoxAccountActionStyled = styled('div')(
