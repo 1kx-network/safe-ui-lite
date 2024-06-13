@@ -2,7 +2,7 @@
 import { Box } from '@mui/system';
 import { usePathname } from 'next/navigation';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { MultiValue } from 'react-select';
 import * as utils from 'ethers';
@@ -73,6 +73,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   const { safeSdk } = useSafeStore();
   const network = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
+  const prevSafeAddress = useRef<string | null>(null);
 
   const searchParams = useMemo(() => {
     if (typeof window !== 'undefined') return new URLSearchParams(window.location.search);
@@ -133,17 +134,19 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   }, [accountList]);
 
   useEffect(() => {
-    if (safeSdk) return;
-
     const safeAddressLocalStorage = localStorage.getItem('safeAddress');
-    if (!safeAddressLocalStorage && accountList.length === 0) return;
 
+    if (!safeAddressLocalStorage && accountList.length === 0) return;
+    if (safeAddressLocalStorage === prevSafeAddress.current) {
+      return;
+    }
     setIsLoading(true);
+    prevSafeAddress.current = safeAddressLocalStorage;
     setSafeAddress(safeAddressLocalStorage ?? accountList[0]);
     createSafe(safeAddressLocalStorage ?? accountList[0]);
 
     setIsLoading(false);
-  }, [safeAddress, accountList, safeSdk, address, chainId]);
+  }, [safeAddress, accountList, address, chainId]);
 
   useEffect(() => {
     if (chainId && address) {

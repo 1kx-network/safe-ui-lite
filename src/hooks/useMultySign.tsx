@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useCallback, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useSwitchNetwork, useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { MetaTransactionData, SafeTransaction } from '@safe-global/safe-core-sdk-types';
 import { v4 as uuid } from 'uuid';
@@ -29,6 +29,8 @@ export interface IUseMultySign {
   newThreshold: string | null;
   nonce: string | null;
   rawTr?: MetaTransactionData[];
+  signaturesFromQueryArgs?: string[] | null;
+  signersFromQueryArgs?: string[] | null;
   calldata?: string | null;
 }
 
@@ -66,6 +68,8 @@ export function useMultySign({
   nonce,
   rawTr,
   calldata,
+  signaturesFromQueryArgs,
+  signersFromQueryArgs,
 }: IUseMultySign): IMultySignResult {
   const [hash, setHash] = useState<string | null>(null);
 
@@ -80,7 +84,6 @@ export function useMultySign({
   const { switchNetwork } = useSwitchNetwork();
   const { open } = useWeb3Modal();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const { threshold, setThreshold, status, setStatus, setOwners } = useSignStore();
 
@@ -185,7 +188,7 @@ export function useMultySign({
 
       if (debounceCreation) return;
       debounceCreation = true;
-      setTimeout(() => (debounceCreation = false), 500);
+      setTimeout(() => (debounceCreation = false), 700);
 
       let safeTransaction: SafeTransaction | null = null;
       let transactionsArray = null;
@@ -318,8 +321,18 @@ export function useMultySign({
       });
     }
 
+    if (signersFromQueryArgs) {
+      signersFromQueryArgs.map((s, idx) => {
+        if (!signers.includes(s)) {
+          signers.push(s);
+          if (signaturesFromQueryArgs) {
+            signatures.push(signaturesFromQueryArgs[idx]);
+          }
+        }
+      });
+    }
     return { signatures, signers };
-  }, [transaction, chainId]);
+  }, [transaction, signaturesFromQueryArgs, signersFromQueryArgs, chainId]);
 
   const saveSignaturesMulty = useCallback(
     (signatures: string[], signers: string[]) => {
@@ -350,6 +363,9 @@ export function useMultySign({
           });
         }
       }
+      signaturesFromQueryArgs = signatures;
+      signersFromQueryArgs = signers;
+
       router.push(originalUrl.toString());
     },
     [router, transaction, chainId, conditionMulty]
