@@ -326,14 +326,6 @@ const NewSignTransactionComponent = () => {
     }
   }, [address]);
 
-  useEffect(() => {
-    if (dataQuery.signaturesFromQueryArgs && dataQuery.signersFromQueryArgs) {
-      if (signedCount !== dataQuery.signaturesFromQueryArgs.length) {
-        setSignedCount(dataQuery.signaturesFromQueryArgs.length);
-      }
-    }
-  }, [dataQuery.signaturesFromQueryArgs, dataQuery.signersFromQueryArgs, address]);
-
   const safeFromDb = useLiveQuery(
     () =>
       db.safes
@@ -384,6 +376,14 @@ const NewSignTransactionComponent = () => {
     },
     [address, ownerList, status, signedCount, threshold]
   );
+
+  useEffect(() => {
+    if (transaction && transaction.signatures) {
+      if (signedCount !== transaction.signatures.length) {
+        setSignedCount(transaction.signatures.length);
+      }
+    }
+  }, [transaction, address]);
 
   let buttonText = 'Sign Transaction';
 
