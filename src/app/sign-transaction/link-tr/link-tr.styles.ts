@@ -24,7 +24,7 @@ export const WrapperStyled = styled('div')`
   max-height: 87vh;
   overflow: auto;
   -ms-overflow-style: none;
-  -scroll-bar-width: none;
+  scrollbar-width: none;
 `;
 
 export const BoxLinkStyled = styled('div')(
@@ -92,7 +92,7 @@ export const SignersBoxStyled = styled('div')(
   max-height: 175px;
   overflow: auto;
   -ms-overflow-style: none;
-  -scroll-bar-width: none; 
+  scrollbar-width: none; 
 `
 );
 
