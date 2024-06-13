@@ -133,18 +133,20 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
   }, [accountList]);
 
   useEffect(() => {
+    if (safeSdk) return;
+
     const safeAddressLocalStorage = localStorage.getItem('safeAddress');
-    if (!safeAddressLocalStorage) return;
+    if (!safeAddressLocalStorage && accountList.length === 0) return;
 
     setIsLoading(true);
-    setSafeAddress(safeAddressLocalStorage);
-    createSafe(safeAddressLocalStorage);
+    setSafeAddress(safeAddressLocalStorage ?? accountList[0]);
+    createSafe(safeAddressLocalStorage ?? accountList[0]);
 
     setIsLoading(false);
-  }, [safeAddress, address, chainId]);
+  }, [safeAddress, accountList, safeSdk, address, chainId]);
 
   useEffect(() => {
-    if (chainId && address && safeSdk) {
+    if (chainId && address) {
       const localList = localStorage.getItem('createdSafes');
       const localListParsed: ISafeNetworksObj = localList ? JSON.parse(localList) : safeNetworksObj;
       const safeAddressLocalStorage = localStorage.getItem('safeAddress');
