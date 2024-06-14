@@ -44,8 +44,8 @@ import {
   styledBtnBack,
   styledPaper,
   styledSecondaryBtn,
-} from './sing-message.styles';
-import { SignMessageInfo } from './sing-msg-info';
+} from './sign-message.styles';
+import { SignMessageInfo } from './sign-msg-info';
 
 const SignMessageComponent = () => {
   const router = useRouter();

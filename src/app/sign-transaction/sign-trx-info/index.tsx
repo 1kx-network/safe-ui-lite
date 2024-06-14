@@ -176,6 +176,9 @@ export const SignTransactionInfo = ({
 };
 
 function shortenString(str: string) {
+  if (!str) {
+    return '';
+  }
   // Check if the input is a valid string and long enough to be shortened
   if (str.length < 14) {
     return str;

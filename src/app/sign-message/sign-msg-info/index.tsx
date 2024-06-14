@@ -1,7 +1,7 @@
 import { Box } from '@mui/system';
 
 import { WalletTypography } from '@/ui-kit';
-import { TransactionInfoStyled } from '../sing-message.styles';
+import { TransactionInfoStyled } from '../sign-message.styles';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import CopyIcon from '@/assets/svg/copy.svg';
 import { customToasty } from '@/components';

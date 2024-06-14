@@ -45,7 +45,7 @@ import {
   styledPaper,
   styledSecondaryBtn,
 } from './sing-transaction.styles';
-import { SignTransactionInfo } from './sing-trx-info';
+import { SignTransactionInfo } from './sign-trx-info';
 import { IBatchTr } from './tr-builder';
 
 const SignTransactionComponent = () => {
