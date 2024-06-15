@@ -76,10 +76,10 @@ export const UserInfoBar = () => {
 
   useEffect(() => {
     if (chainId) {
-      if (!chosenNetwork) {
+      if (chosenNetwork?.chainId) {
         const chosenNetworkDef = networks && networks.find(elem => elem.chainId === chainId);
 
-        if (!chosenNetworkDef) return;
+        if (!chosenNetworkDef?.chainId) return;
         setChosenNetwork(chosenNetworkDef);
       }
     }
