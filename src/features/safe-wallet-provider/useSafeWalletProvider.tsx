@@ -1,7 +1,7 @@
 'use client';
 
 import { v4 as uuid } from 'uuid';
-import { getAddress } from 'ethers';
+import { getAddress, formatEther } from 'ethers';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Methods } from '@safe-global/safe-apps-sdk';
@@ -160,12 +160,14 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
         const currentDate = new Date();
         const dateTrx = currentDate.toLocaleString('en-GB', { timeZone: 'UTC' }).replace(',', '');
         const networkUserInfo = configs.find((elem: ChainInfo) => elem.chainId === chainId);
+        const weiStr = safeTransaction.data.value.toString();
+        const ethValue = formatEther(weiStr);
 
         if (chainId && safeAddress) {
           const queryParams = {
             chainId: String(chainId),
             address: encodeURIComponent(safeAddress),
-            amount: safeTransaction.data.value.toString(),
+            amount: ethValue,
             destinationAddress: transactions[0].to,
             tokenType: NATIVE_TOKENS.ETH,
             networkName: networkUserInfo?.chainName ?? 'Ethereum',
