@@ -2,6 +2,12 @@
 
 No Backend Safe solution
 
+### Add Safe Account
+After you have entered with your wallet and selected a network, you can import or create a new Safe account. To do this, just click on the "Add / Import Account" button, then recheck the network on which you want to create a Safe. Then add owners of the Safe as well as the threshold quantity of signers required to send any transaction on a Safe. After confirming, your contract will be deployed and set up as active.
+
+### Create a Transaction
+When you have an active account, you can create a new transaction. For this, you can click on the "New Transaction" button in the sidebar. Then fill out the form with the transaction data and click the "Next" button. After that, you can sign the transaction and then copy the link to send it to the new owners. After the threshold is passed, the transaction can be executed (by any owner, just share a link with signatures to the chosen one). If the transaction is executed correctly, the sign/execute buttons will say: "Deployed Successfully."
+
 ## Contributing
 
 Contributions, be it a bug report or a pull request, are very welcome.
