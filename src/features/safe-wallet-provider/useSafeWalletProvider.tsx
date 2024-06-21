@@ -175,6 +175,7 @@ export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK |
             nonce: safeTransaction.data.nonce.toString(),
             typeSignTrx: TYPE_SIGN_TRX.SEND_TOKEN,
             userNetworkTrx: JSON.stringify(networkUserInfo),
+            calldata: safeTransaction.data.data,
           };
 
           const transactionDB = {
