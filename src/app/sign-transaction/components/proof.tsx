@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { Noir, ProofData } from '@noir-lang/noir_js';
 import { BarretenbergBackend } from '@noir-lang/backend_barretenberg';
-import { usePublicClient } from 'wagmi';
+import { usePublicClient, useReadContract } from 'wagmi';
 import { encodeFunctionData, toHex } from 'viem';
 import EthSafeTransaction from '@safe-global/protocol-kit/dist/src/utils/transactions/SafeTransaction';
 
@@ -42,6 +42,30 @@ export default function Proof({
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
   const client = usePublicClient();
   const [proofVerified, setProofVerified] = useState(false);
+  const [contract, excists] = useState(false);
+
+  const { data: isModuleEnabled, isError } = useReadContract({
+    abi,
+    address: safeAddress as `0x${string}`,
+    functionName: 'isModuleEnabled',
+    args: [SEPOLIA_ZK_MODULE],
+  });
+
+  useEffect(() => {
+    const checkContract = async () => {
+      excists(false);
+      if (!client) return;
+      const bytecode = await client.getBytecode({
+        address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+      });
+      if (bytecode !== '0x') {
+        excists(true);
+      }
+    };
+    if (client) {
+      checkContract();
+    }
+  }, [client]);
 
   const proof = useCallback(async () => {
     setIsGeneratingProof(true);
@@ -159,6 +183,10 @@ export default function Proof({
         customToasty('Failed to copy call data', 'error');
       });
   };
+
+  if (!contract || !isModuleEnabled) {
+    return null;
+  }
 
   // Usage in your component
   return (
