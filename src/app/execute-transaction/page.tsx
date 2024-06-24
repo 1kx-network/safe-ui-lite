@@ -19,6 +19,7 @@ function ExecuteComponent() {
   const { address } = useWeb3ModalAccount();
   const [callData, setCallData] = useState<`0x${string}`>('' as `0x${string}`);
   const { sendTransactionAsync } = useSendTransaction();
+  const [txnhash, setTxnHash] = useState<string>('');
 
   const handlePaste = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
@@ -29,6 +30,7 @@ function ExecuteComponent() {
     if (!address || !callData) {
       return;
     }
+    setTxnHash('');
     try {
       const hash = await sendTransactionAsync({
         to: SEPOLIA_ZK_MODULE,
@@ -36,6 +38,7 @@ function ExecuteComponent() {
       });
       customToasty('Transaction sent', 'success');
       customToasty(`Transaction hash: ${hash}`, 'success');
+      setTxnHash(hash);
     } catch (e) {
       console.error(e);
       customToasty('Error while sending transaction', 'error');
@@ -79,6 +82,16 @@ function ExecuteComponent() {
               </WalletButton>
             )}
           </GridButtonStyled>
+          {txnhash && (
+            <>
+              <h3>Transaction:</h3>
+              <BoxOwnerLinkStyled style={{ overflow: 'hidden' }}>
+                <a target="_blank" href={`https://etherscan.io/tx/${txnhash}`}>
+                  {txnhash}
+                </a>
+              </BoxOwnerLinkStyled>
+            </>
+          )}
         </WalletPaper>
       </WrapperStyled>
     </WalletLayout>
