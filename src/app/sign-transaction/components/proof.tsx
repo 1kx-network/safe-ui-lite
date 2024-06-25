@@ -44,7 +44,7 @@ export default function Proof({
   const [proofVerified, setProofVerified] = useState(false);
   const [contract, excists] = useState(false);
 
-  const { data: isModuleEnabled, isError } = useReadContract({
+  const { data: isModuleEnabled } = useReadContract({
     abi,
     address: safeAddress as `0x${string}`,
     functionName: 'isModuleEnabled',

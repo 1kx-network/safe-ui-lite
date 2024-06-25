@@ -1,7 +1,7 @@
 'use client';
 import React, { Suspense, useCallback, useState } from 'react';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useSendTransaction } from 'wagmi';
+import { usePublicClient, useSendTransaction } from 'wagmi';
 
 import { WalletButton, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import {
@@ -14,12 +14,14 @@ import { SEPOLIA_ZK_MODULE } from '../../constants/addresses';
 import { customToasty } from '../../components';
 
 import { WalletTextarea } from './execute-transaction.styles';
+import { SendTransactionVariables } from 'wagmi/query';
 
 function ExecuteComponent() {
   const { address } = useWeb3ModalAccount();
   const [callData, setCallData] = useState<`0x${string}`>('' as `0x${string}`);
   const { sendTransactionAsync } = useSendTransaction();
   const [txnhash, setTxnHash] = useState<string>('');
+  const publicClient = usePublicClient();
 
   const handlePaste = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
@@ -32,10 +34,26 @@ function ExecuteComponent() {
     }
     setTxnHash('');
     try {
-      const hash = await sendTransactionAsync({
-        to: SEPOLIA_ZK_MODULE,
-        data: callData,
-      });
+      let hash = '';
+      if (publicClient) {
+        const gas = await publicClient.estimateGas({
+          to: SEPOLIA_ZK_MODULE as `0x${string}`,
+          data: callData,
+        });
+        const gasAdjusted = (gas / 100n) * 120n;
+        console.log('gasAdjusted', gas, gasAdjusted);
+
+        hash = await sendTransactionAsync({
+          to: SEPOLIA_ZK_MODULE,
+          data: callData,
+          gas: gasAdjusted,
+        });
+      } else {
+        hash = await sendTransactionAsync({
+          to: SEPOLIA_ZK_MODULE,
+          data: callData,
+        });
+      }
       customToasty('Transaction sent', 'success');
       customToasty(`Transaction hash: ${hash}`, 'success');
       setTxnHash(hash);
