@@ -40,7 +40,7 @@ function ExecuteComponent() {
           to: SEPOLIA_ZK_MODULE as `0x${string}`,
           data: callData,
         });
-        const gasAdjusted = (gas / 100n) * 120n;
+        const gasAdjusted = gas * 2n;
         console.log('gasAdjusted', gas, gasAdjusted);
 
         hash = await sendTransactionAsync({
