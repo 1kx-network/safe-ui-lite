@@ -18,6 +18,7 @@ import { WalletButton } from '../../../ui-kit';
 import { styledBtn } from '../sing-transaction.styles';
 import { SEPOLIA_ZK_MODULE } from '../../../constants/addresses';
 import abi from '../../../app/contracts/abi/zkSafeModule.json';
+import abiSafe from '../../../app/contracts/abi/safe.json';
 
 import { WrapperStyled } from './proof.styles';
 
@@ -45,7 +46,7 @@ export default function Proof({
   const [contract, excists] = useState(false);
 
   const { data: isModuleEnabled } = useReadContract({
-    abi,
+    abi: abiSafe,
     address: safeAddress as `0x${string}`,
     functionName: 'isModuleEnabled',
     args: [SEPOLIA_ZK_MODULE],
@@ -54,7 +55,6 @@ export default function Proof({
   useEffect(() => {
     const checkContract = async () => {
       excists(false);
-      console.log('Checking contract', !!client);
       if (!client) return;
       const bytecode = await client.getBytecode({
         address: SEPOLIA_ZK_MODULE,
