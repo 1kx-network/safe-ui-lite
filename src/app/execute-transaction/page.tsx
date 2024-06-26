@@ -63,6 +63,11 @@ function ExecuteComponent() {
     }
   };
 
+  const copyHash = () => {
+    navigator.clipboard.writeText(txnhash);
+    customToasty('Transaction hash copied', 'success');
+  };
+
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -104,9 +109,7 @@ function ExecuteComponent() {
             <>
               <h3>Transaction:</h3>
               <BoxOwnerLinkStyled style={{ overflow: 'hidden' }}>
-                <a target="_blank" href={`https://etherscan.io/tx/${txnhash}`}>
-                  {txnhash}
-                </a>
+                <a onClick={copyHash}>{txnhash}</a>
               </BoxOwnerLinkStyled>
             </>
           )}
