@@ -113,7 +113,7 @@ export default function Proof({
         owners: padArray(owners_.map(addressToArray), 10, zero_address),
       };
 
-      console.log("Proving input: ", input);
+      console.log('Proving input: ', input);
 
       const correctProof = await noir.generateFinalProof(input);
       setProofState(correctProof);
