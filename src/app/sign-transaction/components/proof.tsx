@@ -54,6 +54,7 @@ export default function Proof({
   useEffect(() => {
     const checkContract = async () => {
       excists(false);
+      console.log('Checking contract', !!client);
       if (!client) return;
       const bytecode = await client.getBytecode({
         address: SEPOLIA_ZK_MODULE,
