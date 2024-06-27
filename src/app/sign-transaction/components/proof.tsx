@@ -102,7 +102,7 @@ export default function Proof({
       const input = {
         threshold: threshold, // Set the threshold as necessary
         signers: padArray(
-          signatures.map(sig =>
+          sigis.map(sig =>
             extractCoordinates(ethers.SigningKey.recoverPublicKey(txHash, sig))
           ),
           10,
