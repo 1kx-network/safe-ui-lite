@@ -1,5 +1,6 @@
 'use client';
 
+import { formatEther } from 'ethers';
 import { Box } from '@mui/system';
 import {
   Accordion,
@@ -106,7 +107,9 @@ const TrBuildComponent = ({ batchTrProps }: ITrBuildComponent) => {
 
                   {/* value */}
                   <Box display={'flex'} alignItems={'center'} gap={1.5}>
-                    <WalletTypography>Value: {transaction.rawTr.value}</WalletTypography>
+                    <WalletTypography>
+                      Value: {formatEther(transaction.rawTr.value)}
+                    </WalletTypography>
                   </Box>
 
                   {/* data */}
