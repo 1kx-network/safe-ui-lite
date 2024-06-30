@@ -38,7 +38,6 @@ const NewTransactionForm = ({ contract, to, showHexEncodedData }: NewTransaction
       networkPrefix
     );
     memorizedMethod.current = values[CONTRACT_METHOD_INDEX_FIELD_NAME];
-
     addTransaction(proposedTransaction);
   };
 

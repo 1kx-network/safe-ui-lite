@@ -179,12 +179,7 @@ const SignTransactionComponent = () => {
   }, [safeSdk, safeAddress]);
 
   useEffect(() => {
-    if (chainIdUrl) {
-      const linkOnScan = networks?.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
-      if (linkOnScan) {
-        setLinkOnScan(linkOnScan);
-      }
-    }
+    if (userNetwork.explorerUrl) setLinkOnScan(userNetwork.explorerUrl);
 
     if (signatures && signers) {
       if (signedCount !== signatures.split(',').length) {
