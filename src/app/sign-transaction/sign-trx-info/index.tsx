@@ -160,14 +160,14 @@ export const SignTransactionInfo = ({
           </WalletTypography>
           <IconDefaultAddress width="21px" height="21px" />
           <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
-            {shortenString(calldata as string) ??
+            {(calldata && shortenString(calldata as string)) ??
               formattedLabel(safeTransaction?.data.data ?? '0x')}
           </WalletTypography>
           <CopyIcon
             width="18px"
             height="19px"
             cursor="pointer"
-            onClick={() => handleCopy(calldata)}
+            onClick={() => handleCopy(calldata ?? safeTransaction?.data.data ?? '0x')}
           />
         </Box>
       )}

@@ -1,5 +1,5 @@
-import { AbiItem, toBN, isAddress, fromWei } from 'web3-utils';
-import * as abiCoder from 'web3-eth-abi';
+import { toBN, isAddress, fromWei } from 'web3-utils';
+import * as utils from 'ethers';
 
 import { ContractInput, ContractMethod, ProposedTransaction } from '../typings/models';
 import {
@@ -235,11 +235,17 @@ export const encodeToHexData = (
 
         return parseInputValue(contractField.type, cleanValue);
       });
-      const abi = abiCoder as unknown; // a bug in the web3-eth-abi types
-      const hexEncondedData = (abi as any).encodeFunctionCall(
-        contractMethod as AbiItem,
-        parsedValues
-      );
+      // const abi = abiCoder as unknown; // a bug in the web3-eth-abi types
+
+      const abiInterface = new utils.Interface([
+        `function ${contractMethodName}(${contractFields.map(field => `${field.type} ${field.name}`).join(', ')})`,
+      ]);
+      const hexEncondedData = abiInterface.encodeFunctionData(contractMethodName, parsedValues);
+
+      // const hexEncondedData = (abi as any).encodeFunctionCall(
+      //   contractMethod as AbiItem,
+      //   parsedValues
+      // );
 
       return hexEncondedData;
     } catch (error) {
