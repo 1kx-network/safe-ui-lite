@@ -34,26 +34,10 @@ function ExecuteComponent() {
     }
     setTxnHash('');
     try {
-      let hash = '';
-      if (publicClient) {
-        const gas = await publicClient.estimateGas({
-          to: SEPOLIA_ZK_MODULE as `0x${string}`,
-          data: callData,
-        });
-        const gasAdjusted = gas * 2n;
-        console.log('gasAdjusted', gas, gasAdjusted);
-
-        hash = await sendTransactionAsync({
-          to: SEPOLIA_ZK_MODULE,
-          data: callData,
-          gas: gasAdjusted,
-        });
-      } else {
-        hash = await sendTransactionAsync({
-          to: SEPOLIA_ZK_MODULE,
-          data: callData,
-        });
-      }
+      const hash = await sendTransactionAsync({
+        to: SEPOLIA_ZK_MODULE,
+        data: callData,
+      });
       customToasty('Transaction sent', 'success');
       customToasty(`Transaction hash: ${hash}`, 'success');
       setTxnHash(hash);
