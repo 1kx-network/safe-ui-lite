@@ -2,7 +2,7 @@
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import * as utils from 'ethers';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
@@ -60,8 +60,6 @@ export const SendTokens = () => {
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
-  const searchParams = useSearchParams();
-  const recipientAddress = searchParams.get('recipientAddress');
 
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
@@ -78,7 +76,7 @@ export const SendTokens = () => {
     resolver: yupResolver(NewTransactionSchema),
     defaultValues: {
       amount: '0',
-      address: recipientAddress ? recipientAddress : '',
+      address: '',
       calldata: '0x',
     },
   });
@@ -87,6 +85,15 @@ export const SendTokens = () => {
   const [thresholders, setThresholders] = useState(0);
   const [tokenType, setTokenType] = useState<string>(NATIVE_TOKENS.ETH);
   const [balanceAcc, setBalanceAcc] = useState('');
+
+  useEffect(() => {
+    const searchParams = window.location.search;
+    const recipientAddress = searchParams.match(/recipientAddress=([^&]*)/);
+
+    if (recipientAddress && recipientAddress[1]) {
+      setValue('address', recipientAddress[1]);
+    }
+  }, [safeAddress]);
 
   useEffect(() => {
     if (safeSdk) {
