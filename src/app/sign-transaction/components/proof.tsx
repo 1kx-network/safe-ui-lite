@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { Noir, ProofData } from '@noir-lang/noir_js';
 import { BarretenbergBackend } from '@noir-lang/backend_barretenberg';
-import { usePublicClient } from 'wagmi';
+import { usePublicClient, useReadContract } from 'wagmi';
 import { encodeFunctionData, toHex } from 'viem';
 import EthSafeTransaction from '@safe-global/protocol-kit/dist/src/utils/transactions/SafeTransaction';
 
@@ -18,6 +18,7 @@ import { WalletButton } from '../../../ui-kit';
 import { styledBtn } from '../sing-transaction.styles';
 import { SEPOLIA_ZK_MODULE } from '../../../constants/addresses';
 import abi from '../../../app/contracts/abi/zkSafeModule.json';
+import abiSafe from '../../../app/contracts/abi/safe.json';
 
 import { WrapperStyled } from './proof.styles';
 
@@ -42,6 +43,30 @@ export default function Proof({
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
   const client = usePublicClient();
   const [proofVerified, setProofVerified] = useState(false);
+  const [contract, excists] = useState(false);
+
+  const { data: isModuleEnabled } = useReadContract({
+    abi: abiSafe,
+    address: safeAddress as `0x${string}`,
+    functionName: 'isModuleEnabled',
+    args: [SEPOLIA_ZK_MODULE],
+  });
+
+  useEffect(() => {
+    const checkContract = async () => {
+      excists(false);
+      if (!client) return;
+      const bytecode = await client.getBytecode({
+        address: SEPOLIA_ZK_MODULE,
+      });
+      if (bytecode !== '0x') {
+        excists(true);
+      }
+    };
+    if (client) {
+      checkContract();
+    }
+  }, [client]);
 
   const proof = useCallback(async () => {
     setIsGeneratingProof(true);
@@ -77,9 +102,7 @@ export default function Proof({
       const input = {
         threshold: threshold, // Set the threshold as necessary
         signers: padArray(
-          signatures.map(sig =>
-            extractCoordinates(ethers.SigningKey.recoverPublicKey(txHash, sig))
-          ),
+          sigis.map(sig => extractCoordinates(ethers.SigningKey.recoverPublicKey(txHash, sig))),
           10,
           nil_pubkey
         ),
@@ -87,6 +110,8 @@ export default function Proof({
         txn_hash: Array.from(ethers.getBytes(txHash)),
         owners: padArray(owners_.map(addressToArray), 10, zero_address),
       };
+
+      console.log('Proving input: ', input);
 
       const correctProof = await noir.generateFinalProof(input);
       setProofState(correctProof);
@@ -159,6 +184,10 @@ export default function Proof({
         customToasty('Failed to copy call data', 'error');
       });
   };
+
+  if (!contract || !isModuleEnabled) {
+    return null;
+  }
 
   // Usage in your component
   return (
