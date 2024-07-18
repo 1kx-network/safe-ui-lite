@@ -31,9 +31,14 @@ export const CreateEntryModal = ({ isOpen, closeModal, setAddressBook }: ICreate
       return;
     }
 
-    const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(value);
+    // Ethereum address
+    const isValidEthereumAddress = /^0x[a-fA-F0-9]{40}$/.test(value);
+    // Solana address (Base58 encoding)
+    const isValidSolanaAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
+    // Bitcoin address
+    const isValidBitcoinAddress = /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/.test(value);
 
-    if (isValidAddress) {
+    if (isValidEthereumAddress || isValidSolanaAddress || isValidBitcoinAddress) {
       setValueAddressError(null);
     } else {
       setValueAddressError('Invalid address format');

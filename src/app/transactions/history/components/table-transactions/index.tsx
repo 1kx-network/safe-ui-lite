@@ -61,6 +61,14 @@ export const TableTransaction = ({ smallType }: ITableTransaction) => {
             >
               Amount
             </WalletTypography>
+            <WalletTypography
+              component="h3"
+              fontSize={smallType ? 14 : 18}
+              fontWeight={600}
+              textAlign="center"
+            >
+              Data
+            </WalletTypography>
             {!smallType && (
               <WalletTypography
                 component="h3"

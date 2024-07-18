@@ -275,7 +275,7 @@ const NewSignTransactionComponent = () => {
               setThreshold(threshold);
             }
           })
-          .catch(error => console.log(`<--${error}-->`));
+          .catch(error => console.error(`<--${error}-->`));
       })();
     }
   }, [address, dataQuery.safeAddress]);

@@ -62,7 +62,8 @@ export const MenuFilters = () => {
             signer.toLowerCase().includes(lowercaseValue)
           ) ||
           parseFloat(transaction.amount) <= parseFloat(lowercaseValue) ||
-          transaction.destinationAddress.toLowerCase().includes(lowercaseValue)
+          transaction.destinationAddress.toLowerCase().includes(lowercaseValue) ||
+          transaction.calldata?.toLowerCase().includes(lowercaseValue)
       );
     }
 

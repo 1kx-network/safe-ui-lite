@@ -1,4 +1,5 @@
 import { styled } from '@mui/system';
+import CopyIcon from '@/assets/svg/copy.svg';
 
 export const WrapperStyled = styled('div')(
   ({ theme }) => `
@@ -27,6 +28,7 @@ export const ItemWrapperStyled = styled('div')<{ smallType?: boolean }>(
 export const ItemInfoStyled = styled('div')<{ isFirst?: boolean; smallType?: boolean }>(
   ({ theme, isFirst, smallType }) => `
   display: flex;
+  align-items: center;
   justify-content: ${smallType ? 'flex-start' : !isFirst ? 'center' : 'flex-start'};
   width: ${smallType ? '67%' : '33%'};
   max-width: ${smallType ? '67%' : '33%'};
@@ -36,4 +38,13 @@ export const ItemInfoStyled = styled('div')<{ isFirst?: boolean; smallType?: boo
   white-space: nowrap;
   text-overflow: ellipsis; 
 `
+);
+
+export const IconCopyStyled = styled(CopyIcon)(
+  ({ theme }) => `
+     width: 14px;
+     height: 14px;
+     cursor: pointer;
+     color: ${theme.palette.grey};
+  `
 );
