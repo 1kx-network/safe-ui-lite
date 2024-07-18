@@ -62,8 +62,21 @@ export const CreateEntryModal = ({ isOpen, closeModal, setAddressBook }: ICreate
     closeModal();
   };
 
+  const handleReset = () => {
+    setValueName('');
+    setValueAddress('');
+    setValueAddressError(null);
+  };
+
   return (
-    <CustomModal isOpen={isOpen} closeModal={closeModal} styles={{ width: '560px' }}>
+    <CustomModal
+      isOpen={isOpen}
+      closeModal={() => {
+        handleReset();
+        closeModal();
+      }}
+      styles={{ width: '560px' }}
+    >
       <AddStyled>
         <Box display={'flex'} alignItems={'center'} gap={1}>
           <IconUser />
@@ -89,7 +102,14 @@ export const CreateEntryModal = ({ isOpen, closeModal, setAddressBook }: ICreate
         />
 
         <GridBtnAddStyled>
-          <WalletButton styles={styledBtn} onClick={closeModal} variant="text">
+          <WalletButton
+            styles={styledBtn}
+            onClick={() => {
+              closeModal();
+              handleReset();
+            }}
+            variant="text"
+          >
             Cancel
           </WalletButton>
           <WalletButton
