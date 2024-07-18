@@ -60,6 +60,12 @@ export const TableAddressBook = ({
     });
   };
 
+  const handleReset = () => {
+    setUserName('');
+    setUserAddress('');
+    setUserAddressError(null);
+  };
+
   const handleCopy = (address: string) => {
     navigator.clipboard.writeText(address);
     customToasty('Was copy', 'success');
@@ -88,9 +94,14 @@ export const TableAddressBook = ({
       return;
     }
 
-    const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(value);
+    // Ethereum address
+    const isValidEthereumAddress = /^0x[a-fA-F0-9]{40}$/.test(value);
+    // Solana address (Base58 encoding)
+    const isValidSolanaAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
+    // Bitcoin address
+    const isValidBitcoinAddress = /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/.test(value);
 
-    if (isValidAddress) {
+    if (isValidEthereumAddress || isValidSolanaAddress || isValidBitcoinAddress) {
       setUserAddressError(null);
     } else {
       setUserAddressError('Invalid address format');
@@ -179,7 +190,10 @@ export const TableAddressBook = ({
       {/*  */}
       <CustomModal
         isOpen={isOpenChangeAddress}
-        closeModal={() => setIsOpenChangeAddress(false)}
+        closeModal={() => {
+          setIsOpenChangeAddress(false);
+          handleReset();
+        }}
         styles={{ width: '560px' }}
       >
         <Box>
@@ -203,7 +217,13 @@ export const TableAddressBook = ({
           </Box>
 
           <Box display="flex" alignItems={'center'} justifyContent={'space-between'} gap={2} mt={4}>
-            <WalletButton onClick={() => setIsOpenChangeAddress(false)} variant="text">
+            <WalletButton
+              onClick={() => {
+                setIsOpenChangeAddress(false);
+                handleReset();
+              }}
+              variant="text"
+            >
               Cancel
             </WalletButton>
             <WalletButton
