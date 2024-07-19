@@ -18,6 +18,7 @@ export const themeMuiBase = {
     greyToo: '#636363', // label grey2
     success: '#43C057',
     hover: '#00000021', // hover bg
+    warning: 'rgb(255, 128, 97)',
   },
 
   spacing: (factor: number) => `${0.25 * factor}rem`,
