@@ -53,7 +53,7 @@ function ExecuteComponent() {
   };
 
   return (
-    <WalletLayout hideSidebar>
+    <WalletLayout hideSidebar={false}>
       <WrapperStyled>
         <WalletPaper>
           <WalletTypography fontSize={22} fontWeight={600}>
