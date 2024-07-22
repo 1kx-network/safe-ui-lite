@@ -12,16 +12,15 @@ import { Box } from '@mui/system';
 import Link from 'next/link';
 import * as ethers from 'ethers';
 
+import IconWarning from '@/assets/svg/notifications/alert.svg';
 import { WalletTypography } from '@/ui-kit/wallet-typography';
 import { WalletButton, WalletLayout, WalletPaper } from '@/ui-kit';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import useSafeStore from '@/stores/safe-store';
 import { customToasty } from '@/components';
-// import { useMessageMultySign } from '@/hooks/useMessageMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/formatters';
-// import { networks } from '@/context/networks';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { setNetworkDB, setDataDB } from '@/db/set-info';
 import { INetworkDB } from '@/db';
@@ -46,6 +45,8 @@ import {
   styledSecondaryBtn,
 } from './sign-message.styles';
 import { SignMessageInfo } from './sign-msg-info';
+import { WarningBoxStyled } from '../sign-transaction/sing-transaction.styles';
+import { optionsNetwork } from '@/constants/networks';
 
 const SignMessageComponent = () => {
   const router = useRouter();
@@ -198,6 +199,10 @@ const SignMessageComponent = () => {
     buttonText = 'Sign again';
   }
 
+  const isCustomRpc =
+    userNetworkTrxUrl &&
+    optionsNetwork.find(elem => elem.rpc === JSON.parse(userNetworkTrxUrl).rpcUrl);
+
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -280,6 +285,18 @@ const SignMessageComponent = () => {
               </WalletButton>
             )}
           </GridButtonStyled>
+
+          {!isCustomRpc && userNetworkTrxUrl && (
+            <WarningBoxStyled style={{ marginTop: '1rem' }}>
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <IconWarning color={themeMuiBase.palette.warning} />
+                <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
+              </Box>
+              <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
+                Safe RPC: {JSON.parse(userNetworkTrxUrl).rpcUrl}
+              </WalletTypography>
+            </WarningBoxStyled>
+          )}
 
           <WalletTypography fontSize={18} fontWeight={600}>
             Safe URL

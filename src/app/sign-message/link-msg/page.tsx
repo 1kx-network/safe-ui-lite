@@ -12,6 +12,7 @@ import {
 import { useLiveQuery } from 'dexie-react-hooks';
 import Link from 'next/link';
 
+import IconWarning from '@/assets/svg/notifications/alert.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { formatterIcon } from '@/utils/icon-formatter';
@@ -42,6 +43,8 @@ import {
   SingInfoStyled,
   styledSecondaryBtn,
 } from './link-msg.styles';
+import { WarningBoxStyled } from '@/app/sign-transaction/sing-transaction.styles';
+import { optionsNetwork } from '@/constants/networks';
 
 interface IForm {
   safeAddress: string | null;
@@ -367,6 +370,11 @@ const NewSignTransactionComponent = () => {
     reset(defaultDataQuery);
   };
 
+  const userNetwork = dataQuery.userNetworkTrx;
+
+  const isCustomRpc =
+    userNetwork && optionsNetwork.find(elem => elem.rpc === JSON.parse(userNetwork).rpcUrl);
+
   return (
     <WalletLayout hideSidebar>
       <WrapperStyled>
@@ -568,6 +576,18 @@ const NewSignTransactionComponent = () => {
                 </>
               </Box>
             </>
+          )}
+
+          {!isCustomRpc && userNetwork && (
+            <WarningBoxStyled style={{ marginTop: '1rem' }}>
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <IconWarning color={themeMuiBase.palette.warning} />
+                <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
+              </Box>
+              <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
+                Safe RPC: {JSON.parse(userNetwork).rpcUrl}
+              </WalletTypography>
+            </WarningBoxStyled>
           )}
         </WalletPaper>
 
