@@ -112,7 +112,14 @@ const SignMessageComponent = () => {
         rpc: userNetwork.rpcUrl,
         currency: userNetwork.symbol,
       });
-      await setNetworkDB(userNetwork);
+
+      await setNetworkDB({
+        ...userNetwork,
+        //@ts-ignore rpcUri can be get from opensean
+        rpcUrl: userNetwork.rpcUri.value ?? userNetwork.rpcUrl,
+        //@ts-ignore
+        name: userNetwork.chainName ?? userNetwork.name,
+      });
 
       if (safeAddress) {
         await setDataDB(safeAddress, {});
@@ -199,9 +206,12 @@ const SignMessageComponent = () => {
     buttonText = 'Sign again';
   }
 
+  // need work with opensea platform
+  const userNetwork = userNetworkTrxUrl && JSON.parse(userNetworkTrxUrl);
+  const userNetworkUri = userNetwork.rpcUri.value;
+
   const isCustomRpc =
-    userNetworkTrxUrl &&
-    optionsNetwork.find(elem => elem.rpc === JSON.parse(userNetworkTrxUrl).rpcUrl);
+    userNetwork && optionsNetwork.find(elem => elem.rpc === userNetworkUri ?? userNetwork.rpcUrl);
 
   return (
     <WalletLayout hideSidebar>
@@ -286,14 +296,14 @@ const SignMessageComponent = () => {
             )}
           </GridButtonStyled>
 
-          {!isCustomRpc && userNetworkTrxUrl && (
+          {!isCustomRpc && userNetwork && (
             <WarningBoxStyled style={{ marginTop: '1rem' }}>
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <IconWarning color={themeMuiBase.palette.warning} />
                 <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
               </Box>
               <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
-                Safe RPC: {JSON.parse(userNetworkTrxUrl).rpcUrl}
+                Safe RPC: {userNetworkUri ?? userNetwork.rpcUrl}
               </WalletTypography>
             </WarningBoxStyled>
           )}
