@@ -248,7 +248,13 @@ const NewSignTransactionComponent = () => {
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
     if (!existingNetwork) {
-      await setNetworkDB(userNetwork);
+      await setNetworkDB({
+        ...userNetwork,
+        //@ts-ignore rpcUri can be get from opensean
+        rpcUrl: userNetwork.rpcUri.value ?? userNetwork.rpcUrl,
+        //@ts-ignore
+        name: userNetwork.chainName ?? userNetwork.name,
+      });
 
       if (dataQuery.safeAddress) {
         await setDataDB(dataQuery.safeAddress, {});

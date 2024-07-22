@@ -112,7 +112,14 @@ const SignMessageComponent = () => {
         rpc: userNetwork.rpcUrl,
         currency: userNetwork.symbol,
       });
-      await setNetworkDB(userNetwork);
+
+      await setNetworkDB({
+        ...userNetwork,
+        //@ts-ignore rpcUri can be get from opensean
+        rpcUrl: userNetwork.rpcUri.value ?? userNetwork.rpcUrl,
+        //@ts-ignore
+        name: userNetwork.chainName ?? userNetwork.name,
+      });
 
       if (safeAddress) {
         await setDataDB(safeAddress, {});
@@ -201,7 +208,7 @@ const SignMessageComponent = () => {
 
   const isCustomRpc =
     userNetworkTrxUrl &&
-    optionsNetwork.find(elem => elem.rpc === JSON.parse(userNetworkTrxUrl).rpcUrl);
+    optionsNetwork.find(elem => elem.rpc === JSON.parse(userNetworkTrxUrl).rpcUri.value);
 
   return (
     <WalletLayout hideSidebar>
@@ -293,7 +300,7 @@ const SignMessageComponent = () => {
                 <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
               </Box>
               <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
-                Safe RPC: {JSON.parse(userNetworkTrxUrl).rpcUrl}
+                Safe RPC: {JSON.parse(userNetworkTrxUrl).rpcUri.value}
               </WalletTypography>
             </WarningBoxStyled>
           )}
