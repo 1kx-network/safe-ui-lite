@@ -206,9 +206,12 @@ const SignMessageComponent = () => {
     buttonText = 'Sign again';
   }
 
+  // need work with opensea platform
+  const userNetwork = userNetworkTrxUrl && JSON.parse(userNetworkTrxUrl);
+  const userNetworkUri = userNetwork.rpcUri.value;
+
   const isCustomRpc =
-    userNetworkTrxUrl &&
-    optionsNetwork.find(elem => elem.rpc === JSON.parse(userNetworkTrxUrl).rpcUri.value);
+    userNetwork && optionsNetwork.find(elem => elem.rpc === userNetworkUri ?? userNetwork.rpcUrl);
 
   return (
     <WalletLayout hideSidebar>
@@ -293,14 +296,14 @@ const SignMessageComponent = () => {
             )}
           </GridButtonStyled>
 
-          {!isCustomRpc && userNetworkTrxUrl && (
+          {!isCustomRpc && userNetwork && (
             <WarningBoxStyled style={{ marginTop: '1rem' }}>
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <IconWarning color={themeMuiBase.palette.warning} />
                 <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
               </Box>
               <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
-                Safe RPC: {JSON.parse(userNetworkTrxUrl).rpcUri.value}
+                Safe RPC: {userNetworkUri ?? userNetwork.rpcUrl}
               </WalletTypography>
             </WarningBoxStyled>
           )}

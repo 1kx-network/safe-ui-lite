@@ -377,7 +377,6 @@ const NewSignTransactionComponent = () => {
   };
 
   const userNetwork = dataQuery.userNetworkTrx;
-
   const isCustomRpc =
     userNetwork && optionsNetwork.find(elem => elem.rpc === JSON.parse(userNetwork).rpcUrl);
 
