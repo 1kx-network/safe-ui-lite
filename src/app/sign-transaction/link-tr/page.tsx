@@ -13,6 +13,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import Link from 'next/link';
 import Safe from '@safe-global/protocol-kit';
 
+import IconWarning from '@/assets/svg/notifications/alert.svg';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { ITypeSignTrx, TYPE_SIGN_TRX } from '@/constants/type-sign';
 import { formatterIcon } from '@/utils/icon-formatter';
@@ -46,6 +47,8 @@ import {
   SingInfoStyled,
   styledSecondaryBtn,
 } from './link-tr.styles';
+import { optionsNetwork } from '@/constants/networks';
+import { WarningBoxStyled } from '../sing-transaction.styles';
 
 interface IForm {
   safeAddress: string | null;
@@ -421,6 +424,9 @@ const NewSignTransactionComponent = () => {
     TYPE_SIGN_TRX.TR_BUILD !== typeTrx;
 
   const userNetworkInfo = dataQuery.userNetworkTrx;
+  const isCustomRpc =
+    dataQuery.userNetworkTrx &&
+    optionsNetwork.find(elem => elem.rpc === dataQuery.userNetworkTrx.rpcUrl);
 
   return (
     <WalletLayout>
@@ -431,7 +437,6 @@ const NewSignTransactionComponent = () => {
               Sign Transaction
             </WalletTypography>
           </Box>
-
           <BoxLinkStyled>
             <WalletInput
               label="Enter your link or query params"
@@ -442,7 +447,6 @@ const NewSignTransactionComponent = () => {
               Reset
             </WalletButton>
           </BoxLinkStyled>
-
           {valueLink && (
             <>
               <form onSubmit={handleSubmit(onSubmit)}>
@@ -636,6 +640,17 @@ const NewSignTransactionComponent = () => {
                 </>
               </Box>
             </>
+          )}
+          {!isCustomRpc && dataQuery.userNetworkTrx && (
+            <WarningBoxStyled style={{ marginTop: '1rem' }}>
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <IconWarning color={themeMuiBase.palette.warning} />
+                <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
+              </Box>
+              <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
+                Safe RPC: {dataQuery.userNetworkTrx.rpcUrl}
+              </WalletTypography>
+            </WarningBoxStyled>
           )}
         </WalletPaper>
 

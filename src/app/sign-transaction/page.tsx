@@ -294,7 +294,7 @@ const SignTransactionComponent = () => {
     buttonText = 'Sign again';
   }
 
-  const isCustomRpc = optionsNetwork.find(elem => elem.rpc === userNetwork.rpcUrl);
+  const isCustomRpc = userNetwork && optionsNetwork.find(elem => elem.rpc === userNetwork.rpcUrl);
 
   return (
     <WalletLayout>
@@ -373,7 +373,7 @@ const SignTransactionComponent = () => {
             )}
           </GridButtonStyled>
 
-          {!isCustomRpc && (
+          {!isCustomRpc && userNetwork && (
             <WarningBoxStyled>
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <IconWarning color={themeMuiBase.palette.warning} />
