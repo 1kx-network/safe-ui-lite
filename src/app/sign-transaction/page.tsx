@@ -21,6 +21,7 @@ import { customToasty } from '@/components';
 import { useMultySign } from '@/hooks/useMultySign';
 import useSignStore from '@/stores/sign-store';
 import { formatterIcon } from '@/utils/icon-formatter';
+import IconWarning from '@/assets/svg/notifications/alert.svg';
 import { formattedLabel } from '@/utils/formatters';
 import { ITypeSignTrx } from '@/constants/type-sign';
 import { setNetworkDB, setDataDB } from '@/db/set-info';
@@ -40,6 +41,7 @@ import {
   OwnerLinkStyled,
   OwnersInfoStyled,
   TransactionInfoStyled,
+  WarningBoxStyled,
   WrapperStyled,
   styledBtn,
   styledPaper,
@@ -47,6 +49,7 @@ import {
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sign-trx-info';
 import { IBatchTr } from './tr-builder';
+import { optionsNetwork } from '@/constants/networks';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -291,6 +294,8 @@ const SignTransactionComponent = () => {
     buttonText = 'Sign again';
   }
 
+  const isCustomRpc = userNetwork && optionsNetwork.find(elem => elem.rpc === userNetwork.rpcUrl);
+
   return (
     <WalletLayout>
       <WrapperStyled>
@@ -367,6 +372,18 @@ const SignTransactionComponent = () => {
               </WalletButton>
             )}
           </GridButtonStyled>
+
+          {!isCustomRpc && userNetwork && (
+            <WarningBoxStyled>
+              <Box display={'flex'} alignItems={'center'} gap={1}>
+                <IconWarning color={themeMuiBase.palette.warning} />
+                <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
+              </Box>
+              <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
+                Safe RPC: {userNetwork.rpcUrl}
+              </WalletTypography>
+            </WarningBoxStyled>
+          )}
 
           <WalletTypography fontSize={18} fontWeight={600}>
             Safe URL

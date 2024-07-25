@@ -83,3 +83,16 @@ export const styledBtnBack: React.CSSProperties = {
 export const styledPaper: React.CSSProperties = {
   position: 'relative',
 };
+
+export const WarningBoxStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing(2)};
+  margin-bottom: ${theme.spacing(4)};
+  padding: ${theme.spacing(2.5)};
+  border-radius: 12px;
+  background: #FFE793BD;
+
+`
+);
