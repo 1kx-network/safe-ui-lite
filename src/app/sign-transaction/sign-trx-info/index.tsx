@@ -25,6 +25,7 @@ interface ISendTokenInfo {
   typeSignTrx: keyof ITypeSignTrx | null;
   newThreshold: string | null;
   calldata: string | null;
+  destinationName: string | null;
 }
 
 export const SignTransactionInfo = ({
@@ -38,6 +39,7 @@ export const SignTransactionInfo = ({
   amount,
   tokenType,
   calldata,
+  destinationName,
 }: ISendTokenInfo) => {
   const { REMOVE_OWNER, ADD_OWNER, ADD_MODULE, SEND_TOKEN, CHANGE_THRESHOLD, TR_BUILD } =
     TYPE_SIGN_TRX;
@@ -79,6 +81,14 @@ export const SignTransactionInfo = ({
           <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
             Nonce: {nonce}
           </WalletTypography>
+
+          {/* Use name if address was choosed from address book */}
+          {destinationName && (
+            <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
+              Name: {destinationName}
+            </WalletTypography>
+          )}
+
           <Box display={'flex'} alignItems={'center'} gap={1}>
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Destination:{' '}

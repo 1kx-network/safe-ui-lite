@@ -75,6 +75,7 @@ const SignTransactionComponent = () => {
   const chainIdUrl = searchParams.get('chainId');
   const amount = searchParams.get('amount');
   const destinationAddress = searchParams.get('destinationAddress');
+  const destinationName = searchParams.get('destinationName');
   const safeTxHash = searchParams.get('safeTxHash');
   const tokenType = searchParams.get('tokenType');
   const thresholdUrl = searchParams.get('thresholdUrl');
@@ -103,6 +104,7 @@ const SignTransactionComponent = () => {
     chainIdUrl,
     amount,
     address: destinationAddress,
+    destinationName,
     safeTxHash: safeTxHashJSON,
     tokenType,
     typeSignTrx,
@@ -321,6 +323,7 @@ const SignTransactionComponent = () => {
             <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
               Chain: {userNetwork && userNetwork.chainId}
             </WalletTypography>
+
             <Box display={'flex'} alignItems={'center'} gap={1}>
               <WalletTypography component="p" color={themeMuiBase.palette.white} fontWeight={600}>
                 Address:{' '}

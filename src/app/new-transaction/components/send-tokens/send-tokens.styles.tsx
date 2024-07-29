@@ -92,7 +92,7 @@ export const styledBtxMax = {
 
 export const styledInput = {
   width: '100%',
-  padding: `${themeMuiBase.spacing(3)}`,
+  padding: `11.7px ${themeMuiBase.spacing(3)}`,
 };
 
 export const HeaderTokensStyled = styled('div')`
@@ -149,5 +149,26 @@ export const BtnMaxInputStyled = styled('div')(
   height: 100%;
   display: flex;
   align-items: center;
+`
+);
+
+export const WrapperAddressBookInputStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  align-items: center;
+  border: 1px solid ${theme.palette.borderColor};
+  border-radius: 1.75rem;
+  padding: 3.5px 0.75rem;
+  background: white;
+  cursor: pointer;
+  gap: ${theme.spacing(2)};
+`
+);
+
+export const AddressBookInputStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
 `
 );
