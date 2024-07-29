@@ -34,6 +34,7 @@ import CopyIcon from '@/assets/svg/copy.svg';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import TrBuildComponent, { IBatchTr, RawTr } from '../tr-builder';
 import { parseSearchParams } from '@/utils/helpers';
+import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 
 import {
   BoxLinkStyled,
@@ -46,6 +47,8 @@ import {
   SignersBoxStyled,
   SingInfoStyled,
   styledSecondaryBtn,
+  WrapperAddressBookInputStyled,
+  AddressBookInputStyled,
 } from './link-tr.styles';
 import { optionsNetwork } from '@/constants/networks';
 import { WarningBoxStyled } from '../sing-transaction.styles';
@@ -54,6 +57,7 @@ interface IForm {
   safeAddress: string | null;
   nonce: string | null;
   destinationAddress: string | null;
+  destinationName: string | null;
   amount: string | null;
   tokenType: string | null;
   signers: string[] | null;
@@ -66,6 +70,7 @@ interface IDataQuery {
   safeTxHash: string;
   safeAddress: string;
   address: string | null;
+  destinationName: string | null;
   newThreshold: string | null;
   tokenType: string | null;
   amount: string | null;
@@ -92,6 +97,7 @@ const defaultDataQuery: IDataQuery = {
   userNetworkTrx: null,
   batchTr: null,
   rawTr: undefined,
+  destinationName: null,
 };
 
 const parseParamsFromString = (input: string): IQueryParams | null => {
@@ -104,6 +110,7 @@ const parseParamsFromString = (input: string): IQueryParams | null => {
       chainIdUrl: searchParams.get('chainId'),
       amount: searchParams.get('amount'),
       destinationAddress: searchParams.get('destinationAddress'),
+      destinationName: searchParams.get('destinationName'),
       safeTxHash: searchParams.get('safeTxHash'),
       tokenType: searchParams.get('tokenType'),
       networkName: searchParams.get('networkName'),
@@ -139,7 +146,7 @@ const NewSignTransactionComponent = () => {
 
   const { threshold, setThreshold, status, setStatus } = useSignStore();
 
-  const { handleSubmit, control, reset } = useForm<IForm>({
+  const { handleSubmit, control, reset, formState } = useForm<IForm>({
     mode: 'onSubmit',
   });
 
@@ -180,6 +187,7 @@ const NewSignTransactionComponent = () => {
             chainIdUrl: searchParams.get('chainId'),
             amount: searchParams.get('amount'),
             destinationAddress: searchParams.get('destinationAddress'),
+            destinationName: searchParams.get('destinationName'),
             safeTxHash: searchParams.get('safeTxHash'),
             tokenType: searchParams.get('tokenType'),
             networkName: searchParams.get('networkName'),
@@ -208,6 +216,7 @@ const NewSignTransactionComponent = () => {
           safeTxHash: queryParams.safeTxHash ?? '',
           safeAddress: queryParams.safeAddress ?? '',
           address: queryParams.destinationAddress,
+          destinationName: queryParams.destinationName ?? null,
           newThreshold: queryParams.newThreshold,
           tokenType: queryParams.tokenType,
           amount: queryParams.amount,
@@ -488,7 +497,23 @@ const NewSignTransactionComponent = () => {
                       render={({ field }) => (
                         <Box width={'100%'}>
                           <ItemInfoLabelStyled>Recipient Address</ItemInfoLabelStyled>
-                          <ItemInfoStyled>{field.value}</ItemInfoStyled>
+
+                          {!formState.defaultValues?.destinationName ? (
+                            <ItemInfoStyled>{field.value}</ItemInfoStyled>
+                          ) : (
+                            <WrapperAddressBookInputStyled>
+                              <IconDefaultAddress width="25px" height="25px" />
+                              <AddressBookInputStyled>
+                                <WalletTypography component="p" fontSize={14}>
+                                  {formState.defaultValues?.destinationName}
+                                </WalletTypography>
+
+                                <WalletTypography component="p" fontSize={14}>
+                                  {field.value}
+                                </WalletTypography>
+                              </AddressBookInputStyled>
+                            </WrapperAddressBookInputStyled>
+                          )}
                         </Box>
                       )}
                     />
