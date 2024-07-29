@@ -17,7 +17,7 @@ export const themeMuiBase = {
     tetriaryGrey: '#777F88', // label text
     greyToo: '#636363', // label grey2
     success: '#43C057',
-    hover: '#00000021', // hover bg
+    hover: '#00000014', // hover bg
     warning: 'rgb(255, 128, 97)',
   },
 

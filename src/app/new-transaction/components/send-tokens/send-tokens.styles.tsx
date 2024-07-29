@@ -133,6 +133,7 @@ export const styledBtnNextStep = {
 export const WrapPaperStyled = styled('div')`
   width: 50%;
   min-width: 360px;
+  max-width: 550px;
 
   @media (max-width: 1240px) {
     min-width: 100%;

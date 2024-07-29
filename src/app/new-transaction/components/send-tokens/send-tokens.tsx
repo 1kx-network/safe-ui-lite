@@ -45,6 +45,9 @@ import {
   BodyStyled,
 } from './send-tokens.styles';
 import { options } from './fixutres';
+import { SearchAddress } from '../search-address-input';
+import { getAddressBook } from '@/db/get-info';
+import useAddressBookStore from '@/stores/address-book-store';
 
 const isConfirmed = false;
 const isExecute = false;
@@ -60,6 +63,7 @@ export const SendTokens = () => {
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
+  const { setAddressBookArray } = useAddressBookStore();
 
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
@@ -85,6 +89,7 @@ export const SendTokens = () => {
   const [thresholders, setThresholders] = useState(0);
   const [tokenType, setTokenType] = useState<string>(NATIVE_TOKENS.ETH);
   const [balanceAcc, setBalanceAcc] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const searchParams = window.location.search;
@@ -98,11 +103,13 @@ export const SendTokens = () => {
   useEffect(() => {
     if (safeSdk) {
       const pendingBalance = async () => {
+        const addressBook = await getAddressBook();
         const balanceAccount = await safeSdk.getBalance();
         const nonce = await safeSdk.getNonce();
         const thresholders = await safeSdk.getThreshold();
         const parceBalance = utils.formatEther(String(balanceAccount));
 
+        setAddressBookArray(addressBook)
         setThresholders(thresholders);
         setNonce(String(nonce));
         setBalanceAcc(parceBalance);
@@ -202,8 +209,6 @@ export const SendTokens = () => {
     setNonce(newValue);
   };
 
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => setIsLoading(false), 300);
@@ -264,13 +269,17 @@ export const SendTokens = () => {
               control={control}
               name="address"
               render={({ field }) => (
-                <Box width={'100%'}>
+                <Box width={'100%'} position={'relative'}>
                   <WalletInput
                     {...field}
                     placeholder="Address"
                     style={styledInput}
                     error={!!errors.address}
                     errorValue={errors.address?.message}
+                  />
+                  <SearchAddress
+                    value={field.value}
+                    setAddress={(address: string) => setValue('address', address)}
                   />
                 </Box>
               )}
