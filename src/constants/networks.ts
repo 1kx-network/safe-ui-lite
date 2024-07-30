@@ -1,5 +1,5 @@
 import {
-  ChainInfo,
+  // ChainInfo,
   FEATURES,
   GAS_PRICE_TYPE,
   RPC_AUTHENTICATION,
@@ -29,7 +29,7 @@ export const safeNetworksObj: ISafeNetworksObj = {
   '1313161554': {},
 };
 
-export const walletConnectChains: ChainInfo[] = [
+export const walletConnectChains = [
   {
     chainId: '1',
     chainName: 'Ethereum',
