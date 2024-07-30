@@ -7,9 +7,9 @@ import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 import { ITransaction } from '@/db';
 import { formatterIcon } from '@/utils/icon-formatter';
 import { formattedLabel } from '@/utils/formatters';
+import { customToasty } from '@/components';
 
 import { ItemInfoStyled, ItemWrapperStyled, IconCopyStyled } from './item.styles';
-import { customToasty } from '@/components';
 
 export const ItemTransaction = (
   data: ITransaction & { linkOnScan: string; smallType?: boolean }

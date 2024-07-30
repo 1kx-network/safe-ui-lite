@@ -166,7 +166,7 @@ export const WrapperAddressBookInputStyled = styled('div')(
 );
 
 export const AddressBookInputStyled = styled('div')(
-  ({ theme }) => `
+  () => `
   display: flex;
   flex-direction: column;
   font-size: 14px;

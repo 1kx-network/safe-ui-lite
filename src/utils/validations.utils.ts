@@ -32,11 +32,6 @@ export const NewTransactionSchema = yup.object().shape({
     .required('This field is required'),
 });
 
-function isEthCalldata(calldata: string) {
-  if (calldata === '0x') return true;
-  return /^0x[0-9a-fA-F]+$/.test(calldata);
-}
-
 export const AddNetworkSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
   chainId: yup

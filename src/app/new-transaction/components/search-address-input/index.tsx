@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+
 import { WalletTypography } from '@/ui-kit';
 import useAddressBookStore, { IAddressBook } from '@/stores/address-book-store';
+
 import {
   BodyStyled,
   IconAddressStyled,

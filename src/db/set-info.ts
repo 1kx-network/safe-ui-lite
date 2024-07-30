@@ -73,7 +73,6 @@ export async function setMultipleDataDB(data: Record<string, Partial<ISafe>>): P
 
 export async function setNetworkDB(network: INetworkDB): Promise<void> {
   try {
-
     const networkWithId: INetworkDB = {
       ...network,
       id: String(network.rpcOriginal ?? network.rpcUrl),
