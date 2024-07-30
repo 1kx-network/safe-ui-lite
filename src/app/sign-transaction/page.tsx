@@ -33,6 +33,7 @@ import useNetworkStore from '@/stores/networks-store';
 import { parseSearchParams } from '@/utils/helpers';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
+import { optionsNetwork } from '@/constants/networks';
 
 import Proof from './components/proof';
 import {
@@ -49,7 +50,6 @@ import {
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sign-trx-info';
 import { IBatchTr } from './tr-builder';
-import { optionsNetwork } from '@/constants/networks';
 
 const SignTransactionComponent = () => {
   const router = useRouter();

@@ -36,7 +36,7 @@ export const NetworksSettings = ({
 }) => {
   const { networks, loadNetworks } = useNetworkStore();
 
-  const [network, setNetworkLocal] = useState<IOptionNetwork>();
+  const [network, setNetworkLocal] = useState<IOptionNetwork | null>(null);
   const [isLoadingChain, setIsLoadingChain] = useState(false);
 
   const {
@@ -80,7 +80,7 @@ export const NetworksSettings = ({
       rpcUrl: data.rpc,
       symbol: data.name,
       decimals: 18,
-      rpcOriginal: network.rpcOriginal,
+      rpcOriginal: network.rpcOriginal || network.rpc,
     };
 
     // updateNetwork({
@@ -98,6 +98,7 @@ export const NetworksSettings = ({
     setTimeout(() => setIsLoadingChain(false), 500);
     reset();
     customToasty('Network was changed', 'success');
+    setNetworkLocal(null);
     handleSave && handleSave();
   };
 

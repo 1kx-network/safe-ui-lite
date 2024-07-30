@@ -1,4 +1,5 @@
 import { styled } from '@mui/system';
+
 import CopyIcon from '@/assets/svg/copy.svg';
 
 export const WrapperStyled = styled('div')(

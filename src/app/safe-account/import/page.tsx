@@ -66,7 +66,7 @@ export default function CreatePageAccount() {
   const handleUpdateOptions = async (isFirstTime?: boolean) => {
     setIsLoadingSelect(true);
     setOptions(prevOptions => {
-      const activeNetworks = isFirstTime ? networks ?? [] : prevOptions;
+      const activeNetworks = isFirstTime ? (networks ?? []) : prevOptions;
       setChosenNetwork(activeNetworks[0]);
 
       return activeNetworks;

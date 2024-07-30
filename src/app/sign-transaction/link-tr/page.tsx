@@ -35,6 +35,8 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 import TrBuildComponent, { IBatchTr, RawTr } from '../tr-builder';
 import { parseSearchParams } from '@/utils/helpers';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
+import { optionsNetwork } from '@/constants/networks';
+import { WarningBoxStyled } from '../sing-transaction.styles';
 
 import {
   BoxLinkStyled,
@@ -50,8 +52,6 @@ import {
   WrapperAddressBookInputStyled,
   AddressBookInputStyled,
 } from './link-tr.styles';
-import { optionsNetwork } from '@/constants/networks';
-import { WarningBoxStyled } from '../sing-transaction.styles';
 
 interface IForm {
   safeAddress: string | null;

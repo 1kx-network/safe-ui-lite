@@ -31,6 +31,8 @@ import IconArrowLeft from '@/assets/svg/left-arrow.svg';
 import routes from '../routes';
 import useNetworkStore from '@/stores/networks-store';
 import { useMessageMultySign } from '@/hooks/useMessageMultySign';
+import { WarningBoxStyled } from '../sign-transaction/sing-transaction.styles';
+import { optionsNetwork } from '@/constants/networks';
 
 import {
   BoxOwnerLinkStyled,
@@ -45,8 +47,6 @@ import {
   styledSecondaryBtn,
 } from './sign-message.styles';
 import { SignMessageInfo } from './sign-msg-info';
-import { WarningBoxStyled } from '../sign-transaction/sing-transaction.styles';
-import { optionsNetwork } from '@/constants/networks';
 
 const SignMessageComponent = () => {
   const router = useRouter();

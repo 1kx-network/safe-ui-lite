@@ -30,6 +30,8 @@ import routes from '@/app/routes';
 import { WalletButton, WalletInput, WalletLayout, WalletPaper, WalletTypography } from '@/ui-kit';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
+import { WarningBoxStyled } from '@/app/sign-transaction/sing-transaction.styles';
+import { optionsNetwork } from '@/constants/networks';
 
 import {
   BoxLinkStyled,
@@ -43,8 +45,6 @@ import {
   SingInfoStyled,
   styledSecondaryBtn,
 } from './link-msg.styles';
-import { WarningBoxStyled } from '@/app/sign-transaction/sing-transaction.styles';
-import { optionsNetwork } from '@/constants/networks';
 
 interface IForm {
   safeAddress: string | null;

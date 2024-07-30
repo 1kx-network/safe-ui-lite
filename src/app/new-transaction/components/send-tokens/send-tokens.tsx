@@ -24,7 +24,11 @@ import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 import useNetworkStore from '@/stores/networks-store';
 import { formatterIcon } from '@/utils/icon-formatter';
 import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
+import { SearchAddress } from '../search-address-input';
+import { getAddressBook } from '@/db/get-info';
+import useAddressBookStore from '@/stores/address-book-store';
 
+import { options } from './fixutres';
 import {
   AmountSelectStyled,
   ConfirmedWaitStyled,
@@ -47,10 +51,6 @@ import {
   WrapperAddressBookInputStyled,
   AddressBookInputStyled,
 } from './send-tokens.styles';
-import { options } from './fixutres';
-import { SearchAddress } from '../search-address-input';
-import { getAddressBook } from '@/db/get-info';
-import useAddressBookStore from '@/stores/address-book-store';
 
 const isConfirmed = false;
 const isExecute = false;

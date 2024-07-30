@@ -5,7 +5,7 @@ export interface IQueryParams {
   chainIdUrl: string | null;
   amount: string | null;
   destinationAddress: string | null;
-  destinationName: string | null;
+  destinationName?: string | null;
   safeTxHash: string | null;
   tokenType: string | null;
   networkName: string | null;
