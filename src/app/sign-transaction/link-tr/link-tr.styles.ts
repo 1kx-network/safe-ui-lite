@@ -115,3 +115,24 @@ export const styledSecondaryBtn = {
   height: '42px',
   backgroundColor: '#122',
 };
+
+export const WrapperAddressBookInputStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  align-items: center;
+  border: 1px solid ${theme.palette.borderColor};
+  border-radius: 1.75rem;
+  padding: 3.5px 0.75rem;
+  background: white;
+  cursor: pointer;
+  gap: ${theme.spacing(2)};
+`
+);
+
+export const AddressBookInputStyled = styled('div')(
+  ({ theme }) => `
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+`
+);

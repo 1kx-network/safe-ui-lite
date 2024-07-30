@@ -23,6 +23,7 @@ import { returnTransactionObj } from '@/utils/new-trx-functionals';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 import useNetworkStore from '@/stores/networks-store';
 import { formatterIcon } from '@/utils/icon-formatter';
+import IconDefaultAddress from '@/assets/svg/defult-icon-address.svg';
 
 import {
   AmountSelectStyled,
@@ -43,8 +44,13 @@ import {
   WrapPaperStyled,
   BtnMaxInputStyled,
   BodyStyled,
+  WrapperAddressBookInputStyled,
+  AddressBookInputStyled,
 } from './send-tokens.styles';
 import { options } from './fixutres';
+import { SearchAddress } from '../search-address-input';
+import { getAddressBook } from '@/db/get-info';
+import useAddressBookStore from '@/stores/address-book-store';
 
 const isConfirmed = false;
 const isExecute = false;
@@ -55,11 +61,17 @@ interface IInputsForm {
   calldata: string;
 }
 
+interface IAddFromBook {
+  name?: string;
+  address: string;
+}
+
 export const SendTokens = () => {
   const { chosenNetwork } = useNetworkStore();
   const { address, chainId } = useWeb3ModalAccount();
   const { safeSdk } = useSafeStore();
   const { createSafe, getTokenERC20Balance, createTrancationERC20 } = useSafeSdk();
+  const { setAddressBookArray } = useAddressBookStore();
 
   const safeAddress: string | null =
     typeof window !== 'undefined' ? localStorage.getItem('safeAddress') : null;
@@ -85,14 +97,29 @@ export const SendTokens = () => {
   const [thresholders, setThresholders] = useState(0);
   const [tokenType, setTokenType] = useState<string>(NATIVE_TOKENS.ETH);
   const [balanceAcc, setBalanceAcc] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [addFromBook, setAddFromBook] = useState<IAddFromBook | null>(null);
 
   useEffect(() => {
-    const searchParams = window.location.search;
-    const recipientAddress = searchParams.match(/recipientAddress=([^&]*)/);
+    (async () => {
+      const addressBook = await getAddressBook();
+      const searchParams = window.location.search;
+      const recipientAddress = searchParams.match(/recipientAddress=([^&]*)/);
 
-    if (recipientAddress && recipientAddress[1]) {
-      setValue('address', recipientAddress[1]);
-    }
+      if (recipientAddress && recipientAddress[1]) {
+        if (addressBook.length) {
+          const findAddress = addressBook.find(elem => elem.address === recipientAddress[1]);
+          const valueAddress = findAddress?.address ?? recipientAddress[1];
+
+          findAddress && setAddFromBook(findAddress);
+          setValue('address', valueAddress);
+        } else {
+          setValue('address', recipientAddress[1]);
+        }
+      }
+
+      setAddressBookArray(addressBook);
+    })();
   }, [safeAddress]);
 
   useEffect(() => {
@@ -163,6 +190,7 @@ export const SendTokens = () => {
         address: encodeURIComponent(safeAddress),
         amount: data.amount,
         destinationAddress: data.address,
+        ...(addFromBook && { destinationName: addFromBook.name }),
         tokenType,
         safeTxHash,
         nonce: nonce,
@@ -202,8 +230,6 @@ export const SendTokens = () => {
     setNonce(newValue);
   };
 
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => setIsLoading(false), 300);
@@ -235,6 +261,16 @@ export const SendTokens = () => {
     [chosenNetwork, isLoading]
   );
 
+  const handleSearchAddress = (name: string, address: string) => {
+    setAddFromBook({ name, address });
+    setValue('address', address);
+  };
+
+  const handleClickAddressBoookInput = () => {
+    setAddFromBook(null);
+    setValue('address', '');
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <BodyStyled>
@@ -264,14 +300,32 @@ export const SendTokens = () => {
               control={control}
               name="address"
               render={({ field }) => (
-                <Box width={'100%'}>
-                  <WalletInput
-                    {...field}
-                    placeholder="Address"
-                    style={styledInput}
-                    error={!!errors.address}
-                    errorValue={errors.address?.message}
-                  />
+                <Box width={'100%'} position={'relative'} height={'43px'}>
+                  {!addFromBook ? (
+                    <WalletInput
+                      {...field}
+                      placeholder="Address"
+                      style={styledInput}
+                      error={!!errors.address}
+                      errorValue={errors.address?.message}
+                    />
+                  ) : (
+                    <WrapperAddressBookInputStyled onClick={handleClickAddressBoookInput}>
+                      <IconDefaultAddress width="25px" height="25px" />
+
+                      <AddressBookInputStyled>
+                        <WalletTypography component="p" fontSize={14}>
+                          {addFromBook.name ?? 'Name is undefined'}
+                        </WalletTypography>
+
+                        <WalletTypography component="p" fontSize={14}>
+                          {addFromBook.address}
+                        </WalletTypography>
+                      </AddressBookInputStyled>
+                    </WrapperAddressBookInputStyled>
+                  )}
+
+                  <SearchAddress value={field.value} setAddressBook={handleSearchAddress} />
                 </Box>
               )}
             />
