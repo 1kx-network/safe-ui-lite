@@ -33,7 +33,7 @@ export const networks = [
     chainId: elem.id,
     name: elem.name,
     currency: elem.nativeCurrency.symbol,
-    explorerUrl: elem.blockExplorers.default.apiUrl,
+    explorerUrl: elem.blockExplorers.default.url,
     rpcUrl: elem.rpcUrls.default.http[0],
   })),
   {
