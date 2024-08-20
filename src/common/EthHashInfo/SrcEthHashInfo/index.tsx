@@ -28,7 +28,7 @@ export type EthHashInfoProps = {
   avatarSize?: number;
   children?: ReactNode;
   trusted?: boolean;
-  ExplorerButtonProps?: ExplorerButtonProps;
+  explorerButtonProps?: ExplorerButtonProps;
 };
 
 const stopPropagation = (e: SyntheticEvent) => e.stopPropagation();
@@ -46,7 +46,7 @@ const SrcEthHashInfo = ({
   name,
   showCopyButton,
   hasExplorer,
-  ExplorerButtonProps,
+  explorerButtonProps,
   children,
   trusted = true,
 }: EthHashInfoProps): ReactElement => {
@@ -119,9 +119,9 @@ const SrcEthHashInfo = ({
             />
           )}
 
-          {hasExplorer && ExplorerButtonProps && (
+          {hasExplorer && explorerButtonProps && (
             <Box color="border.main">
-              <ExplorerButton {...ExplorerButtonProps} onClick={stopPropagation} />
+              <ExplorerButton {...explorerButtonProps} onClick={stopPropagation} />
             </Box>
           )}
 
