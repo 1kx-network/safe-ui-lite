@@ -3,9 +3,9 @@ import { Box } from '@mui/system';
 
 import { Sidebar, UserInfoBar } from '@/components';
 import Loading from '@/assets/svg/loader.svg';
+import { Bubble } from '@/components/bubble';
 
 import { LayoutStyled, InfoUserStyled } from './wallet-layout.styles';
-import { Bubble } from '../../components/bubble';
 
 interface IWalletLayoutProps {
   children: React.ReactNode;

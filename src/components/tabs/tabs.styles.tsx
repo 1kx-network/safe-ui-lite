@@ -16,7 +16,7 @@ export const WrapperStyled = styled('div')(
 );
 
 export const ItemMenuStyled = styled(Link)<{ $isactive: boolean }>(
-  ({ theme, $isactive }) => `
+  ({ $isactive }) => `
     color: ${$isactive ? 'white' : 'rgba(255,255,255, 0.5)'};
     position: relative; 
     font-size: 18px;
