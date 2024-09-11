@@ -13,9 +13,11 @@ export const InputWrapperStyled = styled(
     width: '100%',
     display: 'flex',
     alignItems: 'center',
+
     border: `1px solid ${theme.palette.borderColor}`,
     borderRadius: theme.spacing(7),
-    background: theme.palette.white,
+    background: 'rgba(0,0,0, 0.4)',
+    color: 'white',
     ...$styles,
   };
 });
@@ -62,14 +64,14 @@ export const InputStyled = styled(
     line-height: 1.5;
     padding:  ${customPadding};
     padding-left: ${isSearch || $startadornment ? theme.spacing(1) : theme.spacing(5)};
-    color: ${theme.palette.textDark};
+    color: white; // Change text color to white
     border: none;
     border-radius: ${theme.spacing(2)};
     background: transparent;
     text-overflow: ellipsis;
   
     &::placeholder {
-      color: ${theme.palette.textDark};
+      color: rgba(255, 255, 255, 0.5); // Change placeholder color to semi-transparent white
     }
   
     &:hover {

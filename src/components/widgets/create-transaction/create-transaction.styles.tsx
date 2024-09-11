@@ -38,7 +38,8 @@ export const IconPlusStyled = styled(IconPlus)(
     min-width: 48px;
     height: 48px;
     margin-bottom: ${theme.spacing(4)};
-    background-color: ${theme.palette.success};
+    background-color: #0A8754;
+    
     color: ${theme.palette.white};
     border-radius: 50%;
     padding: ${theme.spacing(2)};

@@ -3,9 +3,10 @@ import Link from 'next/link';
 
 export const WrapperStyled = styled('div')(
   ({ theme }) => `
+  
   margin-bottom: ${theme.spacing(4)};
   width: 100%;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(255,255,255, 0.2);
   display: flex;
   gap: ${theme.spacing(6)};
   padding: 0 10%;
@@ -16,7 +17,7 @@ export const WrapperStyled = styled('div')(
 
 export const ItemMenuStyled = styled(Link)<{ $isactive: boolean }>(
   ({ theme, $isactive }) => `
-    color: ${$isactive ? theme.palette.textDark : theme.palette.tetriaryGrey}; 
+    color: ${$isactive ? 'white' : 'rgba(255,255,255, 0.5)'};
     position: relative; 
     font-size: 18px;
     font-weight: 500;
@@ -25,6 +26,11 @@ export const ItemMenuStyled = styled(Link)<{ $isactive: boolean }>(
 
     &:hover {
         text-decoration: none;
+        color: white;
+    }
+
+    &:link, &:visited, &:active {
+        color: ${$isactive ? 'white' : 'rgba(255,255,255, 0.5)'};
     }
 
     &::after {
@@ -34,7 +40,7 @@ export const ItemMenuStyled = styled(Link)<{ $isactive: boolean }>(
       left: 0;
       width: 100%;
       height: 2px;
-      border-bottom: 2px solid ${$isactive ? theme.palette.textDark : 'transparent'};
+      border-bottom: 2px solid ${$isactive ? 'white' : 'transparent'};
     }
 `
 );

@@ -6,15 +6,37 @@ import IconTrash from '@/assets/svg/delete.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 import IconAddress from '@/assets/svg/defult-icon-address.svg';
 
+export const commonStylesBasic = `
+  color: rgb(255, 255, 255);
+  font-family: Roboto, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  box-sizing: border-box;
+  min-width: 0px;
+  position: relative;
+  border: 0.5px solid rgba(122, 199, 240, 0.4);
+  background-color: rgba(0, 0, 0, 0.2);
+  display: block;
+  box-shadow: rgba(41, 49, 71, 0.1) 0px 8px 16px;
+`;
+
+export const commonStyles = `
+  ${commonStylesBasic}
+  border-radius: 25px;
+`;
+
 export const WrapperStyled = styled('div')(
   ({ theme }) => `
-  min-width: 246px;
-  width: 246px;
+  min-width: 326px;
+  width: 326px;
+  margin-top: 16px;
   margin-right: ${theme.spacing(5)};
   overflow: hidden;
   height: 100%;
-  padding: 1.5rem 0;
-  border-radius: 0 0 0.875rem 0.875rem;
+  border-radius: 25px;
+  background-color: rgba(0, 0, 0, 0.4);
+    border: 0.5px solid rgba(122, 199, 240, 0.4);
+
 `
 );
 
@@ -22,7 +44,10 @@ export const BodyMainInfoStyled = styled('div')`
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 0 0 0.875rem 0.875rem;
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+  margin-top: 0;
 `;
 
 export const ImgUserStyled = styled(Image)(
@@ -39,53 +64,71 @@ export const InfoUserStyled = styled('div')(
   position: relative;
   align-items: center;
   padding: ${theme.spacing(2.5, 3.5)};
-  border-radius: 0.875rem 0.875rem 0 0;
-  background-color: ${theme.palette.white}
+  background-color: rgba(0, 0, 0, 0.4);
 `
 );
 
 export const MenuStyled = styled('div')(
   ({ theme }) => `
   display: flex;
-	flex-direction: column;
-	gap: 1px;
-	width: 100%;
-	padding: ${theme.spacing(5)};
-	background-color: ${theme.palette.lightSecondary};
-	border-radus: ${theme.spacing(0, 0, 3.5, 3.5)};
-	gap: 1.25rem;
-	font-weight: 600; 
-	height: 100%;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  padding: ${theme.spacing(5)};
+
+  font-weight: 600; 
+  height: 100%;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none; 
+  background-color: rgba(0, 0, 0, 0.2);
   `
 );
 
 export const ItemMenuStyled = styled(Link)<{ disabled?: boolean }>(
   ({ theme, disabled }) => `
-	border: 1px solid transparent;
-	display: flex;
+  ${commonStyles}
+  display: flex;
   align-items: center;
-	font-size: ${theme.spacing(3.5)};
-	text-decoration: none;
-	padding: ${theme.spacing(1.5, 3)};  
-	color: ${theme.palette.textDark};
-  border-radius: 0.5rem;
-  background-color: ${disabled ? theme.palette.textDarkLight : 'transparent'};
+  font-size: ${theme.spacing(3.5)};
+  text-decoration: none;
+  padding: ${theme.spacing(1.5, 3)};  
+  color: rgb(255, 255, 255);
+  background-color: ${disabled ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)'};
   cursor: ${disabled ? 'not-allowed' : 'pointer'};
   opacity: ${disabled ? 0.3 : 1};
- 	&:hover {
+  margin-top: 0;
+  &:hover {
     text-decoration: none;
-    background-color: ${theme.palette.textDarkLight};
-	}
+    background-color: rgba(255,255,255, 0.1);
+    color: rgb(255, 255, 255);
+  }
+`
+);
+
+export const ItemMenuStyled2 = styled(Link)<{ disabled?: boolean }>(
+  ({ theme, disabled }) => `
+  display: flex;
+  align-items: center;
+  font-size: ${theme.spacing(3.5)};
+  text-decoration: none;
+  padding: ${theme.spacing(1.5, 3)};  
+  color: rgb(255, 255, 255);
+  background-color: ${disabled ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)'};
+  cursor: ${disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${disabled ? 0.3 : 1};
+  margin-top: 0;
+  &:hover {
+    text-decoration: none;
+    background-color: rgba(255,255,255, 0.1);
+    color: rgb(255, 255, 255);
+  }
 `
 );
 
 export const WrapperIconStyled = styled('div')<{ isActive: boolean }>(
   ({ theme, isActive }) => `
-  background-color: ${isActive ? theme.palette.textDark : 'transparent'};
-  border: 1px solid  ${theme.palette.textDark};
+  background-color: ${isActive ? 'rgba(255, 255, 255, 1)' : 'transparent'};
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -93,13 +136,13 @@ export const WrapperIconStyled = styled('div')<{ isActive: boolean }>(
   margin-right: 0.875rem;
   width: ${theme.spacing(8)};
   height: ${theme.spacing(8)};
-  color: ${isActive ? theme.palette.white : theme.palette.textDark};
+  color: ${isActive ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 1)'};
 `
 );
 
 export const styleBtnTransaction = {
   justifyContent: 'center',
-  border: '2px solid #020303',
+  border: '0.5px solid rgba(122, 199, 240, 0.4)',
   borderRadius: '28px',
   padding: '0.5rem 0.75rem',
 };
@@ -143,30 +186,37 @@ export const IconOpenAccountsStyled = styled('div')(
 
 export const AccountWrapperStyled = styled('div')(
   ({ theme }) => `
-  background-color: #FFFFFFB5;
+  ${commonStyles}
   backdrop-filter: blur(25px);
   padding: ${theme.spacing(5)};
-  border-radius:  0 0 0.625rem 0.625rem;
+  border-radius: 25px;
+  border: 0.5px solid rgba(122, 199, 240, 0.4);
   height: calc(100% - 60px);
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: rgb(255, 255, 255);
 `
 );
 
 export const ItemAccountStyled = styled('div')(
   ({ theme }) => `
+  ${commonStyles}
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: ${theme.spacing(3.5)} 0;
-  border-bottom: 0.5px solid ${theme.palette.tetriaryLightGrey};
+  border-bottom: 0.5px solid rgba(122, 199, 240, 0.4);
   cursor: pointer;
+  background-color: transparent;
+  border-radius: 0;
+  margin-top: 0;
+  box-shadow: none;
 
   &:last-child {
     border-bottom: 0.5px solid transparent;
   }
-
 `
 );
 
@@ -207,16 +257,21 @@ export const CopyIconStyled = styled(CopyIcon)`
 
 export const BoxAccountActionStyled = styled('div')(
   ({ theme }) => `
+  ${commonStyles}
   display: flex;
   align-items: center;
   gap: ${theme.spacing(1)};
   padding: ${theme.spacing(2.5)};
-  border-radius: 8px;
+  border-radius: 25px;
+  border: 0.5px solid rgba(122, 199, 240, 0.4);
   transition: 0.25s ease all;
   cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: rgb(255, 255, 255);
+  margin-top: 8px;
 
   &:hover {
-    background-color: ${theme.palette.hover};
+    background-color: rgba(0, 0, 0, 0.4);
   }
 `
 );

@@ -50,6 +50,7 @@ import {
   ShareAccountItemStyled,
   styledNetwork,
   styledBalance,
+  ItemMenuStyled2,
 } from './sidebar.styles';
 import { dataUserMock, menuList } from './fixtures';
 
@@ -332,23 +333,23 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                 style={styleBtnTransaction}
                 href={address ? routes.newTransactionSendToken : ''}
               >
-                <WalletTypography>New transaction</WalletTypography>
+                <WalletTypography color="#FFFFFF">New transaction</WalletTypography>
               </ItemMenuStyled>
               <ItemMenuStyled style={styleBtnTransaction} href={routes.newSignTransaction}>
-                <WalletTypography>Sign Transaction</WalletTypography>
+                <WalletTypography color="#FFFFFF">Sign Transaction</WalletTypography>
               </ItemMenuStyled>
             </>
           )}
 
           {condMenuList.map(item => (
-            <ItemMenuStyled key={item.id} href={item.url}>
+            <ItemMenuStyled2 key={item.id} href={item.url}>
               <WrapperIconStyled
                 isActive={pathname === '/' ? item.url === '/' : item.url.includes(pathname)}
               >
                 <item.icon />
               </WrapperIconStyled>
-              <WalletTypography>{item.title}</WalletTypography>
-            </ItemMenuStyled>
+              <WalletTypography color="white">{item.title}</WalletTypography>
+            </ItemMenuStyled2>
           ))}
         </MenuStyled>
       </BodyMainInfoStyled>

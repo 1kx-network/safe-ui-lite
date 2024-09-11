@@ -95,6 +95,7 @@ export const stylesSelect = {
     ...base,
     fontSize: '14px',
     width: '100%',
+    color: themeMuiBase.palette.black,
 
     '&:focus-visible': {
       borderColor: themeMuiBase.palette.black,
@@ -122,14 +123,14 @@ export const stylesSelect = {
     borderRadius: '1.75rem',
     height: '44px',
     padding: `0 ${themeMuiBase.spacing(2)} 0 0`,
-    borderWidth: '1px',
+    borderWidth: '0', // Remove border
     flexWrap: 'nowrap',
-    borderColor: themeMuiBase.palette.tetriaryLightGrey,
     boxShadow: 'none',
-    backgroundColor: themeMuiBase.palette.white,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    color: themeMuiBase.palette.white,
 
     '&:hover': {
-      borderColor: themeMuiBase.palette.tetriaryGrey,
+      borderColor: 'rgba(0,0,0,0.4)', // Remove border on hover
     },
   }),
 
@@ -137,6 +138,7 @@ export const stylesSelect = {
   menu: (base: CSSObject) => ({
     ...base,
     borderRadius: themeMuiBase.spacing(5.75),
+    backgroundColor: 'rgba(0,0,0,0.7)', // Add this line
   }),
 
   // eslint-disable-next-line
@@ -150,6 +152,7 @@ export const stylesSelect = {
       ...base,
       height: isMethodOptions ? '175px' : base.height,
       borderRadius: themeMuiBase.spacing(5.75),
+      backgroundColor: 'rgba(0,0,0,0.7)', // Add this line
     };
   },
 
@@ -163,12 +166,15 @@ export const stylesSelect = {
       height: isMethodOptions ? '32px' : '44px',
       padding: '0 20px',
       flexWrap: 'nowrap',
-      backgroundColor: 'transparent',
-      color: themeMuiBase.palette.greyToo,
+      backgroundColor: 'transparent', // Changed to transparent
+      color: themeMuiBase.palette.white, // Changed to white
       fontSize: '14px',
       cursor: 'pointer',
 
       '&:hover': {
+        backgroundColor: themeMuiBase.palette.hover,
+      },
+      '&:active': {
         backgroundColor: themeMuiBase.palette.hover,
       },
     };

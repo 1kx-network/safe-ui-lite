@@ -12,9 +12,9 @@ export const TextAreaWrapperStyled = styled(
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    border: `1px solid ${theme.palette.borderColor}`,
+    border: 'none', // Remove border
     borderRadius: theme.spacing(7),
-    background: theme.palette.white,
+    background: 'rgba(0,0,0,0.4)', // Set background to rgba black 0.4
     ...$styles,
   };
 });
@@ -61,22 +61,23 @@ export const TextAreaStyled = styled(
     line-height: 1.5;
     padding:  ${customPadding};
     padding-left: ${isSearch || $startadornment ? theme.spacing(1) : theme.spacing(5)};
-    color: ${theme.palette.textDark};
+    color: ${theme.palette.white}; // Set text color to white
     border: none;
     border-radius: ${theme.spacing(2)};
     background: transparent;
     text-overflow: ellipsis;
   
     &::placeholder {
-      color: ${theme.palette.textDark};
+      color: ${theme.palette.white}; // Set placeholder color to white
+      opacity: 0.7; // Add some opacity to the placeholder for better visibility
     }
   
     &:hover {
-      border-color: ${theme.palette.blue};
+      border-color: transparent; // Remove hover border
     }
   
     &:focus {
-      border-color: ${theme.palette.blue};
+      border-color: transparent; // Remove focus border
     }
   
     &:focus-visible, & > input > &:focus-visible {
@@ -90,6 +91,7 @@ export const TextAreaStyled = styled(
       margin: 0;
       width: 100%;
       text-overflow: ellipsis;
+      color: ${theme.palette.white}; // Set input text color to white
     }
   
     &:disabled {
@@ -101,11 +103,11 @@ export const TextAreaStyled = styled(
       }
   
       &:hover {
-        border-color: ${theme.palette.borderColor};
+        border-color: transparent; // Remove hover border for disabled state
       }
     
       &:focus {
-        border-color: ${theme.palette.borderColor};
+        border-color: transparent; // Remove focus border for disabled state
       }
     }
   `;
@@ -126,9 +128,9 @@ export const TextAreaErrorStyled = styled('div')(
 );
 
 export const styleErrorTextArea = {
-  borderColor: themeMuiBase.palette.error,
+  borderColor: 'transparent', // Remove error border
   color: themeMuiBase.palette.error,
-  backgroundColor: themeMuiBase.palette.lighError,
+  backgroundColor: 'rgba(255, 0, 0, 0.1)', // Slightly red background for error state
 
   '& > input': {
     color: themeMuiBase.palette.error,

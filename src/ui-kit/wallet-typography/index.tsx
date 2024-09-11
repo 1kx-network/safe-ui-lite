@@ -20,7 +20,7 @@ export const WalletTypography = ({
   fontSize = 16,
   fontWeight = 400,
   component = 'span',
-  color = '#000000',
+  color = '#FFFFFF',
   className = '',
   opacity,
   lineHeight,

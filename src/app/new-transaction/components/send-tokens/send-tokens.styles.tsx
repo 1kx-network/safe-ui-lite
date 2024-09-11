@@ -88,6 +88,7 @@ export const styledBtxMax = {
   margin: 0,
   padding: 0,
   fontSize: '14px',
+  color: themeMuiBase.palette.white,
 };
 
 export const styledInput = {
@@ -149,6 +150,7 @@ export const BtnMaxInputStyled = styled('div')(
   height: 100%;
   display: flex;
   align-items: center;
+  color: ${theme.palette.white};
 `
 );
 

@@ -5,6 +5,7 @@ import { Sidebar, UserInfoBar } from '@/components';
 import Loading from '@/assets/svg/loader.svg';
 
 import { LayoutStyled, InfoUserStyled } from './wallet-layout.styles';
+import { Bubble } from '../../components/bubble';
 
 interface IWalletLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,8 @@ interface IWalletLayoutProps {
 export function WalletLayout({ children, hideSidebar }: IWalletLayoutProps) {
   return (
     <LayoutStyled>
+      <Bubble top={0} left={0} />
+      <Bubble right={-10} bottom={0} opacity={0.25} />
       {!hideSidebar && <Sidebar />}
 
       {!hideSidebar && (

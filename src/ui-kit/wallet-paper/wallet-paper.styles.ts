@@ -7,7 +7,10 @@ export const PaperStyled = styled(
   withTransientProps
 )<{ $minWidth?: string }>(({ $minWidth = '100%', theme, style }) => {
   return {
-    background: theme.palette.lightGrey,
+    background: 'rgba(0, 0, 0, 0.2)',
+    border: '0.5px solid rgba(122, 199, 240, 0.4)',
+
+
     borderRadius: '14px',
     padding: theme.spacing(6),
     width: '100%',
@@ -17,5 +20,6 @@ export const PaperStyled = styled(
     },
 
     ...style,
+
   };
 });
