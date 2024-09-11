@@ -57,11 +57,10 @@ export default function CreatePageAccount() {
   const router = useRouter();
   const { address } = useWeb3ModalAccount();
   const { switchNetwork } = useSwitchNetwork();
-
   const handleUpdateOptions = async (isFirstTime?: boolean) => {
     setIsLoading(true);
     setOptions(prevOptions => {
-      const activeNetworks = isFirstTime ? networks ?? [] : prevOptions;
+      const activeNetworks = isFirstTime ? (networks ?? []) : prevOptions;
       setChosenNetwork(activeNetworks[0]);
 
       return activeNetworks;

@@ -62,11 +62,10 @@ export default function CreatePageAccount() {
   const { createSafe } = useSafeSdk();
   const { switchNetwork } = useSwitchNetwork();
   const { chainId } = useWeb3ModalAccount();
-
   const handleUpdateOptions = async (isFirstTime?: boolean) => {
     setIsLoadingSelect(true);
     setOptions(prevOptions => {
-      const activeNetworks = isFirstTime ? networks ?? [] : prevOptions;
+      const activeNetworks = isFirstTime ? (networks ?? []) : prevOptions;
       setChosenNetwork(activeNetworks[0]);
 
       return activeNetworks;
