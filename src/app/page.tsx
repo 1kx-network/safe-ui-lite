@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
 
 import { WalletLayout } from '@/ui-kit';
-// import { safeNetworksObj } from '@/constants/networks';
 import { CreateTransactionWidget } from '@/components/widgets/create-transaction';
 import { GetStartedWidget } from '@/components/widgets/get-started';
 import useActiveSafeAddress from '@/stores/safe-address-store';

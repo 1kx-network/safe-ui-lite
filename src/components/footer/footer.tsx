@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box } from '@mui/system';
-import { WalletTypography } from '@/ui-kit';
 import Link from 'next/link';
+import { Box } from '@mui/system';
 
 const textColor = 'rgba(255, 255, 255, 0.87)';
 

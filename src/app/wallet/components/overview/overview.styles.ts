@@ -4,24 +4,6 @@ import Link from 'next/link';
 import OpenInNewIcon from '@/assets/svg/open-in-new.svg';
 import CopyIcon from '@/assets/svg/copy.svg';
 
-const commonStyles = `
-  color: rgb(255, 255, 255);
-  font-family: Roboto, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  box-sizing: border-box;
-  margin: 16px 0px 0px;
-  min-width: 0px;
-  position: relative;
-  border: 0.5px solid rgba(122, 199, 240, 0.4);
-  border-radius: 25px;
-  padding: 16px;
-  background-color: rgba(0, 0, 0, 0.2);
-  display: block;
-  margin-top: 32px;
-  box-shadow: rgba(41, 49, 71, 0.1) 0px 8px 16px;
-`;
-
 export const TotalyBoxStyled = styled('div')(
   ({ theme }) => `
       display: flex;
