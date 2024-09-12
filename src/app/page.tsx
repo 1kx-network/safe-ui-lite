@@ -16,16 +16,16 @@ import AboutSection from '../components/about/about-section';
 export default function Home() {
   const { address } = useWeb3ModalAccount();
   const { accountList } = useActiveSafeAddress();
-  const { open } = useWeb3Modal();
-  const { walletProvider } = useWeb3ModalProvider();
+  // const { open } = useWeb3Modal();
+  // const { walletProvider } = useWeb3ModalProvider();
 
-  useEffect(() => {
-    const walletIsConnected: string | null =
-      typeof window !== 'undefined' ? localStorage.getItem('@w3m/wallet_id') : null;
-    if (walletIsConnected) return;
+  // useEffect(() => {
+  //   const walletIsConnected: string | null =
+  //     typeof window !== 'undefined' ? localStorage.getItem('@w3m/wallet_id') : null;
+  //   if (walletIsConnected) return;
 
-    open();
-  }, [address, walletProvider]);
+  //   open();
+  // }, [address, walletProvider]);
 
   // useEffect(() => {
   //   if (chainId && data && data.length) {

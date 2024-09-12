@@ -10,8 +10,9 @@ import QueryClientProvider from '@/context/query-provider';
 const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
-  title: 'Safe Lite',
-  description: 'Safe UI Lite',
+  title: 'ZKSafe',
+  description:
+    'zkSafe: A Safe module enabling anonymous transaction approvals for multisig users. Enhances privacy by verifying required signatures without revealing signer identities.',
   icons: ['https://uxwing.com/wp-content/themes/uxwing/download/hand-gestures/good-icon.png'],
 };
 

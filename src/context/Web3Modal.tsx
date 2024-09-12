@@ -12,8 +12,9 @@ import useNetworkStore from '@/stores/networks-store';
 import { networks } from './networks';
 
 const metadata = {
-  name: 'Safe Lite',
-  description: 'Safe UI Lite',
+  name: 'ZKSafe',
+  description:
+    'zkSafe: A Safe module enabling anonymous transaction approvals for multisig users. Enhances privacy by verifying required signatures without revealing signer identities.',
   url: 'https://safe-ui-lite.vercel.app/',
   icons: [
     'https://app.safe.global/favicons/mstile-150x150.png',
@@ -25,7 +26,7 @@ createWeb3Modal({
   ethersConfig: defaultConfig({ metadata }),
   chains: networks,
   projectId: WALLETCONNECT_V2_PROJECT_ID,
-  themeMode: 'light',
+  themeMode: 'dark',
   allowUnsupportedChain: true,
 });
 
