@@ -38,4 +38,5 @@ export const styledBtn = {
   height: '44px',
   display: 'flex',
   alingItems: 'center',
+  color: 'rgba(255, 255, 255, 0.87)',
 };

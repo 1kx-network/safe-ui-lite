@@ -80,7 +80,7 @@ export const TableTransaction = ({ smallType }: ITableTransaction) => {
               </WalletTypography>
             )}
           </HeaderListStyled>
-          <WalletPaper style={smallType ? styledPaperSmallType : styledPaper}>
+          <WalletPaper border={false} style={smallType ? styledPaperSmallType : styledPaper}>
             {transactions &&
               transactionsFilter &&
               transactionsFilter.map(elem => (

@@ -104,7 +104,7 @@ export const stylesSelect = {
 
   placeholder: (base: CSSObject) => ({
     ...base,
-    color: themeMuiBase.palette.black,
+    color: 'rgba(255,255,255,0.87)',
   }),
 
   dropdownIndicator: (
@@ -113,7 +113,7 @@ export const stylesSelect = {
   ) => ({
     ...base,
     transition: 'all 0.3s',
-    color: themeMuiBase.palette.tetriaryGrey,
+    color: 'rgba(255,255,255,0.87)',
     transform: menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
   }),
 

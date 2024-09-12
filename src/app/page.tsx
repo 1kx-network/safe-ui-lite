@@ -11,6 +11,7 @@ import useActiveSafeAddress from '@/stores/safe-address-store';
 import { WrapperStyled } from './home.styles';
 import routes from './routes';
 import AddModule from './add-module/add-module';
+import AboutSection from '../components/about/about-section';
 
 export default function Home() {
   const { address } = useWeb3ModalAccount();
@@ -40,6 +41,8 @@ export default function Home() {
   return (
     <WalletLayout>
       <WrapperStyled>
+        <AboutSection />
+
         {address && accountList.length > 0 ? (
           <CreateTransactionWidget routes={routes} />
         ) : (

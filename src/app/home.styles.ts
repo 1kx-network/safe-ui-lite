@@ -5,7 +5,7 @@ import IconPlus from '@/assets/svg/plus.svg';
 export const WrapperStyled = styled('div')`
   display: flex;
   flex-direction: column;
-  margin-top: 5rem;
+  margin-top: 3rem;
   width: 100%;
 `;
 

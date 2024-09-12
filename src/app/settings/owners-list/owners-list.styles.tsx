@@ -39,6 +39,7 @@ export const GridBtnStyled = styled('div')`
 export const styledBtn = {
   width: 'fit-content',
   fontSize: '14px',
+  color: 'rgba(255, 255, 255, 0.87)',
 };
 
 export const styledCSV = {
@@ -95,7 +96,7 @@ export const OnceSelectStyled = styled('div')(
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
+  background-color: transparent;
   border-color: ${theme.palette.tetriaryLightGrey};
   border-radius: 1.75rem;
   border-style: solid;

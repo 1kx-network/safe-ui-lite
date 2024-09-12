@@ -8,10 +8,9 @@ export const LayoutStyled = styled('main')(
       margin: 0;
       position: relative;
       display: flex;
-      padding: 0 20px;
-      // overflow-y: scroll;
+      flex-direction: column;
       overflow-y: hidden;
-
+      justify-content: space-between;
       &::-webkit-scrollbar {
         width: 1px !important;
       }
@@ -33,9 +32,10 @@ export const LayoutStyled = styled('main')(
 );
 
 export const InfoUserStyled = styled('div')`
-  top: 1.5rem;
-  display: inline-block;
-  position: absolute;
+  margin-top: 1.5rem;
+  display: flex;
   right: 0;
-  text-align: right;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;

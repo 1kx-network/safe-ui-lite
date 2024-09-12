@@ -33,5 +33,5 @@ export const TitleStyled = styled('div')(
 
 export const styledPaper = {
   border: `1px solid ${themeMuiBase.palette.grey}`,
-  backgroundColor: themeMuiBase.palette.white,
+  backgroundColor: 'rgba(0, 0, 0, 0.2)',
 };

@@ -24,17 +24,18 @@ const commonStyles = `
 
 export const TotalyBoxStyled = styled('div')(
   ({ theme }) => `
-      ${commonStyles}
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid ${theme.palette.tetriaryLightGrey};
+      padding-bottom: ${theme.spacing(4)};
+      margin-bottom: ${theme.spacing(4)};
   `
 );
 
 export const ButtonsGridStyled = styled('div')(
   ({ theme }) => `
-      ${commonStyles}
+      margin: ${theme.spacing(4)} 0;
       display: flex;
       justify-content: space-between;
       gap: ${theme.spacing(3)};
@@ -49,16 +50,15 @@ export const customStyleModal = {
 
 export const BoxOwnerLinkStyled = styled('div')(
   ({ theme }) => `
-     ${commonStyles}
      display: flex;
      gap: ${theme.spacing(3)};
      align-items: center;
+     margin: 2.5rem 0px 0px;
     `
 );
 
 export const OwnerLinkStyled = styled('div')(
   ({ theme }) => `
-      ${commonStyles}
       display: flex;
       align-items: center;
       padding: ${theme.spacing(4.75)} ${theme.spacing(4.5)};
@@ -83,7 +83,6 @@ export const OpenInNewIconStyled = styled(OpenInNewIcon)(
 
 export const LinkOpenInNewIconStyled = styled(Link)(
   () => `
-   ${commonStyles}
    display: flex;
    align-items: center;
    width: 1.438rem;

@@ -35,4 +35,5 @@ export const styledBtn = {
   width: '33%',
   maxWidth: '100px',
   minWidth: '50px',
+  color: 'rgba(255, 255, 255, 0.87)',
 };
