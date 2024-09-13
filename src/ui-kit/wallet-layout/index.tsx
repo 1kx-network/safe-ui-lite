@@ -5,7 +5,7 @@ import { Sidebar, UserInfoBar } from '@/components';
 import Loading from '@/assets/svg/loader.svg';
 import { Bubble } from '@/components/bubble';
 import { Footer } from '../../components/footer/footer';
-
+import Logo from '../../components/logo/logo';
 import { LayoutStyled, InfoUserStyled } from './wallet-layout.styles';
 
 interface IWalletLayoutProps {
@@ -33,7 +33,9 @@ export function WalletLayout({ children, hideSidebar }: IWalletLayoutProps) {
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', overflow: 'hidden' }}>
           {!hideSidebar && (
             <InfoUserStyled>
-              <Box sx={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>ZKSafe</Box>
+              <Box sx={{ fontSize: '24px', fontWeight: 'bold', color: 'white' }}>
+                <Logo />
+              </Box>
               <UserInfoBar />
             </InfoUserStyled>
           )}

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+
 import { Barlow } from 'next/font/google';
 import '../assets/styles/global-styles.scss';
 import { Toaster } from 'react-hot-toast';
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: 'ZKSafe',
   description:
     'zkSafe: A Safe module enabling anonymous transaction approvals for multisig users. Enhances privacy by verifying required signatures without revealing signer identities.',
-  icons: ['https://uxwing.com/wp-content/themes/uxwing/download/hand-gestures/good-icon.png'],
+  icons: ['/images/shape.svg'],
 };
 
 export default function RootLayout({

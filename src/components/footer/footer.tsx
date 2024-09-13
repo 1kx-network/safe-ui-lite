@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Box } from '@mui/system';
+import { FaGithub, FaLinkedin, FaSquareXTwitter } from 'react-icons/fa6';
 
 const textColor = 'rgba(255, 255, 255, 0.87)';
 
@@ -11,15 +12,19 @@ export function Footer() {
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: '8px 0',
-        background: 'rgba(0, 0, 0, 0.2)', // Change this line
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        background: 'rgba(0, 0, 0, 0.2)',
         flexShrink: 0,
-        position: 'relative', // Add this line
-        zIndex: 1, // Add this line
+        position: 'relative',
+        zIndex: 1,
       }}
     >
-      <Box color={textColor} sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ flex: 1 }} /> {/* Spacer */}
+      <Box
+        color={textColor}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}
+      >
         Built for the community by{' '}
         <Link
           href="https://1kx.capital"
@@ -38,6 +43,59 @@ export function Footer() {
             />
           </svg>
         </Link>
+      </Box>
+      <Box
+        id="footer-info"
+        sx={{ color: 'white', display: 'flex', gap: 2, flex: 1, flexDirection: 'column' }}
+      >
+        <Box
+          id="footer-icons"
+          sx={{ color: 'white', display: 'flex', gap: 2, flex: 1, justifyContent: 'flex-end' }}
+        >
+          <Link
+            href="https://github.com/1kx-network/zksafe"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit' }}
+          >
+            <FaGithub />
+          </Link>
+          <Link
+            href="https://www.linkedin.com/company/1kxnetwork"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit' }}
+          >
+            <FaLinkedin />
+          </Link>
+          <Link
+            href="https://x.com/1kxnetwork"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit' }}
+          >
+            <FaSquareXTwitter />
+          </Link>
+        </Box>
+        <Box
+          sx={{
+            fontSize: 12,
+            color: 'white',
+            display: 'flex',
+            gap: 2,
+            flex: 1,
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Link
+            href="https://github.com/1kx-network/zksafe?tab=Apache-2.0-1-ov-file#readme"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'inherit' }}
+          >
+            License Info
+          </Link>
+        </Box>
       </Box>
     </Box>
   );

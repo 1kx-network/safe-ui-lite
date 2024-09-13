@@ -53,6 +53,7 @@ import {
   ItemMenuStyled2,
 } from './sidebar.styles';
 import { dataUserMock, menuList } from './fixtures';
+import Shape from '../shape/shape';
 
 interface ISidebar {
   icon?: string;
@@ -285,7 +286,9 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     <WrapperStyled>
       <BodyMainInfoStyled>
         <InfoUserStyled suppressHydrationWarning>
-          <ImgUserStyled src={icon} alt="avatar" width={44} height={44} />
+          <Box sx={{ marginRight: 4 }}>
+            <Shape />
+          </Box>
 
           <Box sx={boxStyleInfoUser}>
             <Box sx={boxStyleInfoUserAddress}>

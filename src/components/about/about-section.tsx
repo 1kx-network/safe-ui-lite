@@ -21,7 +21,7 @@ export default function AboutSection() {
               identities, enhancing privacy for multisig users.
             </WalletTypography>
             <WalletTypography color={textColor}>
-              zkSafe enables Safe owners to sign transactions together while keeping individual
+              This module enables Safe owners to sign transactions together while keeping individual
               signers anonymous. The module only verifies:
             </WalletTypography>
             <Box component="ul" color={textColor} sx={{ pl: 4 }}>
@@ -33,20 +33,17 @@ export default function AboutSection() {
               With a valid proof accompanying a transaction, the zkSafe module can execute it
               securely.
             </WalletTypography>
-            <Box display={'flex'} gap={2}>
+            <WalletTypography color={textColor}>
               <Link
-                href="https://blog.example.com/zksafe"
-                style={{ color: themeMuiBase.palette.blue }}
+                href="https://github.com/1kx-network/zksafe"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#007bff', textDecoration: 'underline' }}
               >
-                Read Blog Post
-              </Link>
-              <Link
-                href="https://github.com/example/zksafe"
-                style={{ color: themeMuiBase.palette.blue }}
-              >
-                Visit GitHub
-              </Link>
-            </Box>
+                Visit our GitHub page
+              </Link>{' '}
+              for the latest specs, license, audit, and usage information.
+            </WalletTypography>
           </Box>
         </WalletPaper>
       </ItemStepPaperStyled>
