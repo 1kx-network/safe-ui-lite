@@ -11,6 +11,7 @@ import IconImport from '@/assets/svg/import.svg';
 import IconExport from '@/assets/svg/export.svg';
 import useAddressBookStore from '@/stores/address-book-store';
 import { getAddressBook } from '@/db/get-info';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 import { TableAddressBook } from './components/table/table';
 import { WrapperStyled, styledBtn, InputStyled, BoxSearchStyled } from './address-book.styles';
@@ -45,7 +46,7 @@ export default function AddressBoook() {
     if (chainId) {
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
-        setLinkOnScan(linkOnScan);
+        setLinkOnScan(cleanUrl(linkOnScan));
       }
     }
   }, [chainId]);

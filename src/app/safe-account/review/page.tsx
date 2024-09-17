@@ -26,6 +26,7 @@ import {
   OwnerListStyled,
   WarningStyled,
 } from './review.styles';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 export default function CreatePageAccount() {
   const { owners, needConfirmOwner, setClearOwners } = useActiveOwnerStore();
@@ -49,7 +50,7 @@ export default function CreatePageAccount() {
     }
 
     if (chosenNetwork) {
-      setLinkOnScan(chosenNetwork.explorerUrl ?? '');
+      setLinkOnScan(chosenNetwork.explorerUrl ? cleanUrl(chosenNetwork.explorerUrl) : '');
     }
   }, [chainId, owners]);
 

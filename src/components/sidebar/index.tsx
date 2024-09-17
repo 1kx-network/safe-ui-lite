@@ -17,6 +17,7 @@ import { CustomModal, customToasty } from '..';
 import { useOwnerList } from '@/queries/safe-accounts';
 import { formattedLabel, updateAddressSafe } from '@/utils/formatters';
 import { formatterIcon } from '@/utils/icon-formatter';
+import { cleanUrl } from '@/utils/updateLinkScan';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { networks } from '@/context/networks';
 import useSafeStore from '@/stores/safe-store';
@@ -297,7 +298,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
               </WalletTypography>
               {safeAddress && (
                 <Box display={'flex'} alignItems={'center'}>
-                  <Link href={`${linkOnScan}/address/${safeAddress}`} target="_blank">
+                  <Link href={`${cleanUrl(linkOnScan)}address/${safeAddress}`} target="_blank">
                     <OpenInNewIcon width="14px" height="14px" />
                   </Link>
                   <CopyIconStyled onClick={handleCopyAddress} />

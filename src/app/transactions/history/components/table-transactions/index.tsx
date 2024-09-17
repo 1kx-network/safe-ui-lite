@@ -9,6 +9,7 @@ import useTransactionsStore from '@/stores/transactions-store';
 import { themeMuiBase } from '@/assets/styles/theme-mui';
 import { getTransactionsDB } from '@/db/get-info';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 import {
   HeaderListStyled,
@@ -33,7 +34,7 @@ export const TableTransaction = ({ smallType }: ITableTransaction) => {
     if (chainId && safeAddress) {
       const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
       if (linkOnScan) {
-        setLinkOnScan(linkOnScan);
+        setLinkOnScan(cleanUrl(linkOnScan));
       }
 
       (async () => {

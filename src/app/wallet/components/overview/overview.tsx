@@ -19,6 +19,7 @@ import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 import { formatterIcon } from '@/utils/icon-formatter';
 import useNetworkStore from '@/stores/networks-store';
 import { IOptionNetwork } from '@/constants/networks';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 import {
   TotalyBoxStyled,
@@ -106,7 +107,7 @@ export const Overview = () => {
       network && setValue(network.currency);
 
       if (linkOnScan) {
-        const updateLink = `${linkOnScan}/address/${safeAddress}`;
+        const updateLink = `${cleanUrl(linkOnScan)}/address/${safeAddress}`;
         setLinkOnScan(updateLink);
       }
     }

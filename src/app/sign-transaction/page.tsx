@@ -50,6 +50,7 @@ import {
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sign-trx-info';
 import { IBatchTr } from './tr-builder';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -184,7 +185,7 @@ const SignTransactionComponent = () => {
   }, [safeSdk, safeAddress]);
 
   useEffect(() => {
-    if (userNetwork.explorerUrl) setLinkOnScan(userNetwork.explorerUrl);
+    if (userNetwork.explorerUrl) setLinkOnScan(cleanUrl(userNetwork.explorerUrl));
 
     if (signatures && signers) {
       if (signedCount !== signatures.split(',').length) {

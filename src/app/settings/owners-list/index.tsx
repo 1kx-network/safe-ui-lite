@@ -20,6 +20,7 @@ import useSafeStore from '@/stores/safe-store';
 import { TYPE_SIGN_TRX } from '@/constants/type-sign';
 import routes from '@/app/routes';
 import useNetworkStore from '@/stores/networks-store';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 import {
   BoxStyled,
@@ -84,7 +85,7 @@ export const SettingsOwner = () => {
       if (chainId) {
         const linkOnScan = networks.find(elem => elem.chainId === chainId)?.explorerUrl;
         if (linkOnScan) {
-          const updateLink = linkOnScan;
+          const updateLink = cleanUrl(linkOnScan);
           setLinkOnScan(updateLink);
         }
       }

@@ -47,6 +47,7 @@ import {
   styledSecondaryBtn,
 } from './sign-message.styles';
 import { SignMessageInfo } from './sign-msg-info';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 const SignMessageComponent = () => {
   const router = useRouter();
@@ -153,7 +154,7 @@ const SignMessageComponent = () => {
     if (chainIdUrl) {
       const linkOnScan = networks?.find(elem => elem.chainId === +chainIdUrl)?.explorerUrl;
       if (linkOnScan) {
-        setLinkOnScan(linkOnScan);
+        setLinkOnScan(cleanUrl(linkOnScan));
       }
     }
 
