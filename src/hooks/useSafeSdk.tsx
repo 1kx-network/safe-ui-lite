@@ -82,7 +82,7 @@ export function useSafeSdk(safeAddress: string | null = null) {
       if (error.includes('Create2') || error.includes('reverted')) {
         customToasty(
           `A similar account has already been created. Error with deploy new safe account.`,
-          'error',
+          'error'
         );
       } else {
         customToasty('Error with deploy new safe account', 'error');
