@@ -133,9 +133,6 @@ export default function CreatePageAccount() {
       customToasty(
         'Please check the correctness of the address or check that you are the owner this account',
         'error',
-        {
-          duration: 5000,
-        }
       );
       setIsLoading(false);
     } else {

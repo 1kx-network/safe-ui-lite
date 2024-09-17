@@ -83,10 +83,9 @@ export function useSafeSdk(safeAddress: string | null = null) {
         customToasty(
           `A similar account has already been created. Error with deploy new safe account.`,
           'error',
-          { duration: 4000 }
         );
       } else {
-        customToasty('Error with deploy new safe account', 'error', { duration: 4000 });
+        customToasty('Error with deploy new safe account', 'error');
         console.error(`<-- ${error} -->`);
         setClearActiveSafeStore();
       }

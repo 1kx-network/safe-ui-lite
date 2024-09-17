@@ -56,7 +56,7 @@ export const TableAddressBook = ({
   const handleRemoveAddress = (address: string) => {
     removeAddressBook(address);
     customToasty('Addres was remove', 'success', {
-      duration: 1500,
+      duration: 3500,
     });
   };
 
