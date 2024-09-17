@@ -21,6 +21,7 @@ import abi from '../../../app/contracts/abi/zkSafeModule.json';
 import abiSafe from '../../../app/contracts/abi/safe.json';
 
 import { WrapperStyled } from './proof.styles';
+import { Box } from '@mui/system';
 
 interface IproofComponent {
   threshold: number;
@@ -197,7 +198,7 @@ export default function Proof({
         variant={'outlined'}
         styles={
           !!proofState
-            ? { ...styledBtn, backgroundColor: 'blue', color: 'white', cursor: 'not-allowed' }
+            ? { ...styledBtn, backgroundColor: 'green', color: 'white', cursor: 'not-allowed' }
             : styledBtn
         }
         onClick={proof}
@@ -206,7 +207,7 @@ export default function Proof({
       </WalletButton>
 
       {!!proofState && (
-        <>
+        <Box>
           <h2>How to execute proof:</h2>
           <li>
             Step 1:{' '}
@@ -222,9 +223,13 @@ export default function Proof({
               <> ✅ Proof is verified. </>
             )}
           </li>
-          <li>
+          <li style={{ color: 'white' }}>
             Step 2: Go to{' '}
-            <a target="_blank" href="/execute-transaction">
+            <a
+              target="_blank"
+              href="/execute-transaction"
+              style={{ color: 'white', textDecoration: 'none' }}
+            >
               {window.location.origin}/execute-transaction
             </a>
           </li>
@@ -232,7 +237,7 @@ export default function Proof({
             Step 3: <button onClick={copy}>Copy</button> this call data and paste into
             /execute-transaction page
           </li>
-        </>
+        </Box>
       )}
     </WrapperStyled>
   );

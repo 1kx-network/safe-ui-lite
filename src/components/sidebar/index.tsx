@@ -364,8 +364,9 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
         widthoutPaper
       >
         <InfoUserStyled>
-          <ImgUserStyled src={icon} alt="avatar" width={44} height={44} />
-
+          <Box sx={{ marginRight: 4 }}>
+            <Shape />
+          </Box>
           <Box sx={boxStyleInfoUser}>
             <WalletTypography fontSize={12} fontWeight={400} style={{ marginBottom: 2 }}>
               {headerAddress()}
@@ -424,13 +425,6 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
                 </WalletTypography>
               </BoxAccountActionStyled>
             </Link>
-
-            {/* <BoxAccountActionStyled onClick={() => setIsOpenShareModal(true)}>
-              <IconPlus width="17px" height="17px" color={themeMuiBase.palette.success} />
-              <WalletTypography fontSize={14} fontWeight={500}>
-                Share your account
-              </WalletTypography>
-            </BoxAccountActionStyled> */}
           </Box>
         </AccountWrapperStyled>
       </CustomModal>

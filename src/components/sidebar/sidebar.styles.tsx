@@ -65,6 +65,10 @@ export const InfoUserStyled = styled('div')(
   align-items: center;
   padding: ${theme.spacing(2.5, 3.5)};
   background-color: rgba(0, 0, 0, 0.4);
+  border-bottom: 0.5px solid rgba(122, 199, 240, 0.4);
+  border-radius: 25px 25px 0 0;
+  min-width: 326px;
+  width: 326px;
 `
 );
 
@@ -187,11 +191,14 @@ export const IconOpenAccountsStyled = styled('div')(
 export const AccountWrapperStyled = styled('div')(
   ({ theme }) => `
   ${commonStyles}
+  min-width: 326px;
+  width: 326px;
   backdrop-filter: blur(25px);
   padding: ${theme.spacing(5)};
   border-radius: 25px;
   border: 0.5px solid rgba(122, 199, 240, 0.4);
   height: calc(100% - 60px);
+  border-radius: 0 0 25px 25px;
   overflow: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -207,16 +214,12 @@ export const ItemAccountStyled = styled('div')(
   align-items: center;
   justify-content: space-between;
   padding: ${theme.spacing(3.5)} 0;
-  border-bottom: 0.5px solid rgba(122, 199, 240, 0.4);
   cursor: pointer;
   background-color: transparent;
   border-radius: 0;
   margin-top: 0;
   box-shadow: none;
-
-  &:last-child {
-    border-bottom: 0.5px solid transparent;
-  }
+  border: 0;
 `
 );
 
