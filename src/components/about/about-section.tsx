@@ -1,8 +1,9 @@
 import React from 'react';
 import { Box } from '@mui/system';
+import Link from 'next/link';
+
 import { WalletPaper, WalletTypography } from '@/ui-kit';
 import { ItemStepPaperStyled } from '../../app/home.styles';
-import Link from 'next/link';
 import { themeMuiBase } from '../../assets/styles/theme-mui';
 
 const textColor = 'rgba(255, 255, 255, 0.87)';

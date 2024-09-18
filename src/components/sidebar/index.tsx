@@ -28,6 +28,7 @@ import { useNetwork } from '@/hooks/useNetwork';
 import { getNetworksDB } from '@/db/get-info';
 import { TYPE_IMPORT } from '@/constants/types';
 import { setDataDB } from '@/db/set-info';
+import Shape from '../shape/shape';
 
 import {
   MenuStyled,
@@ -54,7 +55,6 @@ import {
   ItemMenuStyled2,
 } from './sidebar.styles';
 import { dataUserMock, menuList } from './fixtures';
-import Shape from '../shape/shape';
 
 interface ISidebar {
   icon?: string;

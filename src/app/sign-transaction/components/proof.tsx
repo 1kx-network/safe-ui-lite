@@ -5,6 +5,7 @@ import { BarretenbergBackend } from '@noir-lang/backend_barretenberg';
 import { usePublicClient, useReadContract } from 'wagmi';
 import { encodeFunctionData, toHex } from 'viem';
 import EthSafeTransaction from '@safe-global/protocol-kit/dist/src/utils/transactions/SafeTransaction';
+import { Box } from '@mui/system';
 
 import circuit from '../../../constants/circut.json'; // Adjust the path as necessary
 import {
@@ -21,7 +22,6 @@ import abi from '../../../app/contracts/abi/zkSafeModule.json';
 import abiSafe from '../../../app/contracts/abi/safe.json';
 
 import { WrapperStyled } from './proof.styles';
-import { Box } from '@mui/system';
 
 interface IproofComponent {
   threshold: number;

@@ -6,6 +6,7 @@ import Loading from '@/assets/svg/loader.svg';
 import { Bubble } from '@/components/bubble';
 import { Footer } from '../../components/footer/footer';
 import Logo from '../../components/logo/logo';
+
 import { LayoutStyled, InfoUserStyled } from './wallet-layout.styles';
 
 interface IWalletLayoutProps {

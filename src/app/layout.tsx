@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-
 import { Barlow } from 'next/font/google';
 import '../assets/styles/global-styles.scss';
 import { Toaster } from 'react-hot-toast';

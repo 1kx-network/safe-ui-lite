@@ -17,6 +17,7 @@ import useActiveOwnerStore from '@/stores/active-owners-store';
 import { CustomModal, customToasty } from '@/components';
 import IconInfo from '@/assets/svg/infoIcon.svg';
 import useNetworkStore from '@/stores/networks-store';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 import {
   CopyIconStyled,
@@ -26,7 +27,6 @@ import {
   OwnerListStyled,
   WarningStyled,
 } from './review.styles';
-import { cleanUrl } from '@/utils/updateLinkScan';
 
 export default function CreatePageAccount() {
   const { owners, needConfirmOwner, setClearOwners } = useActiveOwnerStore();

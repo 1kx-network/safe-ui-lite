@@ -6,11 +6,11 @@ import { WalletLayout } from '@/ui-kit';
 import { CreateTransactionWidget } from '@/components/widgets/create-transaction';
 import { GetStartedWidget } from '@/components/widgets/get-started';
 import useActiveSafeAddress from '@/stores/safe-address-store';
+import AboutSection from '../components/about/about-section';
 
 import { WrapperStyled } from './home.styles';
 import routes from './routes';
 import AddModule from './add-module/add-module';
-import AboutSection from '../components/about/about-section';
 
 export default function Home() {
   const { address } = useWeb3ModalAccount();
