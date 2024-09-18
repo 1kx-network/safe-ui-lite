@@ -6,7 +6,7 @@ import {
   gnosis, // 100
   arbitrum, // 42161
   optimism, // 10
-  scroll,   // 534352
+  scroll, // 534352
   // sepolia, // 11155111
 } from '@wagmi/core/chains';
 
