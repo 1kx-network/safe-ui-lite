@@ -1,31 +1,24 @@
 import {
   mainnet, // 1
+  base, // 4222
   bsc, // 56
   polygon, // 137
   gnosis, // 100
-  // arbitrum, // 42161
+  arbitrum, // 42161
   optimism, // 10
-  celo, // 42220
-  avalanche, // 43114
-  aurora, // 1313161554
+  scroll,   // 534352
   // sepolia, // 11155111
-  bscTestnet, // 97
-  polygonMumbai, // 80001
 } from '@wagmi/core/chains';
 
 export const chains = [
   mainnet, // Error with adding a new network
-  // sepolia,
+  base,
   bsc,
   polygon,
   gnosis,
-  // arbitrum,
+  arbitrum,
   optimism,
-  celo,
-  avalanche,
-  aurora,
-  bscTestnet,
-  polygonMumbai,
+  scroll,
 ];
 
 export const networks = [
