@@ -33,6 +33,7 @@ import useNetworkStore from '@/stores/networks-store';
 import { useMessageMultySign } from '@/hooks/useMessageMultySign';
 import { WarningBoxStyled } from '../sign-transaction/sing-transaction.styles';
 import { optionsNetwork } from '@/constants/networks';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 import {
   BoxOwnerLinkStyled,
@@ -47,7 +48,6 @@ import {
   styledSecondaryBtn,
 } from './sign-message.styles';
 import { SignMessageInfo } from './sign-msg-info';
-import { cleanUrl } from '@/utils/updateLinkScan';
 
 const SignMessageComponent = () => {
   const router = useRouter();
@@ -297,7 +297,7 @@ const SignMessageComponent = () => {
             )}
           </GridButtonStyled>
 
-          {!isCustomRpc && userNetwork && (
+          {isCustomRpc && userNetwork && (
             <WarningBoxStyled style={{ marginTop: '1rem' }}>
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <IconWarning color={themeMuiBase.palette.warning} />

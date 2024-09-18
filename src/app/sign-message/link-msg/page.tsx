@@ -238,7 +238,7 @@ const NewSignTransactionComponent = () => {
     }
   }, [safeSdk, address, dataQuery.safeAddress]);
 
-  const onSubmit: SubmitHandler<any> = () => {};
+  const onSubmit: SubmitHandler<any> = () => { };
 
   const addNetworkForUserSign = async () => {
     if (!dataQuery.userNetworkTrx) return;
@@ -508,33 +508,33 @@ const NewSignTransactionComponent = () => {
 
                   {(TYPE_SIGN_TRX.ADD_OWNER === typeTrx ||
                     TYPE_SIGN_TRX.REMOVE_OWNER === typeTrx) && (
-                    <Box display={'flex'} alignItems={'center'} gap={2}>
-                      <Controller
-                        control={control}
-                        name="destinationAddress"
-                        render={({ field }) => (
-                          <Box width={'70%'}>
-                            <ItemInfoLabelStyled>{formattedName(typeTrx)}</ItemInfoLabelStyled>
-                            <ItemInfoStyled>{field.value}</ItemInfoStyled>
-                          </Box>
-                        )}
-                      />
+                      <Box display={'flex'} alignItems={'center'} gap={2}>
+                        <Controller
+                          control={control}
+                          name="destinationAddress"
+                          render={({ field }) => (
+                            <Box width={'70%'}>
+                              <ItemInfoLabelStyled>{formattedName(typeTrx)}</ItemInfoLabelStyled>
+                              <ItemInfoStyled>{field.value}</ItemInfoStyled>
+                            </Box>
+                          )}
+                        />
 
-                      <Controller
-                        control={control}
-                        name="networkName"
-                        render={({ field }) => (
-                          <Box display={'flex'} flexDirection={'column'} width="30%">
-                            <ItemInfoLabelStyled>Network</ItemInfoLabelStyled>
-                            <ItemInfoStyled>
-                              {field.value && formatterIcon(chainIdUrl ? +chainIdUrl : 0)}
-                              {field.value}
-                            </ItemInfoStyled>
-                          </Box>
-                        )}
-                      />
-                    </Box>
-                  )}
+                        <Controller
+                          control={control}
+                          name="networkName"
+                          render={({ field }) => (
+                            <Box display={'flex'} flexDirection={'column'} width="30%">
+                              <ItemInfoLabelStyled>Network</ItemInfoLabelStyled>
+                              <ItemInfoStyled>
+                                {field.value && formatterIcon(chainIdUrl ? +chainIdUrl : 0)}
+                                {field.value}
+                              </ItemInfoStyled>
+                            </Box>
+                          )}
+                        />
+                      </Box>
+                    )}
 
                   <Box width={'60%'} display={'flex'} flexDirection={'column'}>
                     <ItemInfoLabelStyled>Signers</ItemInfoLabelStyled>
@@ -583,7 +583,7 @@ const NewSignTransactionComponent = () => {
             </>
           )}
 
-          {!isCustomRpc && userNetwork && (
+          {isCustomRpc && userNetwork && (
             <WarningBoxStyled style={{ marginTop: '1rem' }}>
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <IconWarning color={themeMuiBase.palette.warning} />

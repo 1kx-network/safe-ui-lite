@@ -34,6 +34,7 @@ import { parseSearchParams } from '@/utils/helpers';
 import useActiveSafeAddress from '@/stores/safe-address-store';
 import { useSafeSdk } from '@/hooks/useSafeSdk';
 import { optionsNetwork } from '@/constants/networks';
+import { cleanUrl } from '@/utils/updateLinkScan';
 
 import Proof from './components/proof';
 import {
@@ -50,7 +51,6 @@ import {
 } from './sing-transaction.styles';
 import { SignTransactionInfo } from './sign-trx-info';
 import { IBatchTr } from './tr-builder';
-import { cleanUrl } from '@/utils/updateLinkScan';
 
 const SignTransactionComponent = () => {
   const router = useRouter();
@@ -377,7 +377,7 @@ const SignTransactionComponent = () => {
             )}
           </GridButtonStyled>
 
-          {!isCustomRpc && userNetwork && (
+          {isCustomRpc && userNetwork && (
             <WarningBoxStyled>
               <Box display={'flex'} alignItems={'center'} gap={1}>
                 <IconWarning color={themeMuiBase.palette.warning} />
