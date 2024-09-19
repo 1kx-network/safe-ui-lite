@@ -2,7 +2,17 @@
 import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 import { useEffect } from 'react';
 import { http, createConfig, WagmiProvider } from 'wagmi';
-import { mainnet as mViem, sepolia as sViem } from 'wagmi/chains';
+import {
+  arbitrum,
+  base,
+  bsc,
+  gnosis,
+  mainnet as mViem,
+  optimism,
+  polygon,
+  scroll,
+  sepolia as sViem,
+} from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import useActiveSafeAddress from '@/stores/safe-address-store';
@@ -31,12 +41,20 @@ createWeb3Modal({
 });
 
 const config = createConfig({
-  chains: [mViem, sViem],
+  chains: [mViem, sViem, base, bsc, polygon, gnosis, optimism, scroll, arbitrum],
   transports: {
     [mViem.id]: http('https://cloudflare-eth.com'),
     [sViem.id]: http('https://ethereum-sepolia-rpc.publicnode.com'),
+    [bsc.id]: http('https://binance.llamarpc.com'),
+    [base.id]: http('https://base.llamarpc.com'),
+    [polygon.id]: http('https://polygon.llamarpc.com'),
+    [gnosis.id]: http('https://gnosis-rpc.publicnode.com'),
+    [optimism.id]: http('https://optimism.llamarpc.com'),
+    [arbitrum.id]: http('https://arbitrum.llamarpc.com'),
+    [scroll.id]: http('https://1rpc.io/scroll'),
   },
 });
+
 const queryClient = new QueryClient();
 
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
