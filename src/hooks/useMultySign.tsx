@@ -455,11 +455,6 @@ export function useMultySign({
       const shortMessage =
         (error as { shortMessage?: string }).shortMessage ?? message ?? 'Execute error';
 
-      if (message.includes('-32603')) {
-        customToasty('Transaction has already been executed', 'error');
-        return error;
-      }
-
       customToasty(shortMessage, 'error');
       console.error(`1- <-- ${error} -->`);
       return error;
