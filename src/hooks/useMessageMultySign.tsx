@@ -287,10 +287,6 @@ export function useMessageMultySign({
     } catch (error) {
       checkSignedStatus();
       const message = (error as { message: string }).message;
-      if (message.includes('-32603')) {
-        customToasty('Transaction has already been executed', 'error');
-        return error;
-      }
       customToasty(message, 'error');
       console.error(`<-- ${error} -->`);
       return error;

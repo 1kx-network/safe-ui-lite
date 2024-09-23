@@ -112,7 +112,7 @@ export default function AddModule() {
 
   if (!safeAddress) return null;
 
-  if (isError) return <div>Error loading module status</div>;
+  if (isError) return <Box color="white">Error loading module status</Box>;
 
   return (
     <Box marginTop="16px">
