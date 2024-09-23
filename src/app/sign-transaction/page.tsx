@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   useSwitchNetwork,
@@ -297,7 +297,14 @@ const SignTransactionComponent = () => {
     buttonText = 'Sign again';
   }
 
-  const isCustomRpc = userNetwork && !optionsNetwork.some(elem => elem.rpc === userNetwork.rpcUrl);
+  const isCustomRpc = useMemo(
+    () =>
+      userNetwork &&
+      !optionsNetwork.some(
+        elem => elem.rpc === userNetwork.rpcUrl ?? userNetwork.publicRpcUri.value
+      ),
+    [userNetwork, optionsNetwork]
+  );
 
   return (
     <WalletLayout>

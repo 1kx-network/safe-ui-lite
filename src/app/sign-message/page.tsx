@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   useSwitchNetwork,
@@ -211,8 +211,12 @@ const SignMessageComponent = () => {
   const userNetwork = userNetworkTrxUrl && JSON.parse(userNetworkTrxUrl);
   const userNetworkUri = userNetwork.rpcUri.value;
 
-  const isCustomRpc =
-    userNetwork && !optionsNetwork.some(elem => elem.rpc === userNetworkUri || userNetwork.rpcUrl);
+  const isCustomRpc = useMemo(
+    () =>
+      userNetwork &&
+      !optionsNetwork.some(elem => elem.rpc === userNetwork.rpcUrl ?? userNetworkUri),
+    [userNetwork, optionsNetwork]
+  );
 
   return (
     <WalletLayout hideSidebar>

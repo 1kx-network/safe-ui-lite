@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, Suspense, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import * as ethers from 'ethers';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -376,9 +376,15 @@ const NewSignTransactionComponent = () => {
     reset(defaultDataQuery);
   };
 
-  const userNetwork = dataQuery.userNetworkTrx;
-  const isCustomRpc =
-    userNetwork && !optionsNetwork.some(elem => elem.rpc === JSON.parse(userNetwork).rpcUrl);
+  const userNetwork = dataQuery.userNetworkTrx && JSON.parse(dataQuery.userNetworkTrx);
+  const userNetworkUri = userNetwork.rpcUri.value;
+
+  const isCustomRpc = useMemo(
+    () =>
+      userNetwork &&
+      !optionsNetwork.some(elem => elem.rpc === userNetwork.rpcUrl ?? userNetworkUri),
+    [userNetwork, optionsNetwork]
+  );
 
   return (
     <WalletLayout hideSidebar>

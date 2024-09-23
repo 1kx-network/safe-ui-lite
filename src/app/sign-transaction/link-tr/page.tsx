@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, Suspense, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import * as ethers from 'ethers';
 import { Box } from '@mui/system';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -434,9 +434,14 @@ const NewSignTransactionComponent = () => {
     TYPE_SIGN_TRX.TR_BUILD !== typeTrx;
 
   const userNetworkInfo = dataQuery.userNetworkTrx;
-  const isCustomRpc =
-    dataQuery.userNetworkTrx &&
-    !optionsNetwork.some(elem => elem.rpc === dataQuery.userNetworkTrx.rpcUrl);
+  const isCustomRpc = useMemo(
+    () =>
+      userNetworkInfo &&
+      !optionsNetwork.some(
+        elem => elem.rpc === userNetworkInfo.rpcUrl ?? userNetworkInfo.publicRpcUri.value
+      ),
+    [userNetworkInfo, optionsNetwork]
+  );
 
   return (
     <WalletLayout>
