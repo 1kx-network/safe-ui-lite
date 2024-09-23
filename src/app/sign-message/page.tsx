@@ -212,7 +212,7 @@ const SignMessageComponent = () => {
   const userNetworkUri = userNetwork.rpcUri.value;
 
   const isCustomRpc =
-    userNetwork && optionsNetwork.find(elem => elem.rpc === userNetworkUri || userNetwork.rpcUrl);
+    userNetwork && !optionsNetwork.some(elem => elem.rpc === userNetworkUri || userNetwork.rpcUrl);
 
   return (
     <WalletLayout hideSidebar>

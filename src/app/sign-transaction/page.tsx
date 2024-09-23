@@ -297,7 +297,7 @@ const SignTransactionComponent = () => {
     buttonText = 'Sign again';
   }
 
-  const isCustomRpc = userNetwork && optionsNetwork.find(elem => elem.rpc === userNetwork.rpcUrl);
+  const isCustomRpc = userNetwork && !optionsNetwork.some(elem => elem.rpc === userNetwork.rpcUrl);
 
   return (
     <WalletLayout>

@@ -435,7 +435,7 @@ const NewSignTransactionComponent = () => {
   const userNetworkInfo = dataQuery.userNetworkTrx;
   const isCustomRpc =
     dataQuery.userNetworkTrx &&
-    optionsNetwork.find(elem => elem.rpc === dataQuery.userNetworkTrx.rpcUrl);
+    !optionsNetwork.some(elem => elem.rpc === dataQuery.userNetworkTrx.rpcUrl);
 
   return (
     <WalletLayout>
