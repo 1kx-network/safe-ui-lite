@@ -9,6 +9,12 @@ export interface INetworkDB {
   currency: string;
   explorerUrl: string;
   rpcUrl: string;
+  rpcUri?: {
+    value: string;
+  };
+  publicRpcUri?: {
+    value: string;
+  };
   symbol: string;
   decimals: number;
   chainId: number;

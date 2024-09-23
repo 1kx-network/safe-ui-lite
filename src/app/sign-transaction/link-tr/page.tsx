@@ -297,7 +297,8 @@ const NewSignTransactionComponent = () => {
   const addNetworkForUserSign = async () => {
     if (!dataQuery.userNetworkTrx) return;
     const userNetwork = dataQuery.userNetworkTrx as INetworkDB;
-    const existingNetwork = networks.find(network => network.rpcUrl === userNetwork.rpcUrl);
+    const rpc = userNetwork.rpcUrl ?? userNetwork.publicRpcUri?.value;
+    const existingNetwork = networks.find(network => network.rpcUrl === rpc);
 
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
@@ -321,7 +322,7 @@ const NewSignTransactionComponent = () => {
             symbol: userNetwork.symbol,
             decimals: userNetwork.decimals,
           },
-          rpcUrls: [userNetwork.rpcUrl],
+          rpcUrls: [rpc],
           blockExplorerUrls: [userNetwork.explorerUrl],
         },
       });

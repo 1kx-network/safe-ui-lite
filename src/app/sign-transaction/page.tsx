@@ -119,8 +119,8 @@ const SignTransactionComponent = () => {
   };
 
   const addNetworkForUserSign = async () => {
-    const existingNetwork =
-      networks && networks.find(network => network.rpc === userNetwork.rpcUrl);
+    const rpc = userNetwork.rpcUrl ?? userNetwork.publicRpcUri?.value;
+    const existingNetwork = networks && networks.find(network => network.rpc === rpc);
     const decimalChainId = ethers.toBeHex(userNetwork.chainId);
 
     if (!existingNetwork) {
@@ -128,7 +128,7 @@ const SignTransactionComponent = () => {
         chainId: userNetwork.chainId,
         label: userNetwork.name,
         value: userNetwork.name,
-        rpc: userNetwork.rpcUrl,
+        rpc: rpc,
         currency: userNetwork.currency ?? userNetwork.name,
       });
 
@@ -153,7 +153,7 @@ const SignTransactionComponent = () => {
             symbol: userNetwork.symbol,
             decimals: userNetwork.decimals,
           },
-          rpcUrls: [userNetwork.rpcUrl],
+          rpcUrls: [rpc],
           blockExplorerUrls: [userNetwork.explorerUrl],
         },
       });
