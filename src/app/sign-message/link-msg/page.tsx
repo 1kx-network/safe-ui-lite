@@ -382,7 +382,9 @@ const NewSignTransactionComponent = () => {
   const isCustomRpc = useMemo(
     () =>
       userNetwork &&
-      !optionsNetwork.some(elem => elem.rpc === userNetwork.rpcUrl ?? userNetworkUri),
+      !optionsNetwork.some(
+        elem => elem.rpc === (userNetwork.rpcUrl !== '' ? userNetwork.rpcUrl : userNetworkUri)
+      ),
     [userNetwork, optionsNetwork]
   );
 
