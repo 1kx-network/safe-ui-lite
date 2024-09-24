@@ -438,7 +438,11 @@ const NewSignTransactionComponent = () => {
     () =>
       userNetworkInfo &&
       !optionsNetwork.some(
-        elem => elem.rpc === userNetworkInfo.rpcUrl ?? userNetworkInfo.publicRpcUri.value
+        elem =>
+          elem.rpc ===
+          (userNetworkInfo.rpcUrl !== ''
+            ? userNetworkInfo.rpcUrl
+            : userNetworkInfo.publicRpcUri.value)
       ),
     [userNetworkInfo, optionsNetwork]
   );
