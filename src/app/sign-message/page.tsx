@@ -209,7 +209,7 @@ const SignMessageComponent = () => {
 
   // need work with opensea platform
   const userNetwork = userNetworkTrxUrl && JSON.parse(userNetworkTrxUrl);
-  const userNetworkUri = userNetwork.rpcUri.value;
+  const userNetworkUri = userNetwork?.rpcUri.value;
 
   const isCustomRpc = useMemo(
     () =>
