@@ -391,7 +391,7 @@ const SignTransactionComponent = () => {
                 <WalletTypography fontWeight={500}>You are using custom Safe RPC</WalletTypography>
               </Box>
               <WalletTypography fontSize={14} fontWeight={500} style={{ paddingLeft: '26px' }}>
-                Safe RPC: {userNetwork.rpcUrl}
+                Safe RPC: {userNetwork.rpcUrl ?? userNetwork.publicRpcUri.value}
               </WalletTypography>
             </WarningBoxStyled>
           )}
