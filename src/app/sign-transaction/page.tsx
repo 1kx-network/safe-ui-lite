@@ -301,7 +301,9 @@ const SignTransactionComponent = () => {
     () =>
       userNetwork &&
       !optionsNetwork.some(
-        elem => elem.rpc === userNetwork.rpcUrl ?? userNetwork.publicRpcUri.value
+        elem =>
+          elem.rpc ===
+          (userNetwork.rpcUrl !== '' ? userNetwork.rpcUrl : userNetwork.publicRpcUri.value)
       ),
     [userNetwork, optionsNetwork]
   );
