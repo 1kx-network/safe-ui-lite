@@ -55,7 +55,8 @@ export class DeviceShareRecovery {
 
     // Remove from local storage
     const metadata = this.mpcCoreKit.tKey.getMetadata();
-    const tkeyPubX = metadata.pubKey.x.toString(16, 64);
+    //@ts-ignore
+    const tkeyPubX = metadata?.pubKey?.x?.toString(16, 64);
     const currentStorage = BrowserStorage.getInstance('mpc_corekit_store');
     currentStorage.remove(tkeyPubX);
   }
