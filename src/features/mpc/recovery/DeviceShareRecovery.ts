@@ -58,6 +58,8 @@ export class DeviceShareRecovery {
     //@ts-ignore
     const tkeyPubX = metadata?.pubKey?.x?.toString(16, 64);
     const currentStorage = BrowserStorage.getInstance('mpc_corekit_store');
-    currentStorage.remove(tkeyPubX);
+    if (tkeyPubX) {
+      currentStorage.remove(tkeyPubX);
+    }
   }
 }
