@@ -12,6 +12,7 @@ import {
   polygon,
   scroll,
   sepolia as sViem,
+  pulsechain,
 } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -41,7 +42,7 @@ createWeb3Modal({
 });
 
 const config = createConfig({
-  chains: [mViem, sViem, base, bsc, polygon, gnosis, optimism, scroll, arbitrum],
+  chains: [mViem, sViem, base, bsc, polygon, gnosis, optimism, scroll, arbitrum, pulsechain],
   transports: {
     [mViem.id]: http('https://cloudflare-eth.com'),
     [sViem.id]: http('https://ethereum-sepolia-rpc.publicnode.com'),
@@ -52,6 +53,7 @@ const config = createConfig({
     [optimism.id]: http('https://optimism.llamarpc.com'),
     [arbitrum.id]: http('https://arbitrum.llamarpc.com'),
     [scroll.id]: http('https://1rpc.io/scroll'),
+    [pulsechain.id]: http('https://rpc-pulsechain.g4mm4.io'),
   },
 });
 

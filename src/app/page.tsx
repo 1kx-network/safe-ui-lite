@@ -1,6 +1,5 @@
 'use client';
-import { useEffect } from 'react';
-import { useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 
 import { WalletLayout } from '@/ui-kit';
 import { CreateTransactionWidget } from '@/components/widgets/create-transaction';
