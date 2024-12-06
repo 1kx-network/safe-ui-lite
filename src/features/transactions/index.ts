@@ -3,7 +3,6 @@ import {
   getTransactionDetails,
   getTransactionHistory,
 } from '@safe-global/safe-gateway-typescript-sdk';
-//whatever
 export const getTimezoneOffset = () => new Date().getTimezoneOffset() * 60 * -1000;
 
 /**
@@ -30,7 +29,7 @@ export const getTxHistory = (
     chainId,
     safeAddress,
     {
-      timezone_offset: getTimezoneOffset(), // used for grouping txs by date
+      timezone: getTimezoneOffset().toString(), // used for grouping txs by date
       trusted, // if false, load all transactions, mark untrusted in the UI
     },
     pageUrl

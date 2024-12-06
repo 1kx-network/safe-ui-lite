@@ -55,6 +55,9 @@ export class DeviceShareRecovery {
 
     // Remove from local storage
     const metadata = this.mpcCoreKit.tKey.getMetadata();
+    if (!metadata.pubKey?.x) {
+      throw new Error('Public key not found in metadata');
+    }
     const tkeyPubX = metadata.pubKey.x.toString(16, 64);
     const currentStorage = BrowserStorage.getInstance('mpc_corekit_store');
     currentStorage.remove(tkeyPubX);
