@@ -25,7 +25,7 @@ import { NotificationMessages, showNotification } from './notifications';
 import { SafeWalletProvider } from '.';
 import type { AppInfo, WalletSDK } from '.';
 
-export const _useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK | undefined => {
+export const useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK | undefined => {
   const { safeSdk: safe } = useSafeStore();
   const setTxFlow = () => {};
 
@@ -264,7 +264,7 @@ const useSafeWalletProvider = (): SafeWalletProvider | undefined => {
   const { chainId } = useWeb3ModalAccount();
   const { safeAddress } = useActiveSafeAddress();
 
-  const txFlowApi = _useTxFlowApi(chainId ? chainId.toString() : '1', safeAddress ?? '');
+  const txFlowApi = useTxFlowApi(chainId ? chainId.toString() : '1', safeAddress ?? '');
 
   return useMemo(() => {
     if (!safeAddress || !chainId || !txFlowApi) return;
