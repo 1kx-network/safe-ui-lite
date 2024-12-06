@@ -29,6 +29,9 @@ const WcConnectionState = ({
           sx={{ mx: 2 }}
           className={classNames(css.dots, { [css.errorDots]: isDelete })}
           titleAccess="Connection state"
+          width="24"
+          height="24"
+          aria-label="Connection state"
         />
 
         <SafeAppIconCard src={icon} width={28} height={28} alt={`${name} logo`} />
