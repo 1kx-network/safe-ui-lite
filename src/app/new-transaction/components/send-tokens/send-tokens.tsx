@@ -235,19 +235,16 @@ export const SendTokens = () => {
     setTimeout(() => setIsLoading(false), 300);
   }, [chainId]);
 
+  const tokenOptions = options.map(opt => ({
+    ...opt,
+    icon: () => <opt.icon />,
+  }));
+
   const selectOp = useCallback(
     () => (
       <WalletSelect
         isLoading={isLoading}
-        options={[
-          {
-            id: 0,
-            value: chosenNetwork?.label ?? '',
-            label: chosenNetwork?.label ?? '',
-            icon: () => formatterIcon(chosenNetwork?.chainId ?? 0, '18px', '18px'),
-          },
-          ...options,
-        ]}
+        options={tokenOptions}
         defaultValue={{
           id: 0,
           value: chosenNetwork?.value ?? '',

@@ -28,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/assets/styles/theme-mui.ts"
+    "src/assets/styles/theme-mui.ts",
+    "src/types/svg.d.ts"
   ],
   "exclude": ["node_modules"]
 }

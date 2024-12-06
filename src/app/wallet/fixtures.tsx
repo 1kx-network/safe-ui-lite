@@ -6,7 +6,7 @@ import EthIcon from '@/assets/svg/eth-icon.svg';
 import { NATIVE_TOKENS, TOKENS_ERC20 } from '@/constants/tokens';
 
 export interface IOptions {
-  icon?: () => React.ReactNode | JSX.Element;
+  icon?: React.FC<React.SVGProps<SVGSVGElement>> | (() => React.ReactNode);
   value: string;
   label: string;
   id: number;
@@ -14,8 +14,8 @@ export interface IOptions {
 }
 
 export const options = [
-  { id: 1, label: TOKENS_ERC20.USDT, value: TOKENS_ERC20.USDT, icon: USDTIcon },
-  { id: 2, label: TOKENS_ERC20.USDC, value: TOKENS_ERC20.USDC, icon: USDCIcon },
+  { id: 1, label: TOKENS_ERC20.USDT, value: TOKENS_ERC20.USDT, icon: () => <USDTIcon /> },
+  { id: 2, label: TOKENS_ERC20.USDC, value: TOKENS_ERC20.USDC, icon: () => <USDCIcon /> },
 ];
 
 export const tokenList = [
