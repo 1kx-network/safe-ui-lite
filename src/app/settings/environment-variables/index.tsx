@@ -23,7 +23,6 @@ import {
 interface IChangeNetwork {
   name: string;
   rpc: string;
-  chainId: string;
 }
 
 export const NetworksSettings = ({
@@ -61,7 +60,6 @@ export const NetworksSettings = ({
     setNetworkLocal(elem);
     setValue('name', elem.value);
     setValue('rpc', elem.rpc);
-    setValue('chainId', String(elem.chainId));
   };
 
   const selectInputRef = useRef();
@@ -75,7 +73,7 @@ export const NetworksSettings = ({
     setIsLoadingChain(true);
 
     const updateNetworkDB: INetworkDB = {
-      chainId: Number(data.chainId) || Number(chainId),
+      chainId: Number(chainId),
       name: data.name,
       currency: data.name,
       explorerUrl: explorerUrl ?? '',
@@ -85,17 +83,16 @@ export const NetworksSettings = ({
       rpcOriginal: network.rpcOriginal || network.rpc,
     };
 
-    const newNetwork =
-      Number(data.chainId) !== Number(chainId)
-        ? {
-            value: data.name,
-            rpc: data.rpc,
-            isNew: true,
-            rpcOriginal: network.rpc,
-          }
-        : {};
+    // updateNetwork({
+    //   chainId: Number(chainId),
+    //   label: data.name,
+    //   value: data.name,
+    //   rpc: data.rpc,
+    //   icon: () => formatterIcon(chainId),
+    // });
 
-    await setNetworkDB({ ...updateNetworkDB, ...newNetwork });
+    await setNetworkDB(updateNetworkDB);
+    // await updateNetworkDB(updateNetworkDB);
     await loadNetworks();
 
     setTimeout(() => setIsLoadingChain(false), 500);
@@ -160,18 +157,11 @@ export const NetworksSettings = ({
                 )}
               />
 
-              <Controller
-                control={control}
-                name="chainId"
-                render={({ field }) => (
-                  <WalletInput
-                    {...field}
-                    label="Chain Id"
-                    error={!!errors.rpc}
-                    errorValue={errors.rpc?.message}
-                    disabled={!network}
-                  />
-                )}
+              <WalletInput
+                label="Chain Id"
+                placeholder="Chain Id"
+                value={network?.chainId}
+                disabled
               />
             </GridInfoValueStyled>
 
