@@ -28,7 +28,7 @@ const WcConnectionState = ({
           inheritViewBox
           sx={{ mx: 2 }}
           className={classNames(css.dots, { [css.errorDots]: isDelete })}
-          title="Connection state"
+          titleAccess="Connection state"
         />
 
         <SafeAppIconCard src={icon} width={28} height={28} alt={`${name} logo`} />
