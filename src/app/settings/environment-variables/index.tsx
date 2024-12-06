@@ -23,6 +23,7 @@ import {
 interface IChangeNetwork {
   name: string;
   rpc: string;
+  chainId: string;
 }
 
 export const NetworksSettings = ({
@@ -60,6 +61,7 @@ export const NetworksSettings = ({
     setNetworkLocal(elem);
     setValue('name', elem.value);
     setValue('rpc', elem.rpc);
+    setValue('chainId', String(elem.chainId));
   };
 
   const selectInputRef = useRef();
@@ -73,7 +75,7 @@ export const NetworksSettings = ({
     setIsLoadingChain(true);
 
     const updateNetworkDB: INetworkDB = {
-      chainId: Number(chainId),
+      chainId: Number(data.chainId) || Number(chainId),
       name: data.name,
       currency: data.name,
       explorerUrl: explorerUrl ?? '',
@@ -157,11 +159,18 @@ export const NetworksSettings = ({
                 )}
               />
 
-              <WalletInput
-                label="Chain Id"
-                placeholder="Chain Id"
-                value={network?.chainId}
-                disabled
+              <Controller
+                control={control}
+                name="chainId"
+                render={({ field }) => (
+                  <WalletInput
+                    {...field}
+                    label="Chain Id"
+                    error={!!errors.rpc}
+                    errorValue={errors.rpc?.message}
+                    disabled={!network}
+                  />
+                )}
               />
             </GridInfoValueStyled>
 
