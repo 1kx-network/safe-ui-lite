@@ -8,6 +8,7 @@ import {
   optimism, // 10
   scroll, // 534352
   // sepolia, // 11155111
+  pulsechain,
 } from '@wagmi/core/chains';
 
 export const chains = [
@@ -19,6 +20,7 @@ export const chains = [
   arbitrum,
   optimism,
   scroll,
+  pulsechain,
 ];
 
 export const networks = [
