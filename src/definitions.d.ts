@@ -11,7 +11,6 @@ declare global {
         isUnlocked: () => Promise<boolean>;
       };
       isConnected?: () => boolean;
-      request: (args: { method: string; params?: Array<any> }) => Promise<any>;
     };
     beamer_config?: BeamerConfig;
     Beamer?: BeamerMethods;
