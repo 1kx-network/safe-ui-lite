@@ -85,16 +85,17 @@ export const NetworksSettings = ({
       rpcOriginal: network.rpcOriginal || network.rpc,
     };
 
-    // updateNetwork({
-    //   chainId: Number(chainId),
-    //   label: data.name,
-    //   value: data.name,
-    //   rpc: data.rpc,
-    //   icon: () => formatterIcon(chainId),
-    // });
+    const newNetwork =
+      Number(data.chainId) !== Number(chainId)
+        ? {
+            value: data.name,
+            rpc: data.rpc,
+            isNew: true,
+            rpcOriginal: network.rpc,
+          }
+        : {};
 
-    await setNetworkDB(updateNetworkDB);
-    // await updateNetworkDB(updateNetworkDB);
+    await setNetworkDB({ ...updateNetworkDB, ...newNetwork });
     await loadNetworks();
 
     setTimeout(() => setIsLoadingChain(false), 500);
