@@ -3,7 +3,7 @@ import {
   getTransactionDetails,
   getTransactionHistory,
 } from '@safe-global/safe-gateway-typescript-sdk';
-
+//whatever
 export const getTimezoneOffset = () => new Date().getTimezoneOffset() * 60 * -1000;
 
 /**
