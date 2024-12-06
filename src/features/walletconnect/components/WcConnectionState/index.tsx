@@ -21,7 +21,7 @@ const WcConnectionState = ({
   return (
     <div className={css.container}>
       <div>
-        <SafeLogo alt="Safe logo" width="28px" height="28px" />
+        <SafeLogo aria-label="Safe logo" width="28px" height="28px" />
 
         <SvgIcon
           component={ConnectionDots}
