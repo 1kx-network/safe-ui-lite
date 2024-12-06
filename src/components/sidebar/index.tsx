@@ -236,7 +236,7 @@ export const Sidebar: React.FunctionComponent<ISidebar> = ({ icon = dataUserMock
     return 'Safe account';
   }, [address, safeAddress]);
 
-  const handleCopyAddress = (e: React.MouseEvent<HTMLElement>) => {
+  const handleCopyAddress = (e: React.MouseEvent<SVGSVGElement>) => {
     e.stopPropagation();
     if (safeAddress) {
       navigator.clipboard.writeText(safeAddress);
