@@ -194,12 +194,42 @@ export const UserInfoBar = () => {
   };
 
   const handleChangeNetwork = async (elem: IOptionNetwork) => {
-    await switchNetwork(elem.chainId)
-      .then(() => setChosenNetwork(elem))
-      .finally(() => {
-        setIsOpenNetworkMenu(false);
-        setIsOpenNetworkModal(false);
-      });
+    try {
+      await switchNetwork(elem.chainId);
+      setChosenNetwork(elem);
+    } catch (error: any) {
+      if (
+        error.code === 4902 &&
+        typeof window !== 'undefined' &&
+        typeof window.ethereum !== 'undefined'
+      ) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: `0x${Number(elem.chainId).toString(16)}`,
+                chainName: elem.name,
+                rpcUrls: [elem.rpc],
+                nativeCurrency: {
+                  name: elem.name,
+                  symbol: elem.name,
+                  // decimals: elem.decimals,
+                },
+                blockExplorerUrls: [elem.explorerUrl],
+              },
+            ],
+          });
+        } catch (addError) {
+          console.error('Error add a new network:', addError);
+        }
+      } else {
+        console.error('Error when you try change network:', error);
+      }
+    } finally {
+      setIsOpenNetworkMenu(false);
+      setIsOpenNetworkModal(false);
+    }
   };
 
   return (

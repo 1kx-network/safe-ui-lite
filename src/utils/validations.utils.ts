@@ -38,11 +38,28 @@ export const AddNetworkSchema = yup.object().shape({
     .string()
     .required('Chain ID is required')
     .matches(/^\d+$/, 'Chain ID must be a number'),
-  rpc: yup.string().required('RPC URL is required').url('RPC URL must be a valid URL'),
+  rpc: yup
+    .string()
+    .required('RPC URL is required')
+    .test('is-valid-url', 'RPC URL must be a valid URL', value => {
+      if (!value) return false;
+      // support http, https, ws, wss
+      const urlRegex = /^(http|https|ws|wss):\/\/[^\s$.?#].[^\s]*$/i;
+      return urlRegex.test(value);
+    }),
   explorerUrl: yup.string().required('Explorer URL is required').url('RPC URL must be a valid URL'),
 });
 
 export const ChangeNetworkEnvSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
-  rpc: yup.string().required('RPC URL is required').url('RPC URL must be a valid URL'),
+  rpc: yup
+    .string()
+    .required('RPC URL is required')
+    .test('is-valid-url', 'RPC URL must be a valid URL', value => {
+      if (!value) return false;
+      // support http, https, ws, wss
+      const urlRegex = /^(http|https|ws|wss):\/\/[^\s$.?#].[^\s]*$/i;
+      return urlRegex.test(value);
+    }),
+  chainId: yup.string().required('Chain Id is required'),
 });
