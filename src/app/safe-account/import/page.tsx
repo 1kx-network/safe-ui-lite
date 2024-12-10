@@ -126,10 +126,9 @@ export default function CreatePageAccount() {
         await createSafe(safeAddress);
       }
 
-      customToasty(
-        'Please check the correctness of the address or check that you are the owner this account',
-        'error'
-      );
+      if (!safeSdkLocal) {
+        customToasty('Please check the correctness of the address', 'error');
+      }
       setIsLoading(false);
     } else {
       setErrorValueAcc('Account address must be correct');
