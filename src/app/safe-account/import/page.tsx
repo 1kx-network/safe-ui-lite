@@ -112,20 +112,15 @@ export default function CreatePageAccount() {
         console.error('<-- Error width address -->');
       }
 
-      const isOwner = await safeSdkLocal?.isOwner(String(address));
+      const localList = localStorage.getItem('createdSafes')
+        ? localStorage.getItem('createdSafes')
+        : null;
 
-      if (isOwner) {
-        const localList = localStorage.getItem('createdSafes')
-          ? localStorage.getItem('createdSafes')
-          : null;
+      updateSafeAccounts(chainId ?? options[0].chainId, [String(address)], valueAcc, localList);
 
-        updateSafeAccounts(chainId ?? options[0].chainId, [String(address)], valueAcc, localList);
-
-        customToasty('Address was added', 'success');
-        setIsLoading(false);
-        router.push(routes.home);
-        return;
-      }
+      customToasty('Address was added', 'success');
+      setIsLoading(false);
+      router.push(routes.home);
 
       if (safeAddress) {
         await createSafe(safeAddress);
